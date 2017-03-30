@@ -1,0 +1,254 @@
+<?php
+
+/**
+ * Implementation of hook_enable()
+ */
+function pantheon_migrate_enable() {
+  drupal_set_message(t('The Pantheon Migrate module has now been enabled. Make sure you have the proper permissions and click !here to begin the migration.', array('!here' => l('here', 'admin/config/system/backup_migrate/export/pantheon'))));
+}
+
+/**
+ * Implementation of hook_menu()
+ */
+function pantheon_migrate_menu() {
+  $items['admin/config/system/backup_migrate/export/pantheon'] = array(
+    'title' => 'Pantheon Migrate',
+    'description' => 'Migrate the site onto Pantheon',
+    'page callback' => 'backup_migrate_menu_callback',
+    'page arguments' => array('', 'pantheon_migrate_ui_pantheon_migrate_quick', TRUE),
+    'access arguments' => array('access backup and migrate'),
+    'weight' => 3,
+    'type' => MENU_LOCAL_TASK,
+  );
+  return $items;
+}
+
+/**
+ * Implementation of hook_menu_alter()
+ */
+function pantheon_migrate_menu_alter(&$items) {
+  $items['admin/config/system/backup_migrate/destination/downloadfile']['access callback'] = 'pantheon_migrate_download_access';
+  $items['admin/config/system/backup_migrate/destination/downloadfile']['access arguments'] = array(6, 7);
+}
+
+/**
+ * Pantheon Token Generation
+ */
+function pantheon_migrate_token_get($file_id) {
+  $token = md5(session_id() . $file_id . drupal_get_private_key());
+  $record = array(
+    'file_id' => $file_id,
+    'token' => $token,
+  );
+  drupal_write_record('pantheon_migrate_tokens', $record);
+  return $token;
+}
+
+/**
+ * Pantheon Token Validation
+ */
+function pantheon_migrate_token_validate($file_id, $token) {
+  $result = db_query("SELECT token_id FROM {pantheon_migrate_tokens} WHERE file_id = '%s' AND token = '%s'", array($file_id, $token));
+  if (count($result) > 0) {
+    return TRUE;
+  }
+  else {
+    return FALSE;
+  }
+}
+
+/**
+ * Access Callback for Download
+ */
+function pantheon_migrate_download_access($file_id, $token) {
+  // Let Users Download as Normal
+  if (user_access('access backup files')) {
+    return TRUE;
+  }
+
+  // Validate Our Special Tokens
+  return pantheon_migrate_token_validate($file_id, $token);
+}
+
+/**
+ * Callback for Pantheon Migration
+ */
+function pantheon_migrate_ui_pantheon_migrate_quick() {
+  $out = array();
+  if (user_access('perform backup')) {
+    drupal_set_title(t('Pantheon Migrate'));
+    return drupal_get_form('pantheon_migrate_ui_pantheon_migrate_quick_backup_form');
+  }
+  else {
+    return t('You do not have permission to back up this site.');
+  }
+  return $out;
+}
+
+/**
+ * Implementation of hook_help().
+ */
+function pantheon_migrate_help($path, $arg) {
+  switch($path) {
+    case 'admin/config/system/backup_migrate/export/pantheon':
+      return '<p>' . t('Migrate your site to Pantheon by making an archive of your site and then sending it to Pantheon for further setup. For more information, checkout the !readme file.', array('!readme' => l('README.txt', drupal_get_path('module', 'pantheon_migrate') . '/README.txt'))) . '</p>';
+      break;
+  }
+}
+
+/**
+ * Pantheon Migrate Form
+ */
+function pantheon_migrate_ui_pantheon_migrate_quick_backup_form($form, &$form_state) {
+  backup_migrate_include('profiles', 'destinations');
+
+  $form = array();
+
+  $form['quickbackup'] = array(
+    '#type' => 'fieldset',
+    '#title' => t('Migrate to Pantheon'),
+  );
+
+  $form['quickbackup']['data'] = array(
+    '#markup' => '<p>' . pantheon_migrate_ui_destination_display_files('pantheonstorage') . '</p>',
+  );
+
+  $form['quickbackup']['source_id'] = array(
+    '#type' => 'value',
+    '#value' => 'pantheonarchive',
+  );
+
+  $form['quickbackup']['destination_id'] = array(
+    '#type' => 'value',
+    '#value' => 'pantheonstorage',
+  );
+
+  $form['quickbackup']['profile_id'] = array(
+    '#type' => 'value',
+    '#value' => 'pantheonprofile',
+  );
+
+  $form['quickbackup']['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Create Pantheon Archive'),
+    '#weight' => 1,
+    '#description' => t('Depending on the size of your site, this may take several minutes to complete'),
+  );
+
+  $form['#submit'] = array('pantheon_migrate_ui_manual_quick_backup_form_submit');
+
+  return $form;
+}
+
+/**
+ * Implementation of hook_backup_migrate_destination_types().
+ */
+function pantheon_migrate_backup_migrate_destination_types() {
+  return array(
+    'pantheonarchive' => array(
+      'description' => t('Packages the code, database, and files of your site to import into Pantheon.'),
+      'file' => drupal_get_path('module', 'pantheon_migrate') .'/pantheon_migrate.backup_migrate.inc',
+      'class' => 'backup_migrate_destination_pantheon_migrate',
+      'type_name' => t('Pantheon Import'),
+      'can_create' => FALSE,
+    ),
+    'pantheonstorage' => array(
+      'file' => drupal_get_path('module', 'pantheon_migrate') .'/pantheon_migrate.backup_migrate.inc',
+      'type_name' => t('Pantheon Directory'),
+      'class' => 'backup_migrate_destination_files_pantheon_storage',
+    ),
+  );
+}
+
+/**
+ * Implementation of hook_backup_migrate_profiles()
+ */
+function pantheon_migrate_backup_migrate_profiles() {
+  $out = array();
+  $out['pantheonprofile'] = backup_migrate_crud_create_item('profile', array(
+      'name' => t("Pantheon Settings"),
+      'profile_id' => 'pantheonprofile')
+  );
+  return $out;
+
+}
+
+/**
+ * Implementation of hook_backup_migrate_destinations().
+ */
+function pantheon_migrate_backup_migrate_destinations() {
+  $destination = backup_migrate_create_destination('pantheonstorage', array('destination_id' => 'pantheonstorage'));
+  return array('pantheonstorage' => $destination);
+}
+
+/**
+ * Override of backup_migrate_ui_destination_display_files()
+ */
+function pantheon_migrate_ui_destination_display_files($destination_id = NULL) {
+  $out = $sort = array();
+  if ($destination = backup_migrate_get_destination($destination_id)) {
+    drupal_set_title(t('%title Files', array('%title' => $destination->get_name())), PASS_THROUGH);
+    $headers = array(
+      array('data' => 'URL', 'field' => 'filename'),
+      array('data' => 'Date', 'field' => 'filetime'),
+      array('data' => 'Size', 'field' => 'filesize'),
+      t('Operations'),
+    );
+
+    $sort_order = tablesort_get_order($headers);
+    $sort_key   = $sort_order['sql'] ? $sort_order['sql'] : 'filetime';
+    $sort_dir   = tablesort_get_sort($headers) == 'desc' ? SORT_DESC : SORT_ASC;
+
+    $files      = $destination->list_files();
+
+    $i          = 0;
+    foreach ((array)$files as $file) {
+      $info = $file->info();
+      // Show only files that can be restored from.
+      if ($file->is_recognized_type()) {
+        $sort[] = $info[$sort_key];
+        $file_id = $file->file_info['filename'];
+        $out[] = array(
+          '<input type="textarea" style="width: 100%" value="' . url('admin/config/system/backup_migrate/destination/downloadfile/' . $destination_id .'/'. $file_id . '/' . pantheon_migrate_token_get($file_id), array('query' => array('noise' => rand(rand(100, 1000), rand(5000, 50000))), 'absolute' => TRUE)) . '">',
+          format_date($info['filetime'], 'small'),
+          format_size($info['filesize']),
+          implode(" | ", $destination->get_file_links($file->file_id())),
+        );
+      }
+    }
+
+    array_multisort($sort, $sort_dir, $out);
+
+    if ($out) {
+      return theme('table', array('header' => $headers, 'rows' => $out));
+    }
+    else {
+      return t('There are no backup files to display.');
+    }
+  }
+  drupal_goto("admin/config/system/backup_migrate/destination");
+}
+
+/**
+ * Override of the backup_migrate_ui_manual_quick_backup_form_submit
+ */
+function pantheon_migrate_ui_manual_quick_backup_form_submit($form, &$form_state) {
+  backup_migrate_include('profiles', 'destinations');
+  if (user_access('perform backup')) {
+    // For a quick backup use the default settings.
+    $settings = _backup_migrate_profile_saved_default_profile($form_state['values']['profile_id']);
+
+    // Set the destination to the one chosen in the pulldown.
+    $settings->destination_id = $form_state['values']['destination_id'];
+    $settings->source_id = $form_state['values']['source_id'];
+
+    // Save the settings for next time.
+    variable_set("backup_migrate_source_id", $form_state['values']['source_id']);
+    variable_set("backup_migrate_destination_id", $form_state['values']['destination_id']);
+    variable_set("backup_migrate_profile_id", $form_state['values']['profile_id']);
+
+    // Do the backup.
+    backup_migrate_ui_manual_backup_perform($settings);
+  }
+  $form_state['redirect'] = 'admin/config/system/backup_migrate/export/pantheon';
+}

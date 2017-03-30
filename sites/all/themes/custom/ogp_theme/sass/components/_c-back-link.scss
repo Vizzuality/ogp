@@ -1,0 +1,19 @@
+.c-back-link {
+  position: absolute;
+  right: 0;
+  top: calc((100% / 2) - 8px);
+  margin-right: 50px;
+
+  &::before {
+    @include triangle(8px, $color-2, bottom);
+    position: absolute;
+    top: 5px;
+    left: -15px;
+    content: '';
+    transform: rotate(90deg);
+  }
+
+  @media screen and (min-width: $screen-m) {
+    margin-right: 80px;
+  }
+}

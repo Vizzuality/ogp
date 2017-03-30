@@ -1,0 +1,112 @@
+.l-countries {
+
+  .header-banner {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: flex-start;
+    background-color: #008FE4;
+    position: relative;
+
+    .colour-panel {
+      width: 50%;
+      height: 100%;
+      padding-top: 50px;
+      padding-bottom: 90px;
+      min-height: 640px;
+
+      &.-blue {
+        background-color: $color-2;
+      }
+
+      &.-left {
+        padding-left: calc((100vw - 1200px) / 2);
+      }
+
+      &.-right {
+        padding-right: calc((100vw - 1200px) / 2);
+        padding-bottom: 0;
+      }
+    }
+
+    .body-view-more {
+      max-height: 147px;
+      overflow: hidden;
+      margin-bottom: 10px;
+
+      &.-show {
+        height: auto;
+        max-height: 100%;
+      }
+    }
+
+    .js-view-more {
+
+      &.-open {
+
+        .icon {
+          transform: rotate(180deg);
+        }
+      }
+
+      .icon {
+        margin-left: 5px;
+      }
+    }
+  }
+
+  .current-actions {
+    margin-top: 80px;
+    margin-bottom: 15px;
+  }
+
+  .completion {
+    margin-top: 40px;
+    margin-bottom: 20px;
+  }
+
+  .l-accordion {
+    padding-top: 50px;
+    padding-bottom: 20px;
+    position: relative;
+  }
+
+  .l-reports {
+    margin-top: 60px;
+    position: relative;
+
+    .-hidden {
+      visibility: hidden;
+    }
+  }
+
+  .banner {
+    margin-top: 60px;
+  }
+
+  .document-panel {
+    padding-bottom: 40px;
+    margin-bottom: 30px;
+    position: relative;
+
+    .links-container {
+      padding-top: 20px;
+    }
+
+    &.-loading {
+      visibility: hidden;
+    }
+
+    .c-link {
+      margin-top: 15px;
+      margin-bottom: 20px;
+    }
+
+    hr {
+      width: 100%;
+      border: none;
+      border-bottom: solid 1px rgba($color-22, 0.1);
+      margin-top: 50px;
+    }
+  }
+}

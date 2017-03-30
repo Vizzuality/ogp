@@ -1,0 +1,116 @@
+<?php
+/**
+ * @file
+ * Code for the OGP Twitter feature.
+ */
+
+include_once 'ogp_twitter.features.inc';
+
+/**
+ * Implements hook_twitter_status_save().
+ */
+function ogp_twitter_twitter_status_save($status) {
+  // We only save if tagged #OGP or #OpenGovPartnership
+  if (_ogp_twitter_has_hashtag($status->text)) {
+    // Create new "tweet" content when a status is saved.
+    $node = new stdClass();
+    $node->uid = 1;
+    $node->status = 1;
+    $node->type = 'tweet';
+    $node->created = strtotime($status->created_at);
+    $node->field_twitter_text[LANGUAGE_NONE][0]['value'] = $status->text;
+    $node->field_twitter_text[LANGUAGE_NONE][0]['format'] = 'tweet';
+    $node->field_twitter_account[LANGUAGE_NONE][0]['value'] = $status->user->screen_name;
+    $node->field_twitter_id[LANGUAGE_NONE][0]['value'] = $status->id;
+
+    if ($countries = ogp_twitter_get_account_counries($status->user->screen_name)) {
+      $node->og_group_ref[LANGUAGE_NONE] = array();
+      foreach($countries as $gid) {
+        $node->og_group_ref[LANGUAGE_NONE][] = array('target_id' => $gid);
+      }
+    }
+    $node = node_submit($node);
+    node_save($node);
+  }
+}
+
+/**
+ * Check to see if tweet text contains #OGP or #OpenGovPartnership hastags
+ */
+function _ogp_twitter_has_hashtag($text) {
+  if (preg_match('/[#]\bOGP\b/i', $text)) {
+    return TRUE;
+  }
+  if (preg_match('/[#]\bOpenGovPartnership\b/i', $text)) {    
+    return TRUE;
+  }
+  return FALSE;
+}
+
+function ogp_twitter_twitter_account_save($account) {
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function ogp_twitter_form_country_page_node_form_alter(&$form, &$form_state) {
+  // Add custom validation function to check twitter accounts. Maybe this should go in the country feature.
+  $form['#validate'][] = 'ogp_twitter_country_page_node_form_validate';
+}
+
+/**
+ * Custom validation function for twitter user accounts in country pages
+ */
+function ogp_twitter_country_page_node_form_validate(&$form, &$form_state) {
+  module_load_include('inc', 'twitter', 'twitter');
+  $twitter_accounts = twitter_load_accounts();
+  $accounts = array();
+  foreach($twitter_accounts as $account) {
+    $accounts[] = $account->screen_name;
+  }
+  foreach($form_state['values']['field_country_twitter_account'][LANGUAGE_NONE] as $delta => $input) {
+    if (is_array($input) && $input['value']) {
+      // Remove @ symbol
+      if (strpos($input['value'], '@') === 0) {
+        $input['value'] = $form_state['values']['field_country_twitter_account'][LANGUAGE_NONE][$delta]['value'] = substr($input['value'], 1);
+      }
+      // Check to see if the account is a registered twitter account
+      if (!in_array($input['value'], $accounts)) {
+        form_set_error('field_country_twitter_account][und][' . $delta, t('You must chose a twitter account already registered with this website. Contact staff if you need to add a new twitter account.'));
+      }      
+    }
+  }
+}
+
+/**
+ * Get an array of country group ids that use a particular twitter account.
+ *
+ * @param $twitter_account
+ *   A twitter account name
+ * 
+ * @return A simple array of gids
+ */
+function ogp_twitter_get_account_counries($twitter_account) {
+  $query = new EntityFieldQuery();
+
+  $query->entityCondition('entity_type', 'node')
+    ->entityCondition('bundle', 'country_page')
+    ->propertyCondition('status', 1)
+    ->fieldCondition('field_country_twitter_account', 'value', $twitter_account, '=')
+    ->addMetaData('account', user_load(1)); // Run the query as user 1.
+
+  $result = $query->execute();
+  return array_keys($result['node']);
+}
+
+/**
+ * Implements hook_views_pre_view().
+ *
+ * Start twitter_cron every 5 minutes to update twetter feed.
+ */
+function ogp_twitter_views_pre_view(&$view, &$display_id, &$args) {
+  if (!empty($view->name) and ($view->name == 'ogp_opengov_tweets') and (variable_get('ogp_twitter_last_update', 0) + 300 < REQUEST_TIME)) {
+    variable_set('ogp_twitter_last_update', REQUEST_TIME);
+    twitter_cron();
+  }
+}

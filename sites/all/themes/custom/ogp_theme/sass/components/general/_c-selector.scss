@@ -1,0 +1,32 @@
+.c-selector {
+  padding: 15px 0;
+  position: relative;
+
+  select {
+    height: 40px;
+    display: none;
+  }
+
+  &.-tall {
+
+    select {
+      height: 60px;
+    }
+  }
+
+  &.-search {
+
+    .select2-selection__arrow {
+      display: none !important;
+    }
+
+    .icon-search {
+      position: absolute;
+      right: 30px;
+      top: calc((100% - 15px) / 2);
+      z-index: 1101;
+      background-color: $color-3;
+    }
+  }
+
+}

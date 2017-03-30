@@ -1,0 +1,4 @@
+name = My REST Easy API
+description = The REST Easy API
+core = 7.x
+dependencies[] = restful

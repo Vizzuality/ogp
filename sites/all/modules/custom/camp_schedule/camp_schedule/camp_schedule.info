@@ -1,0 +1,10 @@
+name = Camp Session Schedule
+description = Create a session grid and other schedule display features.
+core = 7.x
+package = DrupalCamp
+dependencies[] = cod_session
+features[ctools][] = views:views_default:3.0
+features[features_api][] = api:2
+features[views_view][] = camp_session_grid
+features_exclude[dependencies][views] = views
+files[] = camp_schedule_views_plugin_style_schedule.inc

@@ -1,0 +1,31 @@
+.l-social-region {
+  background-color: $color-3;
+  display: flex;
+
+  .border-right {
+    border-right: solid 1px $color-4;
+  }
+
+  #block-views-tweetblock-block {
+    width: 50%;
+    margin-left: 25px;
+    padding-right: 50px;
+    border-right: solid 1px #ffffff;
+
+    @media screen and (min-width: $screen-l) {
+      margin-left: calc((100vw - 1150px) / 2);
+      width: 575px;
+    }
+  }
+
+  #block-facebook-pull-facebook-pull-default {
+    width: 50%;
+    margin-right: 25px;
+    padding-left: 50px;
+
+    @media screen and (min-width: $screen-l) {
+      margin-right: calc((100vw - 1150px) / 2);
+      width: 575px;
+    }
+  }
+}

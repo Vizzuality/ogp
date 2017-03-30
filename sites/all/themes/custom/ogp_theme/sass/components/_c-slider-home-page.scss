@@ -1,0 +1,71 @@
+//Cover slider Home Page
+.c-slider-home-page {
+  min-height: 750px;
+  background-image: url('../images/cover/cover1.jpg');
+  background-repeat: no-repeat;
+  background-size: cover;
+  position: relative;
+  padding-top: 80px;
+
+  .container {
+    height: 650px;
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    flex-direction: column;
+
+    .title-text {
+      font-size: $font-size-big;
+      font-weight: $font-weight-semi-bold;
+      line-height: 1.3;
+
+      a {
+        color: $color-4;
+      }
+    }
+  }
+
+  .c-button {
+    padding: 15px 40px;
+  }
+
+  .views-field-title {
+    margin-bottom: 40px;
+  }
+}
+
+.dots-slider {
+  position: absolute;
+  right: 80px;
+  bottom: 40px;
+
+  li {
+    display: inline-block;
+    margin-right: 30px;
+    line-height: 0;
+
+    &:last-of-type {
+      margin-right: 0;
+    }
+
+    button {
+      width: 7px;
+      height: 7px;
+      padding: 0;
+      border: 0;
+      border-radius: 8px;
+      outline: 0;
+      background-color: rgba($color-4, .4);
+      font-size: 0;
+      cursor: pointer;
+    }
+
+    &.slick-active {
+      button {
+        width: 13px;
+        height: 13px;
+        background-color: $color-4;
+      }
+    }
+  }
+}

@@ -1,0 +1,30 @@
+.c-zoom-controls {
+  position: absolute;
+  top: 50px;
+  right: calc((100vw - 1150px) / 2);
+  width: 40px;
+  background-color: $color-4;
+  z-index: 2;
+
+  &.-full-width {
+    right: 40px;
+  }
+
+  .icons {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 40px;
+    cursor: pointer;
+
+    &:first-of-type {
+      border-bottom: 1px solid $color-3;
+    }
+
+    svg {
+      width: 15px;
+      height: 15px;
+      fill: $color-2;
+    }
+  }
+}

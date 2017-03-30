@@ -1,0 +1,13 @@
+//Block logo pages
+.c-logo {
+  position: absolute;
+  top: 0;
+  left: 0;
+  z-index: 1010;
+  width: 150px;
+  height: 150px;
+  background: url('/sites/all/themes/custom/ogp_theme/images/logo/logo.png');
+  background-position: center;
+  background-size: contain;
+  background-repeat: no-repeat;
+}

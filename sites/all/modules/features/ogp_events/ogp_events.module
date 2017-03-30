@@ -1,0 +1,27 @@
+<?php
+/**
+ * @file
+ * Code for the Albatross Events feature.
+ */
+
+include_once('ogp_events.features.inc');
+
+/**
+ * Implements hook_taxonomy_fixtures_vocabulary().
+ */
+function ogp_events_taxonomy_fixtures_vocabulary() {
+  $module_path = drupal_get_path('module', 'ogp_events');
+  $map =  array(
+    'name' => 'name',
+    'weight' => 'weight',
+    'uuid' => 'uuid',
+    'description' => 'description',
+  );
+
+  return array(
+    'ogp_event_type' => array(
+      'export_path' => $module_path . '/data',
+      'map' => $map,
+    ),
+  );
+}

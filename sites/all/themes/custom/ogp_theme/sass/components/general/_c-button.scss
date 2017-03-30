@@ -1,0 +1,59 @@
+.c-button {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: $font-family-1;
+  font-size: $font-size-xsmall;
+  font-weight: $font-weight-semi-bold;
+  letter-spacing: 1px;
+  line-height: 1.25;
+  text-align: center;
+  text-transform: uppercase;
+  cursor: pointer;
+  width: 100%;
+
+  a {
+    color: $color-4;
+    font-family: $font-family-1;
+    font-size: $font-size-xsmall;
+    font-weight: $font-weight-semi-bold;
+  }
+
+  &.-full {
+    width: 100%;
+  }
+
+  &.-disabled {
+    cursor: default;
+    pointer-events: none;
+  }
+
+  &.-box {
+    padding: 15px 0;
+    border: 1px solid $color-4;
+    color: $color-4;
+  }
+
+  &.-large {
+    padding: 15px;
+  }
+
+  &.-green {
+    border: 1px solid $color-1;
+    color: $color-1;
+  }
+
+  &.-green-back {
+    border: 1px solid $color-1;
+    background-color: $color-1;
+    color: $color-4;
+  }
+
+  &.-white {
+    border: 1px solid $color-4;
+  }
+
+  &.-tall {
+    padding: 25px 0;
+  }
+}

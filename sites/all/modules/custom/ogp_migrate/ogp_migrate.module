@@ -1,0 +1,147 @@
+<?php
+/**
+ * Implements hook_flush_caches().
+ */
+function ogp_migrate_flush_caches() {
+  ogp_migrate_register_migrations();
+}
+
+/**
+ * Register all D6->D7 migrations. Based on migrate_d2d_example.module.
+ */
+function ogp_migrate_register_migrations() {
+  $common_arguments = array(
+    'source_connection' => 'legacy',
+    'source_version' => 6,
+    'group_name' => 'ogp_legacy',
+  );
+
+  $arguments = $common_arguments + array(
+    'description' => t('Migration of users from Drupal 6'),
+    'machine_name' => 'User',
+  );
+
+  // We just use the migrate_d2d D6 migration class as-is.
+  Migration::registerMigration('DrupalUser6Migration', $arguments['machine_name'],
+                               $arguments);
+
+  // For vocabulary migrations, source_vocabulary and destination_vocabulary are
+  // required arguments. Note that in Drupal 6 vocabularies did not have machine
+  // names, so we use the vocabulary ID to uniquely identify them.
+  $vocabulary_arguments = array(
+    array(
+      'description' => t('Migration of Topic terms from Drupal 6'),
+      'machine_name' => 'Topic',
+      'source_vocabulary' => '1',  // D6 Vocabulary ID
+      'destination_vocabulary' => 'topics',
+    ),
+    array(
+      'description' => t('Migration of Challenge/Principle terms from Drupal 6'),
+      'machine_name' => 'Challenge',
+      'source_vocabulary' => '10',  // D6 Vocabulary ID
+      'destination_vocabulary' => 'ogp_principle',
+    ),
+    // Note: fix experience vocabs on legacy before migrating
+    array(
+      'description' => t('Migration of 1 experience terms from Drupal 6'),
+      'machine_name' => 'Experience',
+      'source_vocabulary' => '6',  // D6 Vocabulary ID
+      'destination_vocabulary' => 'experience',
+    ),
+    array(
+      'description' => t('Migration of region terms from Drupal 6'),
+      'machine_name' => 'Region',
+      'source_vocabulary' => '7',  // D6 Vocabulary ID
+      'destination_vocabulary' => 'region',
+    ),
+  );
+
+  // Again, we're using the migrate_d2d class directly.
+  // The soft dependency says that while we don't have to run the user migration
+  // first, we want to make sure it's listed first so the vocubularies are
+  // listed right ahead of the node migrations.
+  $common_vocabulary_arguments = $common_arguments + array(
+    'class_name' => 'DrupalTerm6Migration',
+    'soft_dependencies' => array('User'),
+  );
+  foreach ($vocabulary_arguments as $arguments) {
+    $arguments += $common_vocabulary_arguments;
+    Migration::registerMigration($arguments['class_name'], $arguments['machine_name'],
+                                 $arguments);
+  }
+
+  // File migration
+  $file_arguments = $common_arguments + array(
+    'machine_name' => 'OgpFile',
+    'description' => t('Import Drupal 6 files'),
+    'user_migration' => 'User',
+    'default_uid' => 1,
+    'source_dir' => '/Users/dfeder/Sites/ogp_drupal6/sites/www.opengovpartnership.org/files',
+    'destination_dir' => 'public://legacy_files',
+    'new_only' => TRUE,
+  );
+  Migration::registerMigration('DrupalFile6Migration', $file_arguments['machine_name'], 
+                                $file_arguments);
+
+  // Node migrations - each has its own class derived from the migrate_d2d class,
+  // specifying its particular field mappings and transformations. source_type
+  // and destination_type are required arguments.
+  $node_arguments = array(
+    array(
+      'class_name' => 'OgpCountryMigration',
+      'description' => t('Migration of country nodes from Drupal 6'),
+      'machine_name' => 'Country',
+      'source_type' => 'country',
+      'destination_type' => 'country_page',
+      'dependencies' => array('Topic'),
+    ),
+    array(
+      'class_name' => 'OgpCommitmentMigration',
+      'description' => t('Migration of commitment nodes from Drupal 6'),
+      'machine_name' => 'Commitment',
+      'source_type' => 'commitment',
+      'destination_type' => 'commitment',
+      'dependencies' => array('Challenge', 'Topic', 'Country'),
+    ),
+    array(
+      'class_name' => 'OgpNewsMigration',
+      'description' => t('Migration of press/news nodes from Drupal 6'),
+      'machine_name' => 'News',
+      'source_type' => 'press',
+      'destination_type' => 'news',
+      'dependencies' => array('Topic', 'Country'),
+    ),
+    array(
+      'class_name' => 'OgpExpertMigration',
+      'description' => t('Migration of supplier/expert nodes from Drupal 6'),
+      'machine_name' => 'Expert',
+      'source_type' => 'supplier',
+      'destination_type' => 'expert',
+      'dependencies' => array('Experience', 'Country'),
+    ),
+
+
+  );
+  // Tell the node migrations where the users are coming from, so they can
+  // set up the dependency and resolve D6->D7 uids.
+  $common_node_arguments = $common_arguments + array(
+    'user_migration' => 'User',
+  );
+  foreach ($node_arguments as $arguments) {
+    $arguments = array_merge_recursive($arguments, $common_node_arguments);
+    Migration::registerMigration($arguments['class_name'], $arguments['machine_name'],
+                                 $arguments);
+  }
+
+  // No menu migrations
+}
+
+/**
+ * Implements hook_migrate_api().
+ */
+function ogp_migrate_migrate_api() {
+  $api = array(
+    'api' => 2,
+  );
+  return $api;
+}

@@ -1,0 +1,328 @@
+<?php
+/**
+ * @file
+ * Code for the OGP Topics feature.
+ */
+
+include_once 'ogp_topics.features.inc';
+
+/**
+ * Implements hook_views_post_render().
+ * Hide view output if no search data.
+ */
+function ogp_topics_views_post_render(&$view, &$output, &$cache) {
+  if ($view->name == 'ogp_topics' and $view->current_display == 'page' and empty($view->exposed_input)) {
+    $output = _ogp_topics_page();
+  }
+}
+
+/**
+ * Implements hook_menu().
+ */
+function ogp_topics_menu() {
+  $items = array();
+
+  $items['admin/content/ogp_resources'] = array(
+    'title' => 'Administer resources',
+    'description' => 'Administer Resurces (was Topics) Rage.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('ogp_topics_settings_form'),
+    'access arguments' => array('administer nodes'),
+    'type' => MENU_NORMAL_ITEM,
+  );
+
+  $items['tools'] = array(
+    'title' => 'Topic Tools',
+    'page callback' => '_ogp_topics_page',
+    'access arguments' => array('access content'),
+  );
+
+  return $items;
+}
+
+/**
+ * Settings form.
+ *
+ * @see ogp_topics_menu()
+ */
+function ogp_topics_settings_form($form, &$form_state) {
+  $form = array();
+
+  $languages = language_list('enabled');
+  $languages = $languages[1];
+  $default_language = key($languages);
+  $default_language = $languages[$default_language];
+  unset($languages[$default_language->language]);
+
+  // Add new elements into structure
+  if ($links = variable_get('ogp_topics_links', FALSE)) {
+    $links[0]['data'][] = $links[1]['data'][] = $links[2]['data'][] = array('title' => '', 'uri' => '', 'image' => array('fid' => '',),);
+  }
+  // First run - using dafult values
+  else {
+    $links = array(
+      array(
+        'title' => 'Develop Your Action Plan',
+        'data' => array(array('title' => '', 'uri' => '', 'image' => array('fid' => '',),),),),
+      array(
+        'title' => 'Learn from Your Peers',
+        'data' => array(array('title' => '', 'uri' => '', 'image' => array('fid' => '',),),),),
+      array(
+        'title' => 'Track Progress on OGP',
+        'data' => array(array('title' => '', 'uri' => '', 'image' => array('fid' => '',),),),),
+    );
+  }
+
+  foreach ($links as $key => $data) {
+    $form['ogp_topics'][$key] = array(
+      '#type' => 'fieldset',
+      '#title' => check_plain($data['title']),
+      '#weight' => $key,
+      '#collapsible' => TRUE,
+      '#collapsed' => FALSE,
+      'title' => array(
+        '#title' => t('Group title'),
+        '#type' => 'textfield',
+        '#default_value' => $data['title'],
+        '#size' => 40,
+        '#required' => TRUE,
+        '#weight' => 100,
+      ),
+      'data' => array(
+        '#type' => 'container',
+        '#weight' => 200,
+      ),
+    );
+    if (count($languages) > 0) {
+      $delta = 0;
+      foreach ($languages as $language) {
+        $delta++;
+        $form['ogp_topics'][$key]['title_' . $language->language] = $form['ogp_topics'][$key]['title'];
+        $form['ogp_topics'][$key]['title_' . $language->language]['#title'] .= ' (' . $language->native . ')';
+        $form['ogp_topics'][$key]['title_' . $language->language]['#default_value'] = empty($data['title_' . $language->language]) ? '' : $data['title_' . $language->language];
+        $form['ogp_topics'][$key]['title_' . $language->language]['#required'] = FALSE;
+        $form['ogp_topics'][$key]['title_' . $language->language]['#weight'] += $delta;
+      }
+      $form['ogp_topics'][$key]['title']['#title'] .= ' (' . $default_language->native . ')';
+    }
+    foreach ($data['data'] as $k => $link) {
+      $form['ogp_topics'][$key]['data'][$k] = array(
+        '#type' => 'fieldset',
+        '#title' => $link['title'] ? check_plain($link['title']) : 'New link',
+        '#description' => t('To add the button, please fill in all 3 fields. To delete existing button, you will need to clear the text in the fields and delete the picture.'),
+        'title' => array(
+          '#title' => t('Title'),
+          '#type' => 'textfield',
+          '#default_value' => $link['title'],
+          '#size' => 40,
+          '#required' => $k == 0,
+          '#weight' => 100,
+        ),
+        'uri' => array(
+          '#title' => t('URI'),
+          '#type' => 'textfield',
+          '#default_value' => $link['uri'],
+          '#size' => 40,
+          '#required' => $k == 0,
+          '#weight' => 200,
+        ),
+        'image' => array(
+          '#type' => 'media',
+          '#title' => t('Image'),
+          '#description' => t('Select image file'),
+          '#input' => TRUE,
+          '#media_options' => array(
+            'global' => array(
+              'types' => array('image'),
+              'schemes' => array('http'),
+//              'enabledPlugins' => array('upload'),
+            ),
+          ),
+          '#required' => $k == 0,
+          '#default_value' => $link['image'],
+          '#weight' => 300,
+        ),
+        '#collapsible' => TRUE,
+        '#collapsed' => !empty($link['title']),
+      );
+      if (count($languages) > 0) {
+        $delta = 0;
+        foreach ($languages as $language) {
+          $delta++;
+          $form['ogp_topics'][$key]['data'][$k]['title_' . $language->language] = $form['ogp_topics'][$key]['data'][$k]['title'];
+          $form['ogp_topics'][$key]['data'][$k]['title_' . $language->language]['#title'] .= ' (' . $language->native . ')';
+          $form['ogp_topics'][$key]['data'][$k]['title_' . $language->language]['#default_value'] = empty($link['title_' . $language->language]) ? '' : $link['title_' . $language->language];
+          $form['ogp_topics'][$key]['data'][$k]['title_' . $language->language]['#required'] = FALSE;
+          $form['ogp_topics'][$key]['data'][$k]['title_' . $language->language]['#weight'] += $delta;
+          $form['ogp_topics'][$key]['data'][$k]['uri_' . $language->language] = $form['ogp_topics'][$key]['data'][$k]['uri'];
+          $form['ogp_topics'][$key]['data'][$k]['uri_' . $language->language]['#title'] .= ' (' . $language->native . ')';
+          $form['ogp_topics'][$key]['data'][$k]['uri_' . $language->language]['#default_value'] = empty($link['uri_' . $language->language]) ? '' : $link['uri_' . $language->language];
+          $form['ogp_topics'][$key]['data'][$k]['uri_' . $language->language]['#required'] = FALSE;
+          $form['ogp_topics'][$key]['data'][$k]['uri_' . $language->language]['#weight'] += $delta;
+        }
+        $form['ogp_topics'][$key]['data'][$k]['title']['#title'] .= ' (' . $default_language->native . ')';
+        $form['ogp_topics'][$key]['data'][$k]['uri']['#title'] .= ' (' . $default_language->native . ')';
+      }
+    }
+  }
+
+  $form['actions'] = array('#type' => 'actions');
+  $form['actions']['submit'] = array(
+    '#type' => 'submit',
+    '#value' => t('Save'),
+  );
+  $form['actions']['cancel'] = array(
+    '#markup' => l(t('Cancel'), 'admin/content/ogp_resources'),
+  );
+  $form['#submit'][] = 'ogp_topics_settings_form_submit';
+  $form['#validate'][] = 'ogp_topics_settings_form_validate';
+  $form['#theme'] = 'system_settings_form';
+  $form['#tree'] = TRUE;
+
+  return $form;
+}
+
+/**
+ * Validation callback for ogp_topics_settings_form.
+ *
+ * @see ogp_topics_settings_form()
+ */
+function ogp_topics_settings_form_validate($form, &$form_state) {
+  $links = $form_state['values']['ogp_topics'];
+  foreach ($links as $key => $data) {
+    foreach ($data['data'] as $k => $link) {
+      if ((empty($link['title']) or empty($link['uri']) or empty($link['image']['fid'])) and (
+          !empty($link['title']) or !empty($link['uri']) or !empty($link['image']['fid']))) {
+        form_set_error('ogp_topics][' . $key . '][data][' . $k, 'All fields are required.');
+      }
+      if (!empty($link['image']['fid'])) {
+        $image = file_load($link['image']['fid']);
+        if ($image->type != 'image') {
+          form_set_error('ogp_topics][' . $key . '][data][' . $k, 'Only images are allowd.');
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Submit callback for ogp_topics_settings_form.
+ *
+ * @see ogp_topics_settings_form()
+ */
+function ogp_topics_settings_form_submit($form, &$form_state) {
+  $links = $form_state['values']['ogp_topics'];
+
+  foreach ($links as $key => $data) {
+    foreach ($data['data'] as $k => $link) {
+      // Don't store empty values.
+      if (empty($link['title']) and empty($link['uri']) and empty($link['image']['fid'])) {
+        unset($links[$key]['data'][$k]);
+      }
+    }
+    $links[$key]['data'] = array_values($links[$key]['data']);
+  }
+
+  variable_set('ogp_topics_links', $links);
+  // @todo: generate page into cache after save.
+}
+
+/**
+ * Get rendered Resources (topics) page data to replace search results without
+ * user input.
+ */
+function _ogp_topics_page() {
+  // @todo: use cache.
+  $output = '';
+  if ($links = variable_get('ogp_topics_links', FALSE)) {
+    // Add multilingual support
+    $languages = language_list('enabled');
+    $languages = $languages[1];
+    $default_language = key($languages);
+    $default_language = $languages[$default_language];
+    unset($languages[$default_language->language]);
+    $lang_suffix = '';
+    if ($GLOBALS['language']->language != $default_language->language) {
+      $lang_suffix = '_' . $GLOBALS['language']->language;
+    }
+
+    $output .= '<div class="ogp-resources-wrapper">';
+    foreach ($links as $key => $data) {
+      $output .= '<div class="ogp-resource-col">';
+      // Add multilingual support
+      if (!empty($lang_suffix) and !empty($data['title' . $lang_suffix])) {
+        $data['title'] = $data['title' . $lang_suffix];
+      }
+      $output .= '<h3>' . check_plain($data['title']) . '</h3>';
+      foreach ($data['data'] as $k => $link) {
+        // Add multilingual support
+        if (!empty($lang_suffix)) {
+          if(!empty($link['title' . $lang_suffix])) {
+            $link['title'] = $link['title' . $lang_suffix];
+          }
+          if(!empty($link['uri' . $lang_suffix])) {
+            $link['uri'] = $link['uri' . $lang_suffix];
+          }
+        }
+        $output .= '<div class="ogp-resource-item">';
+        $image = '';
+        $file = file_load($link['image']['fid']);
+        switch ($file->type) {
+          case 'video':
+//            @todo: Add video support
+//            $video = $file->oembed['html'];
+//            $output .= l('<span class="resource-title">' . check_plain($link['title']) . '</span>', check_plain($link['uri']), array('html' => TRUE, 'attributes' => array('class' => 'ogp-resource-link')));
+//            $output .= '<div class="resource-media resource-video">' . $video . '</div>';
+            break;
+          case 'image':
+            $image = theme('image_style', array('path' => $file->uri, 'style_name' => 'ogp_resource'));
+            $image = '<span class="resource-media resource-image">' . $image . '</span>';
+            $output .= l('<span class="resource-title">' . check_plain($link['title']) . '</span>' . $image, check_plain($link['uri']), array('html' => TRUE, 'attributes' => array('class' => 'ogp-resource-link')));
+            break;
+        }
+        $output .= '</div>';
+      }
+      $output .= '</div>';
+    }
+    $output .= '</div>';
+  }
+  return $output;
+}
+
+/**
+ * Implements hook_block_info().
+ */
+function ogp_topics_block_info() {
+  $blocks['ogp_topics_hint1'] = array(
+    'info' => t('ogp_topics: Search for resources by applying one or more filters'),
+    'cache' => DRUPAL_CACHE_GLOBAL,
+  );
+
+  $blocks['ogp_topics_hint2'] = array(
+    'info' => t('ogp_topics: OR Search any word'),
+    'cache' => DRUPAL_CACHE_GLOBAL,
+  );
+
+  return $blocks;
+}
+
+
+/**
+ * Implements hook_block_view().
+ */
+function ogp_topics_block_view($delta = '') {
+  $block = array();
+
+  switch ($delta) {
+    case 'ogp_topics_hint1':
+      $block['subject'] = '<none>';
+      $block['content'] = t('Search for resources by applying one or more filters');
+      break;
+    case 'ogp_topics_hint2':
+      $block['subject'] = '<none>';
+      $block['content'] = t('OR Search any word');
+      break;
+  }
+
+  return $block;
+}

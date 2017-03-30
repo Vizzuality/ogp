@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the OGP Sitewide Contexts feature.
+ */
+
+include_once 'ogp_sitewide.features.inc';

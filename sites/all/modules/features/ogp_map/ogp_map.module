@@ -1,0 +1,433 @@
+<?php
+/**
+ * @file
+ * This draws the map used on the homepage and /countries.  The map uses a GeoJSON file with the country shapes and adds it
+ * to a Leaflet map with Mapbox tiles.  The country cohort info is pulled from the ogp_map_countries view.  Country nodes are
+ * attached to the country shapes from the GeoJSON file by the iso2 part of field_country on Country nodes.
+ */
+
+include_once 'ogp_map.features.inc';
+
+
+
+/**
+ * Implements hook_block_info().
+ *
+ * This hook declares what blocks are provided by the module.
+ */
+function ogp_map_block_info() {
+  // Many options are defined in hook_block_info():
+  $blocks['country_map'] = array(
+    'info' => t('OGP Participating Countries Map'),
+  );
+  $blocks['country_sc'] = array(
+    'info' => t('OGP Steering Committee Countries Map'),
+  );
+  $blocks['country_apc'] = array(
+    'info' => t('OGP Action Plan Cycles Countries Map'),
+  );
+//  $blocks['country_cohort'] = array(
+//    'info' => t('OGP Countries Cohorts Map (Obsolete)'),
+//  );
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_view().
+ *
+ * This hook generates the contents of the blocks themselves.
+ */
+function ogp_map_block_view($delta) {
+  global $base_url;
+  $basepath = drupal_get_path('module', 'ogp_map');
+  $leafletpath = libraries_get_path('leaflet');
+  $ogp_script = $basepath . '/ogp-map.js';
+  $data = array(
+    'geojson' => $base_url . '/' . $basepath . '/world-countries.json',
+    'countries' => ogp_map_countries_data($delta),
+    'delta' => $delta,
+  );
+  switch ($delta) {
+    case 'country_sc':
+      $data['legend'] = array(
+        0 => array('title' => t('Participating Countries'), 'color' => '#00AAFF'),
+        1 => array('title' => t('Steering Committee'), 'color' => '#2A2F70'),
+      );
+      $ogp_script = $basepath . '/ogp-map-sc.js';
+      break;
+    case 'country_apc': // Map Home Page
+      $data['legend'] = array(
+        0 => array('title' => t('Developing Action Plan'), 'color' => '#f5cd96'),
+        1 => array('title' => t('1st Action Plan Cycle'), 'color' => '#f8bb00'),
+        2 => array('title' => t('2nd Action Plan Cycle'), 'color' => '#f09800'),
+        3 => array('title' => t('3rd Action Plan Cycle'), 'color' => '#795711'),
+        4 => array('title' => t('4th Action Plan Cycle'), 'color' => '#104d70'),
+        5 => array('title' => t('Inactive as of May 2016'), 'color' => '#cccccc'),
+      );
+      // Remove unused legends.
+      $enabled = array();
+      foreach ($data['countries'] as $value) {
+        $enabled[$value['apc']] = TRUE;
+      }
+      foreach ($data['legend'] as $key => $value) {
+        if (!isset($enabled[$key])) {
+          unset($data['legend'][$key]);
+        }
+      }
+      $ogp_script = $basepath . '/ogp-map-apc.js'; //Script Map Home Page
+      break;
+    case 'country_cohort':
+      $data['legend'] = array(
+        1 => array('title' => t('Cohort 1 (Joined September 2011)'), 'color' => '#00AAFF'),
+        2 => array('title' => t('Cohort 2 (Joined April 2012)'), 'color' => '#20D3BD'),
+        3 => array('title' => t('Cohort 3 (Joined April 2013)'), 'color' => '#FFF292'),
+        4 => array('title' => t('Cohort 4 (Joining 2014)'), 'color' => '#e48c46'),
+      );
+      $ogp_script = $basepath . '/ogp-map.js';
+      break;
+    default:
+      $data['legend'] = array(
+        0 => array('title' => t('Participating Countries'), 'color' => '#00AAFF'),
+        1 => array('title' => t('Other Countries'), 'color' => '#424551'),
+      );
+      $ogp_script = $basepath . '/ogp-map-pc.js';
+      break;
+  }
+
+  return array(
+    'title' => '',
+    'content' => array(
+      '#markup' => theme('ogp_map', array('data' => $data)),
+      '#attached' => array(
+        'js'  => array(
+          $leafletpath . '/leaflet.js',
+          $ogp_script,
+          array('type' => 'setting', 'data' => array('ogp_map' => $data)),
+        ),
+        'css' => array(
+          $leafletpath . '/leaflet.css',
+          $basepath . '/ogp-map.css',
+        ),
+      ),
+    ),
+  );
+}
+
+/**
+ * Returns a formatted array of counry info from the og_map_countries view.
+ */
+function ogp_map_countries_data($delta) {
+  // @todo: replace view with db_query
+  switch ($delta) {
+    case 'country_sc':
+      $data = ogp_map_view_data('ogp_map_countries', 'block_1');
+      break;
+    case 'country_apc':
+      $data = ogp_map_view_data('ogp_map_countries', 'block_2');
+      break;
+    case 'country_cohort':
+      $dates = array(
+        '2011' => mktime(0, 0, 0, 9, 19, 2011),
+        '2012' => mktime(0, 0, 0, 4, 17, 2012),
+        '2013' => mktime(0, 0, 0, 4, 17, 2013),
+        '2014' => mktime(0, 0, 0, 4, 17, 2014),
+      );
+      $data = ogp_map_view_data('ogp_map_countries', 'default');
+      break;
+    default:
+      $data = ogp_map_view_data('ogp_map_countries', 'default');
+      break;
+  }
+
+  $dupes = array();
+  $return = array();
+  foreach ($data as $item) {
+    $row = array(
+      'name' => $item->node_title,
+      'url' => url('node/' . $item->nid),
+      'iso2' => $item->field_field_country_1[0]['rendered']['#markup'],
+      'country' => $item->field_field_country[0]['rendered']['#markup'],
+      'country_official' => $item->field_field_member_since[0]['rendered']['#markup'],
+      'nid' => $item->nid,
+    );
+    switch ($delta) {
+      case 'country_sc':
+        if ($item->field_ogp_sc_country_node_type == 'ogp_action_plan_cycles') {
+          $row['sc'] = 0;
+          $dupes[] = $row;
+        }
+        else {
+          $row['sc'] = (int) !empty($item->field_field_ogp_sc_country[0]['raw']['target_id']);
+          $return[] = $row;
+        }
+        break;
+      case 'country_apc':
+        if ($item->field_ogp_sc_country_node_type == 'ogp_steering_committee') {
+          $row['apc'] = 0;
+          $dupes[] = $row;
+        }
+        else {
+          $row['apc'] = empty($item->field_field_apc_ap_developed[0]['raw']['value']) ? 0 : $item->field_field_apc_ap_developed[0]['raw']['value'];
+          $return[] = $row;
+        }
+        break;
+      case 'country_cohort':
+        $date = strtotime($item->field_field_member_since[0]['rendered']['#markup']);
+        if ($date < $dates['2011']) {
+          $cohort = 1;
+        }
+        elseif ($date < $dates['2012']) {
+          $cohort = 2;
+        }
+        elseif ($date < $dates['2013']) {
+          $cohort = 3;
+        }
+        // We will stop using cohorts at the end of this year so it doesn't make sense to create a cohort 5.
+        else {
+          //if ($date < $dates['2014']) {
+          $cohort = 4;
+        }
+        $row['cohort'] = $cohort;
+        $return[] = $row;
+        break;
+      default:
+        $return[] = $row;
+        break;
+    }
+  }
+  if (!empty($dupes)) {
+    foreach ($dupes as $item) {
+      $exist = FALSE;
+      reset($return);
+      foreach ($return as $key => $row) {
+        if ($row['iso2'] == $item['iso2']) {
+          $exist = TRUE;
+          break;
+        }
+      }
+      if (!$exist) {
+        $return[] = $item;
+      }
+    }
+  }
+  return $return;
+}
+
+/**
+ * Render a view and return as an array or as rendered HTML.
+ * Modified from views_embed_view();
+ *
+ *    @ $mode : string : 'results' || 'view'
+ */
+function ogp_map_view_data($view_name, $display = 'default', $args = array(), $filters = array(), $mode = 'results') {
+  $view = is_object($view_name) ? $view_name : views_get_view($view_name);
+  $view->set_display($display);
+
+  if (count($filters) > 0) {
+    $view->set_exposed_input($filters);
+  }
+  $view->args = $args;
+
+  $view->execute();
+
+  return ($mode == 'view') ? $view : $view->result;
+}
+
+
+
+/**
+ * Implements hook_theme()
+ */
+function ogp_map_theme() {
+  return array(
+    'ogp_map' => array(
+      'variables' => array(
+        'data' => array(),
+      ),
+    ),
+  );
+}
+
+
+/**
+ * Theme the map including legend
+ * @param  array $variables
+ *    @param  array [data]   Contains the data array that is added as JS
+ * @return theme output
+ */
+function theme_ogp_map($variables) {
+  $output = '<h4 id="' . $variables['data']['delta'] . '_title" class="map-title"></h4><div class="map-wrapper"><div id="' . $variables['data']['delta'] . '" class="map-content"></div><div class="map-legend-wrapper"><div class="dashboard"><div class="information-dashboard"><h2 class="subtitles">From commitment to action</h2><p>OGP was launched in 2011 to provide an international platform for domestic reformers committed to making their governments more open, accountable, and responsive to citizens.</p><div class="circles-actions"><ul>';
+  foreach ($variables['data']['legend'] as $key => $item) {
+    $output .= //here legend map
+      '
+      <li class="-gray -small"><div style="background-color: '. $item['color'] .'" class="circle-color"></div>' . $item['title'] . '</li>
+      ';
+  }
+  $output .= '</ul></div></div><div class="buttons"><a class="text-interactive" href="countries">countries</a><a class="text-interactive" href="themes">themes</a></div></div></div></div></div>';
+
+  return $output;
+}
+
+/**
+ * Implements hook_form_alter().
+ *
+ * Don't allow country duplicates at node edit/creation.
+ */
+function ogp_map_form_alter(&$form, &$form_state, $form_id) {
+  switch ($form_id) {
+    // Steering Committee Node Form
+    case 'ogp_steering_committee_node_form':
+      if (!empty($form['field_ogp_sc_country'])) {
+        // Add custom validator to title generation
+        array_unshift($form['#validate'], '_ogp_map_steering_committee_node_form_submit_callback');
+        $form['title']['#access'] = FALSE;
+
+        // Disable not-used fields
+        $form['comment_settings']['#access'] = FALSE;
+        $form['redirect']['#access'] = FALSE;
+        $form['metatags']['#access'] = FALSE;
+        $form['options']['#access'] = FALSE;
+        $form['revision_information']['#access'] = FALSE;
+        $form['author']['#access'] = FALSE;
+
+        // Fetch all existing values for countries
+        $result = db_select('field_data_field_ogp_sc_country', 'c')
+            ->fields('c', array('field_ogp_sc_country_target_id', 'entity_id'))
+            ->condition('bundle', 'ogp_steering_committee', '=')
+            ->execute()
+            ->fetchAllKeyed(0, 1);
+        if (!empty($result)) {
+          $nid = 0;
+          if (!empty($form['nid']['#value'])) {
+            $nid = $form['nid']['#value'];
+          }
+
+          if (!empty($result)) {
+            $entities = array();
+            // Don't allow select existing nodes
+            foreach ($result as $country_id => $entity_id) {
+              // Don't disable current node in list.
+              if ($nid != $entity_id) {
+                // Store country names for usability purposes.
+                $entities[$entity_id] = $form['field_ogp_sc_country'][LANGUAGE_NONE]['#options'][$country_id];
+                unset($form['field_ogp_sc_country'][LANGUAGE_NONE]['#options'][$country_id]);
+              }
+            }
+
+            $variables = array(
+              'items' => array(),
+              'title' => t('Steering Committee'),
+              'type' => 'ul',
+            );
+
+            // Add quick links to edit content
+            foreach ($entities as $entity_id => $value) {
+              $variables['items'][] = l($value, 'node/' . $entity_id . '/edit');
+            }
+
+            $form['ogp_existing_items'] = array(
+              '#markup' => theme('item_list', $variables) .
+                '<div>' . l(t('View all Action Plan Cycles and Steering Committee.'), 'admin/content/ogp-map') . '</div>',
+              '#weight' => 100,            );
+          }
+        }
+      }
+      break;
+
+    // Action Plan Cycles Node Form
+    case 'ogp_action_plan_cycles_node_form':
+      if (!empty($form['field_ogp_sc_country'])) {
+        array_unshift($form['#validate'], '_ogp_map_action_plan_cycles_node_form_submit_callback');
+        $form['title']['#access'] = FALSE;
+
+        // Disable not-used fields
+        $form['comment_settings']['#access'] = FALSE;
+        $form['redirect']['#access'] = FALSE;
+        $form['metatags']['#access'] = FALSE;
+        $form['options']['#access'] = FALSE;
+        $form['revision_information']['#access'] = FALSE;
+        $form['author']['#access'] = FALSE;
+
+        // Fetch all existing values for countries
+        $result = db_select('field_data_field_ogp_sc_country', 'c')
+            ->fields('c', array('field_ogp_sc_country_target_id', 'entity_id'))
+            ->condition('bundle', 'ogp_action_plan_cycles', '=')
+            ->execute()
+            ->fetchAllKeyed(0, 1);
+        if (!empty($result)) {
+          $nid = 0;
+          if (!empty($form['nid']['#value'])) {
+            $nid = $form['nid']['#value'];
+          }
+
+          if (!empty($result)) {
+            $entities = array();
+            // Don't allow select existing nodes
+            foreach ($result as $country_id => $entity_id) {
+              // Don't disable current node in list.
+              if ($nid != $entity_id) {
+                // Store country names for usability purposes.
+                $entities[$entity_id] = $form['field_ogp_sc_country'][LANGUAGE_NONE]['#options'][$country_id];
+                unset($form['field_ogp_sc_country'][LANGUAGE_NONE]['#options'][$country_id]);
+              }
+            }
+
+            $variables = array(
+              'items' => array(),
+              'title' => t('Action Plan Cycles'),
+              'type' => 'ul',
+            );
+
+            // Add quick links to edit content
+            foreach ($entities as $entity_id => $value) {
+              $variables['items'][] = l($value, 'node/' . $entity_id . '/edit');
+            }
+
+            $form['ogp_existing_items'] = array(
+              '#markup' => theme('item_list', $variables) .
+                '<div>' . l(t('View all Action Plan Cycles and Steering Committee.'), 'admin/content/ogp-map') . '</div>',
+              '#weight' => 100,
+            );
+          }
+        }
+      }
+      break;
+  }
+}
+
+/**
+ * Form ogp_steering_committee_node_form validate callback.
+ * Generate title for ogp_steering_committee node type.
+ * @see ogp_map_form_alter().
+ */
+function _ogp_map_steering_committee_node_form_submit_callback($form, &$form_state) {
+  if (!empty($form_state['values']['field_ogp_sc_country'][LANGUAGE_NONE][0]['target_id'])) {
+    $form_state['values']['title'] = $form['field_ogp_sc_country'][LANGUAGE_NONE]['#options'][$form_state['values']['field_ogp_sc_country'][LANGUAGE_NONE][0]['target_id']] . ' Steering Committee';
+  }
+}
+
+/**
+ * Form ogp_action_plan_cycles_node_form validate callback.
+ * Generate title for ogp_action_plan_cycles node type.
+ * @see ogp_map_form_alter().
+ */
+function _ogp_map_action_plan_cycles_node_form_submit_callback($form, &$form_state) {
+  if (!empty($form_state['values']['field_ogp_sc_country'][LANGUAGE_NONE][0]['target_id'])) {
+    $form_state['values']['title'] = $form['field_ogp_sc_country'][LANGUAGE_NONE]['#options'][$form_state['values']['field_ogp_sc_country'][LANGUAGE_NONE][0]['target_id']] . ' Action Plan Cycles';
+  }
+}
+
+/**
+ * Implements hook_node_view().
+ * Don't allow to view some node types.
+ */
+function ogp_map_node_view($node, $view_mode, $langcode) {
+  if (isset($node->type) and $view_mode == 'full' and ($node->type == 'ogp_steering_committee' or $node->type == 'ogp_action_plan_cycles')) {
+    if (user_access('administer nodes')) {
+      drupal_goto('node/' . $node->nid . '/edit');
+    }
+    else {
+      drupal_goto('<front>');
+    }
+  }
+}

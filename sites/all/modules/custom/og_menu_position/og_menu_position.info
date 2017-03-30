@@ -1,0 +1,8 @@
+; $Id:$
+name = Organic groups menu position
+description = "Add menu position rule for Organic groups"
+package = "Organic groups"
+dependencies[] = og (2.x)
+dependencies[] = menu_position
+core = 7.x
+files[] = og_menu_position.module

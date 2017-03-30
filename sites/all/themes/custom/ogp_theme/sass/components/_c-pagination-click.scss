@@ -1,0 +1,51 @@
+.c-pagination-click {
+  margin: 50px 0  50px;
+
+  &.-hidden {
+    visibility: hidden;
+  }
+
+  .links,
+  .reload,
+  .reload-potential,
+  .reload-relevance,
+  .reload-thematic {
+    display: flex;
+    align-content: center;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .reload,
+  .reload-potential,
+  .reload-relevance,
+  .reload-thematic {
+    flex-direction: column;
+
+    .icon-reload {
+      width: 30px;
+      height: 30px;
+      margin-bottom: 15px;
+      transition: .5s ease;
+      cursor: pointer;
+      fill: $color-2;
+
+      &.animated {
+        transform: rotate(360deg);
+      }
+    }
+  }
+
+  .links {
+    display: flex;
+    margin-top: 75px;
+
+    a {
+      min-width: 240px;
+
+      &:first-of-type {
+        margin-right: 50px;
+      }
+    }
+  }
+}

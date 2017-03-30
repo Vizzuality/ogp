@@ -1,0 +1,98 @@
+<?php
+/**
+ * @file
+ * Code for the OGP Activity Stream feature.
+ */
+
+include_once 'ogp_activity_stream.features.inc';
+
+function ogp_activity_stream_preprocess_node(&$vars) {
+  switch($vars['type']) {
+    case 'blog_post':
+      $params = array(
+        '!type_link' => l(t('New OGP Blog Post'), 'node/' . $vars['nid']),
+        '!title' => l($vars['title'], 'node/' . $vars['nid']),
+      );
+      if (!empty($vars['og_group_ref']) && !empty($vars['og_group_ref'][LANGUAGE_NONE])) {
+        $countries = array();
+        $i = 0;
+        foreach($vars['og_group_ref'][LANGUAGE_NONE] as $group_ref) {
+          if ($i == 3) {
+            $countries[] = '&hellip;';
+            break;
+          }
+          if ($group = node_load($group_ref['target_id'])) {
+            // $countries[] = l($group->title, 'node/' . $group->nid);
+            $countries[] = $group->title;
+            $i++;
+          }
+        }
+        $params['!country_tagged'] = implode(', ', $countries);
+        $vars['activity_stream_item'] = t('<i></i>A !type_link has been tagged "!country_tagged": !title', $params);
+      }
+      else {
+        $vars['activity_stream_item'] = t('<i></i>A !type_link has been posted: !title', $params);
+      }
+      break;
+    case 'commitment':
+          if ($vars['created'] != $vars['changed']) {
+            $params = array(
+              '!type_link' => l(t('Commitment'), 'node/' . $vars['nid']),
+              '!title' => l($vars['title'], 'node/' . $vars['nid']),
+             );
+            $vars['activity_stream_item'] = t('<i></i>A !type_link has been edited: "!title"', $params);
+          }
+          else {
+            $params = array(
+              '!type_link' => l(t('New Commitment'), 'node/' . $vars['nid']),
+              '!title' => l($vars['title'], 'node/' . $vars['nid']),
+            );
+            $vars['activity_stream_item'] = t('<i></i>A !type_link has been added: "!title"', $params);
+          }
+      break;
+    case 'tweet':
+      // dpm($vars);
+      $params = array(
+        '!tweet_link' => l(t('Tweet'), 'http://twitter.com/' . $vars['field_twitter_account'][LANGUAGE_NONE][0]['value'] . '/status/' . $vars['field_twitter_id'][LANGUAGE_NONE][0]['value']),
+        '!account' => l('@' . $vars['field_twitter_account'][LANGUAGE_NONE][0]['value'], 'http://twitter.com/' . $vars['field_twitter_account'][LANGUAGE_NONE][0]['value']),
+        '!tweet' => $vars['field_twitter_text'][LANGUAGE_NONE][0]['safe_value'],
+      );
+      $vars['activity_stream_item'] = t('<i></i>!tweet_link from !account: "!tweet"', $params);
+      break;
+  }
+}
+
+/**
+ * Implements hook_block_info().
+ */
+function ogp_activity_stream_block_info() {
+  // Many options are defined in hook_block_info():
+  $blocks['ogp_rss'] = array(
+    'info' => t('OGP link to RSS Feed.'),
+  );
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_view(). HECTOR COMMENT THIS --> CHANGE
+ */
+// function ogp_activity_stream_block_view($delta) {
+//   return array(
+//     'title' => '',
+//     'content' => array(
+//       '#markup' => l('Subscribe to RSS Feed', 'rss.xml'),
+//     ),
+//   );
+// }
+
+/**
+ * Implements hook_preprocess_page().
+ */
+function ogp_activity_stream_preprocess_page(&$variables) {
+  drupal_add_html_head_link(array(
+    'rel' => 'alternate',
+    'type' => 'application/rss+xml',
+    'title' => variable_get('site_name', 'Open Government Partnership') . ' ' . t('RSS'),
+    'href' => url('rss.xml', array('absolute' => TRUE)),
+  ));
+}

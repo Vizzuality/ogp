@@ -1,0 +1,44 @@
+.c-country-relevance-bar {
+
+  .relevance-bar {
+    margin-bottom: 0;
+
+    .bar-border {
+      height: 12px;
+      margin-top: 10px;
+      margin-bottom: 20px;
+      border: 1px solid $color-9;
+      background-color: transparent;
+
+      &.-hiden {
+        margin-top: 5px;
+        margin-bottom: 25px;
+        border: 0;
+      }
+    }
+
+    .bar {
+      height: 10px;
+      margin-bottom: 0;
+      background-color: $color-2;
+
+      &.-hiden {
+        margin-bottom: 0;
+        background-color: $color-4;
+      }
+
+      span {
+        color: #fefefe;
+      }
+
+      .bar-error {
+        display: block;
+        color: $color-5;
+
+        &.-hiden {
+          display: none;
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,53 @@
+.c-activity-stream {
+  background: $color-2;
+  width: 100%;
+  padding: 30px 40px;
+  position: relative;
+  margin-bottom: 50px;
+  min-height: 500px;
+
+  h3 {
+    margin-bottom: 30px;
+  }
+
+  .story-item {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    align-items: flex-start;
+    margin-bottom: 30px;
+
+    .badge {
+      border-radius: 30px;
+      padding: 15px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      background: #007ed5;
+      margin-right: 15px;
+      z-index: 10;
+
+      .icon {
+        margin-right: 0;
+      }
+    }
+
+    a {
+      color: white;
+    }
+  }
+
+  .item-bridge {
+    position: absolute;
+    border: 1px dashed #4cb8ff;
+    height: calc(100% - 180px);
+    width: 1px;
+    top: 110px;
+    left: 61px;
+    z-index: 1;
+
+    &.-hidden {
+      display: none;
+    }
+  }
+}

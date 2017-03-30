@@ -1,0 +1,152 @@
+<?php
+
+/**
+ * @file
+ * Get feeds from social networks.
+ */
+
+/**
+ * Implements hook_init().
+ */
+function tb_social_feed_init() {
+  drupal_add_js(array(
+    'tb_social_feed' => array(
+      'path' => $GLOBALS['base_url'] . '/' . drupal_get_path('module', 'tb_social_feed'),
+    )
+  ), 'setting');
+}
+
+/**
+ * Implements hook_menu().
+ */
+function tb_social_feed_menu() {
+  $items['admin/config/feed'] = array(
+    'title' => 'Feed',
+    'description' => 'Tools that enhance feed.',
+    'position' => 'right',
+    'page callback' => 'system_admin_menu_block_page',
+    'access arguments' => array('access administration pages'),
+    'file' => 'system.admin.inc',
+    'weight' => -15
+  );
+  $items['admin/structure/feed/tb_social_feed'] = array(
+    'title' => 'TB Social Feed',
+    'description' => t('Get feeds from social'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('tb_social_feed_admin_get_feed'),
+    'access arguments' => array('administer modules'),
+    'file' => 'tb_social_feed.admin.inc'
+  );
+  $items['admin/config/feed/tb_social_feed'] = array(
+    'title' => 'TB Social Feed',
+    'description' => t('Configure TB Social Feed Module'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('tb_social_feed_admin_settings'),
+    'access arguments' => array('administer modules'),
+    'file' => 'tb_social_feed.admin.inc'
+  );
+  //Ajax Callback
+  $items['tb_social_feed/fb_user'] = array(
+    'title' => 'TB Social Feed',
+    'description' => t('Configure TB Social Feed Module'),
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('tb_social_feed_get_faccbok_account'),
+    'access arguments' => array('administer modules'),
+    'file' => 'tb_social_feed.ajax.inc'
+  );
+  // Verify the instagram account
+  $items['admin/tb_social_feed/instagram/verify'] = array(
+    'title' => 'Instagram Verify',
+    'page callback' => 'tb_social_feed_instagram_verify',
+    'access arguments' => array('administer modules'),
+    'file' => 'tb_social_feed.admin.inc',
+    'type' => MENU_CALLBACK,
+  );
+  return $items;
+}
+
+/**
+ * Implements hook_cron().
+ */
+function tb_social_feed_cron() {
+  $feed_services = tb_social_feed_get_services();
+  foreach ($feed_services as $service) {
+    if ($service->enabled && $service->auto_feed && class_exists($service->class)) {
+      $object_service = new $service->class;
+      if ($access_token = $object_service->getAccessToken()) {
+        $class_name = $service->class;
+        $configs = array(
+          'feed_limit' => $service->feed_limit,
+          'app_info' => unserialize($service->app_info),
+          'service' => $service->service,
+          'access_token' => $access_token,
+        );
+        if ($service->number_accounts >= 0) {
+          $db_accounts = new Tb_Social_Feed_Accounts();
+          $accounts = $db_accounts->select(
+            array(), array('service' => $service->service, 'deleted' => 0), array(), Tb_Social_Feed_Accounts::$RETURN_ARRAY
+          );
+          foreach ($accounts as $account) {
+            $configs['account'] = $account->account;
+            $configs['feed_type'] = $account->feed_type;
+            $configs['type'] = $account->type;
+            $feed = new $class_name($configs);
+            $results = $feed->feed();
+          }
+        }
+        else {
+          $feed = new $class_name($configs);
+          $results = $feed->feed();
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_node_info().
+ */
+function tb_social_feed_node_info() {
+  return array(
+    'tb_social_feed' => array(
+      'name' => t('Social feed'),
+      'base' => 'node_content',
+      'description' => t('Social feed.'),
+      'custom' => 1,
+      'modified' => 1,
+      'locked' => 0,
+      'disabled' => 0,
+      'comment' => '1',
+      'node_options' => array(
+        'status' => true,
+        'promote' => false,
+        'sticky' => false,
+      ),
+    ),
+  );
+}
+
+/**
+ * Get all of serivces from DB.
+ * 
+ * @return array
+ */
+function tb_social_feed_get_services() {
+  $db_services = new Tb_Social_Feed_Services();
+  $services = $db_services->select(
+    array(), array('type' => 'tb_social_feed'), array(), Tb_Social_Feed_Services::$RETURN_ARRAY
+  );
+  if (empty($services)) {
+    $default_services = TBSocialFeed::getServicesDefault();
+    foreach ($default_services as $name => $service) {
+      $service['service'] = $name;
+      $service['created'] = time();
+      $service['changed'] = time();
+      $db_services->insert($service);
+    }
+    $services = $db_services->select(
+      array(), array('type' => 'tb_social_feed'), array(), Tb_Social_Feed_Services::$RETURN_ARRAY
+    );
+  }
+  return $services;
+}

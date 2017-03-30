@@ -1,0 +1,81 @@
+<?php
+/**
+ * @file
+ * Code for the OGP Blog feature.
+ */
+
+include_once 'ogp_blog.features.inc';
+
+/**
+ * Implements hook_node_insert().
+ * Using this because I can't figure out how to extend the wordpress classes.
+ */
+// function ogp_blog_node_insert($node) {
+//   if ($node->type == 'blog_post' && !empty($node->field_tags)) {
+//     foreach($node->field_tags[LANGUAGE_NONE] as $key => $tag) {
+//       $term = taxonomy_term_load($tag['tid']);
+//       // Find whether this tag represents a country
+//       $query = new EntityFieldQuery();
+//       $country_tag = str_replace('-', ' ', $term->name);
+//       $query->entityCondition('entity_type', 'node')
+//         ->entityCondition('bundle', 'country_page')
+//         ->propertyCondition('title', $country_tag)
+//         ->addMetaData('account', user_load(1)); // Run the query as user 1.
+//       $result = $query->execute();
+//       // If so, unset that tag and add the country as a group audience
+//       if (isset($result['node'])) {
+//         unset($node->field_tags[LANGUAGE_NONE][$key]);
+//         $node->og_group_ref[LANGUAGE_NONE][] = array('target_id' => current(array_keys($result['node'])));
+//       }
+//       // Fix image paths
+//       $filespath = variable_get('file_' . file_default_scheme() . '_path', conf_path() . '/files/');
+//       $pattern = '/src="http:\/\/blog.opengovpartnership.org\/([^"]+)"/';
+//       $replace = 'src="/' . $filespath . '/$1"';
+//       $node->body[LANGUAGE_NONE][0]['value'] = preg_replace($pattern, $replace, $node->body[LANGUAGE_NONE][0]['value']);
+//     }
+//   }
+// }
+
+/**
+ * Implements hook_taxonomy_fixtures_vocabulary().
+ */
+function ogp_blog_taxonomy_fixtures_vocabulary() {
+  $module_path = drupal_get_path('module', 'ogp_blog');
+  $map =  array(
+    'name' => 'name',
+    'weight' => 'weight',
+    'uuid' => 'uuid',
+    'description' => 'description',
+  );
+
+  return array(
+    'blog_category' => array(
+      'export_path' => $module_path . '/data',
+      'map' => $map,
+    ),
+    'topics' => array(
+      'export_path' => $module_path . '/data',
+      'map' => $map,
+    ),
+  );
+}
+
+/**
+ * Implements hook_menu_block_blocks().
+ */
+function ogp_blog_menu_block_blocks() {
+  // The array key is the block delta used by menu block.
+  return array(
+    'ogp_blog-1' => array(
+      'menu_name'   => 'main-menu',
+      'parent_mlid' => 722,
+      'title_link'  => 1,
+      'admin_title' => 'Second-level main menu for blog',
+      'level'       => 1,
+      'follow'      => 0,
+      'depth'       => 3,
+      'expanded'    => 1,
+      'sort'        => 0,
+    ),
+  );
+}

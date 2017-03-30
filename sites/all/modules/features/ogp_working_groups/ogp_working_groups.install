@@ -1,0 +1,54 @@
+<?php
+
+/**
+ * Add permissions to the Working Group Editor role.
+ */
+function ogp_working_groups_update_7001() {
+  if (!$role = user_role_load_by_name('working group editor')) {
+    if (!is_object($role)) {
+      $role = new stdClass();
+      $role->name = 'working group editor';
+    }
+    if (!user_role_save($role)) {
+      throw new DrupalUpdateException('Can not add the Working group editor role.');
+    }
+  }
+  $permissions = array(
+    'access administration menu',
+    'access administration pages',
+    'access content',
+    'access content overview',
+    'access site in maintenance mode',
+    'administer menu',
+    'create files',
+    'create url aliases',
+    'create working_group content',
+    'create working_group_page content',
+    'delete own audio files',
+    'delete own document files',
+    'delete own image files',
+    'delete own video files',
+    'delete revisions',
+    'download own audio files',
+    'download own document files',
+    'download own image files',
+    'download own video files',
+    'edit any working_group content',
+    'edit any working_group_page content',
+    'edit own audio files',
+    'edit own document files',
+    'edit own image files',
+    'edit own video files',
+    'revert revisions',
+    'set page title',
+    'use text format full_html',
+    'view advanced help index',
+    'view advanced help popup',
+    'view advanced help topic',
+    'view own files',
+    'view own private files',
+    'view own unpublished content',
+    'view revisions',
+  );
+  user_role_grant_permissions($role->rid, $permissions);
+}

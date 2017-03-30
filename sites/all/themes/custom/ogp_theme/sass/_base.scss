@@ -1,0 +1,52 @@
+//Grid - Layout
+* {
+  box-sizing: border-box;
+
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+
+  &::before,
+  &::after {
+    box-sizing: border-box;
+
+    -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+  }
+}
+
+body,
+html {
+  margin: 0;
+  padding: 0;
+
+  font-family: $font-family-1;
+  font-size: $font-size-xsmall;
+  font-style: normal;
+  font-weight: $font-weight-normal;
+  font-stretch: normal;
+}
+
+ul {
+  display: inline-block;
+  margin: 0;
+  padding: 0;
+
+  > li {
+    display: inline-block;
+    list-style: none;
+  }
+}
+
+a {
+  text-decoration: none;
+
+  &.-disabled {
+    cursor: default;
+    pointer-events: none;
+  }
+}
+
+// element applied by Drupal
+span.ext {
+  display: none;
+}

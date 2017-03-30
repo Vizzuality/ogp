@@ -1,0 +1,299 @@
+<?php
+/**
+ * @file
+ * Code for the OGP Working Groups feature.
+ */
+
+include_once 'ogp_working_groups.features.inc';
+
+/**
+ * Implements hook_node_view().
+ */
+function ogp_working_groups_node_view($node, $view_mode, $langcode) {
+  if ($node->type == 'working_group_page' and !empty($node->field_og_working_group[LANGUAGE_NONE][0]['target_id'])) {
+    menu_tree_set_path('main-menu', 'node/' . $node->field_og_working_group[LANGUAGE_NONE][0]['target_id']);
+  }
+}
+
+/**
+ * Implements hook_node_view_alter().
+ */
+function ogp_working_groups_preprocess_page($variables) {
+  // Custom menu active trail and breadcrumbs on working group pages
+  if (!empty($variables['node']) && is_object($variables['node']) && $variables['node']->type == 'working_group_page' and !empty($variables['node']->field_og_working_group[LANGUAGE_NONE][0]['target_id'])) {
+    $gid = $variables['node']->field_og_working_group[LANGUAGE_NONE][0]['target_id'];
+    $group_node = node_load($gid);
+    $menu_link = menu_link_get_preferred('node/' . $group_node->nid);
+    $breadcrumb = array(l(t('Home'), '<front>'));
+    foreach ($menu_link as $key => $element) {
+      if (preg_match('/^p[0-9]$/', $key) && $element) {
+        $link = menu_link_load($element);
+        if (!empty($link['link_title'])) {
+          $breadcrumb[] = l($link['link_title'], $link['link_path']);
+        }
+      }
+    }
+    // No menu defined - use predefined.
+    if (count($breadcrumb) == 1) {
+      $breadcrumb[] = l(t('Get involved'), 'node/1000');
+      $breadcrumb[] = l($group_node->title, 'node/' . $group_node->nid);
+    }
+    drupal_set_breadcrumb($breadcrumb);
+  }
+  // Custom menu active trail and breadcrumbs on working group
+  if (!empty($variables['node']) && is_object($variables['node']) && $variables['node']->type == 'working_group') {
+    $node = $variables['node'];
+    $menu_link = menu_link_get_preferred('node/' . $node->nid);
+    $breadcrumb = array(l(t('Home'), '<front>'));
+    foreach ($menu_link as $key => $element) {
+      if (preg_match('/^p[0-9]$/', $key) && $element) {
+        $link = menu_link_load($element);
+        if (!empty($link['link_title'])) {
+          $breadcrumb[] = l($link['link_title'], $link['link_path']);
+        }
+      }
+    }
+    // No menu defined - use predefined.
+    if (count($breadcrumb) == 1) {
+      $breadcrumb[] = l(t('Get involved'), 'node/1000');
+      $breadcrumb[] = l($node->title, 'node/' . $node->nid);
+    }
+    drupal_set_breadcrumb($breadcrumb);
+  }
+}
+
+/**
+ * Implements hook_views_pre_render().
+ */
+// function ogp_working_groups_views_pre_render(&$view) {
+//   // Add "home" link to view if there are results (otherwise block is hidden)
+//   if ($view->name == 'working_group_content') {
+//     if (!empty($view->result)) {
+//       global $language;
+
+//       $home_result = new stdClass();
+//       $home_result->node_title = t('Working Group Home');
+//       $home_result->nid = $view->args[0];
+//       $home_result->node_language = $language->language;
+//       // Make sure always at the top
+//       $home_result->node_sticky = 1;
+//       $home_result->created = $view->result[0]->node_created + 100;
+
+//       array_unshift($view->result, $home_result);
+//     }
+//   }
+// }
+
+/**
+ * Implements hook_block_info().
+ */
+function ogp_working_groups_block_info() {
+  $blocks['page-add'] = array(
+    'info' => t('Working Groups Create Content Links'),
+    'cache' => DRUPAL_NO_CACHE,
+  );
+  $blocks['wg-header'] = array(
+    'info' => t('Working Groups page header'),
+    'cache' => DRUPAL_NO_CACHE,
+  );
+  $blocks['wg-menu'] = array(
+    'info' => t('Working Group menu'),
+    'cache' => DRUPAL_NO_CACHE,
+  );
+
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_view().
+ */
+function ogp_working_groups_block_view($delta = '') {
+  $block = array();
+
+  switch ($delta) {
+    case 'page-add':
+      // $block['subject'] = t('Content link');
+      $block['content'] = theme('ogp_working_groups_page_add');
+      break;
+
+    // WG/WGP slide-show
+    case 'wg-header':
+      if ($node = menu_get_object() and $group = og_context('node')) {
+        $group_title = '';
+        $block['content'] = '';
+        $image = FALSE;
+        if ($node->nid == $group['gid']) {
+          // Slideshow from WG
+          if (!empty($node->field_wg_image[LANGUAGE_NONE][0])) {
+            $image = $node->field_wg_image[LANGUAGE_NONE][0];
+          }
+          $group_title = $node->title;
+        }
+        else {
+          // Slideshow from WGP
+          if (!empty($node->field_wg_image[LANGUAGE_NONE][0])) {
+            $image = $node->field_wg_image[LANGUAGE_NONE][0];
+          }
+          else {
+            if ($group_node = node_load($group['gid']) and !empty($group_node->field_wg_image[LANGUAGE_NONE][0])) {
+              $image = $group_node->field_wg_image[LANGUAGE_NONE][0];
+              $group_title = $group_node->title;
+            }
+          }
+        }
+        if ($image) {
+          if (empty($group_title) and $group_node = node_load($group['gid'])) {
+            $group_title = $group_node->title;
+          }
+          $themed_image = theme(
+            'image_style',
+            array(
+              'path' => $image['uri'],
+              'style_name' => 'ogp_slideshow',
+            )
+          );
+          $block['content'] .= '
+<div class="flexslider"">
+  <div class="slides">
+    <div style="width: 100%; float: left; margin-right: -100%; position: relative; opacity: 1; display: block; z-index: 2;" class="flex-active-slide">
+      ' . $themed_image . '
+      <div class="carousel-caption">
+        <h4>' . $group_title . '</h4>
+      </div>
+    </div>
+  </div>
+</div>';
+        }
+      }
+      break;
+
+    // WG/WGP menu
+    case 'wg-menu':
+      if ($group = og_context('node')) {
+        $lang_condition = '';
+        $variables = array();
+        $links = array();
+        // Add WG to menu
+        $links[] = array('text' => t('About'), 'path' => 'node/' . $group['gid']);
+        // Add WGP to menu
+        $query = db_select('og_membership', 'og');
+        $query->join('field_data_field_wgp_in_menu', 'wgp_in_menu', 'og.etid = wgp_in_menu.entity_id AND og.gid = ' . $group['gid']);
+        $query->join('field_data_field_wgp_menu_delta', 'wgp_delta', 'wgp_delta.entity_id = wgp_in_menu.entity_id');
+        $query->join('field_data_field_wgp_menu_title', 'wgp_title', 'wgp_title.entity_id = wgp_in_menu.entity_id');
+        $query->join('node', 'n', 'n.nid = wgp_in_menu.entity_id');
+        $query->addField('wgp_title', 'field_wgp_menu_title_value', 'title');
+        $query->addField('wgp_title', 'entity_id', 'nid');
+        // Add multilingual support.
+        if (!empty($GLOBALS['language']->language)) {
+          $query->condition('wgp_title.language', $GLOBALS['language']->language, '=');
+        }
+        $query->condition('field_wgp_in_menu_value', 1, '=')
+            ->condition('field_wgp_menu_title_value', '', '<>')
+            ->condition('n.status', 1, '=')
+            ->orderBy('field_wgp_menu_delta_value')
+            ->orderBy('title');
+        $result = $query->execute()->fetchAllAssoc('nid', PDO::FETCH_ASSOC);
+        foreach ($result as $data) {
+          $links[] = array('text' => $data['title'], 'path' => 'node/' . $data['nid']);
+        }
+
+        $variables['links'] = $links;
+
+        $block['content'] = theme('ogp_working_groups_wg_menu', $variables);
+      }
+      break;
+  }
+
+  return $block;
+}
+
+/**
+ * Implements hook_theme().
+ */
+function ogp_working_groups_theme($existing, $type, $theme, $path) {
+  return array(
+    'ogp_working_groups_page_add' => array(
+      'variables' => array(),
+    ),
+    'ogp_working_groups_wg_menu' => array(
+      'variables' => array(),
+    ),
+  );
+}
+
+/**
+ * Theme function to create link for adding content to a working group
+ */
+function theme_ogp_working_groups_page_add($variables) {
+  $output = '';
+  $group = og_context('node');
+  if (og_user_access('node', $group['gid'], "create working_group_page content")) {
+    $options = array(
+      'query' => array('field_og_working_group' => $group['gid'])
+    );
+    $output = l(t('Add group content'), 'node/add/working-group-page', $options);
+  }
+  return $output;
+}
+
+/**
+ * Theme function to create WG/WGP main menu.
+ */
+function theme_ogp_working_groups_wg_menu($variables) {
+  $output = '';
+
+  if (!empty($variables['links'])) {
+    foreach ($variables['links'] as $link) {
+      $output .= '<li class="leaf">' . l($link['text'], $link['path'], isset($link['options']) ? $link['options'] : array()) . '</li>';
+    }
+    $output = '<div class="menu-block-wrapper"><ul class="menu clearfix">' . $output . '</ul></div>';
+  }
+
+  return $output;
+}
+
+/**
+ * Implements theme_preprocess_block().
+ */
+function ogp_working_groups_preprocess_block(&$vars) {
+  if ($vars['block']->delta == 'wg-menu') {
+    $vars['classes_array'][] = 'meeting-block-menu';
+  }
+}
+
+/**
+ * Implements hook_block_view_alter().
+ */
+function ogp_working_groups_block_view_alter(&$data, $block) {
+  if ($block->bid == 'views-working_group_content-block' && $group = og_context('node')) {
+    $data['subject'] = l($data['subject'], 'node/' . $group['gid']);
+   }
+}
+
+/**
+ * Implements hook_node_insert().
+ * Adds default pages for WG content type.
+ */
+function ogp_working_groups_node_insert($node) {
+  if ($node->type == 'working_group') {
+    $values = array(
+      'type' => 'working_group_page',
+      'uid' => $GLOBALS['user']->uid,
+      'status' => 1,
+      'comment' => 0,
+      'promote' => 0,
+      'language' => $node->language,
+    );
+    $titles = array('Participants', 'Workplan', 'Resources');
+    foreach ($titles as $delta => $title) {
+      $entity = entity_create('node', $values);
+      $wrapper = entity_metadata_wrapper('node', $entity);
+      $wrapper->title->set($title);
+      $wrapper->field_wgp_in_menu->set(1);
+      $wrapper->field_wgp_menu_title->set($title);
+      $wrapper->field_wgp_menu_delta->set($delta);
+      $wrapper->field_og_working_group->set($node->nid);
+      $wrapper->save();
+    }
+  }
+}

@@ -1,0 +1,22 @@
+core = "7.x"
+dependencies[] = "strongarm"
+description = "Creates and sets Date Formats and Date Types to typical North American defaults."
+features[ctools][] = "strongarm:strongarm:1"
+features[variable][] = "date_format_long"
+features[variable][] = "date_format_long_date"
+features[variable][] = "date_format_medium"
+features[variable][] = "date_format_medium_date"
+features[variable][] = "date_format_short"
+features[variable][] = "date_format_short_date"
+features[variable][] = "date_format_time"
+name = "OGP Date Formats"
+package = "OGP"
+php = "5.2.4"
+project = "ogp_date_formats"
+version = "7.x-1.0-beta1"
+
+; Information added by drupal.org packaging script on 2013-06-18
+version = "7.x-1.x-dev"
+core = "7.x"
+datestamp = "1371517966"
+

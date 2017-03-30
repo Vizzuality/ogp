@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Committments importer feature.
+ */
+
+include_once 'committments_importer.features.inc';

@@ -1,0 +1,73 @@
+.icon {
+  width: 15px;
+  height: 15px;
+  min-width: 15px;
+  stroke-width: 0;
+  display: inline-block;
+  stroke: currentColor;
+  fill: currentColor;
+
+  &.-xxlarge {
+    width: 150px;
+    height: 110px;
+  }
+
+  &.-xlarge {
+    width: 100px;
+    height: 70px;
+  }
+
+  &.-large {
+    width: 25px;
+    height: 25px;
+    min-width: 25px;
+  }
+
+  &.-medium {
+    width: 15px;
+    height: 15px;
+  }
+
+  &.-small {
+    width: 10px;
+    height: 10px;
+    min-width: 10px;
+  }
+
+  // colours
+  &.-blue {
+    fill: $color-2;
+  }
+
+  &.icon-down-arrow {
+    width: 1.2861328125em;
+  }
+
+  &.icon-facebook {
+    width: .5em;
+  }
+
+  &.icon-left-arrow {
+    width: .888671875em;
+  }
+
+  &.icon-loading {
+    width: .8125em;
+  }
+
+  &.icon-right-arrow {
+    width: .77734375em;
+  }
+
+  &.icon-twitter {
+    width: 1.2138671875em;
+  }
+
+  &.icon-up-arrow {
+    width: 1.2861328125em;
+  }
+
+  &.icon-youtube {
+    width: 1.5em;
+  }
+}

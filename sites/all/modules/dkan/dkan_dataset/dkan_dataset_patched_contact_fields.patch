@@ -1,0 +1,185 @@
+diff --git a/sites/all/modules/dkan/dkan_dataset/modules/dkan_dataset_api/dkan_dataset_api.inc b/sites/all/modules/dkan/dkan_dataset/modules/dkan_dataset_api/dkan_dataset_api.inc
+index 62a5ec8..44ad4dd 100644
+--- a/sites/all/modules/dkan/dkan_dataset/modules/dkan_dataset_api/dkan_dataset_api.inc
++++ b/sites/all/modules/dkan/dkan_dataset/modules/dkan_dataset_api/dkan_dataset_api.inc
+@@ -64,8 +64,8 @@ function dkan_open_data_build_rows($nodes) {
+       else {
+         $row->publisher = $publisher[0]->title;
+       }
+-      $row->contactPoint = dkan_open_data_get_field_value($node, 'field_contact_name', 'value');
+-      $row->mbox = dkan_open_data_get_field_value($node, 'field_contact_email', 'value');
++      $row->contactPoint = dkan_open_data_get_field_value($node, 'field_dataset_contact_name', 'value');
++      $row->mbox = dkan_open_data_get_field_value($node, 'field_dataset_contact_email', 'value');
+       $row->identifier = dkan_open_data_get_field_value($node, 'uuid', 'value');
+       $access_level = dkan_open_data_get_field_value($node, 'field_public_access_level', 'label');
+       $row->accessLevel = $access_level ? $access_level : t('public');
+@@ -134,8 +134,8 @@ function dkan_open_data_build_datasets($nodes) {
+       $row->metadata_created = format_date($node_wrapper->created->value(), 'custom', 'Y-m-d\TH:i:s.u');
+       $row->metadata_modified = format_date($node_wrapper->changed->value(), 'custom', 'Y-m-d\TH:i:s.u');
+       $row->url = url('node/' . $node->nid, array('absolute' => TRUE));
+-      $row->author = dkan_open_data_get_field_value($node, 'field_contact_name', 'value');
+-      $row->author_email = dkan_open_data_get_field_value($node, 'field_contact_email', 'value');
++      $row->author = dkan_open_data_get_field_value($node, 'field_dataset_contact_name', 'value');
++      $row->author_email = dkan_open_data_get_field_value($node, 'field_dataset_contact_email', 'value');
+       $row->type = 'dataset';
+ 
+       $access_level = dkan_open_data_get_field_value($node, 'field_public_access_level', 'label');
+diff --git a/sites/all/modules/dkan/dkan_dataset/modules/dkan_dataset_content_types/dkan_dataset_content_types.features.field_base.inc b/sites/all/modules/dkan/dkan_dataset/modules/dkan_dataset_content_types/dkan_dataset_content_types.features.field_base.inc
+index cb10482..3ec328b 100644
+--- a/sites/all/modules/dkan/dkan_dataset/modules/dkan_dataset_content_types/dkan_dataset_content_types.features.field_base.inc
++++ b/sites/all/modules/dkan/dkan_dataset/modules/dkan_dataset_content_types/dkan_dataset_content_types.features.field_base.inc
+@@ -82,13 +82,13 @@ function dkan_dataset_content_types_field_default_field_bases() {
+     'type' => 'text',
+   );
+ 
+-  // Exported field_base: 'field_contact_email'
+-  $field_bases['field_contact_email'] = array(
++  // Exported field_base: 'field_dataset_contact_email'
++  $field_bases['field_dataset_contact_email'] = array(
+     'active' => 1,
+     'cardinality' => 1,
+     'deleted' => 0,
+     'entity_types' => array(),
+-    'field_name' => 'field_contact_email',
++    'field_name' => 'field_dataset_contact_email',
+     'indexes' => array(
+       'format' => array(
+         0 => 'format',
+@@ -103,13 +103,13 @@ function dkan_dataset_content_types_field_default_field_bases() {
+     'type' => 'text',
+   );
+ 
+-  // Exported field_base: 'field_contact_name'
+-  $field_bases['field_contact_name'] = array(
++  // Exported field_base: 'field_dataset_contact_name'
++  $field_bases['field_dataset_contact_name'] = array(
+     'active' => 1,
+     'cardinality' => 1,
+     'deleted' => 0,
+     'entity_types' => array(),
+-    'field_name' => 'field_contact_name',
++    'field_name' => 'field_dataset_contact_name',
+     'indexes' => array(
+       'format' => array(
+         0 => 'format',
+diff --git a/sites/all/modules/dkan/dkan_dataset/modules/dkan_dataset_content_types/dkan_dataset_content_types.features.field_instance.inc b/sites/all/modules/dkan/dkan_dataset/modules/dkan_dataset_content_types/dkan_dataset_content_types.features.field_instance.inc
+index 49b25c7..3f9854b 100644
+--- a/sites/all/modules/dkan/dkan_dataset/modules/dkan_dataset_content_types/dkan_dataset_content_types.features.field_instance.inc
++++ b/sites/all/modules/dkan/dkan_dataset/modules/dkan_dataset_content_types/dkan_dataset_content_types.features.field_instance.inc
+@@ -179,8 +179,8 @@ function dkan_dataset_content_types_field_default_field_instances() {
+     ),
+   );
+ 
+-  // Exported field_instance: 'node-dataset-field_contact_email'
+-  $field_instances['node-dataset-field_contact_email'] = array(
++  // Exported field_instance: 'node-dataset-field_dataset_contact_email'
++  $field_instances['node-dataset-field_dataset_contact_email'] = array(
+     'bundle' => 'dataset',
+     'default_value' => NULL,
+     'deleted' => 0,
+@@ -201,7 +201,7 @@ function dkan_dataset_content_types_field_default_field_instances() {
+       ),
+     ),
+     'entity_type' => 'node',
+-    'field_name' => 'field_contact_email',
++    'field_name' => 'field_dataset_contact_email',
+     'label' => 'Contact Email',
+     'required' => 0,
+     'settings' => array(
+@@ -219,8 +219,8 @@ function dkan_dataset_content_types_field_default_field_instances() {
+     ),
+   );
+ 
+-  // Exported field_instance: 'node-dataset-field_contact_name'
+-  $field_instances['node-dataset-field_contact_name'] = array(
++  // Exported field_instance: 'node-dataset-field_dataset_contact_name'
++  $field_instances['node-dataset-field_dataset_contact_name'] = array(
+     'bundle' => 'dataset',
+     'default_value' => NULL,
+     'deleted' => 0,
+@@ -241,7 +241,7 @@ function dkan_dataset_content_types_field_default_field_instances() {
+       ),
+     ),
+     'entity_type' => 'node',
+-    'field_name' => 'field_contact_name',
++    'field_name' => 'field_dataset_contact_name',
+     'label' => 'Contact Name',
+     'required' => 0,
+     'settings' => array(
+diff --git a/sites/all/modules/dkan/dkan_dataset/modules/dkan_dataset_content_types/dkan_dataset_content_types.field_group.inc b/sites/all/modules/dkan/dkan_dataset/modules/dkan_dataset_content_types/dkan_dataset_content_types.field_group.inc
+index 8d72d40..06491c1 100644
+--- a/sites/all/modules/dkan/dkan_dataset/modules/dkan_dataset_content_types/dkan_dataset_content_types.field_group.inc
++++ b/sites/all/modules/dkan/dkan_dataset/modules/dkan_dataset_content_types/dkan_dataset_content_types.field_group.inc
+@@ -24,8 +24,8 @@ function dkan_dataset_content_types_field_group_info() {
+     'weight' => '3',
+     'children' => array(
+       0 => 'field_author',
+-      1 => 'field_contact_email',
+-      2 => 'field_contact_name',
++      1 => 'field_dataset_contact_email',
++      2 => 'field_dataset_contact_name',
+       3 => 'field_data_dictionary',
+       4 => 'field_frequency',
+       5 => 'field_granularity',
+@@ -69,8 +69,8 @@ function dkan_dataset_content_types_field_group_info() {
+     'children' => array(
+       0 => 'field_additional_info',
+       1 => 'field_author',
+-      2 => 'field_contact_email',
+-      3 => 'field_contact_name',
++      2 => 'field_dataset_contact_email',
++      3 => 'field_dataset_contact_name',
+       4 => 'field_data_dictionary',
+       5 => 'field_frequency',
+       6 => 'field_granularity',
+diff --git a/sites/all/modules/dkan/dkan_dataset/modules/dkan_dataset_content_types/dkan_dataset_content_types.info b/sites/all/modules/dkan/dkan_dataset/modules/dkan_dataset_content_types/dkan_dataset_content_types.info
+index 540530c..c70d830 100644
+--- a/sites/all/modules/dkan/dkan_dataset/modules/dkan_dataset_content_types/dkan_dataset_content_types.info
++++ b/sites/all/modules/dkan/dkan_dataset/modules/dkan_dataset_content_types/dkan_dataset_content_types.info
+@@ -33,8 +33,8 @@ features[features_api][] = api:2
+ features[field_base][] = body
+ features[field_base][] = field_additional_info
+ features[field_base][] = field_author
+-features[field_base][] = field_contact_email
+-features[field_base][] = field_contact_name
++features[field_base][] = field_dataset_contact_email
++features[field_base][] = field_dataset_contact_name
+ features[field_base][] = field_data_dictionary
+ features[field_base][] = field_dataset_ref
+ features[field_base][] = field_format
+@@ -61,8 +61,8 @@ features[field_group][] = group_upload|node|resource|form
+ features[field_instance][] = node-dataset-body
+ features[field_instance][] = node-dataset-field_additional_info
+ features[field_instance][] = node-dataset-field_author
+-features[field_instance][] = node-dataset-field_contact_email
+-features[field_instance][] = node-dataset-field_contact_name
++features[field_instance][] = node-dataset-field_dataset_contact_email
++features[field_instance][] = node-dataset-field_dataset_contact_name
+ features[field_instance][] = node-dataset-field_data_dictionary
+ features[field_instance][] = node-dataset-field_frequency
+ features[field_instance][] = node-dataset-field_granularity
+diff --git a/sites/all/modules/dkan/dkan_dataset/tests/dkan_dataset.test b/sites/all/modules/dkan/dkan_dataset/tests/dkan_dataset.test
+index 0169a00..623fcb3 100644
+--- a/sites/all/modules/dkan/dkan_dataset/tests/dkan_dataset.test
++++ b/sites/all/modules/dkan/dkan_dataset/tests/dkan_dataset.test
+@@ -222,7 +222,7 @@ class DkanDatasetWebTestCase extends DrupalWebTestCase {
+    * @param array $additional
+    *   Args: field_author, field_spatial, field_spatial_geographical_cover,
+    *   field_frequency, field_temporal_coverage, field_granularity,
+-   *   field_data_dictionary, field_contact_name, field_contact_email,
++   *   field_data_dictionary, field_dataset_contact_name, field_dataset_contact_email,
+    *   field_public_access_level, field_additional_info, field_resources,
+    *   field_dataset_related_content
+    * @param array $resources
+@@ -369,9 +369,9 @@ class DkanDatasetWebTestCase extends DrupalWebTestCase {
+       // Data Dictionary.
+       'field_data_dictionary[und][0][value]' => $data_dictionary,
+       // Contact Name.
+-      'field_contact_name[und][0][value]' => $contact_name,
++      'field_dataset_contact_name[und][0][value]' => $contact_name,
+       // Contact Email.
+-      'field_contact_email[und][0][value]' => $contact_email,
++      'field_dataset_contact_email[und][0][value]' => $contact_email,
+       // Public Access Level.
+       'field_public_access_level[und]' => $access_level,
+       // Additional Info.

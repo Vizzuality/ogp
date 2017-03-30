@@ -1,0 +1,107 @@
+.c-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  z-index: 1000;
+  display: none;
+
+  &.-open {
+    display: block;
+  }
+
+  &.-subscribe {
+    .modal-container {
+      min-width: 600px;
+    }
+  }
+
+  .modal-overlay {
+    background-color: rgba($color-4, 0.7);
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 1001;
+  }
+
+  .modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 30px 40px 20px;
+    border-bottom: 1px solid $color-3;
+
+    .header-info {
+      padding-right: 30px;
+    }
+  }
+
+  .modal-container {
+    background-color: $color-4;
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    z-index: 1002;
+    min-width: 400px;
+
+    .close-icon {
+      position: absolute;
+      top: 30px;
+      right: 30px;
+      cursor: pointer;
+      z-index: 1003;
+     }
+
+     .content-wrapper {
+       margin: 50px;
+
+       .-title-x-small {
+         margin-bottom: 20px;
+       }
+
+       &.-scroll {
+         overflow: auto;
+         max-height: 350px;
+       }
+     }
+
+     .with-padding {
+       margin-bottom: 40px;
+     }
+   }
+
+   .c-button {
+     border: 0;
+   }
+
+   .-meta {
+     margin-top: 0;
+   }
+
+   .button-container {
+     display: flex;
+     flex-direction: row;
+     justify-content: space-between;
+     align-items: flex-end;
+
+     .c-button {
+       width: 50%;
+     }
+
+     &.-fixed {
+       width: 70%;
+       float: right;
+     }
+   }
+
+   .data-container {
+     display: flex;
+     align-items: center;
+     justify-content: space-around;
+     flex-direction: row;
+   }
+}

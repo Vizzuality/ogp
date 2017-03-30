@@ -1,0 +1,12 @@
+<?php
+/**
+ * @file
+ * Code for the OGP Permissions feature.
+ */
+
+include_once 'ogp_permissions.features.inc';
+/**
+ * @file
+ */
+
+// Drupal needs this blank file.

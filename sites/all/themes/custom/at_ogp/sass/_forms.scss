@@ -1,0 +1,64 @@
+/* =============================================================================
+ *   Forms
+ * ========================================================================== */
+
+/*
+ * Wrapper for a form element (or group of form elements) and its label
+ */
+.form-item { 
+  input.error,
+  textarea.error,
+  select.error {
+    border: 1px solid $highlight;
+  }
+}
+
+/*
+ * Highlight marks and form required mark
+ */
+.marker,
+.form-required {
+  color: $highlight;
+}
+
+.container-inline {
+  div,
+  label {
+    display: inline;
+  }
+}
+
+/*
+ * Define consistent borders
+ */
+fieldset {
+  border: 1px solid $border;
+}
+
+/*
+ * Buttons used by contrib modules like Media
+ */
+a.button { 
+  @include appearance(button);
+}
+
+/*
+ * Password confirmation
+ */
+.password-parent,
+.confirm-parent {
+  margin: 0;
+}
+
+a.btn:link,
+.resource-list a.btn,
+.btn-primary {
+  color: #fff;
+  background-color: $pop;
+  border-color: $pop;
+  &:hover,
+  &:focus {
+  	background-color: $accent;
+  	border-color: $accent;
+  }
+}

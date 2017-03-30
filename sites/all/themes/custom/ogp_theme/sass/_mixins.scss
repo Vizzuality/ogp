@@ -1,0 +1,29 @@
+// Mixins triangle
+@mixin triangle ($size, $color, $direction) {
+  width: 0;
+  height: 0;
+
+  @if($direction == 'left') {
+    border-top: $size / 2 solid transparent;
+    border-right: $size solid $color;
+    border-bottom: $size / 2 solid transparent;
+  }
+
+  @if($direction == 'right') {
+    border-top: $size / 2 solid transparent;
+    border-bottom: $size / 2 solid transparent;
+    border-left: $size solid $color;
+  }
+
+  @if($direction == 'top') {
+    border-right: $size / 2 solid transparent;
+    border-bottom: $size solid $color;
+    border-left: $size / 2 solid transparent;
+  }
+
+  @if($direction == 'bottom') {
+    border-top: $size solid $color;
+    border-right: $size / 2 solid transparent;
+    border-left: $size / 2 solid transparent;
+  }
+}

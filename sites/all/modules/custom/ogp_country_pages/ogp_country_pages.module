@@ -1,0 +1,181 @@
+<?php
+
+/**
+ * Implements hook_block_info().
+ */
+function ogp_country_pages_block_info() {
+  // This example comes from node.module.
+  /*
+   *$blocks['syndicate'] = array(
+   *  'info' => t('Syndicate'),
+   *  'cache' => DRUPAL_NO_CACHE
+   *);
+   */
+  $blocks['nav'] = array(
+    'info' => t('Country Navigation Block'),
+    'cache' => DRUPAL_NO_CACHE,
+  );
+  $blocks['overview'] = array(
+    'info' => t('Country Overview Table'),
+    'cache' => DRUPAL_NO_CACHE,
+  );
+
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_view().
+ */
+function ogp_country_pages_block_view($delta = '') {
+  $block = array();
+
+  if ($context = og_context('node')) {
+    // Add logic for making sure this is a country group
+    switch ($delta) {
+      case 'nav':
+        $block['content'] = theme('og_country_pages_nav', array('country_nid' => $context['gid']));
+        break;      
+      case 'overview':
+        $block['content'] = theme('og_country_pages_overview', array('country_nid' => $context['gid']));
+        break;
+    }
+  }
+  return $block;
+}
+
+/**
+ * Implements hook_theme().
+ */
+function ogp_country_pages_theme($existing, $type, $theme, $path) {
+  return array(
+    'og_country_pages_nav' => array(
+      'variables' => array('country_nid' => NULL),
+    ),
+    'og_country_pages_overview' => array(
+      'variables' => array('country_nid' => NULL),
+    ),
+  );
+}
+
+function theme_ogp_country_pages_nav($vars) {
+  $gid = $vars['country_nid'];
+  $country_path = drupal_get_path_alias('node/' . $gid);
+  $menu = array(
+    l(t('Overview'), 'node/' . $gid),
+    l(t('Action Plan'), $country_path . '/action-plan'),
+    l(t('Commitments'), $country_path . '/commitments'),
+    l(t('Self Assessment'), $country_path . '/assessment'),
+    l(t('Report (IRM)'), $country_path . '/irm'),
+    l(t('Case Study'), $country_path . '/case-study'), // Shouldn't be plural?
+    l(t('Contact'), $country_path . '/contact'),
+  );
+  $list_vars = array(
+    'items' => $menu,
+    'type' => 'ul',
+    'attributes' => array('class' => 'ogp-country-nav'),
+  );
+  return theme('item_list', $list_vars);
+}
+
+/**
+ * Overview "table" block theme function. May need to add logic to skip rows if data not present.
+ */
+function theme_ogp_country_pages_overview($variables) {
+  // Country variables
+  $gid = $vars['country_nid'];
+  $country = node_load($gid);
+  $country_path = drupal_get_path_alias('node/' . $gid);
+  
+  // pre-load the commitments delivered string and markup
+  $commitments_delivered = '<div class="country-commitments-delivered">' . _ogp_country_pages_commitments_count($gid) .  '</div>';
+  $commitments_delivered .= t('Commitments Delivered');
+
+  // Prepare for date fields
+  $display = array('settings' => array('format_type' => 'medium'), 'label' => 'inline');
+  $member_since = field_view_field('node', $country, 'field_member_since', $display);
+  $latest_report_date = format_date(_ogp_country_pages_latest_report_date($gid));
+
+  // Action plan download link
+  $aciton_plan = field_view_field('node', $country, 'field_ap_pdf');
+
+  $overview = array(
+    array(
+      'class' => 'country-overview-commitments-delivered', 
+      'data' => l($commitments_delivered, $country_path . '/commitments', array('html' => TRUE)),
+    ),
+    array(
+      'class' => 'country-overview-website', 
+      'data' => l($country->field_link[$country->language][0]['title'], $country->field_link[LANGUAGE_NONE][0]['url'])
+    ),
+    array(
+      'class' => 'country-overview-member-since', 
+      'data' => drupal_render($member_since),
+    ),
+  );
+
+  if (_ogp_country_pages_commitments_all($gid)) {
+    $overview += array(
+      array(
+        'class' => 'country-overview-commitments-checkbox-yes', 
+        'data' => t('Commitments Delivered'),
+      ),
+    );
+  }
+
+  $overview += array(
+    array(
+      'class' => 'country-overview-latest-report', 
+      'data' => t('Latest report: ') . $latest_report_date,
+    ),
+    array(
+      'class' => 'country-overview-action-plan', 
+      'data' => drupal_render($action_plan),
+    ),
+    array(
+      'class' => 'country-overview-contact', 
+      'data' => l(t('Get in Touch'), $country_path . '/contact'),
+    ),
+  );
+}
+
+/**
+ * Returns number of commitments delivered by a given country.
+ *
+ * @param $nid
+ *   Node id of country node.
+ *
+ * @return int
+ *
+ * @todo Make this actually work.
+ */
+function _ogp_country_pages_commitments_count($nid) {
+  return 26;
+}
+
+/**
+ * Determines whether a given country's commitments have all been reached or not.
+ *
+ * @param $nid
+ *   Node id of country node.
+ *
+ * @return bool
+ *
+ * @todo Make this actually work.
+ */
+function _ogp_country_pages_commitments_all($nid) {
+  return TRUE;
+}
+
+/**
+ * Return the datestamp for a country's latest IRM report
+ *
+ * @param $nid
+ *   Node id of country node.
+ *
+ * @return int Unix timestamp
+ *
+ * @todo Make this actually work.
+ */
+function _ogp_country_pages_latest_report_date($nid) {
+  return time();
+}

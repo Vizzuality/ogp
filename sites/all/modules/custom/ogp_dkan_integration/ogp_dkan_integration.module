@@ -1,0 +1,465 @@
+<?php
+/**
+ * @file
+ * Code for the OGP DKAN Integration feature.
+ */
+
+define('OGP_DOCUMENTS_TEMP', 'public://ogp_documents_temp');
+
+include_once 'ogp_dkan_integration.features.inc';
+include_once 'ogp_dkan_integration.migrate.inc';
+include_once 'ogp_dkan_integration.document_query.inc';
+include_once 'ogp_dkan_integration.search.inc';
+
+
+/**
+ * Implements hook_menu().
+ */
+function ogp_dkan_integration_menu() {
+  $items = array();
+  $items['node/%node/ogp/zip/%'] = array(
+    'title' => 'Download resources by document type',
+    'page callback' => 'ogp_dkan_integration_download_filtered_by_type',
+    'page arguments' => array(1, 4),
+    'access callback' => 'dkan_dataset_download_access',
+    'access arguments' => array(1),
+  );
+  $items['admin/dkan/datasets'] = array(
+    'title' => 'Datasets',
+    'page callback' => 'admin/dkan/datasets',
+    'access arguments' => array('administer site configuration'),
+    'weight' => '5',
+  );
+  return $items;
+}
+
+/**
+ * Implements hook_preprocess_html().
+ */
+function ogp_dkan_integration_preprocess_html(&$vars) {
+  $path = drupal_get_path('module', 'ogp_dkan_integration');
+  drupal_add_css($path . '/css/ogp_dkan.css');
+}
+
+/**
+ * Callback to download dataset resources filtered by document type.
+ */
+function ogp_dkan_integration_download_filtered_by_type($node, $doctype) {
+  require_once(
+    implode(
+      '/', 
+      array(
+        drupal_get_path('module', 'dkan_dataset'),
+        'dkan_dataset.pages.inc',
+      )
+    )
+  );
+  $node = entity_metadata_wrapper('node', $node);
+  $resources = $node->field_resources->value();
+  $doctype = str_replace('_', ' ', $doctype);
+  $term = ogp_dkan_integration_get_type_term_id(str_replace('_', ' ', $doctype));
+
+  if (isset($resources) && $term) {
+    $files = array();
+    foreach ($resources as $resource) {
+      // Check if resource if empty and access for current user.
+      if (!$resource || !node_access('view', $resource)) {
+        continue;
+      }
+      
+      if (!isset($resource->field_ogp_document_type[LANGUAGE_NONE]) && count($resource->field_ogp_document_type[LANGUAGE_NONE]) == 0) {
+        continue;
+      }
+      $doc_types = array();
+      if (isset($resource->field_ogp_document_type[LANGUAGE_NONE])) {
+        foreach ($resource->field_ogp_document_type[LANGUAGE_NONE] as $key => $type) {
+          $doc_types[] = $type['tid'];
+        }
+        if (!in_array($term, $doc_types)) {
+          continue;
+        }
+        
+        if (isset($resource->field_upload[LANGUAGE_NONE])) {
+          $files[] = drupal_realpath($resource->field_upload[LANGUAGE_NONE][0]['uri']);
+        }
+      }
+    }
+    $node->title->set($node->title->value() . '-' . $doctype . '_documents');
+    _dkan_dataset_zip($files, $node);
+  }
+}
+
+/**
+ * Implements hook_block_info().
+ */
+function ogp_dkan_integration_block_info() {
+  $blocks = array();
+  $blocks['action_plan_table'] = array(
+    'info' => t('Country Action Plan Documents'),
+    'cache' => DRUPAL_NO_CACHE,
+  );
+  $blocks['irm_report_table'] = array(
+    'info' => t('Country Progress Report Documents'),
+    'cache' => DRUPAL_NO_CACHE,
+  );
+  $blocks['self_assessment_table'] = array(
+    'info' => t('Country Self Assessment Documents'),
+    'cache' => DRUPAL_NO_CACHE,
+  );
+  $blocks['case_study_table'] = array(
+    'info' => t('Country Case Study Documents'),
+    'cache' => DRUPAL_NO_CACHE,
+  );
+  $blocks['irm_reports_by_country'] = array(
+    'info' => t('IRM Reports and Comment pages by Country'),
+    'cache' => DRUPAL_NO_CACHE,
+  );
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_view().
+ */
+function ogp_dkan_integration_block_view($delta = '') {
+  $block = array();
+  $context = og_context('node');
+  if ($context) {
+    switch ($delta) {
+      case 'action_plan_table':
+      case 'irm_report_table':
+      case 'self_assessment_table':
+      case 'case_study_table':
+        $document_type = str_replace('_table', '', $delta);
+        $document_type = str_replace('_', ' ', $document_type);
+        $block['content'] = theme(
+          'ogp_country_documents_table',
+          array(
+            'country_nid' => $context['gid'],
+            'document_type' => $document_type
+          )
+        );
+        break;
+    }
+  }
+  if ($delta == 'irm_reports_by_country') {
+    $countries = ogp_dkan_integration_irm_reports_by_country();
+    $block['content'] = theme(
+      'irm_reports_by_country',
+      array(
+        'countries' => $countries,
+      )
+    );
+  }
+  return $block;
+}
+
+
+/**
+ * Implements hook_theme().
+ */
+function ogp_dkan_integration_theme($existing, $type, $theme, $path) {
+  $path = drupal_get_path('module', 'ogp_dkan_integration');
+  $path = implode('/', array($path, 'theme'));
+  return array(
+    'irm_reports_by_country' => array(
+      'arguments' => array('countries' => NULL),
+      'template' => 'irm-reports-by-country',
+      'path' => $path,
+    ),
+    'views_view_fields__ogp_dkan_resources_search__page' => array(
+      'arguments' => array('view' => NULL, 'fields' => NULL, 'row' => NULL),
+      'template' => 'views-view-fields--ogp-dkan-resources-search--page',
+      'original hook' => 'views_view_fields',
+      'preprocess functions' => array(
+        'template_preprocess',
+        'template_preprocess_views_view_fields',
+      ),
+      'path' => $path,
+    ),
+    'views_view_field__ogp_dkan_resources_search__page__title' => array(
+      'arguments' => array('view' => NULL, 'field' => NULL, 'row' => NULL, 'output' => NULL),
+      'template' => 'views-view-field--ogp-dkan-resources-search--page--title',
+      'original hook' => 'views_view_field',
+      'preprocess functions' => array(
+        'template_preprocess',
+        'template_preprocess_views_view_field',
+      ),
+      'path' => $path,
+    ),
+    'views_view_table__ogp_dkan_country_documents__block' => array(
+      'arguments' => array(
+        'title' => NULL,
+        'header' => NULL,
+        'caption' => NULL,
+        'header_classes' => NULL,
+        'fields' => NULL,
+        'classes' => NULL,
+        'row_classes' => NULL,
+        'rows' => NULL,
+        'field_classes' => NULL
+      ),
+      'template' => 'views-view-table--ogp-dkan-country-documents--block',
+      'original hook' => 'views_view_table',
+      'preprocess functions' => array(
+        'template_preprocess',
+        'template_preprocess_views_view_table',
+      ),
+      'path' => $path,
+    ),
+    'views_view_grouping__ogp_dkan_country_documents__block' => array(
+      'arguments' => array(
+        'title' => NULL,
+        'grouping' => NULL,
+        'grouping_level' => NULL,
+        'rows' => NULL,
+        'title' => NULL,
+        'content' => NULL,
+      ),
+      'template' => 'views-view-grouping--ogp-dkan-country-documents--block',
+      'original hook' => 'views_view_grouping',
+      'preprocess functions' => array(
+        'template_preprocess',
+        'template_preprocess_views_view_grouping',
+      ),
+      'path' => $path,
+    ),
+    'ogp_country_documents_table' => array(
+      'variables' => array(
+        'country_nid' => NULL,
+        'document_type' => NULL
+      ),
+    ),
+  );
+}
+
+function theme_ogp_country_documents_table($vars) {
+  $documents = views_get_view('ogp_dkan_country_documents');
+  $documents->set_display('block');
+  $arguments = array(
+    $vars['country_nid'],
+    'all',
+    ogp_dkan_integration_get_type_term_id($vars['document_type']),
+  );
+  $documents->set_arguments($arguments);
+  $documents->pre_execute();
+  $documents->execute();
+  return $documents->render('block');
+}
+
+/**
+ * Implements hook_taxonomy_fixtures_vocabulary().
+ */
+function ogp_dkan_integration_taxonomy_fixtures_vocabulary() {
+  $module_path = drupal_get_path('module', 'ogp_dkan_integration');
+  $map =  array(
+    'name' => 'name',
+    'weight' => 'weight',
+    'uuid' => 'uuid',
+    'description' => 'description',
+  );
+  $export_path = $module_path . '/data';
+  return array(
+    'ogp_document_type' => array(
+      'export_path' => $export_path,
+      'map' => $map,
+    ),
+  );
+}
+
+/**
+ * Implements hook_node_validate().
+ */
+function ogp_dkan_integration_node_validate($node, $form, &$form_state) {
+  if ($node->type == 'dataset') {
+    // If country ref is not empty then period-from must be populated.
+    // if (!ogp_dkan_integration_field_is_empty($form, 'field_country_ref')) {
+    //   if (ogp_dkan_integration_field_is_empty($form, 'field_period', 'from')) {
+    //     form_set_error('field_period][from', t('If country ref is not empty then period-from must be populated.'));
+    //     return;
+    //   }
+    // }
+    // If period-from is not empty then country ref must be populated.
+    if (!ogp_dkan_integration_field_is_empty($form, 'field_period', 'from')) {
+      if (ogp_dkan_integration_field_is_empty($form, 'field_country_ref')) {
+        form_set_error('field_country_ref', t('If period->from is not empty then country ref must be populated.'));
+        return;
+      }
+    }
+    // Validate there's no repeated datasets for a given country and period.
+    if (!ogp_dkan_integration_field_is_empty($form, 'field_country_ref')) {
+      $country = $form['field_country_ref'][LANGUAGE_NONE]['#value'];
+      $from = $form['field_period'][LANGUAGE_NONE][0]['from']['#value'];
+      $to = $form['field_period'][LANGUAGE_NONE][0]['to']['#value'];
+      if (isset($from) && isset($to)) {
+        $results = array();
+        $operations = array(
+          array('from' => '>=', 'to' => '<='),
+          array('from' => '='),
+          array('to' => '='),
+        );
+        foreach ($operations as $operation) {
+          $query = new EntityFieldQuery();
+          $query->entityCondition('entity_type', 'node')
+                ->entityCondition('bundle', 'dataset')
+                ->fieldCondition('field_country_ref', 'target_id', $country, '=');
+          foreach ($operation as $column => $operator) {
+            $query->fieldCondition(
+              'field_period',
+              $column,
+              ($column == 'from' ? $from : $to),
+              $operator
+            );
+          }
+          $result = $query->execute();
+          if (isset($result['node'])) {
+            $results = array_unique(array_merge($results, array_keys($result['node'])));
+          }
+        }
+        if (count($results) > (isset($node->nid) ? 1 : 0)) {
+          form_set_error(
+            'field_period',
+            t("There's an existing action plan dataset that overlaps with the given period and country")
+          );
+          return;
+        }
+      }
+    }
+  }
+}
+
+function ogp_dkan_integration_field_is_empty($form, $field, $column=NULL) {
+  if (isset($form[$field][LANGUAGE_NONE])) {
+    $f = $form[$field][LANGUAGE_NONE];
+    if (isset($f[0])) {
+      $f = $f[0];
+    }
+    if (!empty($column)) {
+      return empty($f[$column]['#value']);
+    }
+    return empty($f['#value']);
+  }
+  return TRUE;
+}
+
+/**
+ * Implements hook_update_status_alter().
+ *
+ * DKAN is using patched versions of a few modules that trip up the update manager.
+ */
+function ogp_dkan_integration_update_status_alter(&$projects) {
+  
+  // Remove update notices for.
+  $up_to_date_projects = array('link_iframe_formatter', 'og_extras', 'entity');
+  foreach ( $up_to_date_projects as $up_to_date_project ) {
+    
+    if ( isset($projects[$up_to_date_project]) ) {
+      
+      $projects[$up_to_date_project]['status'] = UPDATE_CURRENT; 
+
+      if ( isset($projects[$up_to_date_project]['title']) &&
+           isset($projects[$up_to_date_project]['existing_version']) ) {
+        
+        $project_name = $projects[$up_to_date_project]['title'];
+        $project_revision = $projects[$up_to_date_project]['existing_version'];
+        if ( $project_revision == 'unknown' ) {
+          // Entity.
+          $project_revision = '1.6 (modified)';
+        }
+
+        if (current_path() == 'admin/reports/updates') {
+          drupal_set_message( $project_name . ' is up to date. We are using ' . $project_revision . ' revision.' );
+        }
+      }
+    }
+  } 
+}
+
+/**
+ * Implements hook_views_pre_view().
+ */
+function ogp_dkan_integration_views_pre_view(&$view, &$display_id, &$args) {
+  $views = array(
+    'ogp_dkan_report_reference',
+    'ogp_dkan_irm_page_reports_by_country'
+  );
+  if (in_array($view->name, $views)) {
+    $term = taxonomy_get_term_by_name('irm report');
+    if (count($term)) {
+      $term = end($term);
+      $args[] = $term->tid;
+    }
+  }
+}
+
+/**
+ * Builds a list of reports and comment pages ordered by country.
+ */
+function ogp_dkan_integration_irm_reports_by_country() {
+  $countries = array();
+  $english_spoken = array('United States', 'United Kingdom');
+  // Query comments.
+  $comments = views_get_view('ogp_dkan_irm_page_report_comments_by_country');
+  $comments->set_display('block');
+  $comments->pre_execute();
+  $comments->execute();
+  foreach ($comments->result as $comment) {
+    $country = $comment->node_field_data_field_country_ref_title;
+    $code = $comment->countries_country_field_data_field_country_iso2;
+    if (!isset($countries[$country])) {
+      $countries[$country] = array(
+        'country' => $country,
+        'code' => $code,
+      );
+    }
+    if (!isset($countries[$country]['comments'])) {
+      $countries[$country]['comments'] = '/node/' . $comment->nid;
+    }
+  }
+  // Query reports.
+  $reports = views_get_view('ogp_dkan_irm_page_reports_by_country');
+  $reports->set_display('block');
+  $reports->pre_execute();
+  $reports->execute();
+  foreach ($reports->result as $report) {
+    $country = $report->node_field_data_field_country_ref_title;
+    $code = $report->countries_country_field_data_field_country_iso2;
+    if (!isset($countries[$country])) {
+      $countries[$country] = array(
+        'country' => $country,
+        'code' => $code,
+      );
+    }
+    $tags = $report->field_field_ogp_document_tags;
+    $label = 'report';
+    if (count($tags)) {
+      foreach ($tags as $k => $tag) {
+        $tags[$k] = $tag['rendered']['#title'];
+      }
+      if (in_array('national', $tags)) {
+        $label = 'national report';
+      }
+    }
+    if (in_array($country, $english_spoken)) {
+      $label = 'national report';
+    }
+    if (!isset($countries[$country][$label])) {
+      if(isset($report->field_field_upload[0]['rendered']['#item']['uri'])) {
+        $uri = file_create_url($report->field_field_upload[0]['rendered']['#item']['uri']);
+      }
+      else {
+        $uri ='';
+      }
+      $countries[$country][$label] = array(
+        'title' => t('Report'),
+        'file' => $uri,
+      );
+    }
+  }
+  $keys = array_keys($countries);
+  sort($keys);
+  $r = array();
+  foreach ($keys as $key) {
+    $r[$key] = $countries[$key];
+  }
+  return $r;
+}

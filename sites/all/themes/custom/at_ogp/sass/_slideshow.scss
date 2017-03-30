@@ -1,0 +1,142 @@
+/* Secondary Region */
+#secondary-content-wrapper {
+  background: $nublack;
+  .container {
+    padding:0;
+    @media screen and (min-width: 100px) and (max-width: 2000px) {
+      width: 100%;
+      max-width: 100%;
+    }
+  }
+  .block-bean {
+    margin-bottom: 0;
+    position: relative;
+    h2.block-title {
+      display:none;
+    }
+    .bean-slideshow {
+      &.view-mode-slideshow_single {
+        margin-bottom: 0;
+        text-align: center;
+      }
+      &.view-mode-default {
+        @include wide-screen;
+        margin-bottom: 45px;
+      }
+    }
+    .block-inner {
+      margin: 0;
+    }
+    .flexslider li {
+      background:$nublack;
+    }
+  }
+}
+
+/* Flexslider */
+.flexslider {
+  background: $nublack;
+  border:none;
+  @include border-radius(0);
+  @include box-shadow(none);
+  margin: 0 auto;
+  max-width: 960px;
+  position: relative;
+  img {
+    width:100%;
+    max-height:375px;
+  }
+  .carousel-caption {
+    background: none;
+    text-align: center;
+    bottom: 6%;
+    left: 8%;
+    padding: 0;
+    position: absolute;
+    // position:absolute;
+    // left:0;
+    // right:0;
+    // bottom:5%;
+    h4 {
+      background:rgba(0, 0, 0, 0.75);
+      display: table;
+      margin: 0 auto;
+      padding: 15px 25px;
+      font-size:36px;
+      line-height:1.15em;
+      font-size:2.5em;
+    }
+    p {
+      background:rgba($pop, 0.65);
+      color:#fff;
+      display:table;
+      padding:15px 20px;
+      font-size:21px;
+      margin:0 auto;
+    }
+  }
+  ul.slides {
+    background:$nublack;
+    padding:0;
+  }
+  .flex-control-nav {
+    bottom:-35px;
+    background: $nublack;
+    height:10px;
+    padding: 15px 0 20px;
+    text-align: center;
+    z-index:5;
+    line-height:10px;
+    li {
+      display: inline-block;
+      padding: 0 5px;
+      a {
+        background-color: #fff;
+        -webkit-box-shadow: inset 0px 1px 3px rgba(4,4,4,0.5);
+        -moz-box-shadow: inset 0px 1px 3px rgba(4,4,4,0.5);
+        -o-box-shadow: inset 0px 1px 3px rgba(4,4,4,0.5);
+        box-shadow: inset 0px 1px 3px rgba(4,4,4,0.5);
+        &.flex-active {
+          background:rgba($pop,0.65);
+        }
+      }
+    }
+  }
+  .flex-direction-nav a {
+    background-image: url(../css/images/bg_direction_nav.png);
+  }
+  .flex-direction-nav .flex-disabled {
+    opacity: 0 !important;
+  }
+}
+
+.front .flexslider {
+  .views-field {
+    max-width:960px;
+    margin:0 auto;
+    position:relative;
+    .carousel-caption {
+      bottom: 6%;
+      left: 8%;
+      padding: 0;
+      position: absolute;
+      h4 {
+        font-size:36px;
+        margin-left:0;
+        margin-right:0;
+        line-height:1.25em;
+      }
+      a {
+        font-size:36px;
+        display:block;
+        &:hover {
+          text-decoration:none;
+          color:$pop;
+        }
+      }
+      p {
+        margin:0;
+      }
+    }
+  }
+}

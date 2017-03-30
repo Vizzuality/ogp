@@ -1,0 +1,18 @@
+<?php
+
+/**
+ * @file
+ * Deployment-specific code.
+ */
+
+/**
+ * Implements hook_module_implements_alter().
+ */
+function ogp_deploy_module_implements_alter(&$implementations, $hook) {
+  // Ensure that our hook_modules_enabled happens at the end.
+  if ($hook == 'modules_enabled') {
+    $group = $implementations['ogp_deploy'];
+    unset($implementations['ogp_deploy']);
+    $implementations['ogp_deploy'] = $group;
+  }
+}

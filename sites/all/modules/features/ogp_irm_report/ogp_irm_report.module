@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the OGP IRM Report feature.
+ */
+
+include_once 'ogp_irm_report.features.inc';

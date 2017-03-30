@@ -1,0 +1,8 @@
+.l-section {
+  position: relative;
+  min-height: 400px;
+
+  &.-short {
+    min-height: 200px;
+  }
+}

@@ -1,0 +1,84 @@
+.c-social-block {
+  padding: 80px 0;
+
+  &.-tweet {
+
+    .views-field-field-twitter-text {
+      margin-top: 25px;
+    }
+
+    .views-field-field-twitter-account {
+      display: inline-block;
+      float: right;
+
+      .field-content {
+
+        &::before {
+          display: inline-block;
+          content: '@';
+        }
+      }
+
+      .icon-twitter {
+        width: 15px;
+        margin-left: 15px;
+        color: $color-2;
+      }
+    }
+
+    .subtitles {
+      font-family: $font-family-1;
+      font-size: $font-size-medium;
+      font-weight: $font-weight-semi-bold;
+      line-height: 1.33;
+
+      a {
+        color: $color-2;
+      }
+    }
+  }
+
+  &.-facebook {
+    display: inline-block;
+    flex: 1;
+    width: 50%;
+
+    .block-title {
+      position: relative;
+      color: $color-5;
+      font-family: $font-family-2;
+      font-size: $font-size-small-medium;
+      font-weight: $font-weight-semi-bold;
+    }
+
+    .block-content {
+      margin-top: 25px;
+    }
+
+    .facebook-feed-message {
+      color: $color-5;
+      font-family: $font-family-1;
+      font-size: $font-size-medium;
+      font-weight: $font-weight-semi-bold;
+      line-height: 1.33;
+    }
+
+    .icon-facebook {
+      position: absolute;
+      top: calc(50% - 10px);
+      right: 0;
+      width: 15px;
+      fill: $color-2;
+    }
+
+    .facebook-feed-picture,
+    .facebook-feed-from,
+    .facebook-feed-time {
+      display: none;
+    }
+  }
+
+  .mailto {
+    display: none;
+  }
+}

@@ -1,0 +1,27 @@
+<?php
+/**
+ * @file
+ * Code for the Albatross Page feature.
+ */
+
+include_once('ogp_page.features.inc');
+
+/**
+ * Implements hook_menu_block_blocks().
+ */
+function ogp_page_menu_block_blocks() {
+  // The array key is the block delta used by menu block.
+  return array(
+    'ogp_page-1' => array(
+      'menu_name'   => 'main-menu',
+      'parent_mlid' => 0,
+      'title_link'  => 1,
+      'admin_title' => 'Second-level main menu',
+      'level'       => 2,
+      'follow'      => 0,
+      'depth'       => 3,
+      'expanded'    => 0,
+      'sort'        => 0,
+    ),
+  );
+}

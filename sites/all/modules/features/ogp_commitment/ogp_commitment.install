@@ -1,0 +1,24 @@
+<?php
+/**
+ * Change activities field into long text
+ */
+function ogp_commitment_update_7001() {
+  // Manual database changes.
+  db_query("UPDATE {field_config} SET type = 'text_long' WHERE field_name = 'field_activities'");
+  db_change_field('field_data_field_activities', 'field_activities_value', 'field_activities_value', array(
+    'type' => 'text',
+    'size' => 'big',
+    'not null' => FALSE,
+  ));
+  db_change_field('field_revision_field_activities', 'field_activities_value', 'field_activities_value', array(
+    'type' => 'text',
+    'size' => 'big',
+    'not null' => FALSE,
+  ));
+  // Clear caches.
+  field_cache_clear(TRUE);
+  // Apply the new field instance configuration.
+  features_revert(array(
+    'ogp_commitment' => array('field'),
+  ));
+}

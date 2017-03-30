@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the OGP Priority Links feature.
+ */
+
+include_once 'ogp_priority_links.features.inc';

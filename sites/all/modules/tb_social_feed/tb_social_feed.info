@@ -1,0 +1,38 @@
+name = TB Social Feed
+description = "Get social feeds (Facebook, Flickr, Twitter, Instagram, Vimeo, Youtube) and create nodes"
+package = Feeds
+core = 7.x
+project = "tb_social_feed"
+configure = admin/config/feed/tb_social_feed
+
+files[] = tb_social_feed.inc
+files[] = includes/facebook.inc
+files[] = includes/twitter.inc
+files[] = includes/flickr.inc
+files[] = includes/instagram.inc
+files[] = includes/youtube.inc
+files[] = includes/vimeo.inc
+files[] = tb_social_feed_views.inc
+files[] = models/tb_social_feed_accounts.inc
+files[] = models/tb_social_feed_account_services.inc
+files[] = models/tb_social_feed_services.inc
+files[] = models/tb_social_feed_contents.inc
+
+scripts[] = 'js/json2.js'
+scripts[] = 'js/tb_social_feed.js'
+scripts[] = 'js/tb_social_facebook.js'
+
+dependencies[] = image
+dependencies[] = youtube
+dependencies[] = vimeo_link_formatter
+dependencies[] = link
+dependencies[] = taxonomy
+
+stylesheets[all][] = css/tb_social_feed.css
+
+; Information added by Drupal.org packaging script on 2015-08-05
+version = "7.x-1.0-beta7"
+core = "7.x"
+project = "tb_social_feed"
+datestamp = "1438743241"
+

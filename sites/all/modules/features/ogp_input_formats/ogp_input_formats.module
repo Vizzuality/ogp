@@ -1,0 +1,47 @@
+<?php
+/**
+ * @file
+ * Code for the OGP Input Formats feature.
+ */
+
+include_once 'ogp_input_formats.features.inc';
+/**
+ * @file
+ */
+
+// Drupal needs this blank file.
+
+/**
+ * Implementation of hook_wysiwyg_editor_settings_alter
+ */
+function ogp_input_formats_wysiwyg_editor_settings_alter(&$settings, &$context) {
+  if($context['profile']->editor == 'ckeditor') {
+    $settings['forcePasteAsPlainText'] = TRUE;
+    $settings['disableNativeSpellChecker'] = false;
+    $settings['browserContextMenuOnCtrl'] = true;
+    //$settings['enterMode'] = 2; // CKEDITOR.ENTER_BR
+    //$settings['shiftEnterMode'] = 1; // CKEDITOR.ENTER_P
+  }
+}
+
+/**
+ * Implementation of hook_form_alter
+ * Modifications to the node/__/edit pages
+ */
+function dcpl_configuration_form_alter(&$form, &$form_state, $form_id) {
+  if (strpos($form_id, '_node_form') !== FALSE){
+    
+    // Add spellchecker
+    if (isset($form['title'])){
+      $form['title']['#attributes']['spellcheck'] = 'true';
+    }
+    if (isset($form['field_subtitle'])){
+      $form['field_subtitle']['und'][0]['value']['#attributes']['spellcheck'] = 'true';
+    }
+    if (isset($form['body'])){
+      $form['body']['und'][0]['value']['#attributes']['spellcheck'] = 'true';
+    }
+    
+  }
+  //dpm($form_id);
+}

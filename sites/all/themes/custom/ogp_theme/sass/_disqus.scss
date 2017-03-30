@@ -1,0 +1,14 @@
+#disqus_thread {
+
+  a {
+    color: $color-2 !important;
+
+    &:after {
+      color: $color-2 !important;
+    }
+  }
+
+  a, span, h2, li {
+    font-family: $font-family-1 !important;
+  }
+}

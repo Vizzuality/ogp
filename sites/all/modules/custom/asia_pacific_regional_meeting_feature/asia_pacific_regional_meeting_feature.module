@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the Asia Pacific Regional Meeting Feature feature.
+ */
+
+include_once 'asia_pacific_regional_meeting_feature.features.inc';

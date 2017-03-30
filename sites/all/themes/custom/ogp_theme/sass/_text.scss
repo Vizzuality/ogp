@@ -1,0 +1,349 @@
+// Texts layout
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  -webkit-margin-before: 0;
+  -webkit-margin-after: 0;
+}
+
+.text {
+  font-family: $font-family-1;
+  font-size: $font-size-small;
+  font-weight: $font-weight-normal;
+  color: $color-22;
+  line-height: 1.6;
+  position: relative;
+
+  &.-menu {
+    font-size: $font-size-xxsmall;
+    font-weight: $font-weight-semi-bold;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    color: $color-22;
+
+    a {
+      color: $color-22;
+    }
+  }
+
+  &.-title {
+    font-size: $font-size-big;
+    font-weight: $font-weight-semi-bold;
+    line-height: 1.3;
+  }
+
+  &.-title-small {
+    font-size: $font-size-x-medium;
+    font-weight: $font-weight-semi-bold;
+    line-height: 1.3;
+  }
+
+  &.-title-x-small {
+    font-size: $font-size-small-medium;
+    font-weight: $font-weight-semi-bold;
+    line-height: 1.3;
+  }
+
+  &.-section-title {
+    font-size: $font-size-x-medium;
+    font-weight: $font-weight-semi-bold;
+    line-height: 1.15;
+  }
+
+  &.-section-title-small {
+    font-size: $font-size-medium;
+    font-weight: $font-weight-semi-bold;
+    line-height: 1.15;
+  }
+
+  &.-tile-detail {
+    font-size: 24px;
+    font-weight: $font-weight-semi-bold;
+    line-height: 1.46;
+  }
+
+  &.-tile {
+    font-size: $font-size-xxsmall;
+    font-weight: $font-weight-semi-bold;
+    line-height: 1.25;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  &.-tab {
+    font-size: $font-size-xxsmall;
+    font-weight: $font-weight-semi-bold;
+    line-height: 1.25;
+    text-transform: uppercase;
+  }
+
+  &.-date {
+    font-size: $font-size-xxsmall;
+    font-weight: $font-weight-semi-bold;
+    line-height: 1.25;
+    text-transform: uppercase;
+  }
+
+  &.-link {
+    font-size: $font-size-small;
+    font-weight: normal;
+    line-height: 1.6;
+    cursor: pointer;
+  }
+
+  &.-module-title {
+    font-size: $font-size-x-medium;
+    font-weight: $font-weight-semi-bold;
+  }
+
+  &.-heavy {
+    font-weight: $font-weight-semi-bold;
+  }
+
+  &.-large-number {
+    font-size: 120px;
+    font-weight: $font-weight-semi-bold;
+  }
+
+  &.-number {
+    font-size: $font-size-x-medium;
+    color: $color-6;
+    font-weight: $font-weight-semi-bold;
+  }
+
+  &.-interactive {
+    cursor: pointer;
+  }
+
+  &.-footnote {
+    font-size: $font-size-xxsmall;
+  }
+
+  &.-small-bold {
+    font-size: $font-size-xxsmall;
+    font-weight: $font-weight-semi-bold;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  &.-uppercase {
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  &.-legend {
+    font-size: $font-size-small;
+  }
+
+  &.-post-meta {
+    color: $color-2;
+    font-size: $font-size-xxsmall;
+    text-transform: uppercase;
+    font-weight: $font-weight-semi-bold;
+    letter-spacing: 1px;
+  }
+
+  &.-dynamic-link {
+    a {
+      color: $color-2;
+      font-size: $font-size-xxsmall;
+      text-transform: uppercase;
+      font-weight: $font-weight-semi-bold;
+      letter-spacing: 1px;
+    }
+  }
+
+  &.-meta {
+    font-size: $font-size-xxsmall;
+    line-height: 2;
+    font-family: $font-family-2;
+    color: $color-6;
+
+    a {
+      color: $color-6;
+    }
+  }
+
+  &.-meta-large {
+    font-size: $font-size-small;
+    line-height: 2;
+    font-family: $font-family-2;
+    color: $color-6;
+
+    a {
+      color: $color-6;
+    }
+  }
+
+  &.-pagination {
+    font-family: $font-family-1;
+    font-size: $font-size-small;
+    font-weight: $font-weight-bold;
+  }
+
+  &.-search {
+    font-family: $font-family-2;
+    font-size: $font-size-small;
+    font-style: italic;
+    color: rgba(51,51,51,0.5);
+  }
+
+  &.-social-title {
+    font-size: $font-size-small-medium;
+  }
+
+  &.-capitalize {
+    text-transform: capitalize;
+  }
+
+  // colours
+  &.-white {
+    color: $color-4;
+
+    a {
+      color: $color-4;
+    }
+  }
+
+  &.-grey {
+    color: $color-6;
+  }
+
+  &.-blue {
+    color: $color-2;
+
+    a {
+      color: $color-2;
+    }
+  }
+
+  &.-black {
+    color: $color-22;
+  }
+
+  //wysiwyg body content
+  &.-body-content {
+    font-family: $font-family-2;
+
+    h1, h2, h3, h4, h5, h6 {
+      font-weight: $font-weight-semi-bold;
+      line-height: 1.33;
+      display: inline-block;
+      margin: 30px 0 0;
+    }
+
+    h1 {
+      font-size: 60px;
+    }
+
+    h2 {
+      font-size: 30px;
+    }
+
+    h3 {
+      font-size: 25px;
+    }
+
+    h4 {
+      font-size: 20px;
+    }
+
+    h5, h6 {
+      font-size: 16px;
+    }
+
+    p {
+      margin-bottom: 20px;
+    }
+
+    a {
+      color: $color-2;
+
+      &:hover {
+        color: $color-2;
+      }
+    }
+
+    blockquote {
+      margin: 25px auto;
+      padding: 0 40px;
+      font-weight: $font-weight-bold;
+      color: $color-5;
+      font-family: $font-family-1;
+      font-size: 17px;
+      font-weight: $font-weight-semi-bold;
+      line-height: 1.6;
+
+      &::after {
+        display: inline-block;
+        content: '"';
+      }
+
+      &::before {
+        display: inline-block;
+        content: '"';
+      }
+
+      p {
+        display: inline;
+      }
+    }
+  }
+
+  ul {
+    list-style: none;
+
+    li {
+      padding-left: 25px;
+      text-indent: -25px;
+      display: block;
+      padding-bottom: 10px;
+
+      p {
+        display: inline;
+      }
+    }
+
+    li::before {
+      content: '';
+      display: inline-block;
+      width: 10px;
+      height: 10px;
+      border-radius: 5px;
+      background-color: $color-13;
+      margin-right: 15px;
+    }
+  }
+
+  ol {
+    list-style-type: none !important;
+    padding-left: 0;
+
+    li {
+      counter-increment: step-counter;
+      display: block;
+      padding-left: 35px;
+      text-indent: -35px;
+      padding-bottom: 10px;
+
+      &::before {
+        content: counter(step-counter);
+        font-size: 80%;
+        padding: 3px 8px;
+        background-color: $color-13;
+        color: white;
+        font-weight: bold;
+        border-radius: 15px;
+        margin-right: 13px;
+      }
+
+      p {
+        display: inline;
+      }
+    }
+  }
+}

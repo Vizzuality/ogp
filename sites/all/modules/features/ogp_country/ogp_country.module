@@ -1,0 +1,457 @@
+<?php
+/**
+ * @file
+ * Code for the OGP Country feature.
+ */
+
+include_once 'ogp_country.features.inc';
+
+/* Start custom code section */
+
+/**
+ * Implements hook_init().
+ */
+function ogp_country_init() {
+  if (arg(0) == 'node' && is_numeric(arg(1)) && arg(2)) {
+    $context = og_context('node');
+    if (empty($context)) {
+      $node = node_load(arg(1));
+      if ($node->type == 'country_page') {
+        $context = og_context('node', $node);
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_menu().
+ */
+function ogp_country_menu() {
+  $items = array();
+  $items['node/%node/action-plan'] = array(
+    'title' => t('Action Plan'),
+    'page callback' => 'ogp_country_action_plan',
+    'page arguments' => array(1),
+    'access arguments' => array('access content'),
+  );
+  $items['node/%node/assessment'] = array(
+    'title' => t('Self Assestment'),
+    'page callback' => 'ogp_country_action_plan',
+    'page arguments' => array(1),
+    'access arguments' => array('access content'),
+  );
+  $items['node/%node/irm'] = array(
+    'title' => t('IRM Report'),
+    'page callback' => 'ogp_country_action_plan',
+    'page arguments' => array(1),
+    'access arguments' => array('access content'),
+  );
+  $items['node/%node/case-study'] = array(
+    'title' => t('Case Study'),
+    'page callback' => 'ogp_country_action_plan',
+    'page arguments' => array(1),
+    'access arguments' => array('access content'),
+  );
+  $items['node/%node/contact'] = array(
+    'title' => 'Action Plan',
+    'page callback' => 'ogp_country_action_plan',
+    'page arguments' => array(1),
+    'access arguments' => array('access content'),
+  );
+
+  return $items;
+}
+
+/**
+ * Country action plan page callback.
+ *
+ * @param $country
+ *   Country node object
+ */
+function ogp_country_action_plan($country) {
+  if (!is_object($country) || $country->type != 'country_page') {
+    return MENU_NOT_FOUND;
+  }
+  // return node_view($country, 'action_plan');
+  return '';
+}
+
+/**
+ * Implements hook_block_info().
+ */
+function ogp_country_block_info() {
+  $blocks = array();
+  $blocks['nav'] = array(
+    'info' => t('Country Navigation Block'),
+    'cache' => DRUPAL_NO_CACHE,
+  );
+  $blocks['overview'] = array(
+    'info' => t('Country Overview Table'),
+    'cache' => DRUPAL_NO_CACHE,
+  );
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_view().
+ */
+function ogp_country_block_view($delta = '') {
+  $block = array();
+  if ($context = og_context('node')) {
+    // Add logic for making sure this is a country group
+    switch ($delta) {
+      case 'nav':
+        $block['content'] = theme('ogp_country_nav', array('country_nid' => $context['gid']));
+        break;      
+      case 'overview':
+        $block['content'] = theme('ogp_country_overview', array('country_nid' => $context['gid']));
+        break;
+    }
+  }
+  return $block;
+}
+
+/**
+ * Implements hook_theme().
+ */
+function ogp_country_theme($existing, $type, $theme, $path) {
+  return array(
+    'ogp_country_nav' => array(
+      'variables' => array('country_nid' => NULL),
+    ),
+    'ogp_country_overview' => array(
+      'variables' => array('country_nid' => NULL),
+    ),
+  );
+}
+
+function theme_ogp_country_nav($vars) {
+  $gid = $vars['country_nid'];
+  $country_path = 'node/' . $gid;
+  $menu = array(l(t('Overview'), $country_path));
+  // Only add more menu items if the content is there
+  if (ogp_country_has_content($gid, 'commitment') || ogp_country_has_action_plan($gid)) {
+    $menu[] = l(t('Action Plans'), $country_path . '/action-plan');
+  }
+  if (ogp_country_has_content($gid, 'self_assessment')) {
+    $menu[] = l(t('Self Assessment'), $country_path . '/assessment');
+  }
+  if (ogp_country_has_content($gid, 'irm_report')) {
+    $menu[] = l(t('Progress Reports'), $country_path . '/irm');
+  }
+  if (ogp_country_has_content($gid, 'case_study')) {
+    $menu[] = l(t('Case Studies'), $country_path . '/case-study');
+  }
+  $menu[] = l(t('Contact'), $country_path . '/contact');
+  
+  $list_vars = array(
+    'items' => $menu,
+    'type' => 'ul',
+    'attributes' => array('class' => 'ogp-country-nav'),
+  );
+  return theme('item_list', $list_vars);
+}
+
+/**
+ * Overview "table" block theme function. May need to add logic to skip rows if data not present.
+ */
+function theme_ogp_country_overview($vars) {
+  // Country variables
+  $gid = $vars['country_nid'];
+  $country = node_load($gid);
+  $country_path = drupal_get_path_alias('node/' . $gid);
+ 
+  // pre-load the commitments delivered string and markup
+  $commitments_count = _ogp_country_commitments_count($gid);
+  $commitments_delivered = '<div class="country-commitments-delivered">' . $commitments_count .  '</div>';
+  $commitments_delivered .= t('Current Commitments');
+
+  // Prepare for date fields
+  $display = array('settings' => array('format_type' => 'medium'), 'label' => 'hidden');
+
+  // Member since date
+  $since_date = new DateObject(strtotime($country->field_member_since[LANGUAGE_NONE][0]['value']));
+  unset($since_date->granularity[0], $since_date->granularity[1], $since_date->granularity[2], $since_date->granularity[4]);
+  $member_since = date_format_date($since_date, 'medium');    
+
+  $latest_report_date = _ogp_country_latest_report_date($gid);
+
+  // Action plan download link
+  //$action_plan = field_view_field('node', $country, 'field_country_ap_pdf', 'country_overview');
+  $action_plan = _ogp_country_latest_action_plan($gid);
+  // Progress report download link
+  $report = _ogp_country_latest_report($gid);
+
+  // Current Status
+  $current_status = field_view_field('node', $country, 'field_country_status', 'country_overview');
+
+  $overview = array(
+    array(
+      'class' => array('country-overview-commitments-delivered'), 
+      'data' => l($commitments_delivered, $country_path . '/action-plan', array('html' => TRUE)),
+    ),
+  );
+  if (!empty($country->field_country_ogp_website)) {
+    $overview[] = array(
+      'class' => array('country-overview-website'), 
+      'data' => l($country->field_country_ogp_website[LANGUAGE_NONE][0]['title'], $country->field_country_ogp_website[LANGUAGE_NONE][0]['url'])
+    );
+  }
+   $overview[] = array(
+    'class' => array('country-overview-member-since'), 
+    'data' => t('Began process to join: @date', array('@date' => $member_since)),
+  );
+
+  if ($latest_report_date) {
+    $overview[] = array(
+      'class' => array('country-overview-latest-report'), 
+      'data' => t('Latest progress report: ') . $latest_report_date,
+    );
+  }
+
+  if (!empty($action_plan)) {
+    $overview[] = array(
+      'class' => array('country-overview-action-plan'), 
+      'data' => drupal_render($action_plan),
+    );
+  }
+
+  if (!empty($report)) {
+    $overview[] = array(
+      'class' => array('country-overview-report-download'), 
+      'data' => drupal_render($report),
+    );
+  }
+  
+  if (!empty($current_status)) {
+    $overview[] = array(
+      'class' => array('country-overview-current_status'), 
+      'data' => strip_tags(drupal_render($current_status)),
+    );
+  }
+  
+  $overview[] = array(
+      'class' => array('country-overview-contact'), 
+      'data' => l(t('Get in Touch'), $country_path . '/contact'),
+  );
+
+  $list_vars = array(
+    'items' => $overview,
+    'type' => 'ul',
+    'attributes' => array('class' => array('ogp-country-overview')),
+  );
+  return theme('item_list', $list_vars);
+}
+
+/**
+ * Returns number of commitments delivered by a given country.
+ *
+ * @param $nid
+ *   Node id of country node.
+ *
+ * @return int
+ */
+function _ogp_country_commitments_count($nid) {
+  $query = new EntityFieldQuery();
+
+  $query->entityCondition('entity_type', 'node')
+    ->entityCondition('bundle', 'commitment')
+    ->propertyCondition('status', 1)
+    ->fieldCondition('og_group_ref', 'target_id', $nid)
+    ->fieldCondition('field_current_commitment','value','1','=')
+    ->addMetaData('account', user_load(1)); // Run the query as user 1.
+
+    $result = $query->execute();
+	
+    if (empty($result['node'])) {
+      return 0;
+    }
+    else {
+      return count($result['node']);
+    }
+}
+
+/**
+ * Returns latest action plan of country.
+ *
+ * @param $nid
+ *   Node id of country node.
+ *
+ * @return int
+ */
+function _ogp_country_latest_action_plan($nid) {
+  $ap = ogp_dkan_integration_get_latest_action_plans($nid);
+  if (count($ap)) {
+    $ap = $ap[0];
+    $link = _ogp_country_prepare_link(
+      'node/' . $ap->nid . '/ogp/zip/action_plan',
+      'Download latest Action Plan'
+    );
+    return $link;
+  }
+  else {
+    return 0;
+  }
+}
+/**
+ * Determine whether a particular country group has content of a particular type
+ *
+ * @param $nid
+ *   Node id of country node.
+ *
+ * @param $type
+ *   Node type to look for.
+ *
+ * @return boolean
+ */
+function ogp_country_has_content($nid, $type) {
+  // NOTE: Document content has been migrated to resource nodes
+  // todo: update this to check for resources with matching country(group) and document type(taxonomy)
+
+  // $query = new EntityFieldQuery();
+
+  // $query->entityCondition('entity_type', 'node')
+  //   ->entityCondition('bundle', $type)
+  //   ->propertyCondition('status', 1)
+  //   ->fieldCondition('og_group_ref', 'target_id', $nid)
+  //   ->addMetaData('account', user_load(1)); // Run the query as user 1.
+
+  // $result = $query->execute();
+  // if (empty($result['node'])) {
+  //   return FALSE;
+  // }
+  // else {
+    return TRUE;
+  //}
+}
+
+function ogp_country_has_action_plan($nid) {
+  $aps = ogp_dkan_integration_get_latest_action_plans($nid);
+  return count($aps) > 0;
+}
+
+
+/**
+ * Determines whether a given country's commitments have all been reached or not.
+ *
+ * @param $nid
+ *   Node id of country node.
+ *
+ * @return bool
+ *
+ * @todo Make this actually work.
+ */
+function _ogp_country_commitments_all($nid) {
+  return TRUE;
+}
+
+/**
+ * Return the datestamp for a country's latest IRM report
+ *
+ * @param $nid
+ *   Node id of country node.
+ *
+ * @return string Formatted date string
+ *
+ * @todo Make this actually work.
+ */
+function _ogp_country_latest_report_date($nid) {
+  $docs = ogp_dkan_integration_get_latest_progress_report_document($nid);
+  if (count($docs)) {
+    $latest = $docs[0];
+    $latest = node_load($latest->nid);
+    $date = new DateObject($latest->created);
+    unset($date->granularity[0], $date->granularity[1], $date->granularity[2], $date->granularity[4]);
+    return date_format_date($date, 'medium');
+  }
+  return FALSE;
+}
+
+
+/**
+ * Return the link for a country's latest IRM report
+ *
+ * @param $nid
+ *   Node id of country node.
+ *
+ * @return string Report download link
+ *
+ */
+function _ogp_country_latest_report($nid) {
+  $docs = ogp_dkan_integration_get_latest_progress_report_document($nid);
+  if (count($docs)) {
+    $latest = $docs[0];
+    $link = _ogp_country_prepare_link(
+      $latest->field_field_upload[0]['raw']['uri'],
+      'Download latest Progress Report'
+    );
+    return $link;
+  }
+  else {
+    return 0;
+  }
+}
+
+/**
+ * Returns a themable array for a given uri.
+ */
+function _ogp_country_prepare_link($uri, $text) {
+  $url = file_create_url($uri);
+  $link = array(
+    '#theme' => 'link',
+    '#text' => t($text),
+    '#path' => $url,
+    '#options' => array(
+      'attributes' => array(),
+      'html' => FALSE,
+    ),
+  );
+  return $link;
+}
+
+/**
+ * Implements hook_node_presave().
+ */
+function ogp_country_node_presave($node) {
+  if ($node->type == 'country_page') {
+    if (!empty($node->field_country_ogp_website) && !empty($node->field_country_ogp_website[LANGUAGE_NONE][0])) {
+      $title = preg_replace('#^https?://#', '', $node->field_country_ogp_website[LANGUAGE_NONE][0]['url']);
+      $title = preg_replace('{/$}', '', $title);
+      $node->field_country_ogp_website[LANGUAGE_NONE][0]['title'] = $title;
+    }
+  }
+}
+
+/**
+ * Implements hook_form_alter().
+ */
+function ogp_country_form_alter(&$form, &$form_state, $form_id) {
+  // Add country group to node add form if contains og_group_ref query
+  if (preg_match('/_node_form$/', $form_id) && isset($_GET['og_group_ref'])) {
+    $types = node_type_get_types();
+    $country = node_load($_GET['og_group_ref']);
+    // Modify title
+    drupal_set_title(t('@title for @country', array('@title' => drupal_get_title(), '@country' => $country->title)));
+  }
+}
+
+/**
+ * Implements hook_views_pre_render().
+ */
+function ogp_country_views_pre_render(&$view) {
+  if ($view->name == 'ogp_country_contact' && !empty($view->result)) {
+    // Attach contact form to contact page
+    module_load_include('inc', 'contact', 'contact.pages');
+    $recipient = user_load($view->result[0]->users_og_membership_uid);
+    $view->attachment_after = drupal_render(drupal_get_form('contact_personal_form', $recipient));
+  }
+}
+
+/**
+ * Remove redundant "to" part of personal contact form
+ */
+function ogp_country_form_contact_personal_form_alter(&$form, &$form_state) {
+  if (arg(2) == 'contact') {
+    unset($form['to']);
+  }
+}

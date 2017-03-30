@@ -1,0 +1,46 @@
+.c-node-tools {
+  position: fixed;
+  right: 0;
+  background: transparent;
+  z-index: 1100;
+  padding-right: 20px;
+  padding-top: 20px;
+  display: none;
+
+  @media screen and (min-width: $screen-m) {
+    display: block;
+  }
+
+  .tools {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+
+    li {
+      display: flex;
+      list-style: none;
+      background: $color-2;
+      border-radius: 50%;
+      width: 75px;
+      height: 75px;
+      margin-bottom: 20px;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 15px;
+      border: solid 2px $color-4;
+
+      a {
+        color: $color-3;
+        font-family: $font-family-1;
+        font-size: 12px;
+        font-weight: 500;
+      }
+
+      &.active {
+        display: none;
+      }
+    }
+  }
+}

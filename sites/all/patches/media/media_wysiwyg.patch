@@ -1,0 +1,40 @@
+diff --git a/sites/all/modules/contrib/media/modules/media_wysiwyg/js/media_wysiwyg.format_form.js b/sites/all/modules/contrib/media/modules/media_wysiwyg/js/media_wysiwyg.format_form.js
+index 4345a34..90436de 100644
+--- a/sites/all/modules/contrib/media/modules/media_wysiwyg/js/media_wysiwyg.format_form.js
++++ b/sites/all/modules/contrib/media/modules/media_wysiwyg/js/media_wysiwyg.format_form.js
+@@ -33,6 +33,8 @@ Drupal.behaviors.mediaFormatForm = {
+ Drupal.media.formatForm.getOptions = function () {
+   // Get all the values
+   var ret = {};
++  //Get WYSIWYG instance
++  var wysiwyg = Drupal.wysiwyg;
+ 
+   $.each($('#media-wysiwyg-format-form .fieldset-wrapper *').serializeArray(), function (i, field) {
+     ret[field.name] = field.value;
+@@ -41,14 +43,20 @@ Drupal.media.formatForm.getOptions = function () {
+     if (field.name.match(/\[format\]/i)) {
+       field.name = field.name.replace(/\[format\]/i, '[value]');
+       field.key  = 'edit-' + field.name.replace(/[_\[]/g, '-').replace(/[\]]/g, '');
++      // If WYSIWYG found, get content.
++      if (wysiwyg) {
++        if (wysiwyg.instances[field.key]) {
++          // Retrieve the content from the WYSIWYG instance.
++          ret[field.name] = Drupal.wysiwyg.instances[field.key].getContent();
++        }
++      }
+ 
+-      if (Drupal.wysiwyg && Drupal.wysiwyg.instances[field.key]) {
+-        // Retrieve the content from the WYSIWYG instance.
+-        ret[field.name] = Drupal.wysiwyg.instances[field.key].getContent();
+-
+-        // Encode the content to play nicely within JSON.
+-        ret[field.name] = encodeURIComponent(ret[field.name]);
++      // CKEditor module support.
++      if (Drupal.ckeditorInstance) {
++        ret[field.name] = Drupal.ckeditorInstance.getData();
+       }
++      // Escape the double-quotes and encode it to play nicely within JSON.
++      ret[field.name] = encodeURIComponent(ret[field.name].replace(/"/g, '\\"'));
+     }
+   });
+ 

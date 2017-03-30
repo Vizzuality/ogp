@@ -1,0 +1,6 @@
+name = Feed Import Upgrade
+description = Upgrades Feed Import from 2.x to 3.x
+package = Feeds
+core = 7.x
+
+configure = admin/config/services/feed_import/upgrade

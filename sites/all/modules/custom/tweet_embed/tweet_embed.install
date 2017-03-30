@@ -1,0 +1,17 @@
+<?php
+/**
+ * @file
+ * Provides the install/uninstall hooks for the tweet_embed module.
+ */
+
+/**
+ * Implements hook_uninstall().
+ */
+function tweet_embed_uninstall() {
+  variable_del('tweet_embed_maxwidth');
+  variable_del('tweet_embed_hide_media');
+  variable_del('tweet_embed_hide_thread');
+  variable_del('tweet_embed_omit_script');
+  variable_del('tweet_embed_align');
+  variable_del('tweet_embed_lang');
+}

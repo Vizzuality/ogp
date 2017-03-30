@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the News and Rvents (content type and view) feature.
+ */
+
+include_once 'news_and_rvents_content_type_and_view_.features.inc';

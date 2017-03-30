@@ -1,0 +1,14 @@
+<?php
+/**
+ * @file
+ * Code for the OGP Search feature.
+ */
+
+include_once 'ogp_search.features.inc';
+
+
+function ogp_search_form_views_exposed_form_alter(&$form, &$form_state) {
+  if ($form['#id'] == 'views-exposed-form-ogp-search-search-block' && $form['#action'] == '/search/block') {
+    $form['#action'] = '/search';
+  }
+}

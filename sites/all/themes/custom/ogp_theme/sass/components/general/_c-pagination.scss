@@ -1,0 +1,173 @@
+.c-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 50px;
+
+  li {
+    display: inline-block;
+    width: 40px;
+    height: 40px;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-top: 1px solid $color-1;
+    border-right: 1px solid $color-1;
+    border-bottom: 1px solid $color-1;
+    color: $color-1;
+    cursor: pointer;
+
+    &:first-of-type {
+      border-left: 1px solid $color-1;
+    }
+
+    &.-selected {
+      pointer-events: none;
+      color: $color-22;
+      border: 1px solid #d6d6d6;
+    }
+  }
+
+  .next,
+  .prev {
+    position: relative;
+    background-color: $color-1;
+    position: relative;
+    color: transparent;
+    font-size: 8px;
+    z-index: 2;
+  }
+
+  .prev {
+    border-top: 1px solid $color-1;
+    border-bottom: 1px solid $color-1;
+    border-left: 1px solid $color-1;
+
+    &::before {
+      @include triangle(10px, $color-4, left);
+      display: block;
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      content: '';
+    }
+  }
+
+  .next {
+    border-top: 1px solid $color-1;
+    border-right: 1px solid $color-1;
+    border-bottom: 1px solid $color-1;
+    content: 'd';
+
+    &::before {
+      @include triangle(10px, $color-4, right);
+      display: block;
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      content: '';
+    }
+  }
+}
+
+.item-list-pager {
+
+  .throbber {
+    display: none !important;
+  }
+
+  .pager {
+
+    li {
+      display: inline-block;
+      width: 40px;
+      height: 40px;
+      margin: 0;
+      background-color: $color-4;
+
+      a {
+        font-family: $font-family-1;
+        font-size: $font-size-small;
+        font-weight: $font-weight-bold;
+      }
+
+      &.pager-first,
+      &.pager-last {
+        display: none;;
+      }
+
+      &.pager-next,
+      &.pager-previous {
+        position: relative;
+        background-color: $color-1;
+
+        a {
+          position: relative;
+          color: transparent;
+          font-size: 8px;
+          z-index: 2;
+        }
+      }
+
+      &.pager-previous {
+        border-top: 1px solid $color-1;
+        border-bottom: 1px solid $color-1;
+        border-left: 1px solid $color-1;
+
+        &::before {
+          @include triangle(10px, $color-4, left);
+          display: block;
+          position: absolute;
+          top: 14px;
+          left: 14px;
+          content: '';
+        }
+      }
+
+      &.pager-next {
+        border-top: 1px solid $color-1;
+        border-right: 1px solid $color-1;
+        border-bottom: 1px solid $color-1;
+        content: 'd';
+
+        &::before {
+          @include triangle(10px, $color-4, right);
+          display: block;
+          position: absolute;
+          top: 14px;
+          left: 14px;
+          content: '';
+        }
+      }
+
+      &.pager-ellipsis {
+        display: none;
+      }
+
+      &.pager-item,
+      &.pager-current {
+        border-top: 1px solid $color-1;
+        border-right: 1px solid $color-1;
+        border-bottom: 1px solid $color-1;
+
+        &:first-of-type {
+          border-left: 1px solid $color-1;
+        }
+
+      }
+
+      &.pager-item {
+        a {
+          color: $color-1;
+        }
+      }
+
+      &.pager-current {
+        a {
+          color: $color-5;
+        }
+      }
+    }
+  }
+}

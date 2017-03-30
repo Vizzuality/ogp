@@ -1,0 +1,2380 @@
+body{
+    font-family: "Open sans", sans-serif;
+    font-size: 11px;
+    color: orange;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+}
+
+
+/* for svgs generally */
+svg{
+    shape-rendering: crispEdges;
+}
+
+
+a{
+    color: inherit; /* blue colors for links too */
+    text-decoration: inherit; /* no underline */
+}
+
+/* ------------  area outer areas  ----------- */
+
+/* this surrounds the current outer view */
+.current_view_outer_object{
+    position: absolute;
+    left: 0px;
+    top: 0px;
+}
+
+/* specific id names of the outer view areas */
+#table_view__commitment_data_edition{
+}
+
+
+
+
+
+/* ------------  general page things ----------- */
+
+#page_header{
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    padding-left: 290px;
+    height: 111px;
+    width: 3500px;
+    font-size: 24px;
+    font-weight: 200;
+    line-height: 186px;
+    color: white;
+    background-color: rgba( 0, 153, 255, 1.0 );
+    z-index: 0;
+}
+
+#main_viz_viewing_options_area{
+    position: absolute;
+    left: 0px;
+    top: 90px;
+    height: 170px;
+    width: 3500px;
+    /* border: 1px solid rgb( 240, 240, 180); */
+    z-index: 12;
+    /* fonty things */
+    color: rgb( 185, 180, 168 );
+}
+
+
+/* -------- page header - IDRC logo ------- */
+
+#idrc_logo_outer_box{
+    position: absolute;
+    left: 780px;
+    top: 90px;
+    width: 235px;
+    min-height: 47px;
+}
+#idrc_logo_inner_text_box{
+    position: relative;
+    float: left;
+    left: 0px;
+    top: 4px;
+    margin-left: 10px;
+    margin-right: 9px;
+    font-size: 10px;
+    color: white;
+    letter-spacing: 1px;
+}
+#idrc_logo_inner_logo_box {
+    position: relative;
+    float: left;
+    left: 0px;
+    top:0px;
+    width: 103px;
+    height: 40px;
+    background-image: url( images/idrc_crdi_logo_smlr3.png );
+    background-repeat: no-repeat;
+    background-position: 4px 1px;
+    background-color: white;
+}
+
+
+/* ------  main_viz_viewing_options_area  ------ */
+
+
+/* top level items outer area */
+#views_switching_area__main_items__outer_area{
+    position: relative;
+    left:0px;
+    top: 0px;
+    margin-top: 81px;
+    height: 41px;
+    width: 100%;
+    border-bottom: 1px solid rgb(245, 243, 212);
+    font-size: 17px;
+    line-height: 49px;
+    background-color: rgb( 252,252, 245 );
+}
+
+/* top level items - "view" text */
+#views_switching_area__main_items__view_text{
+    float: left;
+    width: 126px;
+    height: 100%;
+    padding-right: 12px;
+    text-align: right;
+}
+
+/* a general link item in the top bar */
+.views_switching_area__main_items__link_items_item{
+    float: left;
+    height: 100%;
+    padding-left: 22px;
+    padding-right: 28px;
+    font-weight: 200;
+}
+
+.views_switching_area__main_items__link_items_item:hover{
+    background-color: rgb(240, 240, 210);
+}
+
+/* for selected items */
+.views_switching_area__SELECTED_views_menu_item{
+    background-color: rgb(244, 244, 233);
+}
+
+/* and one for visible items - like the submenus */
+.views_switching_area__submenu__VISIBLE{
+    display: block;
+}
+
+
+/* top level items - "table" link */
+#views_switching_area__main_items__table_link_n_text{
+
+}
+
+/* top level items - "graph" view link n text */
+#views_switching_area__main_items__graph_link_n_text{
+}
+
+
+/* top level items - "fact sheet" link n text */
+#views_switching_area__main_items__factsheet_link_n_text{
+    display: none;
+}
+
+
+/* -- sub items - eg for the table and graph views -- */
+
+/* the classes for the different views */
+/*  mostly these work to define/identify the items for some
+    for some */
+
+/*	FOR THE TABLE VIEW  */
+.views_switching_area__submenu__table_view{
+}
+/*	FOR THE GRAPH VIEW  */
+.views_switching_area__submenu__graph_view{
+}
+/*	FOR THE FACT SHEET VIEW */
+.views_switching_area__submenu__factSheet_view{
+}
+
+/* the outer area for the texts and links */
+#views_switching_area__subitems_items__outer_area{
+    display: none;
+    position: relative;
+    float: left;
+    left: 0px;
+    top: 0px;
+    height: 34px;
+    width: 100%;
+    /* border-bottom: 1px solid rgb( 231, 226, 211); */
+    font-size: 13px;
+    line-height: 35px;
+    background-color: rgb( 252, 252, 245 );
+}
+
+.views_switching_area__subitems_items__dataset__text{
+    float: left;
+    width: 126px;
+    height: 100%;
+    padding-right: 12px;
+    text-align: right;
+}
+
+
+.views_switching_area__subitems__link_items_item{
+    float: left;
+    padding-left: 22px;
+    padding-right: 28px;
+    font-weight: 200;
+    /* border-right: 1px solid white; */
+    line-height: 35px;
+}
+
+.views_switching_area__subitems__link_items_item:hover{
+    background-color: rgb(245, 245, 200);
+}
+
+.views_switching_area__subitems__link_items_item__SELECTED{
+    background-color: rgb(245, 245, 230);
+}
+
+
+/* ---- different versions of the positioning for the commitmetns text box
+    - for if different main elements are selected,
+    eg. Table / Graph/ Fact Sheet */
+/* table view edition of commitments text + box position ---- */
+.views_switching_area__submenu__table_view .views_switching_area__subitems_items__commitments__text{
+    margin-left: 110px;
+}
+
+/* -- graph view edition of commitments text + box position -- */
+.views_switching_area__submenu__graph_view .views_switching_area__subitems_items__commitments__text{
+    margin-left: 10px;
+}
+
+.views_switching_area__submenu__graph_view .views_switching_area__subitems_items__process__text{
+    display: none;
+}
+
+
+
+/* fact sheet view edition of commitments text + box position */
+.views_switching_area__submenu__factSheet_view .views_switching_area__subitems_items__commitments__text{
+    margin-left: 200px;
+}
+
+.views_switching_area__subitems_items__process__text{
+
+}
+
+
+/* ------------  header area ----------- */
+
+
+#ogp_logo_graphic{
+    position: absolute;
+    left: 88px;
+    top: 0px;
+    width: 150px;
+    height: 131px;
+    background-image: url( images/ogplogo.png );
+}
+
+/* the area at the top with the black line (aka navigation bar) */
+#page_header__top_black_area{
+    position: absolute;
+    left: 0px;
+    top: 0px;
+    width: 100%;
+    height: 45px;
+    background-color: black;
+}
+
+
+
+/* -----------  table view things ----------- */
+
+
+#table_view_main_header_area__dom_elmt{
+    position: absolute;
+    top: 186px;
+    /* left: 389px; */
+    left: 393px;
+    width: 3000px;
+    height: 493px;
+    /* border: 1px dashed rgb( 210, 210, 235 ); */
+    z-index: 7;
+    background-color: rgba( 255, 255, 255, 1.0 );
+}
+
+/* process data view edition */
+/* - process data view edition */
+.page_pseudo_body__FOR_VIEWS_process__dom_elmt__class_name #table_view_main_header_area__dom_elmt{
+    position: absolute;
+    top: 186px;
+    left: 216px;
+    width: 3000px;
+    height: 493px;
+    /* border: 1px dashed rgb( 210, 210, 235 ); */
+    z-index: 7;
+    background-color: rgba( 255, 255, 255, 1.0 );
+}
+
+
+
+
+
+#table_view__countryNamesEtAl_area__headersArea__id_name{
+    position: absolute;
+    left: 0px;
+    top: 186px;
+    /* - for when the country listing is below the header .. the above setting is for when it's at the same height
+    top: 773px;	*/
+    width: 389px;
+    height: 493px;
+    /* border: 1px dashed rgb( 210, 235, 210); */
+    z-index: 10;
+    background-color: rgba( 255, 255, 255, 1.0 );
+}
+
+/* - process data view edition */
+/* - process data view edition */
+.page_pseudo_body__FOR_VIEWS_process__dom_elmt__class_name #table_view__countryNamesEtAl_area__headersArea__id_name{
+    position: absolute;
+    left: 0px;
+    top: 186px;
+    /* - for when the country listing is below the header .. the above setting is for when it's at the same height
+    top: 773px;	*/
+    width: 208px;
+    height: 493px;
+    /* border: 1px dashed rgb( 210, 235, 210); */
+    z-index: 10;
+    background-color: rgba( 255, 255, 255, 1.0 );
+}
+
+
+/* within the country name header obj */
+#table_view__countryNamesEtAl_area__headersArea__columnHeader__dom_elmt{
+    position: absolute;
+    left: 0px;
+    bottom: 0px;
+    height: 360px;
+    width: 100%;
+}
+
+
+#table_view__countryNamesEtAl_area__belowHeadersArea__id_name{
+    position: absolute;
+    left: 0px;
+    top: 680px;
+    /* - for when the country listing is below the header .. the above setting is for when it's at the same height
+    top: 773px;	*/
+    width: 389px;
+    min-height: 2000px;
+    /* border: 1px dashed rgb( 210, 235, 210); */
+    background-color: rgba( 255, 255, 255, 1.0 );
+    z-index: 9;
+}
+
+/* - process data view edition */
+/* - process data view edition */
+.page_pseudo_body__FOR_VIEWS_process__dom_elmt__class_name #table_view__countryNamesEtAl_area__belowHeadersArea__id_name{
+    position: absolute;
+    left: 0px;
+    top: 680px;
+    /* - for when the country listing is below the header .. the above setting is for when it's at the same height
+    top: 773px;	*/
+    width: 208px;
+    min-height: 2000px;
+    /* border: 1px dashed rgb( 210, 235, 210); */
+    background-color: rgba( 255, 255, 255, 1.0 );
+    z-index: 9;
+}
+
+
+
+#table_view__main_commitments_listing_area__id_name{
+    position: absolute;
+    left: 393px;
+    top: 680px;
+    width: 3300px;
+    height: 2000px;
+    /* border: 1px dashed rgb( 235, 210, 210); */
+    background-color: white;
+    z-index: 5;
+}
+
+/* - process data view edition */
+/* - process data view edition */
+.page_pseudo_body__FOR_VIEWS_process__dom_elmt__class_name #table_view__main_commitments_listing_area__id_name{
+    position: absolute;
+    left: 216px;
+    top: 680px;
+    width: 3300px;
+    height: 2000px;
+    /* border: 1px dashed rgb( 235, 210, 210); */
+    background-color: white;
+    z-index: 5;
+}
+
+
+/* ----------- the mouseover ----------- */
+
+#mouseover_div__outer_div_dom_element__id_name{
+    position: fixed;
+    left: 0px;
+    top: 0px;
+    width: 436px;
+    min-height: 100px;
+    /* background-color: rgba( 255, 255, 255, 0.95); */
+    /* border: 1px solid rgb( 245, 236, 180 ); */
+    font-family: "Open sans", sans-serif;
+    font-size: 11px;
+    /* color: rgb(178, 172, 158); */
+    /* color: rgb(168, 162, 138); */
+    color: rgb( 165, 160, 145 );
+    z-index: 20;
+}
+
+#mouseover_div__header__outer_area{
+    position: absolute;
+    top: 0px;
+    left: 0px;
+    width: 419px;
+    height: 40px;
+    padding-left: 10%;
+    padding-top: 2%;
+    padding-right: 27px;
+    background-image: url( images/ogp_irm__mouseovers_header_background__taller.svg );
+    background-repeat: no-repeat;
+    /* background-color: white; */
+    /* border: 1px dashed red;	 */
+}
+
+#mouseover_div__body__outer_area{
+    position: absolute;
+    left: 17px;
+    top: 49px;
+    width: 422px;
+    min-height: 50px;
+    padding: 5%;
+    padding-left: 6%;
+    padding-top: 3%;
+    margin-left: 0%;
+    margin-right: 10%;
+    background-color: white;
+    border: 1px solid rgb( 224, 204, 166);
+    border-top: 0px solid rgb( 224, 204, 166);
+}
+
+.mouseover_div__outer_div_dom_element__IS_VISIBLE{
+    display: block;
+}
+
+.mouseover_div__outer_div_dom_element__IS_INVISIBLE{
+    display: none;
+}
+
+/* to override the general column title style which are assigned to
+    the column header text by default */
+#mouseover_div__header__outer_area .column_title{
+    font-size: 11px;
+}
+
+
+
+.mouseover_summary_statistics__breakdown_statistics_row{
+    position: relative;
+    float: left;
+    width: 100%;
+    height: 10px;
+    border-bottom: 1px solid rgb( 250, 250, 250 );
+    color: rgb(252, 250, 245);
+}
+
+.mouseover_summary_statistics__breakdown_statistics_row__value_name{
+    position: absolute;
+    left: 0px;
+    top: 0px;
+}
+
+.mouseover_summary_statistics__breakdown_statistics_row__percent_num{
+    position: absolute;
+    left: 117px;
+    top: 0px;
+    color: rgb(178, 172, 158);
+    text-align: right;
+}
+
+.mouseover_summary_statistics__breakdown_statistics_row__abs_found_commitments_num{
+    position: absolute;
+    left: 170px;
+    top: 0px;
+    color: rgb(187, 182, 169)
+}
+
+.mouseover_summary_statistics__breakdown_statistics_row__abs_num_of_commitments{
+    position: absolute;
+    left: 160px;
+    top: 0px;
+}
+
+
+/* --- mouseover bits for the graph page mouseover --- */
+
+
+/* special version of the mouseover region */
+#graph_view__outer_area_id #mouseover_div__outer_div_dom_element__id_name{
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    min-width: 20px;
+    max-width: 150px;
+    background-image: url( images/ogp_irm__graph_mouseovers_footer_background_02.svg );
+    background-position: 1px 48px;
+    background-repeat: no-repeat;
+}
+
+#graph_view__outer_area_id #mouseover_div__outer_div_dom_element__id_name span{
+    font-size: 9px;
+}
+
+#mousevoer_graphPg__outer_region{
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    position: relative;
+    left: 10px;
+    top: 0px;
+    min-width: 40px;
+    height: 73px;
+    font-size: 9px;
+    border-top: 1px solid rgb( 224, 207, 166 );
+    border-bottom: 1px solid rgb( 224, 207, 166 );
+    border-right: 1px solid rgb( 224, 207, 166 );
+    background-color: white;
+}
+
+#mousevoer_graphPg__inner__region__header{
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    position: relative;
+    margin-left: 0px;
+    padding-left: 9px;
+    padding-top: 5px;
+    top: 0px;
+    min-width: 40px;
+    height: 48px;
+    border-left: 1px solid rgb( 224, 207, 166 );
+    background-color: rgb( 252, 250, 245 );
+}
+
+#mousevoer_graphPg__inner__statistics__region{
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    position: relative;
+    margin-left: 0px;
+    padding-left: 9px;
+    padding-top: 5px;
+    top: 00px;
+    min-width: 40px;
+    height: 18px;
+    background-color: white;
+}
+
+
+
+/* -----------  within the mouseover header obj  ----------- */
+
+#table_view_main_header_area__column_headers_area__dom_elmt{
+    position: absolute;
+    left: 0px;
+    bottom: 0px;
+    height: 360px;
+    width: 100%;
+    /* border: 1px dashed rgb( 210, 235, 210); */
+}
+
+
+/* ------  search txt field | reset filters button | export data button ----- */
+
+
+#table_view_main_header_area__search_n_options_area__text_search_field__id_name{
+    position: absolute;
+    left: 223px;
+    top: 115px;
+    width: 369px;
+    height: 26px;
+    line-height: 8px;
+    font-style: italic;
+    /* text-align: center; */
+    background-color: rgb( 252, 249, 231 );
+}
+/* and the input text field of this */
+#table_view_main_header_area__search_n_options_area__text_search_field__INPUT_AREA__id_name{
+    position: relative;
+    margin-left: 10px;
+    margin-top: 5px;
+    width: 88%;
+    font-size: 11px;
+    font-style: italic;
+    line-height: 4px;
+    color: rgb( 169, 161, 159 );
+    background-color: transparent;
+    border: 1px solid rgb( 252, 249, 231 );
+}
+/* and when it's clicked */
+#table_view_main_header_area__search_n_options_area__text_search_field__INPUT_AREA__id_name:focus{
+    outline: 0;
+    border: 0px solid #bebede;
+}
+
+#table_view_main_header_area__search_n_options_area__text_search_field__SEARCH_ICON__id_name{
+    position: absolute;
+    top: 0px;
+    right: 5px;
+    width: 26px;
+    height: 26px;
+    background-image: url( images/ogp_irm__search_box_search_icon.svg );
+    background-repeat: no-repeat ;
+    background-position: 0% 0%;
+    cursor: pointer;
+}
+
+
+#table_view_main_header_area__search_n_options_area__reset_settings_button__id_name{
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    position: absolute;
+    left: 619px;
+    top: 115px;
+    width: 234px;
+    height: 26px;
+    padding-right: 40px;
+    line-height: 5px;
+    text-align: right;
+    color: rgb( 169, 161, 159 );
+    background-color: rgb( 252, 245, 236);
+    background-image: url( images/ogp_irm__clear_filter_serch_settings__icon.svg );
+    background-repeat: no-repeat ;
+    background-position: 98% 0%;
+    cursor: pointer;
+}
+
+#table_view_main_header_area__search_n_options_area__export_data_button__id_name{
+    position: absolute;
+    left: 880px;
+    top: 115px;
+    width: 131px;
+    height: 26px;
+    line-height: 5px;
+    text-align: center;
+    color: rgb( 171, 167, 136 );
+    background-color: rgb( 252, 250, 217 );
+    background-image: url( images/ogp_irm__export_data__icon.svg );
+    background-repeat: no-repeat ;
+    background-position: 98% 0%;
+    cursor: pointer;
+}
+
+
+
+/* ------ columns headers  ----- */
+
+.column_header_outer_object_general_class__class_name{
+    position: relative;
+    float: left;
+    left: 0px;
+    bottom: 0px;
+    width: 100px;
+    height: 360px;
+    /* border-right: 1px solid rgb( 240, 240, 240 ); */
+}
+
+/* --- top header obj area --- */
+
+.top_header_column{
+    width: 100%;
+    height: 171px;
+    /* border: 1px dashed rgb( 235, 235, 235); */
+}
+
+/* for the header title text -- generic version */
+.column_title{
+    font-size: 12px;
+    fill: green ;
+}
+/* smaller column title */
+.column_title__smaller_text{
+    font-size: 11px;
+    fill: green ;
+}
+/* and a parallel version */
+.header_title_class{
+    font-size: 12px;
+    fill: blue ;
+}
+
+/* the small vertical line on top of the value header area */
+.upper_header__small_vertical_line{
+    stroke: rgb( 226, 227, 228 );
+    stroke-width: 1px;
+}
+
+/* the diagonal line potentially extending off the small vertical line */
+.upper_header_small__diagonal_line{
+    stroke: rgb( 199, 200, 201 );
+    stroke-width: 1px;
+}
+
+/* background mouseover area */
+.upper_header__background_mouseover_area_class_name{
+    fill: white;
+    stroke: yellow;
+    stroke-width: 1px;
+}
+
+
+
+/* --- bottom header obj area --- */
+
+.bottom_header_column{
+    width: 98%;
+    height: 189px;
+    /* border-right: 1px solid rgb( 226, 227, 228); */
+    border-right: 1px solid rgb(228, 228, 226);
+    border-top: 1px solid rgb( 224, 215, 209 );
+    border-bottom: 1px solid rgb( 198, 176, 167 );
+}
+
+/* - within the bottom header obj - */
+
+/* the values outer div */
+.values_area__outer_div{
+    position: absolute;
+    bottom: 13px;
+    margin: 0px;
+    width: 100%;
+    min-height: 20px;
+    /* border: 1px dashed rgb( 210, 235, 210); */
+}
+
+/* a sort area looks like this */
+.sort_area_outer_div{
+    position: relative;
+    left: 0px;
+    top: 0px;
+    min-width: 20px;
+    height: 16px;
+    /* border: 1px dashed rgb( 240, 240, 240 ); */
+}
+
+/* a general values area looks like this */
+.general_individual_value_outer_area{
+    position: relative;
+    left: 0px;
+    top: 0px;
+    width: 100%;
+    height: 17px;
+    /* border: 1px dashed rgb( 240, 240, 240); */
+}
+
+
+/* --- country operations area --- */
+
+/* the top of the menu, usually on this is visible */
+.country_operations_menu__top_item{
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    position: absolute;
+    left: 7px;
+    bottom: 5px;
+    width: 194px;
+    height: 21px;
+    padding-left: 36px;
+    font-size: 11px;
+    /* text-align: right; */
+    line-height: 20px;
+    /* color: rgb( 193, 176, 166 ); */
+    color: rgb( 185, 180, 168 );
+    /* border: 1px solid rgb( 220, 221, 222 ); */
+    border: 1px solid rgb( 245, 245, 234 );
+    background-color: rgb( 250, 250, 238 );
+    background-image: url( images/drop_down_menu_down_arrow.svg );
+    background-position: 98% 0px;
+    background-repeat: no-repeat ;
+}
+
+
+/* the expanding part - holding the menu options */
+.country_operations_menu__drop_down_area__outer{
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    display: none;
+    position: absolute;
+    left: 7px;
+    top: 354px;
+    padding: 10px;
+    padding-top: 23px;
+    padding-left: 21px;
+    padding-bottom: 18px;
+    min-width: 194px;
+    min-height: 100px;
+    background-color: white;
+    border: 1px solid rgb( 220, 221, 222 );
+    z-index: 15;
+}
+
+
+
+.country_operations_menu__drop_down_area__general_menu_item{
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    padding-left: 15px;
+    padding-right: 15px;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    margin-bottom: 13px;
+    font-size: 11px;
+    font-weight: 500;
+    /* background-color: rgb( 250, 250, 240); */
+    color: rgb( 168, 162, 148 );
+}
+
+.country_operations_menu__drop_down_area__general_menu_item:hover{
+    background-color: rgb( 250, 250, 240);
+}
+
+.country_operations_menu__drop_down_area__general_menu_item__SELECTED{
+    /* background-color: rgb( 250, 250, 245); */
+    background-color: rgb( 247, 247, 229);
+}
+
+
+
+
+
+/* --- tags listing area --- */
+
+
+/* the invisible background part of the drop down menu, which is behind the menu
+    and catches the clicks outside the menu   */
+.tags_drop_down_menu__invisible_background_div{
+    display: none;
+    position: fixed;
+    left: 0px;
+    top: 0px;
+    width: 100%;
+    height: 100%;
+    /* background-color: rgba( 255, 128, 128, 0.5); */
+    background-color: rgba( 160, 160, 120, 0.01);
+    z-index: 11;
+}
+
+/* and a special version for the country listings column */
+#table_view__countryNamesEtAl_area__headersArea__id_name .tags_drop_down_menu__invisible_background_div{
+    display: none;
+    position: fixed;
+    left: 0px;
+    top: 0px;
+    width: inherit;
+    height: 100%;
+    background-color: rgba( 160, 160, 120, 0.01 );
+    z-index: 11;
+}
+
+
+/*  drop down menu general area  */
+.tags__drop_down_menu_general_area__outer_div{
+    position: relative;
+    left: 0px;
+    top: 0px;
+    z-index: 15;
+}
+
+/* the top of the menu, usually on this is visible */
+.tags__top_of_drop_down_menu__outer_div__class_name{
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    position: absolute;
+    left: 7px;
+    top: 45px;
+    width: 203px;
+    height: 21px;
+    padding-left: 36px;
+    font-size: 11px;
+    /* text-align: right; */
+    line-height: 20px;
+    /* color: rgb( 193, 176, 166 ); */
+    color: rgb( 185, 180, 168 );
+    /* border: 1px solid rgb( 220, 221, 222 ); */
+    border: 1px solid rgb( 245, 245, 234 );
+    background-color: rgb( 250, 250, 238 );
+    background-image: url( images/drop_down_menu_down_arrow.svg );
+    background-position: 98% 0px;
+    background-repeat: no-repeat ;
+}
+
+/* the expanding part - holding the menu options */
+.tags__dropping_down_menu__outer_div{
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    display: none;
+    position: absolute;
+    left: 7px;
+    top: 63px;
+    padding: 10px;
+    padding-top: 23px;
+    padding-left: 21px;
+    min-width: 730px;
+    min-height: 495px;
+    background-color: white;
+    border: 1px solid rgb( 220, 221, 222 );
+    z-index: 15;
+}
+
+.tags__dropping_down_menu__inner__select_none{
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    position: absolute;
+    left: 17px;
+    top: 17px;
+    width: 100px;
+    height: 26px;
+    padding-top: 5px;
+    font-size: 10px;
+    text-align: center;
+    font-weight: 600;
+    /* color: rgb( 95,106, 111 ); */
+    color: rgb( 140, 144, 153 );
+    /* background-color: rgb( 252, 251, 236); */
+    background-color: rgb( 253, 251, 238 );
+}
+
+/* and this for the the inner columns of the drop down menu */
+.tags__dropping_down_menu__inner_column_div{
+    position: relative;
+    float: left;
+    left: 0px;
+    margin-top: 40px;
+    margin-bottom: 20px;
+    margin-left: 20px;
+    width: 209px;
+    min-height: 409px;
+    line-height: 17px;
+}
+
+.tags__dropping_down_menu__inner_column__category_markup{
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    padding-left: 0px;
+    font-size: 11px;
+    font-weight: 700;
+    /* color: rgb( 125, 120, 125); */
+    /* color: rgb( 207, 203, 195); */
+    color: rgb(181, 169, 140);
+}
+
+
+.tags__dropping_down_menu__inner_column__tag_markup{
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    padding-left: 15px;
+    padding-right: 15px;
+    margin-bottom: 2px;
+    font-size: 10px;
+    line-height: 18px;
+    font-weight: 400;
+    /* background-color: rgb( 250, 250, 240); */
+    color: rgb( 168, 162, 148 );
+}
+
+.tags__dropping_down_menu__inner_column__tag_SELECTED_markup{
+    /* background-color: rgb( 240, 240, 235); */
+    background-color: rgb( 247, 247, 229);
+}
+
+.tags__dropping_down_menu__inner_column__tag_ROLLOVER_markup{
+    background-color: rgb( 250, 250, 240);
+}
+
+
+/* - tags listing area (below the tags drop down menu) - */
+
+.tags__tags_listing_area__outer_div{
+    position: relative;
+    left: 7px;
+    top: 72px;
+    width: 440px;
+    height: 105px;
+    overflow: hidden;
+    /* border: 1px dashed red; */
+}
+
+.tags__tags_listing_area__individual_tag{
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    position: relative;
+    float: left;
+    /* left: 0px;
+    top: 0px; */
+    /* min-width: 75px; */
+    /* max-width: 175px; */
+    margin: 2px;
+    margin-right: 200px;
+    padding: 0px;
+    padding-right: 26px;
+    height: 17px;
+    line-height: 17px;
+    color: rgb( 178, 172, 158 );
+    background-color: rgb( 251, 251, 248 );
+}
+
+.tags__tags_listing_area__individual_tag__cross_mark{
+    position: relative;
+    float: left;
+    left: 0px;
+    top: 0px;
+    margin-right: 2px;
+    width: 15px;
+    height: 15px;
+    border: 1px solid rgb( 255, 250, 200 );
+    background-image: url( images/small_cross_for_tags__1pt5px_wide.svg );
+}
+
+
+
+/* ---- individual sort area ---- */
+
+.individual_sort_area__text_area__selected{
+    position: absolute;
+    right: 40px;
+    bottom: 8px;
+    text-align: left;
+    color: rgb( 138, 126, 16) ;
+}
+
+.individual_sort_area__text_area__UNselected{
+    position: absolute;
+    right: 40px;
+    bottom: 8px;
+    text-align: right;
+    color: rgb( 199, 200, 202) ;
+}
+
+
+.individual_sort_area__up_arrow__UNselected{
+    position: absolute;
+    right: 19px;
+    bottom: 9px;
+    width: 11px;
+    height: 11px;
+    background-image: url( images/ogp_irm_sort_upArrow__UNselected.svg );
+}
+
+.individual_sort_area__up_arrow__selected{
+    position: absolute;
+    right: 19px;
+    bottom: 9px;
+    width: 11px;
+    height: 11px;
+    background-image: url( images/ogp_irm_sort_upArrow__selected.svg );
+}
+
+
+.individual_sort_area__down_arrow__UNselected{
+    position: absolute;
+    right: 8px;
+    bottom: 9px;
+    width: 11px;
+    height: 11px;
+    background-image: url( images/ogp_irm_sort_downArrow__UNselected.svg );
+}
+
+.individual_sort_area__down_arrow__selected{
+    position: absolute;
+    right: 8px;
+    bottom: 9px;
+    width: 11px;
+    height: 11px;
+    background-image: url( images/ogp_irm_sort_downArrow__selected.svg );
+}
+
+.individual_sort_area__horizontal_line{
+    position: relative;
+    top: 12px;
+    height: 1px;
+    margin-left: 10px;
+    margin-right: 10px;
+    border-bottom: 1px solid red;
+}
+
+.individual_sort_area__horizontal_line__unselected{
+    border-bottom: 1px solid rgb( 199, 200, 202);
+}
+
+.individual_sort_area__horizontal_line__selected{
+    border-bottom: 1px solid rgb( 138, 126, 16);
+}
+
+
+
+/* -- individual arrangements for different column sort areas -- */
+
+#country_name .sort_area_outer_div{
+    margin-top: 125px;
+}
+
+#commitment_title_text .sort_area_outer_div{
+    margin-top: 170px;
+}
+
+#full_commitment_text .sort_area_outer_div{
+    margin-top: 170px;
+}
+
+
+/* ---- individual value area ---- */
+
+
+.individual_value__text_area{
+    position: absolute;
+    left : 0px;
+    margin-left: 8px;
+    padding-right: 0px;
+    bottom: 0px;
+    height: 11px;
+    /* color: rgb(128, 128, 128); */
+    border: "1px solid rgb( 240, 240, 240 )";
+}
+
+.individual_value__tick_mark_area{
+    position: absolute;
+    right : 8px;
+    bottom: -2px;
+    width: 11px;
+    height: 11px;
+    color: rgb(128, 128, 128);
+    border: "1px solid rgb( 240, 240, 240 )";
+}
+
+.individual_value__cross_mark_area{
+    position: absolute;
+    right : 21px;
+    bottom: -2px;
+    width: 11px;
+    height: 11px;
+    color: rgb(128, 128, 128);
+    border: "1px solid rgb( 240, 240, 240 )";
+}
+
+/* selected tick mark */
+.individual_value__tick_mark_selected{
+    background-image: url(images/tick_mark_selected.svg);
+}
+
+/* UNselected tick mark */
+.individual_value__tick_mark_UNselected{
+    background-image: url(images/tick_mark_UNselected.svg);
+}
+
+/* selected cross mark */
+.individual_value__cross_mark_selected{
+    background-image: url(images/cross_mark_selected.svg);
+}
+
+/* UNselected cross mark */
+.individual_value__cross_mark_UNselected{
+    background-image: url(images/cross_mark_UNselected.svg);
+}
+
+
+
+
+/* ----------- display area thingies --------- */
+
+.display_area_div_outer{
+    position: relative;
+    float: left;
+    width: 100%;
+    min-height: 20px;
+    /* border-bottom: 1px solid rgb(249, 246, 232); */
+}
+
+.display_area_div_outer .countryname{
+    position: absolute;
+    left: 90px;
+    top: 9px;
+    text-align: right;
+    font-size: 11px;
+    color: rgb( 169, 131, 125);
+    /* border: 1px dashed rgb( 210, 210, 235 ); */
+}
+
+
+
+
+/*   for the top area, above the commitments listing   */
+.display_area__inner__area_above_commitments_listing{
+    position: relative;
+    float: left;
+    width: 100%;
+    height: 15px;
+    background-color: rgb( 255, 254, 252 );
+    /* border: 1px dashed rgb( 210, 235, 210); */
+}
+
+/*   inside display area - the commitments listing area   */
+.display_area__inner__commitments_listing_area{
+    position: relative;
+    float: left;
+    width: 100%;
+    min-height: 30px;
+    /* border-top: 1px solid rgb( 219, 230, 232 ); */
+    /* border: 1px dashed rgb( 210, 210, 235 ); */
+}
+
+/*   inside display area - below commitments area   */
+.display_area__inner__area_below_commitments_listing{
+    position: relative;
+    float: left;
+    width: 100%;
+    min-height: 5px;
+    background-color: rgb( 255, 254, 250 );
+    /* border: 1px dashed rgb( 210, 235, 210); */
+}
+
+
+
+/* ------- individual commitment cell ------ */
+
+
+.individual_commitment_ROW{
+    position: relative;
+    left: 0px;
+    top: 0px;
+    width: 100%;
+    height: 26px;
+    /* border : 1px dashed orange; */
+    /* border-bottom: 1px dashed rgb(199, 200, 202); */
+}
+
+.individual_commitment_cell__outer_div{
+    position: absolute;
+    bottom: 0px;
+    width: 50px;
+    height:26px;
+    /* border-right: 1px solid rgb( 226, 227, 228); */
+    border-right: 1px solid rgb(241, 241, 241);
+    /* border-bottom: 1px solid rgb(231, 224, 201); */
+    border-bottom: 1px solid rgb(242, 229, 185);
+}
+
+/* let's see if we can remove the bottom border on the first child cell and let the inner cell take care of it */
+/* specific for the country listing area */
+#table_view__countryNamesEtAl_area__belowHeadersArea__id_name .individual_commitment_cell__outer_div:first-child{
+    position: absolute;
+    bottom: 0px;
+    width: 50px;
+    height: 26px;
+    border-right: 1px solid rgb( 226, 227, 228);
+    border-bottom: 0px solid red;
+}
+
+
+
+/* for country name cells */
+.individual_commitment_cell__country_col_cell__inner_cell{
+    position: absolute;
+    right: 0px;
+    bottom: 0px;
+    padding-right: 9px;
+    /* width: 96px; */
+    width: 136px;
+    height: 17px;
+    text-align: right;
+    line-height: 19px;
+    /* color: rgb( 193, 176, 166 ); */
+    color: rgb(182, 141, 117);
+    /* border-bottom: 1px solid rgb( 199, 200, 202 ); */
+    border-bottom: 1px solid rgb( 199, 200, 202 );
+}
+
+/* for the commitment title and full text cells */
+.individual_commitment_cell__commitment_title_andOr_full_commitment_text__inner_cell{
+    /* set the way the box vs margins/padding sizing works */
+    position: absolute;
+    left: 0px;
+    bottom: 0px;
+    width: auto;
+    height: 17px;
+    line-height: 19px;
+    margin-left: 5px;
+    margin-right: 5px;
+    /* border: 1px dashed rgb( 230, 230, 230 ); */
+    /* importantly */
+    overflow: hidden;
+    /* color: rgb( 186, 182, 173 ); */
+    /* color: rgb(168, 162, 148); */
+    color: rgb(165, 160, 148);
+}
+
+/* for basic value cells */
+.individual_commitment_cell__inner_value_cell_txt_area{
+    position: absolute;
+    left: 1px;
+    bottom: 0px;
+    width: 80%;
+    padding-left: 6px;
+    height: 17px;
+    line-height: 19px;
+    overflow: hidden;
+    /* border: 1px solid rgb( 240, 240, 240 ); */
+}
+
+/* for the tags */
+.individual_tags_cell__inner_tag_value_cell{
+    position: relative;
+    float: left;
+    max-width: 205px;
+    overflow: hidden;
+    height: 17px;
+    padding-left: 5px;
+    padding-right: 5px;
+    margin-left: 5px;
+    margin-right: 5px;
+    margin-top: 8px;
+    line-height: 19px;
+    color: rgb(178, 172, 158);
+    /* border-right: 1px solid rgb( 240, 240, 240);
+    border-bottom: 0px solid white;*/
+    background-color: rgb( 250, 250, 250);
+}
+
+.individual_tags_cell__plusNmoreTags_cell{
+    position: relative;
+    float: left;
+    height: 17px;
+    padding-left: 5px;
+    padding-right: 5px;
+    margin-left: 5px;
+    margin-right: 5px;
+    margin-top: 8px;
+    line-height: 17px;
+    font-style: italic;
+    color: rgb(188, 182, 168);
+    border: 1px dashed rgb( 250, 250, 250);
+    border-bottom: 0px solid white;
+}
+
+
+
+
+/* ----------  summary statistics row ------- */
+
+.individual_summary_statistics_ROW{
+    position: relative;
+    left: 0px;
+    top: 0px;
+    width: 100%;
+    height: 26px;
+    /* border-bottom: 1px dashed rgb(199, 200, 202); */
+}
+
+.summary_statistics_row___country_name__outer_area{
+    position: absolute;
+    right: 0px;
+    bottom: 0px;
+    padding-right: 9px;
+    width: 135px;
+    height: 17px;
+    /* border: 1px dashed rgba( 255, 128, 0, 0.5); */
+}
+
+.summary_statistics_row___country_name__clickbox{
+    position: absolute;
+    left: -12px;
+    bottom: 2px;
+    width: 12px;
+    height: 12px;
+    border: 1px solid rgb(232, 229, 205);
+}
+
+/* process data view edition */
+/* - process data view edition */
+.page_pseudo_body__FOR_VIEWS_process__dom_elmt__class_name .summary_statistics_row___country_name__clickbox{
+    display: none; /* <<<<  process view modification  <<<< */
+    position: absolute;
+    left:0px;
+    bottom: 2px;
+    width: 12px;
+    height: 12px;
+    border: 1px solid rgb(232, 229, 205);
+}
+
+/* table:commitments edition too */
+/* and the same for the commitments - no clickbox please */
+.page_pseudo_body__FOR_VIEWS_commitments__dom_elmt__class_name .summary_statistics_row___country_name__clickbox{
+    display: none; /* <<<<  process view modification  <<<< */
+    position: absolute;
+    left: 0px;
+    bottom: 2px;
+    width: 12px;
+    height: 12px;
+    border: 1px solid rgb(232, 229, 205);
+}
+
+/* and the selected version of the above */
+.summary_statistics_row___country_name__clickbox__SELECTED{
+    /* border: 1px solid rgb(132, 129, 105); */
+    border: 1px solid rgb(220, 220, 220);
+    background-image: url( images/ogp_irm__country__selected_country__icon2.svg );
+    background-repeat: no-repeat ;
+    background-position: 0% 0%;
+}
+
+.summary_statistics_row___country_name__country_name_text{
+    position: absolute;
+    right: 0px;
+    bottom: 0px;
+    padding-right: 9px;
+    /* width: 120px; */
+    width: 160px;
+    height: 17px;
+    font-size: 12px;
+    text-align: right;
+    line-height: 17px;
+    /* color: rgb( 193, 176, 166 ); */
+    color: rgb(152, 101, 77);
+    border-bottom: 1px solid rgb( 199, 200, 202 );
+}
+
+.summary_statistics_row___value_cell__inner_cell{
+
+}
+
+.summary_statistics_row___value_cell__percent_markup{
+    font-size: 9px;
+    color: rgb( 202, 203, 205 );
+}
+
+.summary_statistics_row___value_cell__absolute_numbers_markup{
+    font-size: 11px;
+    color: rgb( 185, 180, 168 );
+}
+
+
+
+
+
+
+
+
+/* ------- colour-value palettes ------- */
+
+
+/* -- column header text colours -- */
+
+.column_header_text__val_no_1{
+    fill: rgb( 219, 181, 159 );
+    color: rgb( 219, 181, 159 );
+}
+
+.column_header_text__val_no_2{
+    fill: rgb( 206, 178, 178 );
+    color: rgb( 206, 178, 178 );
+}
+
+.column_header_text__val_no_3{
+    fill: rgb( 227, 155, 182 );
+    color: rgb( 227, 155, 182 );
+}
+
+.column_header_text__val_no_4{
+    fill: rgb( 152, 192, 201 );
+    color: rgb( 152, 192, 201 );
+}
+
+.column_header_text__val_no_5{
+    fill: rgb( 159, 197, 169 );
+    color: rgb( 159, 197, 169 );
+}
+
+.column_header_text__val_no_6{
+    fill: rgb( 194, 198, 173 );
+    color: rgb( 194, 198, 173 );
+}
+
+.column_header_text__val_no_7{
+    fill: rgb(189, 186, 213);
+    color: rgb(189, 186, 213);
+}
+
+.column_header_text__val_no_8{
+    fill: rgb(219, 191, 145);
+    color: rgb(219, 191, 145);
+}
+
+.column_header_text__val_no_9{
+    fill: rgb(225, 200, 186);
+    color: rgb(225, 200, 186);
+}
+
+
+
+/* ---- values colours ---- */
+/* 7 step colour scale */
+
+
+
+/* -- for the header */
+
+/* old values */
+.header_values__colours_1_of_7{
+    color: rgb( 124, 170, 83 );
+}
+
+.header_values__colours_2_of_7{
+    color: rgb( 124, 155, 178 );
+}
+
+.header_values__colours_3_of_7{
+    color: rgb( 141, 161, 173 );
+}
+
+.header_values__colours_4_of_7{
+    color: rgb( 181, 156, 138 );
+}
+
+.header_values__colours_5_of_7{
+    color: rgb( 224, 161, 145 );
+}
+
+.header_values__colours_6_of_7{
+    color: rgb( 205, 136, 92 );
+}
+
+.header_values__colours_7_of_7{
+    color: rgb( 175, 175, 175 );
+}
+
+
+/* - new
+	  	.header_values__colours_1_of_7{
+	  		color: rgb( 114, 160, 73 );
+	  	}
+
+	  	.header_values__colours_2_of_7{
+	  		color: rgb( 116, 155, 182 );
+	  	}
+
+	  	.header_values__colours_3_of_7{
+	  		color: rgb( 131, 151, 163 );
+	  	}
+
+	  	.header_values__colours_4_of_7{
+	  		color: rgb( 171, 146, 128 );
+	  	}
+
+	  	.header_values__colours_5_of_7{
+	  		color: rgb( 214, 151, 135 );
+	  	}
+
+	  	.header_values__colours_6_of_7{
+	  		color: rgb( 185, 126, 82 );
+	  	}
+
+	  	.header_values__colours_7_of_7{
+	  		color: rgb( 175, 175, 175 );
+	  	}
+*/
+
+
+/* -- for the table cells -- */
+/* - old values
+	  	.tableCell_values__colours_1_of_7{
+	  		color: rgb( 156, 192, 129 );
+	  		background-color: rgb( 247, 250, 245 );
+	  	}
+
+	  	.tableCell_values__colours_2_of_7{
+	  		color: rgb( 148, 195, 185 );
+	  		background-color: rgb( 246, 250, 249 );
+	  		157, 180, 193
+	  	}
+
+	  	.tableCell_values__colours_3_of_7{
+	  		color: rgb( 184, 195, 204 );
+	  		background-color: rgb( 246, 250, 249  );
+	  	}
+
+	  	.tableCell_values__colours_4_of_7{
+	  		color: rgb( 208, 192, 181 );
+	  		background-color: rgb( 252, 251, 249);
+	  	}
+
+	  	.tableCell_values__colours_5_of_7{
+	  		color: rgb( 232, 184, 172 );
+	  		background-color: rgb( 253, 249, 248);
+	  	}
+
+	  	.tableCell_values__colours_6_of_7{
+	  		color: rgb( 216, 167, 135 );
+	  		background-color: rgb( 252, 248, 245 );
+	  	}
+
+	  	.tableCell_values__colours_7_of_7{
+	  		color: rgb( 205, 205, 205 );
+	  		background-color: rgb( 251, 251, 251);
+	  	}
+*/
+
+.tableCell_values__colours_1_of_7{
+    color: rgb( 154, 180, 129 );
+    background-color: rgb( 247, 250, 245 );
+}
+
+.tableCell_values__colours_2_of_7{
+    color: rgb( 157, 171, 192 );
+    background-color: rgb( 246, 250, 249 );
+}
+
+.tableCell_values__colours_3_of_7{
+    color: rgb( 182, 191, 198 );
+    background-color: rgb( 246, 250, 249  );
+}
+
+.tableCell_values__colours_4_of_7{
+    color: rgb( 203, 185, 173 );
+    background-color: rgb( 252, 251, 249);
+}
+
+.tableCell_values__colours_5_of_7{
+    color: rgb( 227, 175, 137 );
+    background-color: rgb( 253, 249, 248);
+}
+
+.tableCell_values__colours_6_of_7{
+    color: rgb( 208, 157, 157 );
+    background-color: rgb( 252, 248, 245 );
+}
+
+.tableCell_values__colours_7_of_7{
+    color: rgb( 205, 205, 205 );
+    background-color: rgb( 251, 251, 251);
+}
+
+
+
+/* -----------  graph view things ----------- */
+/* -----------  graph view things ----------- */
+/* -----------  graph view things ----------- */
+
+
+/* ---- outer area ----- */
+
+#graph_view__outer_area_id{
+    position: absolute;
+    left: 80px;
+    top: 340px;
+    min-width: 1500px;
+    height: 760px;
+    /* border: 1px dashed rgb(238, 238, 236); */
+    font-size: 13px;
+    /* text-align: right; */
+    /* line-height: 24px; */
+    /* color: rgb( 193, 176, 166 ); */
+    color: rgb( 185, 180, 168 );
+}
+
+
+
+/* ---- inner main areas ----- */
+
+/* menu area */
+#graph_view__inner_areas__menu_options_area__id{
+    position: relative;
+    float: left;
+    left: 0px;
+    top: 0px;
+    min-width: 302px;
+    height: 760px;
+    border-right: 1px solid rgb(231, 219, 186);
+}
+
+/* graphing area */
+#graph_view__inner_areas__graphing_area__id{
+    position: absolute;
+    float: left;
+    left: 303px;
+    top: 0px;
+    min-width: 1327px;
+    height: 760px;
+    /* border: 1px dashed rgb(228, 228, 226); */
+}
+
+
+
+
+/* ---- inner area : menu area  ----- */
+
+
+/* - general menu items, valid for all menus - */
+.graph_view__inner_areas__menu_options_area__menu_options__header_item{
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    padding-left: 15px;
+    padding-right: 15px;
+    margin-top: 2px;
+    font-size: 10px;
+    font-weight: 700;
+    line-height: 18px;
+    /* background-color: rgb( 250, 250, 240); */
+    /* color: rgb( 153, 141, 111 ); */
+    color: rgb(181, 169, 140);
+    z-index: 5;
+}
+
+.graph_view__inner_areas__menu_options_area__menu_options__selectable_item__REGION{
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    padding-left: 15px;
+    padding-right: 15px;
+    margin-top: 2px;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    line-height: 18px;
+    /* background-color: rgb( 250, 250, 240); */
+    color: rgb( 168, 162, 148 );
+}
+
+.graph_view__inner_areas__menu_options_area__menu_options__selectable_item__REGION:hover{
+    background-color: rgb( 250, 250, 240);
+}
+
+.graph_view__inner_areas__menu_options_area__menu_options__selectable_item{
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    padding-left: 25px;
+    padding-right: 15px;
+    margin-top: 2px;
+    font-size: 10px;
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    line-height: 18px;
+    /* background-color: rgb( 250, 250, 240); */
+    /* color: rgb( 168, 162, 148 ); */
+    color: rgb( 188, 182, 168 );
+}
+
+.graph_view__inner_areas__menu_options_area__menu_options__selectable_item:hover{
+    background-color: rgb( 250, 250, 240);
+}
+
+.graph_view__inner_areas__menu_options_area__menu_options__selectable_item__SELECTED{
+    /* background-color: rgb( 250, 250, 245); */
+    background-color: rgb( 247, 247, 229);
+}
+
+.graph_view__inner_areas__menu_options_area__menu_options__selectable_item__SELECTED:hover{
+    background-color: rgb( 245, 245, 220 );
+}
+
+
+.graph_view__inner_areas__menu_options_area__displayByMenu__general_drop_down_menu_DOWN_ARROW{
+    position: absolute ;
+    top: 0px;
+    right: 10px;
+    width: 20px;
+    height: 20px;
+    /* background-image: url(images/); */
+}
+
+/* general drop down menu class */
+.graph_view__inner_areas__menu_options_area__menu_options__drop_down_menu_top_part__CLASS{
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    width: 225px;
+    height: 25px;
+    padding-left: 36px;
+    font-size: 11px;
+    /* text-align: right; */
+    line-height: 24px;
+    /* color: rgb( 193, 176, 166 ); */
+    /* color: rgb( 185, 180, 168 ); */
+    color: rgb( 182, 177, 168 );
+    /* border: 1px solid rgb( 230, 231, 242 ); */
+    border: 1px solid rgb( 243, 243, 240 );
+    background-color: rgb( 251, 251, 239 );
+    background-image: url( images/drop_down_menu_down_arrow_lighter.svg );
+    background-position: 98% 4px;
+    background-repeat: no-repeat ;
+}
+
+
+
+/* - text at the top markup - */
+#graph_view__inner_areas__menu_options_area__text_at_top{
+    position: absolute;
+    left: 26px;
+    top: -42px;
+    width: 225px;
+    font-weight: 200;
+    /* border: 1px dashed rgb( 235, 235, 240 ); */
+}
+/* numerator */
+#graph_view__inner_areas__menu_options_area__text_at_top__numerator_txt{
+    font-size: 29px;
+    color: rgb( 126, 27, 94);
+    font-weight: 400;
+}
+/* slash */
+#graph_view__inner_areas__menu_options_area__text_at_top__slash_txt{
+    font-size: 25px;
+    color: rgb( 175, 128, 156);
+    letter-spacing: -2px;
+}
+/* denominator */
+#graph_view__inner_areas__menu_options_area__text_at_top__DEnominator_txt{
+    font-size: 16px;
+    color: rgb( 175, 128, 156);
+}
+
+/* regular text - upper part */
+#graph_view__inner_areas__menu_options_area__text_at_top__regularUpperPart_txt{
+    font-size: 16px;
+    color: rgb( 126, 27, 94);
+}
+
+/* regular text - lower part */
+#graph_view__inner_areas__menu_options_area__text_at_top__regularLowerPart_txt{
+    font-size: 16px;
+    color: rgb( 200, 201, 202 );
+}
+
+
+
+/* -- menu area : Display By Menu -- */
+
+/* the other bits in the menu */
+#graph_view__inner_areas__menu_options_area__displayByMenu__outer_area{
+    z-index: 15;
+}
+
+
+
+#graph_view__inner_areas__menu_options_area__displayByMenu__outer_top_option_static{
+    position: absolute;
+    left: 26px;
+    top: 180px;
+}
+
+#graph_view__inner_areas__menu_options_area__displayByMenu__outer_list_of_menu_options_outer{
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    display: none;
+    position: absolute;
+    left: 26px;
+    top: 204px;
+    width: 225px;
+    min-height: 25px;
+    padding: 10px;
+    padding-top: 12px;
+    padding-left: 21px;
+    border: 1px solid rgb( 220, 221, 222 );
+    background-color: white;
+    z-index: 15;
+}
+
+
+
+/* -- menu area : Values -- */
+
+#graph_view__inner_areas__menu_options_area__Values__outer_area{
+    z-index: 15;
+}
+
+#graph_view__inner_areas__menu_options_area__Values__outer_top_option_static{
+    position: absolute;
+    left: 26px;
+    top: 271px;
+}
+
+#graph_view__inner_areas__menu_options_area__Values__outer_list_of_menu_options_outer{
+    display: none;
+    position: absolute;
+    left: 26px;
+    top: 295px;
+    min-width: 839px;
+    min-height: 506px;
+    border: 1px solid rgb( 220, 221, 222 );
+    z-index: 15;
+    background-color: white;
+}
+
+.graph_view__inner_areas__menu_options_area__Values__drop_down__single_column{
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    position: relative;
+    float: left;
+    width: 190px;
+    min-height: 466px;
+    margin-left: 10px;
+    margin-top: 50px;
+    margin-bottom: 10px;
+}
+
+/* tags header for the values/gcs/aps/tags menu */
+.graph_view__inner_areas__menu_options_area__Values__drop_down__div_for_TAGS_AREA_title{
+    position: absolute;
+    left: 206px;
+    top: 45px;
+    font-size: 11px;
+    font-weight: 700;
+    /* color: rgb( 128, 132, 128 ); */
+    color: rgb(174, 158, 120);
+}
+
+/* and one for the tags items */
+.graph_view__inner_areas__menu_options_area__Values__drop_down__single_column__FOR_TAGS{
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    position: relative;
+    float: left;
+    width: 201px;
+    min-height: 445px;
+    margin-left: 10px;
+    margin-top: 63px;
+    margin-bottom: 25px;
+}
+
+#graph_view__inner_areas__select_none__values_menu{
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    position: absolute;
+    left: 10px;
+    top: 13px;
+    width: 100px;
+    height: 26px;
+    padding-top: 5px;
+    font-size: 10px;
+    text-align: center;
+    font-weight: 600;
+    /* color: rgb( 95,106, 111 ); */
+    color: rgb( 140, 144, 153 );
+    /* background-color: rgb( 252, 251, 236); */
+    background-color: rgb( 253, 251, 238 );
+}
+
+#graph_view__inner_areas__select_all__values_menu{
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    position: absolute;
+    left: 123px;
+    top: 13px;
+    width: 100px;
+    height: 26px;
+    padding-top: 5px;
+    font-size: 10px;
+    text-align: center;
+    font-weight: 600;
+    /* color: rgb( 95,106, 111 ); */
+    color: rgb( 140, 144, 153 );
+    /* background-color: rgb( 252, 251, 236); */
+    background-color: rgb( 253, 251, 238 );
+}
+
+
+
+/* -- menu area : Regions -- */
+
+#graph_view__inner_areas__menu_options_area__regions__outer_area{
+    z-index: 15;
+}
+
+#graph_view__inner_areas__menu_options_area__regions__outer_top_option_static{
+    position: absolute;
+    left: 26px;
+    top: 361px;
+}
+
+#graph_view__inner_areas__menu_options_area__regions__outer_list_of_menu_options_outer{
+    display: none;
+    position: absolute;
+    left: 26px;
+    top: 385px;
+    /* for 4 columns… width: 736px; */
+    width: 555px;
+    height: 445px;
+    border: 1px solid rgb( 220, 221, 222 );
+    z-index: 15;
+    background-color: white;
+}
+
+.graph_view__inner_areas__menu_options_area__regions__drop_down__single_column{
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    position: relative;
+    float: left;
+    width: 171px;
+    height: 420px;
+    margin-left: 10px;
+    margin-top: 51px;
+}
+
+#graph_view__inner_areas__select_none{
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    position: absolute;
+    left: 10px;
+    top: 13px;
+    width: 100px;
+    height: 26px;
+    padding-top: 5px;
+    font-size: 10px;
+    text-align: center;
+    font-weight: 600;
+    /* color: rgb( 95,106, 111 ); */
+    color: rgb( 140, 144, 153 );
+    /* background-color: rgb( 252, 251, 236); */
+    background-color: rgb( 253, 251, 238 );
+}
+
+#graph_view__inner_areas__select_all{
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    position: absolute;
+    left: 123px;
+    top: 13px;
+    width: 100px;
+    height: 26px;
+    padding-top: 5px;
+    font-size: 10px;
+    text-align: center;
+    font-weight: 600;
+    /* color: rgb( 95,106, 111 ); */
+    color: rgb( 140, 144, 153 );
+    /* background-color: rgb( 252, 251, 236); */
+    background-color: rgb( 253, 251, 238 );
+}
+
+/* -- menu area : Sort by -- */
+
+#graph_view__inner_areas__menu_options_area__SortBy__outer_area{
+    z-index: 15;
+}
+
+#graph_view__inner_areas__menu_options_area__SortBy__outer_top_option_static{
+    position: absolute;
+    left: 26px;
+    top: 451px;
+}
+
+#graph_view__inner_areas__menu_options_area__SortBy__outer_list_of_menu_options_outer{
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    display: none;
+    position: absolute;
+    left: 26px;
+    top: 475px;
+    width: 225px;
+    min-height: 25px;
+    padding: 10px;
+    padding-top: 12px;
+    padding-left: 21px;
+    border: 1px solid rgb( 220, 221, 222 );
+    background-color: white;
+    z-index: 15;
+}
+
+
+/*  -- buttons : export as data/pdf -- */
+
+#graph_view__inner_areas__menu_options_area__export_data__button{
+    position: absolute;
+    left: 26px;
+    top: 615px;
+    width: 223px;
+    height: 25px;
+    /* border: 1px solid rgb( 220, 221, 222 ); */
+    border: 1px solid rgb( 248, 244, 227 );
+    background-color: rgb( 254, 252, 236 );
+    /* background-color: rgb( 252, 250, 217 );	*/
+    background-image: url( images/ogp_irm__export_data__icon.svg );
+    background-repeat: no-repeat ;
+    background-position: 98% 0%;
+    cursor: pointer;
+    font-size: 11px;
+    line-height: 26px;
+    color: rgb( 185, 180, 168 );
+    text-align: center;
+}
+
+#graph_view__inner_areas__menu_options_area__export_pdf__button{
+    position: absolute;
+    left: 26px;
+    top: 690px;
+    width: 223px;
+    height: 25px;
+    /* border: 1px solid rgb( 220, 221, 222 ); */
+    border: 1px solid rgb( 255, 248, 232  );
+    background-color: rgb( 255, 248, 239 );
+    font-size: 11px;
+    line-height: 26px;
+    color: rgb( 185, 180, 168 );
+    text-align: center;
+}
+
+
+#graph_view__inner_areas__menu_options_area__reset_settings{
+    position: absolute;
+    left: 26px;
+    top: 690px;
+    width: 223px;
+    height: 25px;
+    /* border: 1px solid rgb( 220, 221, 222 ); */
+    border: 1px solid rgb( 255, 248, 232  );
+    background-color: rgb( 252, 245, 236 );
+    background-image: url(images/ogp_irm__clear_filter_serch_settings__icon.svg );
+    background-repeat: no-repeat;
+    background-position: 98%;
+    font-size: 11px;
+    line-height: 26px;
+    color: rgb( 185, 180, 168 );
+    text-align: center;
+    cursor: pointer;
+}
+
+
+
+
+/* ---- graph view inner area : graphing area  ----- */
+
+
+#graph_view__inner_areas__graphing_area__graph_title_area{
+    position:absolute;
+    left: 122px;
+    top: 5px;
+    min-width: 100px;
+    min-height: 25px;
+    font-size: 25px;
+    font-weight: 200;
+    letter-spacing: 1px;
+    color: rgb(152, 101, 77);
+}
+
+#graph_view__inner_areas__graphing_area__vertical_axis_outer_block{
+    position:absolute;
+    left: 0px;
+    top: 101px;
+    min-width: 113px;
+    min-height: 600px;
+    /* border: 1px dashed rgb( 240, 240, 255); */
+}
+
+#graph_view__inner_areas__graphing_area__actual_graphing_area{
+    position: relative;
+    top: 101px;
+    margin-left: 114px;
+    min-width: 300px;
+    min-height: 600px;
+    /* border-left: 1px dashed rgb( 240, 240, 255); */
+    /* border: 1px dashed rgb( 240, 240, 255); */
+}
+
+/* visible/invisible area for catching mouse-clicks */
+#graph_view__invisible_area_for_catching_mouse_clickis_below_menu{
+    display: none;
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 100%;
+    height: 100%;
+    /* background-color: rgba( 255, 128, 128, 0.10 ); */
+    background-color: rgba( 160, 160, 120, 0.01 );
+    z-index: 12;
+}
+
+
+/* -- bits for the actual graphing area
+        - incl bars etc  -- */
+
+.graph_view__inner_areas__graphing_area__actual_graphing_area__single_bar_graph_outer_element{
+    position: absolute;
+    float: left;
+    left:0px;
+    top: 0px;
+    width: 30px;
+    height: 600px;
+    /* border: 1px dashed rgb( 240, 240, 240); */
+}
+
+.graph_view__inner_areas__graphing_area__actual_graphing_area__single_bar_graph__inner_element__outer_bar{
+    position: absolute;
+    bottom: 0px;
+    left: 10px;
+    width: 10px;
+    height: 350px;
+    /* border: 2.5px solid rgb( 225, 215, 154); */
+    /* border: 2.5px solid rgb(247, 242, 214); */
+    background-color: rgb(247, 242, 214);
+    border-radius: 2px;
+}
+
+.graph_view__inner_areas__graphing_area__actual_graphing_area__single_bar_graph__inner_element__individual_bar_within_the_outer_bar{
+    position: absolute;
+    left: 0px;
+    /* top: 0px; */
+    width: 100%;
+    /* height: 0px; */
+    height: 0px;
+    opacity: 0;
+    background-color: rgba( 200, 200, 200, 0.5);
+    border: 1px solid rgb( 180, 180, 180);
+}
+
+.graph_view__inner_areas__graphing_area__actual_graphing_area__single_bar_graph__inner_element__text_on_top{
+    position: absolute;
+    bottom: 50px;
+    left: 0px;
+    width: 30px;
+    height: 25px;
+    font-size: 10px;
+    text-align: center;
+    color: rgb( 187, 183, 152 );
+    border: 1px dashed rgb( 250, 250, 250);
+}
+
+.graph_view__inner_areas__graphing_area__actual_graphing_area__single_bar_graph__inner_element__text_on_bottom_countryname{
+    position: absolute;
+    bottom: -86px;
+    left: -18px;
+    width: 150px;
+    height: 25px;
+    font-size: 11px;
+    color: rgb(152, 101, 77);
+    border: 1px dashed rgb( 250, 250, 240 );
+    /* rotate */
+    -ms-transform: rotate(45deg); /* IE 9 */
+    -webkit-transform: rotate(45deg); /* Chrome, Safari, Opera */
+    transform: rotate(45deg);
+}
+
+
+
+/* - graphing area Vertical Axis - */
+
+.graph_view__vertical_axis__single_mark__outer{
+    position: absolute;
+    left: 0px;
+    bottom: 0px;
+    height: 15px;
+    /* border: 1px dashed rgb( 240,240, 240); */
+}
+
+.graph_view__vertical_axis__single_mark__inner__text_div{
+    position: absolute;
+    left: 57px;
+    bottom: -5px;
+    width: 40px;
+    height: 15px;
+    font-size: 10px;
+    text-align: right;
+    color: rgb(182, 142, 124);
+    border: 1px dashed rgb( 240,240, 240);
+}
+
+.graph_view__vertical_axis__single_mark__inner__mark_div{
+    position: absolute;
+    /* left: 95px; */
+    margin-left: 103px;
+    bottom: 0px;
+    width: 8px;
+    height: 15px;
+    border: 1px dashed rgb( 240,240, 240);
+    border-bottom: 1px solid rgb(152, 101, 77);
+}
+
+
+
+/* - graphing area LEGEND AREA - */
+
+/* the outer area */
+#graph_view__inner_areas__graphing_legends__id{
+    position: absolute;
+    left: 415px;
+    top: 5px;
+    min-width: 300px;
+    min-height: 75px;
+}
+
+/* single legend item */
+.graph_view__inner_areas__graphing_legends__single_legend_item__outer_area{
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    position: relative;
+    opacity: 0.0;
+    float: left;
+    left: 0px;
+    top: 52px;
+    padding-right: 5px;
+    margin-left: 10px;
+    min-width: 10px;
+    height: 25px;
+    font-size: 11px;
+}
+
+/* single legend item */
+.graph_view__inner_areas__graphing_legends__single_legend_item__inner_area__colour_box{
+    position: relative;
+    float: left;
+    left: 0px;
+    top: 4px;
+    min-width: 4px;
+    height: 4px;
+    margin-right: 4px;
+    border: 1px solid rgb( 150, 150, 150);
+}
+
+/* the text area */
+.graph_view__inner_areas__graphing_legends__single_legend_item__inner_area__legend_text{
+    float: left;
+    font-size: 11px;
+    /* color: rgb(152, 101, 77); */
+}
+
+
+
+/*   TEMPORARY CSS FIXES    */
+/*   TEMPORARY CSS FIXES    */
+/*   TEMPORARY CSS FIXES    */
+
+/* to make the last colunm svg area wide enough to fit the whole title */
+
+#was_annual_progress_report_published .top_header_column{
+    width: 210px !important;
+}
+
+#was_it_done_according_to_schedule .top_header_column{
+    width: 205px !important;
+}
+
+#did_gvmt_provide_two_week_comment_period .top_header_column{
+    width: 210px !important;
+}
+
+.darker_text_for_mouse_overs{
+    color: rgb(148, 141, 112);
+}

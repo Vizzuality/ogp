@@ -1,0 +1,18 @@
+diff --git a/subpathauto.module b/subpathauto.module
+index 4fd2eda..def9f1b 100644
+--- a/subpathauto.module
++++ b/subpathauto.module
+@@ -20,13 +20,6 @@ function subpathauto_menu() {
+  * Implements hook_url_inbound_alter().
+  */
+ function subpathauto_url_inbound_alter(&$path, $original_path, $language) {
+-  // If the current menu item exists at this path, then we should not continue
+-  // processing.
+-  $item = menu_get_item($path);
+-  if (!empty($item) && $item['href'] == $path) {
+-    return FALSE;
+-  }
+-
+   if ($source = subpathauto_lookup_subpath('source', $path, $original_path, $language)) {
+     $path = $source;
+   }

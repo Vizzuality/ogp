@@ -1,0 +1,123 @@
+<?php
+/**
+ * @file
+ * Code for the OGP Summit feature.
+ */
+
+include_once 'ogp_summit.features.inc';
+
+/**
+ * Implements hook_node_view().
+ */
+function ogp_summit_node_view($node, $view_mode, $langcode) {
+  if ($node->type == 'session' || $node->type == 'schedule_item') {
+    if (!empty($node->field_session_timeslot)) {
+      // Add date and time field to session
+      $timeslot_collection = field_collection_item_load($node->field_session_timeslot[LANGUAGE_NONE][0]['target_id']);
+      $timeslot = node_load($timeslot_collection->field_slot_types_time_slot[LANGUAGE_NONE][0]['target_id']);
+      $time = field_view_field('node', $timeslot, 'field_slot_datetime', array('label' => 'hidden'));
+      $node->content['field_slot_datetime'] = $time;
+      $node->content['field_slot_datetime']['#weight'] = -2;
+
+      $room = $timeslot_collection->hostEntity();
+      $node->content['room'] = array(
+        '#weight' => -1,
+        '#markup' => l($room->title, 'node/' . $room->nid),
+      );
+
+      // Add live stream if room is configured for one
+      if (!empty($room->field_livestream_str)) {
+        $livestream_str = $room->field_livestream_str[LANGUAGE_NONE][0]['value'];
+        $node->content['stream'] = array(
+          '#weight' => 15,
+          '#markup' => theme('ogp_summit_livestream', array(
+                               'room' => $room->field_livestream_str[LANGUAGE_NONE][0]['value'], 
+                               'title' => t('Live Stream'),
+                            )),
+        );
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_block_info().
+ */
+function ogp_summit_block_info() {
+  // Live stream block for media page
+  $blocks['press_livestream'] = array(
+    'info' => t('Pressroom Live Stream'),
+    'cache' => DRUPAL_NO_CACHE
+  );
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_view().
+ */
+function ogp_summit_block_view($delta = '') {
+  $block = array();
+
+  switch ($delta) {
+    case 'press_livestream':
+      $block['subject'] = t('Press Room Live Stream');
+      $block['content'] = theme('ogp_summit_livestream', array('room' => 'pressroom'));
+      break;
+    
+  }
+  return $block;
+}
+
+/**
+ *  Return a live streaming block. $vars['room'] is a string ready to be plugged into
+ *  jwplayer source urls, such as "windsor"
+ */
+function theme_ogp_summit_livestream($variables) {
+  drupal_add_js(libraries_get_path('jwplayer') . '/jwplayer.js', array('type' => 'file', 'preprocess' => FALSE));
+  drupal_add_js('jwplayer.key="d8n/GV6cZxgxVAHoTub4l/Zf3vQvZo+TlDImGGXYC/I=";', array('type' => 'inline'));
+  // drupal_add_css('#player {height:100%; width:100%; padding:0; margin:-3px;}', array('type' => 'inline'));
+  $room = $variables['room'];
+  $title = $variables['title'];
+  global $base_url;
+  $bg = variable_get('ogp_summit_stream_bg', $base_url . '/' . drupal_get_path('module', 'ogp_summit') . '/stream_bg.png');
+
+  $output = '';
+  // If a title variable was supplied, add with H2. This is used when this is being added to a node array rather than a block.
+  if ($title) {
+    $output .= '<h2 class="title livestream">' . $title . '</h2>';
+  }
+  $output .= <<<EOF
+<div id='player'></div>
+<script type='text/javascript'>
+jwplayer('player').setup({
+   'autostart': 'false',
+   'controlbar': 'over',
+   'ga': {},
+   'rtmp': {
+        subscribe: true
+    },
+   'width': "100%",
+   'aspectratio': "16:9",
+   'primary': "flash",
+   'image': "$bg",
+   'sources': [{ 
+            file: "rtmp://fml.0979.edgecastcdn.net/200979/live/flv:{$room}flash"
+        },{
+            file: "http://wpc.0979.edgecastcdn.net/hls-live/200979/live/kinuralive/{$room}.m3u8"
+        }],
+    });
+</script>
+EOF;
+  return $output;
+}
+
+/**
+ * Implements hook_theme().
+ */
+function ogp_summit_theme($existing, $type, $theme, $path) {
+  return array(
+    'ogp_summit_livestream' => array(
+      'variables' => array('room' => NULL, 'title' => NULL),
+    ),
+  );
+}

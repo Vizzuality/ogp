@@ -1,0 +1,57 @@
+.l-page {
+  padding: 40px 0 80px;
+
+  &.-tall {
+    padding: 60px 0;
+  }
+
+  &.-short {
+    padding-top: 0;
+  }
+
+  // generic styles
+  .content-header {
+    margin-bottom: 50px;
+
+    p {
+      font-size: 15px;
+      color: $color-5;
+    }
+  }
+
+  .text {
+
+    &.-section-title {
+      margin-bottom: 40px;
+    }
+  }
+
+  .media {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .tiles-container {
+    position: relative;
+    min-height: 400px;
+  }
+
+  // content specific styles
+  .story-detail {
+    text-align: right;
+  }
+
+  .tab-container {
+
+    &.-hidden {
+      display: none;
+    }
+  }
+
+  .content-container {
+    position: relative;
+    min-height: 300px;
+  }
+}

@@ -1,0 +1,69 @@
+// Fonts
+@import 'https://fonts.googleapis.com/css?family=Open+Sans:300,400,600,700,800|Rubik:300,400,500,700';
+
+$font-family-1: 'Rubik', sans-serif;
+$font-family-2: 'Open Sans', sans-serif;
+
+// $font-size-tiny: 10px;
+$font-size-xxsmall: 12px;
+$font-size-xsmall: 13px;
+$font-size-small: 15px;
+$font-size-small-medium: 20px;
+$font-size-medium: 30px;
+$font-size-x-medium: 40px;
+$font-size-big: 60px;
+$font-size-huge: 120px;
+
+$font-weight-light: 300;
+$font-weight-normal: 400;
+$font-weight-semi-bold: 500;
+$font-weight-bold: 700;
+
+// Colors
+$color-1: #66bc29;
+$color-2: #0099ff;
+$color-3: #f1f4f5;
+$color-4: #fff;
+$color-5: #333;
+$color-6: #727272;
+$color-22: #373534;
+
+//Map colors
+$color-7: #efefef;
+$color-8: #73b31f;
+
+//Bread Crumb colors
+$color-9: #d7d7d7;
+
+//Pager colors
+$color-10: #e2e5e5;
+$color-11: #bddd94;
+
+//Commitment Grid
+$color-12: #f63;
+$color-13: #ffa200;
+
+//Country bars
+$color-14: #007ed5;
+$color-15: #0583da;
+
+// legend map colors
+$color-16: #f5cd96;
+$color-17: #f8bb00;
+$color-18: #f09800;
+$color-19: #795711;
+$color-20: #ffa200;
+$color-21: #e8ecee;
+
+// Legend map color 2ºVersion
+$implementing: #2d4f00;
+$developing: #66bc29;
+$inactive: #cc3300;
+
+/* SCREENS */
+$screen-xs: 320px;
+$screen-s: 540px;
+$screen-m: 768px;
+$screen-l: 1024px;
+$screen-xl: 1280px;
+$screen-xxl: 2000px;

@@ -1,0 +1,15 @@
+.c-data-number {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-direction: column;
+  text-align: center;
+
+  &.-width-padding {
+    padding: 0 25px 20px;
+  }
+
+  .-small-bold {
+    margin-top: 0;
+  }
+}

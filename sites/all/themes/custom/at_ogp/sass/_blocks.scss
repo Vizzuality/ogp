@@ -1,0 +1,671 @@
+.block {
+  margin-bottom: 20px;
+}
+
+.block-title {
+  margin: 1em 0 .5em;
+}
+
+.block-content {
+  ul,
+  ol {
+    padding: 0 0 0 15px;
+  }
+
+  li {
+    margin: 0;
+    padding: 0;
+  }
+}
+
+#block-system-user-menu {
+  margin:13px 0 0 0;
+  a {
+    color:#fff;
+    font-size:.9em;
+    &:hover {
+      color:$pop;
+      text-decoration:none;
+    }
+  }
+}
+
+#block-block-5 {
+  @include wide-screen;
+  h2.block-title {
+    color:#fff;
+  }
+  .block-content {
+    margin:0 5% 25px;
+  }
+}
+
+#block-block-7 {
+  z-index:4;
+  position:relative;
+  padding-bottom:25px;
+  h2.block-title {
+    font-size:2.7em;
+    text-align:center;
+    color:$pop;
+    font-weight:100;
+    position: relative;
+    background: transparent;
+    z-index:5;
+    margin:0;
+    padding:30px 0 20px;
+  }
+}
+
+.not-front #block-block-7 {
+
+  &:after {
+    top: 100%;
+    border: solid transparent;
+    content: " ";
+    height: 0;
+    width: 0;
+    position: absolute;
+    pointer-events: none;
+    z-index: 10;
+  }
+  &:after {
+    border-color: rgba(255, 255, 255, 0);
+    border-top-color: #fff;
+    border-width: 26px;
+    left: 50%;
+    margin-left: -26px;
+    @include transform(scalex(1.5));
+  }
+}
+
+#block-block-15 {
+  z-index:4;
+  position:relative;
+  .block-inner {
+    text-align:center;
+    padding-bottom:25px;
+  }
+  &:after {
+    top: 100%;
+    border: solid transparent;
+    content: " ";
+    height: 0;
+    width: 0;
+    position: absolute;
+    pointer-events: none;
+  }
+  &:after {
+    border-color: rgba(255, 255, 255, 0);
+    border-top-color: #ffffff;
+    border-width: 26px;
+    left: 50%;
+    margin-left: -26px;
+    @include transform(scalex(1.5));
+  }
+}
+
+// Front page map quicktabs block.
+#block-quicktabs-front-page-maps {
+
+  .quicktabs_main {
+    min-height: 200px;
+    position: relative;
+  }
+
+  .block-inner {
+    margin: 0;
+  }
+
+  .item-list {
+    position: relative;
+    background: $pop;
+    padding: 5px 0;
+
+    ul.quicktabs-tabs {
+      max-width: 960px;
+      height: auto;
+      overflow: hidden;
+      text-align: center;
+      background: none;
+      padding: 0;
+      margin: 0 auto;
+
+      li {
+        float: none;
+        display: inline-block;
+        min-width: 190px;
+        position: relative;
+        background: none;
+        padding: 0;
+        margin: 0;
+
+        a {
+          background: none;
+          color: #fff;
+          font-weight: normal;
+          font-size: 14px;
+          padding: 10px 15px;
+
+          &:hover {
+            background:darken( $pop, 8% );
+          }
+        }
+
+        &.active a {
+          background:darken( $pop, 16% );
+        }
+
+        .ajax-progress-throbber {
+          position: absolute;
+          top: -1px;
+          left: 50%;
+          margin-left: -10px;
+        }
+      }
+    }
+
+    &:after {
+      top: 100%;
+      border: solid transparent;
+      content: " ";
+      height: 0;
+      width: 0;
+      position: absolute;
+      pointer-events: none;
+      z-index: 10;
+    }
+    &:after {
+      border-color: rgba(255, 255, 255, 0);
+      border-top-color: $pop;
+      border-width: 26px;
+      left: 50%;
+      margin-left: -26px;
+      @include transform(scalex(1.5));
+    }
+  }
+}
+
+#block-ogp-map-country-map,
+#block-ogp-map-country-sc,
+#block-ogp-map-country-apc {
+
+  .block-inner {
+    margin: 0;
+  }
+
+  #country_map_title,
+  #country_sc_title,
+  #country_apc_title {
+    font-size: 14px;
+  }
+
+  .map-wrapper {
+    background:$dark;
+    position:relative;
+
+    .map-content {
+      margin: 0 auto;
+    }
+
+    .map-legend-wrapper {
+      width: 100%;
+      position:absolute;
+      bottom:0;
+      left:0;
+      line-height:1em;
+      right:0;
+      z-index:10;
+      padding: 10px 0 5px;
+
+      .map-legend {
+        font-family:$sans-serif-small;
+        font-size:.7em;
+        display:block;
+        position:relative;
+        bottom:auto;
+        text-align: center;
+
+        .legend-item {
+          display: inline-block;
+          float: none;
+          margin-bottom: 5px;
+
+          .legend-color {
+            display:inline-block;
+            position:relative;
+            vertical-align:middle;
+          }
+
+          .legend-label {
+            display:inline-block;
+            font-weight:normal;
+            margin:0 0 0 10px;
+          }
+        }
+      }
+    }
+  }
+}
+#block-ogp-activity-stream-ogp-rss {
+  text-align: center;
+
+  & > a {
+    display: inline-block;
+    line-height: 34px;
+    color: #fff;
+    text-decoration: none;
+    padding: 5px 10px 5px 45px;
+    background: url(images/rss.png) no-repeat 10px center $pop;
+
+    &:hover {
+      text-decoration:none;
+      background-color: lighten( $pop, 8% );
+    }
+  }
+} 
+
+#block-views-country-header-block {
+  display:block;
+  margin:0;
+  .block-inner {
+    margin:0;
+    position:relative;
+    text-align:center;
+  }
+  .view-content {
+    .views-field-field-country-cover-photo img { 
+      z-index:1;
+    }
+    .views-field-title-field {
+      position:absolute;
+      left:0;
+      right:0;
+      top:45%;
+      text-align:center;
+      z-index:5;
+      h1 {
+        background:rgba(0,0,0,.6);
+        padding:15px 15px 10px;
+        color:#fff;
+        font-size:4em;
+        font-weight:100;
+        display:inline-block;
+      }
+    }
+  }
+}
+
+
+.meeting-block-menu,
+#block-ogp-country-nav {
+  background:$pop;
+  margin:0;
+  height:45px;
+  z-index:5;
+  .block-inner {
+    margin:0;
+  }
+  ul.menu,
+  ul.ogp-country-nav {
+    margin:0;
+    padding:0;
+    li {
+      list-style-type:none;
+      display:inline;
+      margin:0;
+      a {
+        color: #FFFFFF;
+        text-align:center;
+        display:inline-block;
+        vertical-align:middle;
+        font-weight:normal;
+        &:hover {
+          background:darken( $pop, 8% );
+          color:#fff;
+          text-decoration:none; 
+        }
+        &.active {
+          background:darken( $pop, 16% );
+          color:#fff;
+          text-decoration:none;
+        }
+      }
+    }
+  }
+}
+
+.meeting-block-menu {
+
+  li a {
+    width:13%;
+  }
+
+  .menu-block-wrapper {
+    max-width: 960px;
+    margin: 0 auto;
+  }
+}
+
+.meeting-block-menu,
+#block-ogp-country-nav {
+  
+  ul a {
+    font-size: 18px;
+    line-height: 45px;
+    height: 45px;
+    padding: 0;
+  }
+}
+
+#block-ogp-country-nav li a {
+  width:16%;
+}
+
+#block-ogp-country-overview {
+  .block-content {
+    background:$nublack;
+    padding-top:15px;
+  }
+  ul.ogp-country-overview {
+    margin:0;
+    padding:0;
+    list-style-type:none;
+    li {
+      margin:15px;
+      color:#fff;
+      padding:1px 0 4px 40px;
+      border:none;
+      a {
+        color:#fff;
+        border:none;
+      }
+      &.country-overview-website {
+        @include blue-sprite(link);
+      }
+      &.country-overview-member-since {
+        @include blue-sprite(member);
+      }
+      &.country-overview-current_status,
+      &.country-overview-commitments-checkbox-yes {
+        @include blue-sprite(check);
+      }
+      &.country-overview-latest-report {
+        @include blue-sprite(commitment);
+      }
+      &.country-overview-action-plan,
+      &.country-overview-report-download {
+        @include blue-sprite(download);
+        .file img {
+          display:none;
+        }
+      }
+      .field-item {
+        border:none;
+      }
+      &:hover, a, a:hover {
+        background-color:transparent;
+      }
+    } 
+
+    li.last {
+      margin:5px 0 0;
+      padding:0;
+      a {
+        background:$pop;
+        color:#fff;
+        padding:8px 15px;
+        display:block;
+        text-align:center;
+        text-transform:uppercase;
+        &:hover {
+          text-decoration:none;
+          background:darken( $pop, 8% );
+        }
+      }
+    }
+    li.country-overview-commitments-delivered {
+      font-size:26px;
+      line-height:1em;
+      padding:0;
+      margin:15px 15px 0;
+      display:inline-block;
+      vertical-align:middle;
+      background:none;
+      .country-commitments-delivered {
+        @include border-radius(3px);
+        @include background-image(linear-gradient($pop 50%, #0C80D2 50%));
+        float: left;
+        font-size: 46px;
+        height: 50px;
+        min-width:35px;
+        line-height: 50px;
+        margin: 0 8px 0 0;
+        text-align: center;
+        padding:0 10px 0 6px;
+      }
+      &:hover, a, a:hover {
+        background:none;
+        background-image:none;
+        background-color:transparent;
+      }
+      .country-overview-website {
+        clear:both;
+      }
+    }
+  }
+}
+
+#block-views-ogp-activity-feed-block,
+#block-views-ogp-activity-feed-block-1,
+#block-views-ogp-activity-feed-block-2 {
+  .view-content:before {
+    border-left:1px solid lighten($smoke, 20%);
+    position:absolute;
+    top:10px;
+    left:30px;
+    height:88%;
+    z-index:0;
+    content: "";
+  }
+  .view-ogp-activity-feed {
+    position:relative;
+    height:auto;
+  }
+  .views-row {
+    display:table;
+    margin-bottom:16px;
+    z-index:3;
+    position:relative;
+  }
+  .node {
+    height:57px;
+    padding-left:75px;
+    overflow:visible;
+    display:table-cell;
+    vertical-align:middle;
+    &.node-commitment {
+      @include circle-sprite(commitment);
+    }
+    &.node-link {
+      @include circle-sprite(link);
+    }
+    &.node-blog-post {
+      @include circle-sprite(blog);
+    }
+    &.node-tweet {
+      @include circle-sprite(tweet);
+    }
+  }
+  #views_infinite_scroll_button {
+    position:relative;
+    z-index:3;
+    a {
+      @include circle-sprite(more);
+      display: block;
+      font-weight: normal;
+      height: 52px;
+      padding-top: 20px;
+      text-indent: 75px;
+      color:$smoke;
+      &:hover {
+        color:darken( $smoke, 20% ) 
+      }
+    }
+  }
+}
+// Activity Stream horizontal.
+
+#block-views-ogp-activity-feed-block-3,
+#block-views-ogp-activity-feed-block-4 {
+  .views-row-col {
+    @include faux-four-col;
+    margin-bottom: 1em;
+    .view-mode-activity_stream {
+      margin: 0;
+      padding: 0 15px 15px;
+    }
+    .node i {
+      margin: 0 auto;
+      width: 65px;
+      height: 65px;
+      display: block;
+    }
+    .node-commitment i {
+      @include circle-sprite(commitment);
+    }
+    .node-link i {
+      @include circle-sprite(link);
+    }
+    .node-blog-post i {
+      @include circle-sprite(blog);
+    }
+    .node-tweet i {
+      @include circle-sprite(tweet);
+    }
+  }
+  #views_infinite_scroll-ajax-loader,
+  .views-row-first {
+    clear: both;
+  }
+  #views_infinite_scroll_button {
+    clear: both;
+    border-bottom: 1px solid #eee;
+    display: block;
+    margin: 1em auto;
+    position: relative;
+    text-align: center;
+    a {
+      background: #fff;
+      padding: 3px;
+      position: absolute;
+      top: -12px;
+      left: 45%;
+      &:hover,
+      &:focus {
+        text-decoration:none;
+      }
+      &:before {
+        content: "+";
+        color: #fff;
+        background: #ccc;
+        font-weight: bold;
+        padding: 0px 5px;
+        margin-right: 5px;
+        @include border-radius(14px);
+      }
+    }
+  }
+}
+
+#block-views-blog-category-achive-block,
+#block-menu-block-ogp-page-1,
+#block-views-country-blog-content-block,
+#block-views-ef62ad50c9cf51f742d6778835e0782e {
+  h2.block-title {
+    margin:1em 0 10px;
+    font-size:1.7em;
+    line-height:1.15em;
+  }
+}
+
+#block-views-country-blog-content-block {
+  .views-row {
+    margin:0 0 10px;
+  }
+  .views-field-title {
+    a {
+      font-size:1.25em;
+      color:$nublack;
+    }
+  }
+  .views-field-created {
+    color:$smoke;
+  }
+}
+
+/*
+ * Working group blocks
+ */
+#block-views-working-group-content-block {
+  width: 240px;
+  float: right;
+  margin-left: 10px;
+  padding-left: 10px;
+  background:$light;
+
+  h2.block-title {
+    font-size: 1.4em;
+    line-height: 1.4em;
+  }
+  .view-content {
+    padding:0 15px 10px 10px;
+  }
+}
+
+#block-ogp-working-groups-page-add {
+  a {
+    @include sassy-button-gradient("matte", $pop, $accent, #fff, "none", true);
+    @include sassy-button-structure(5px, 1.3em, 6px 12px);
+  }
+  .contextual-links-wrapper {
+    display:none;
+  }
+}
+
+#block-views-ogp-opengov-tweets-block-1 {
+  .view-ogp-opengov-tweets {
+    background:lighten($pop,40%);
+  }
+  .view-content {
+    padding:10px;
+  }
+  .twitter-follow-link {
+    text-align:right;
+    margin-right:10px;
+  }
+}
+
+#block-bean-london-2013 {
+  margin:0 -10px;
+}
+
+.meeting-block-title-image {
+  margin: 0 -10px;
+}
+
+//Spanish legend
+.i18n-es #block-ogp-map-country-map {
+  #map-legend .legend-color {
+    display:block;
+    margin:0 auto;
+  }
+}
+
+.file-video-youtube {
+  text-align: center;
+}
+
+#block-views-related-content-block {
+  @include sidebar-list;
+}

@@ -1,0 +1,64 @@
+;----------// Theme Information
+
+name        = OGP Theme New 2
+description = Adaptive Theme subtheme for Open Government Partnership website
+core        = 7.x
+base theme  = adaptivetheme
+release     = 7.x-3.x
+engine      = phptemplate
+screenshot  = screenshot.png
+
+
+;----------// Stylesheets
+
+stylesheets[screen][] = css/foundation.css
+stylesheets[screen][] = css/cartodb.css
+stylesheets[screen][] = css/select2.min.css
+stylesheets[screen][] = css/main.css
+
+;----------// Regions Delete
+;regions[contentLogin] = Login
+;regions[contentStories] = StoriesPage
+;regions[contentStoryDetail] = StoryDetail
+;regions[contentPagePolicy] = PagePolicyContent
+;regions[contentTerms] = TermsContent
+;regions[contentModelCommitmentContent] = ModelCommitmentContent
+;regions[contentModelStarredContent] = ModelStarredContent
+;regions[contentSubmitStories] = SubmitStoryContent
+;regions[contentResources] = Resource
+;regions[contentCountries] = CountriesPage
+;regions[contentAbout] = AboutPage
+;regions[contentCountryTop] = countryInfoTop
+;regions[contentCountry] = countryInfo
+;regions[contentCountryActivity] = countryInfoActivity
+;regions[contentCountryBanner] = countryInfoBanner
+
+;----------// HERE NEWS REGIONS
+
+regions[topbar] = TopBar
+regions[content] = Content
+regions[contentTheme] = ThemesPage
+regions[contentThemeContent] = ThemeContent
+regions[contentThemeResult] = ThemeResultGrid
+regions[contentSocialFeed] = SocialFeed
+regions[footer] = Footer
+
+
+;----------// Scripts
+
+; ie_scripts[lte IE 8][] = js/my-script.js
+scripts[] = scripts/jquery.browser.min.js
+scripts[] = scripts/slick.min.js
+scripts[] = scripts/queue.v1.min.js
+scripts[] = scripts/d3.min.js
+scripts[] = scripts/cartodb.js
+scripts[] = scripts/select2.full.min.js
+scripts[] = scripts/getIso.js
+scripts[] = scripts/moment.js
+scripts[] = scripts/bundle.js
+
+;----------// Site Features
+
+features[] = logo
+features[] = name
+features[] = favicon

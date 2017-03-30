@@ -1,0 +1,91 @@
+.views-field-field-upload,
+.view-ogp-dkan-page-referenced-documents .views-field,
+.field-name-field-country-ap-pdf,
+span.file {
+	a {
+		&:hover {
+			text-decoration: none;
+		}
+		&:before {
+			font-family: 'dkan-flaticon';
+			font-size: 2em;
+			speak: none;
+			font-style: normal;
+			font-weight: normal;
+			font-variant: normal;
+			text-transform: none;
+			line-height: 1;
+			vertical-align: middle;
+			-webkit-font-smoothing: antialiased;
+			-moz-osx-font-smoothing: grayscale;
+			content: "\e6a1";
+	  	color:#0099ff;
+		}
+	}
+
+	a[data-format=txt]:before {
+	  content: "\e6a1";
+	  color:#0099ff;  
+	}
+	a[href$=doc]:before {
+		content: "\e62e";
+		color: #2F4994;
+	}
+	a[href$=docx]:before {
+		content: "\e62f";
+		color: #476096;
+	}
+	a[href$=api]:before {
+	  content: "\e608";
+	  color: #ec96be;
+	}
+	a[href$=csv]:before {
+	  content: "\e622";
+	  color: #dfb100;
+	}
+	a[href$=html]:before {
+	  content: "\e645";
+	  color: #55a1ce;
+	}
+	a[href$=jpg]:before,
+	a[href$=jpeg]:before {
+	  content: "\e64f";
+	  color: #d14b9b;
+	}
+	a[href$=json]:before {
+	  content: "\e651";
+	  color: #ef7100;
+	}
+	a[href$=pdf]:before {
+	  content: "\e67b";
+	  color: #e0051e;
+	}
+	a[href$=png]:before {
+	  content: "\e67f";
+	  color: purple;
+	}
+	a[href$=rdf]:before {
+	  content: "\e68a";
+	  color: #0b4498;
+	}
+	a[href$=txt]:before {
+	  content: "\e6a1";
+	  color:#70C6E5;  
+	}
+	a[href$=xls]:before {
+	  content: "\e6af";
+	  color: #2db55d;  
+	}
+	a[href$=xlsx]:before {
+	  content: "\e6b0";
+	  color: #0c993d;  
+	}
+	a[href$=xml]:before {
+	  content: "\e6b1";
+	  color: #ef7100;  
+	}
+	a[href$=zip]:before {
+	  content: "\e6b3";
+	  color: #686868;  
+	}
+}

@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the OGP Case Study feature.
+ */
+
+include_once 'ogp_case_study.features.inc';

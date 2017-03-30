@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the OGP Meeting Minutes feature.
+ */
+
+include_once 'ogp_minutes.features.inc';

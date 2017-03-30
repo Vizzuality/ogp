@@ -1,0 +1,68 @@
+.beanslide .item-list ul,
+.beanslide .item-list ul li {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.beanslide .item-list .field-type-image,
+.beanslide .item-list .field-type-image img,
+.beanslide .item-list .field-type-image figure {
+  border: none;
+  margin: 0;
+  padding: 0;
+  float: none;
+}
+.beanslide .caption {
+  position: absolute;
+  background: rgb(0, 0, 0);
+  background: rgba(0, 0, 0, 0.6);
+  padding: 10px;
+  color: #fff;
+  text-align: left;
+  top: 10px;
+  left: 10px;
+}
+.beanslide .field-name-field-slide-headline {
+  font-size: 2em;
+}
+.beanslide .rslides_tabs {
+  background: #333;
+  font-size: 18px;
+  list-style: none;
+  margin: 0 auto 50px;
+  padding: 10px 0;
+  text-align: center;
+  width: 100%;
+}
+.beanslide .rslides_tabs li {
+  display: inline;
+  float: none;
+  margin-right: 1px;
+}
+.beanslide .rslides_tabs a {
+  width: auto;
+  line-height: 20px;
+  padding: 9px 20px;
+  height: auto;
+  background: transparent;
+  display: inline;
+  color: #fff;
+  text-shadow: 1px 2px 2px rgba(0, 0, 0, 0.5);
+}
+.beanslide .rslides_tabs .rslides_here a {
+  text-decoration: underline;
+}
+.beanslide .rslides_nav {
+  position: absolute;
+  bottom: 15px;
+  font-size: 3em;
+  font-weight: bolder;
+  color: #fff;
+  text-decoration: none;
+}
+.beanslide .rslides_nav.prev {
+  left: 45%;
+}
+.beanslide .rslides_nav.next {
+  right: 45%;
+}

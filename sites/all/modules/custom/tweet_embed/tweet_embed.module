@@ -1,0 +1,239 @@
+<?php
+/**
+ * @file
+ * Provides an input filter to embed tweets via the Embedded Tweet API
+ */
+
+define('TWEET_EMBED_EMBED_URL', 'https://api.twitter.com/1/statuses/oembed.json');
+
+/**
+ * Implements hook_menu(). 
+ */
+function tweet_embed_menu() {
+  $items['admin/config/services/tweet_embed'] = array(
+    'title' => 'Tweet Embed',
+    'description' => 'Configure the default settings for the Tweet Embed input filter.',
+    'page callback' => 'drupal_get_form',
+    'page arguments' => array('tweet_embed_admin'),
+    'access arguments' => array('administer tweet_embed settings'),
+    'type' => MENU_NORMAL_ITEM,
+  );
+
+  return $items;
+}
+
+/**
+ * Implements hook_permission().
+ */
+function tweet_embed_permission() {
+  return array(
+    'administer tweet_embed settings' => array(
+      'title' => t('Administer Tweet Embed Settings'),
+      'description' => t('Permits access to administer Tweet Embed deafult settings.'),
+    ),
+  );
+}
+
+/**
+ * Tweet Embed admin settings callback.
+ */
+function tweet_embed_admin() {
+  $form = array();
+
+  $form['tweet_embed_intro'] = array(
+    '#type' => 'markup',
+    '#markup' => t('<p>Use the form below to configure the default settings for the Tweet Embed module. You can override each of these defaults when embedding a tweet within your content.</p>'),
+  );
+
+  $form['tweet_embed_maxwidth'] = array(
+    '#title' => t('Default "maxwidth" setting'),
+    '#description' => t('The maximum width in pixels that the embed should be rendered at. This value should be between 250 and 550 pixels.'),
+    '#type' => 'textfield',
+    '#default_value' => variable_get('tweet_embed_maxwidth', '500'),
+  );
+
+  $form['tweet_embed_hide_media'] = array(
+    '#title' => t('Default "hide_media" setting'),
+    '#description' => t('Specifies whether the embedded Tweet should automatically expand images which were uploaded. When set to true, images will not be expanded.'),
+    '#type' => 'select',
+    '#options' => drupal_map_assoc(array('true' => t('true'), 'false' => t('false'))),
+    '#type' => 'select',
+    '#default_value' => variable_get('tweet_embed_hide_media', 'false'),
+  );
+
+  $form['tweet_embed_hide_thread'] = array(
+    '#title' => t('Default "hide_thread" setting'),
+    '#description' => t('Specifies whether the embedded Tweet should automatically show the original message in the case that the embedded Tweet is a reply. When set to either true the original Tweet will not be shown.'),
+    '#type' => 'select',
+    '#options' => drupal_map_assoc(array('true' => t('true'), 'false' => t('false'))),
+    '#type' => 'select',
+    '#default_value' => variable_get('tweet_embed_hide_thread', 'false'),
+  );
+
+  $form['tweet_embed_omit_script'] = array(
+    '#title' => t('Default "omit_script" setting'),
+    '#description' => t('Specifies whether the embedded Tweet HTML should include a script element pointing to widgets.js. In cases where a page already includes widgets.js, setting this value to true will prevent a redundant script element from being included. When set to true, the script element will not be included in the embed HTML, meaning that pages must include a reference to widgets.js manually.'),
+    '#type' => 'select',
+    '#options' => drupal_map_assoc(array('true' => t('true'), 'false' => t('false'))),
+    '#type' => 'select',
+    '#default_value' => variable_get('tweet_embed_omit_script', 'false'),
+  );
+
+  $form['tweet_embed_align'] = array(
+    '#title' => t('Default "align" setting'),
+    '#description' => t('Specifies whether the embedded Tweet should be left aligned, right aligned, or centered in the page. Defaults to none, meaning no alignment styles are specified for the Tweet.'),
+    '#type' => 'select',
+    '#options' => drupal_map_assoc(
+       array(
+         'left' => t('left'),
+         'right' => t('right'),
+         'center' => t('center'),
+         'none' => t('none'),
+       )
+    ),
+    '#type' => 'select',
+    '#default_value' => variable_get('tweet_embed_align', 'none'),
+  );
+
+  $form['tweet_embed_lang'] = array(
+    '#title' => t('Default "lang" setting'),
+    '#description' => t('Language code for the rendered embed. This will affect the text and localization of the rendered HTML.'),
+    '#type' => 'textfield',
+    '#default_value' => variable_get('tweet_embed_lang', 'en'),
+  );
+
+  return system_settings_form($form);
+}
+
+/**
+ * Validation for the Tweet Embed settings form.
+ */
+function tweet_embed_admin_validate($form, &$form_state) {
+  $maxwidth = $form_state['values']['tweet_embed_maxwidth'];
+  $langcode = $form_state['values']['tweet_embed_lang'];
+
+  if (!is_numeric($maxwidth)) {
+    form_set_error('tweet_embed_maxwidth', t('You must enter an integer for the maxwidth setting.'));
+  }
+
+  if ($maxwidth < 250 || $maxwidth > 550) {
+    form_set_error('tweet_embed_maxwidth', t('You must enter an integer between 250 and 550 for the maxwidth setting.'));
+  }
+
+  if (!$langcode) {
+    form_set_error('tweet_embed_lang', t('You must enter in a default language code.'));
+  }
+}
+
+/**
+ * Implements hook_filter_info().
+ */
+function tweet_embed_filter_info() {
+  $filters = array();
+  $filters['tweet_embed'] = array(
+    'title' => t('Twitter Embed Filter'),
+    'description' => t('This input filter allows users to drop in links to twitter statuses and have them automatically transformed into an Embedded Tweet.'),
+    'settings callback' => '_tweet_embed_filter_settings',
+    'process callback' => '_tweet_embed_filter_process',
+  );
+
+  return $filters;
+}
+
+/**
+ * Callback function for tweet_embed filter.
+ */
+function _tweet_embed_filter_settings($form, $form_state, $filter, $format, $defaults) {
+  $settings['tweet_embed'] = array(
+    '#type' => 'markup',
+    '#markup' => t('Default settings for this filter can be managed !link.',
+      array('!link' => l(t('here'), 'admin/config/services/tweet_embed'))),
+  );
+
+  return $settings;
+}
+
+/**
+ * Process function for tweet_embed filter.
+ */
+function _tweet_embed_filter_process($text, $filter, $format, $langcode, $cache, $cache_id) {
+  $matches = array();
+
+  /* The regular expression to follow should match any of the following:
+   *  [tweet_embed]*tweet url*[/tweet_embed]
+   *  [tweet_embed align="center" lang="en"]*tweet url*[/tweet_embed]
+   */
+  $expression = "/\[tweet_embed(?P<attributes>(.*)?)\](?P<protocol>(http|https)):\/\/twitter\.com\/(.*)\/status\/(?P<status_id>([0-9]*))\[\/tweet_embed\]/i";
+
+  if (preg_match_all($expression, $text, $matches)) {
+    for ($i = 0; $i < count($matches[0]); $i++) {
+      $twitter_status_id = $matches['status_id'][$i];
+      $attributes = $matches['attributes'][$i];
+      $embed_code = _tweet_embed_fetch_embed_code($twitter_status_id, $attributes);
+      $text = str_replace($matches[0][$i], $embed_code, $text);
+    }
+    return $text;
+  }
+  else {
+    return $text;
+  }
+}
+
+/**
+ * Fetches the tweet embed code from Twitter or cache. Returns string of html. 
+ */
+function _tweet_embed_fetch_embed_code($twitter_status_id, $attributes) {
+
+  $valid_attributes = array(
+    'maxwidth',
+    'hide_media',
+    'hide_thread',
+    'align',
+    'lang');
+
+  // These are the values from the admin settings form.
+  // We will use these as defaults and then merge in values which differ.
+  $default_attribute_values = array(
+    'maxwidth' => variable_get('tweet_embed_maxwidth', '500'),
+    'hide_media' => variable_get('tweet_embed_hide_media', 'false'),
+    'hide_thread' => variable_get('tweet_embed_hide_thread', 'false'),
+    'align' => variable_get('tweet_embed_align', 'none'),
+    'lang' => variable_get('tweet_embed_lang', 'en'),
+  );
+
+  $user_defined_attributes = array();
+
+  if (strlen($attributes) > 0) {
+    // Filter out invalid attributes.
+    $attributes_array = explode(" ", str_replace(array('"', "'"), '', $attributes));
+    foreach ($attributes_array as $attribute) {
+      $element = explode("=", $attribute);
+      if (!in_array($element[0], $valid_attributes)) {
+        unset($attributes_array[$element[0]]);
+        continue;
+      }
+      // Create array of user defined attributes to be merged in later.
+      $user_defined_attributes[$element[0]] = $element[1];
+    }
+  }
+
+  // Merge in $user_defined_attributes with $default_attribute_values.
+  $merged_attribute_array = array_merge($default_attribute_values, $user_defined_attributes);
+  $url_param_string = http_build_query($merged_attribute_array);
+  $cache_key = $twitter_status_id . '_' . $url_param_string;
+
+  // Determine if this embed code has already been cached.
+  if ($cached_tweet_html = cache_get('tweet_embed_' . $cache_key, 'cache')) {
+    return $cached_tweet_html->data;
+  }
+  else {
+    $response = drupal_http_request(TWEET_EMBED_EMBED_URL . '?id=' . $twitter_status_id . '&' . $url_param_string);
+    if ($response->code == '200') {
+      $data = json_decode($response->data, TRUE);
+      if (isset($data['html'])) {
+        cache_set('tweet_embed_' . $cache_key, $data['html']);
+        return $data['html'];
+      }
+    }
+  }
+}

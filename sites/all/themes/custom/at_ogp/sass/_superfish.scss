@@ -1,0 +1,156 @@
+/*
+ * Superfish menu
+ */
+
+#nav-wrapper {
+  background: $nublack url('../images/main-nav.png') repeat-x 0 0;
+  margin: 0;
+  height: 45px;
+  padding: 0 0 140px 0;
+  // Always remove padding on nav container.
+  @media screen and (max-width: 4000px) and (min-width: 100px) {
+    .container {
+      padding: 0;
+      margin: 0 auto;
+    }
+  } 
+}
+#menu-bar.nav {
+  margin: 0;
+  position: relative;
+}
+#block-superfish-1 {
+  padding: 0 0 45px 165px;
+  margin: 0;
+  width: 100%;
+  @media (max-width: 767px) {
+    padding: 0;
+  }
+}
+.front #block-superfish-1 {
+  padding: 0 0 45px 165px;
+}
+
+ul.sf-menu { 
+  // First level.
+  li.sf-depth-1 {
+    a.sf-depth-1 {
+      border-top: 3px solid #000;
+      color:#fff;
+      line-height: 42px;
+      font-size: 13px;
+      padding: 0 9px;
+    }
+    &.sfHover a.sf-depth-1,
+    a.sf-depth-1:focus,
+    a.sf-depth-1:hover {
+      background-color: $nublack;
+      border-top: 3px solid #fff;
+      text-decoration: none;
+      color: #fff;
+    }
+    &.sf-breadcrumb a.sf-depth-1.active {
+      background-color: #000;
+      border-top: 3px solid $pop;
+    }
+    &.sfHover.sf-breadcrumb a.sf-depth-1,
+    &.sfHover.sf-breadcrumb a.sf-depth-1.active,
+    &.sfHover.sf-breadcrumb a.sf-depth-1.active:active,
+    &.sfHover.sf-breadcrumb a.sf-depth-1.active:hover,
+    &.sfHover.sf-breadcrumb a.sf-depth-1.active:focus {
+      background-color: $nublack;
+      border-top: 3px solid $pop;
+      text-decoration: none;
+      color: #fff;
+    }
+  }
+
+  // Second level.
+  &.sf-navbar {
+    li.sfHover > ul {
+      background: $nublack;
+      padding: 5px;
+      left: 0;
+      top: 50px;
+    }
+    li.sf-breadcrumb ul {
+      background: $nublack;
+    }
+    li li {
+      width: 33%;
+      padding: 0;
+      &.sf-depth-2 a {
+        border-top: none;
+        color: #fff;
+        font-size: 13px;
+        line-height: 1.25em;
+        padding: 3px 10px 3px 8px;
+        position: relative;
+        margin: 0;
+        white-space: normal;
+        &:active,
+        &:focus,
+        &:hover {
+          color: #fff;
+          text-decoration: underline;
+        }
+        &:before {
+          content: '>';
+          font-size: .75em;
+          color: $pop;
+          position: absolute;
+          top: 4px;
+          left: 0;
+        }
+      }
+    }
+    // li.sf-total-children-8 li {
+    //   width: 25%;
+    // }
+  }
+}
+#superfish-1-select {
+    background: $nublack;
+    border: 1px solid #333;
+    color: #fff;
+    padding: 3px 6px;
+    width: auto;
+    height: 32px;
+}
+/*
+ * Vertical style
+ */
+.sf-vertical {
+  width: 100%;
+
+  li {
+    width: 100%;
+
+    &.last {}
+
+    &:hover ul,
+    &.sfHover ul {
+      left: 100%;
+      top: 0;
+      margin: 0;
+      padding: 0;
+    }
+
+    a {
+      padding: 0 10px;
+    }
+  }
+}
+
+// Non-desktop screens.
+@media only screen and (max-width: 980px) {
+  .front #block-superfish-1,
+  #block-superfish-1 {
+    position:absolute;
+    top:10px;
+    left:160px;
+    float:none;
+    padding:0;
+    height:auto;
+  }
+}

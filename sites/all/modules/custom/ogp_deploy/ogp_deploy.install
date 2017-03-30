@@ -1,0 +1,60 @@
+<?php
+/**
+ * @file
+ * Incremental and initial deployment code.
+ */
+
+function ogp_deploy_install() {
+  ogp_deploy_update_7101();
+  ogp_deploy_update_7102();
+}
+
+/**
+ * Implements hook_update_N().
+ * Switching to Pantheon profile.
+ * @see issue #58
+ */
+function ogp_deploy_update_7101() {
+  $disable = array(
+    'media_filepickerio',
+    'plupload',
+    'ckeditor'
+  );
+
+  $enable = array(
+    'media_inkfilepicker',
+    'pantheon_api',
+    'pantheon_login'
+  );
+
+  module_disable($disable);
+  drupal_uninstall_modules($disable);
+  module_enable($enable);
+
+  // Switching profile.
+  variable_set('install_profile', 'pantheon');
+  // db_query("DELETE FROM {system} WHERE filename = 'profiles/pantheon/pantheon.profile';");
+  // db_query("UPDATE {system} SET filename = 'profiles/pantheon/pantheon.profile', name = 'pantheon' WHERE system.filename = 'profiles/flight/flight.profile';");
+}
+
+/**
+ * Implements hook_update_N().
+ * Disable wysiwyg from comment form.
+ * @see issue #68
+ */
+function ogp_deploy_update_7102() {
+  $info = field_info_field('comment_body');
+  foreach ($info['bundles']['comment'] as $bundle) {
+    $field_instance = field_read_instance('comment', 'comment_body', $bundle);
+    if ($field_instance) {
+      $field_instance['settings']['text_processing'] = 0;
+      // Save or update field instance.
+      field_update_instance($field_instance);
+    }
+  }
+  db_query("UPDATE {system} SET `filename` = 'profiles/pantheon/pantheon.profile', `name` = 'pantheon' WHERE `filename` = 'profiles/flight/flight.profile';");
+  db_query("UPDATE {system} SET `status` = '1' WHERE `filename` = 'profiles/pantheon/pantheon.profile';");
+  db_query("DELETE FROM {system} WHERE name LIKE 'flight_%';");
+  // Clear all caches.
+  cache_clear_all();
+}

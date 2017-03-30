@@ -1,0 +1,67 @@
+.c-tabs {
+  background-color: $color-3;
+  height: 50px;
+  margin-bottom: 50px;
+
+  &.-horizontal {
+    .tabs-container {
+      list-style: none;
+      height: 50px;
+      display: flex;
+      justify-content: flex-start;
+
+      .tab {
+        height: 50px;
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        margin-right: 110px;
+        cursor: pointer;
+
+        &.-selected {
+          position: relative;
+
+          &::after {
+            display: block;
+            position: absolute;
+            bottom: 0;
+            width: 100%;
+            height: 5px;
+            background-color: $color-2;
+            content: '';
+          }
+        }
+      }
+    }
+  }
+
+  &.-vertical {
+    height: auto;
+
+    .tabs-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-start;
+      cursor: pointer;
+      height: auto;
+
+      .tab {
+        display: flex;
+        justify-content: flex-start;
+        align-items: center;
+        width: 100%;
+        min-height: 70px;
+        padding: 10px 40px;
+        border-bottom: 1px solid $color-4;
+        background-color: $color-3;
+
+        &.-selected {
+          background-color: $color-10;
+          color: $color-22;
+          box-shadow: inset 5px 0 0 0 $color-2;
+        }
+      }
+    }
+  }
+}

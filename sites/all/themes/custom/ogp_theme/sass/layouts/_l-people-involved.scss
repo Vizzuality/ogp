@@ -1,0 +1,30 @@
+.l-people-involved {
+
+  .tag {
+    display: block;
+    position: relative;
+    margin-top: 35px;
+
+    &::before {
+      display: block;
+      position: absolute;
+      top: -5px;
+      width: 10px;
+      height: 2px;
+      background-color: $color-2;
+      content: '';
+    }
+  }
+
+  .container-contact {
+    margin-top: 80px;
+
+    p {
+      margin-top: 5px;
+    }
+
+    h2 {
+      margin-bottom: 20px;
+    }
+  }
+}

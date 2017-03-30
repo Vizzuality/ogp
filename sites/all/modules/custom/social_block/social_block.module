@@ -1,0 +1,444 @@
+<?php
+
+/**
+ * @file
+ * This is an example outlining how a module can define blocks that can be
+ * displayed on various pages of a site, or how to alter blocks provided by
+ * other modules.
+ */
+
+/**
+ * Implements hook_menu().
+ *
+ * Provides a default page to explain what this module does.
+ */
+/*function social_block_menu() {
+  $items['examples/social_block'] = array(
+    'page callback' => 'social_block_page',
+    'access callback' => TRUE,
+    'title' => 'Block Example',
+  );
+  return $items;
+}*/
+
+/**
+ * Implements hook_block_info().
+ *
+ * This hook declares what blocks are provided by the module.
+ */
+function social_block_block_info() {
+  // This hook returns an array, each component of which is an array of block
+  // information. The array keys are the 'delta' values used in other block
+  // hooks.
+
+  // The required block information is a block description, which is shown
+  // to the site administrator in the list of possible blocks. You can also
+  // provide initial settings for block weight, status, etc.
+
+  // Many options are defined in hook_block_info():
+  $blocks['social'] = array(
+    'info' => t('Social Networks'),
+  );
+  
+  $blocks['sharethis'] = array(
+    'info' => t('Sharethis Page Sharing'),
+  );
+  
+  $blocks['twitter_feed'] = array(
+    'info' => t('Twitter Feed'),
+  );
+  
+  $blocks['twitter_feed_2'] = array(
+    'info' => t('Secondary (blog) Twitter Feed'),
+  );
+  
+  $blocks['facebook_widget'] = array(
+    'info' => t('Facebook Like Widget'),
+  );
+  
+  $blocks['facebook_widget_240'] = array(
+    'info' => t('Facebook Like Widget (width 240)'),
+  );
+  
+  return $blocks;
+}
+
+/**
+ * Implements hook_block_configure().
+ *
+ * This hook declares configuration options for blocks provided by this module.
+ */
+function social_block_block_configure($delta = '') {
+  // The $delta parameter tells us which block is being configured.
+  // In this example, we'll allow the administrator to customize
+  // the text of the 'configurable text string' block defined in this module.
+
+  $form = array();
+  if ($delta == 'social') {
+    // All we need to provide is the specific configuration options for our
+    // block. Drupal will take care of the standard block configuration options
+    // (block title, page visibility, etc.) and the save button.
+    $form['social_block_facebook'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Facebook page url'),
+      '#size' => 60,
+      '#description' => t('Enter the full URL to your facebook page. Sometimes it is just your alias (like !link1), othertimes it also must include an id number (like !link2).', 
+        array(
+          '!link1' => l('http://www.facebook.com/AlbatrossDigital', 'http://www.facebook.com/AlbatrossDigital'),
+          '!link2' => l('http://www.facebook.com/AlbatrossDigital/133024146715314', 'http://www.facebook.com/AlbatrossDigital/133024146715314'),
+        )
+      ),
+      '#default_value' => variable_get('social_block_facebook',  'http://www.facebook.com/pages/'),
+    );
+    $form['social_block_twitter'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Twitter account name'),
+      '#size' => 20,
+      '#description' => t('This is your max-15 character Twitter username (ie !link)', array('!link' => l('AlbatrossDigi','http://twitter.com/albatrossdigi'))),
+      '#default_value' => variable_get('social_block_twitter',  ''),
+    );
+    $form['social_block_linkedin'] = array(
+      '#type' => 'textfield',
+      '#title' => t('LinkedIn URL'),
+      '#size' => 60,
+      '#description' => t('Enter your LinkedIn profile URL.'),
+      '#default_value' => variable_get('social_block_linkedin',  'http://www.linkedin.com/in/'),
+    );
+    $form['social_block_youtube'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Youtube URL'),
+      '#size' => 60,
+      '#description' => t('Enter your Youtube profile URL.'),
+      '#default_value' => variable_get('social_block_youtube',  'http://www.youtube.com/user'),
+    );
+    $form['social_block_vimeo'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Vimeo URL'),
+      '#size' => 60,
+      '#description' => t('Enter your Vimeo profile URL.'),
+      '#default_value' => variable_get('social_block_vimeo',  'http://www.vimeo.com/'),
+    );
+    $form['social_block_style'] = array(
+      '#type' => 'select',
+      '#title' => t('Style'),
+      //'#description' => t('This is your max-15 character Twitter username (ie !link)', array('!link' => l('AlbatrossDigi','http://twitter.com/albatrossdigi'))),
+      '#default_value' => variable_get('social_block_style',  'none'),
+      '#options' => array(
+        'none' => t('Plain links'),
+        'big' => t('Big buttons'),
+        'white' => t('White buttons'),
+      ),
+    );
+  } elseif ($delta == 'sharethis') {
+    $form['social_block_sharethis_link'] = array(
+      '#type' => 'markup',
+      '#markup' => '<strong>' . l('Configure ShareThis', 'admin/config/sharethis') . '</strong>',
+    );
+    $form['social_block_sharethis'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Sharethis account name'),
+      '#size' => 20,
+      '#description' => t('This is not required, but allows you to receive detailed sharing analytics.'),
+      '#default_value' => variable_get('social_block_sharethis',  ''),
+    );
+  } elseif (strpos($delta, 'twitter_feed') !== FALSE) {
+    $form['social_block_twitter'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Twitter account name'),
+      '#size' => 20,
+      '#required' => true,
+      '#description' => t('This is your max-15 character Twitter username (ie !link)', array('!link' => l('AlbatrossDigi','http://twitter.com/albatrossdigi'))),
+      '#default_value' => variable_get('social_block_twitter',  ''),
+    );
+    $form['social_block_' . $delta . '_num'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Number of posts'),
+      '#size' => 2,
+      '#default_value' => variable_get('social_block_twitter_feed_num',  1),
+    );
+    $form['social_block_' . $delta . '_links'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Show Header Links'),
+      '#default_value' => variable_get('social_block_twitter_feed_links',  1),
+    );
+    // Give error if twitter_pull is not enabled
+    if (!function_exists('twitter_pull_render')) {
+      drupal_set_message('You need to enable the Twitter Pull render module for the Twitter feed to work', 'error');
+    }
+  } elseif ($delta == 'facebook_widget' || $delta == 'facebook_widget_240') {
+    $form['social_block_facebook'] = array(
+      '#type' => 'textfield',
+      '#title' => t('Facebook page url'),
+      '#size' => 60,
+      '#required' => true,
+      '#description' => t('Enter the full URL to your facebook page. Sometimes it is just your alias (like !link1), othertimes it also must include an id number (like !link2).', 
+        array(
+          '!link1' => l('http://www.facebook.com/AlbatrossDigital', 'http://www.facebook.com/AlbatrossDigital'),
+          '!link2' => l('http://www.facebook.com/AlbatrossDigital/133024146715314', 'http://www.facebook.com/AlbatrossDigital/133024146715314'),
+        )
+      ),
+      '#default_value' => variable_get('social_block_facebook',  'http://www.facebook.com/pages/'),
+    );
+    $form['social_block_facebook_widget_faces'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Show Faces'),
+      '#default_value' => variable_get('social_block_facebook_widget_faces',  1),
+    );
+    $form['social_block_facebook_widget_stream'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Show Stream'),
+      '#default_value' => variable_get('social_block_facebook_widget_stream',  0),
+    );
+    $form['social_block_facebook_widget_header'] = array(
+      '#type' => 'checkbox',
+      '#title' => t('Show Facebook Header'),
+      '#default_value' => variable_get('social_block_facebook_widget_header',  0),
+    );
+    $form['social_block_facebook_widget_color'] = array(
+      '#type' => 'select',
+      '#title' => t('Color Scheme'),
+      '#options' => array(
+        'light' => 'Light',
+        'dark' => 'Dark',
+      ),
+      '#default_value' => variable_get('social_block_facebook_widget_color',  'light'),
+    );
+  }
+  
+  
+  return $form;
+}
+
+/**
+ * Implements hook_block_save().
+ *
+ * This hook declares how the configured options for a block
+ * provided by this module are saved.
+ */
+function social_block_block_save($delta = '', $edit = array()) {
+  // We need to save settings from the configuration form.
+  // We need to check $delta to make sure we are saving the right block.
+  if ($delta == 'social') {
+    // Have Drupal save the string to the database.
+    variable_set('social_block_facebook', $edit['social_block_facebook']);
+    variable_set('social_block_twitter', $edit['social_block_twitter']);
+    variable_set('social_block_linkedin', $edit['social_block_linkedin']);
+    variable_set('social_block_youtube', $edit['social_block_youtube']);
+    variable_set('social_block_vimeo', $edit['social_block_vimeo']);
+    variable_set('social_block_style', $edit['social_block_style']);
+  } elseif ($delta == 'sharethis') {
+    // Have Drupal save the string to the database.
+    variable_set('social_block_sharethis', $edit['social_block_sharethis']);
+  } elseif (strpos($delta, 'twitter_feed') !== FALSE) {
+    // Have Drupal save the string to the database.
+    variable_set('social_block_twitter', $edit['social_block_twitter']);
+    variable_set('social_block_' . $delta . '_num', $edit['social_block_twitter_feed_num']);
+    variable_set('social_block_' . $delta . '_links', $edit['social_block_twitter_feed_links']);
+  } elseif ($delta == 'facebook_widget' || $delta == 'facebook_widget_2') {
+    // Have Drupal save the string to the database.
+    variable_set('social_block_facebook', $edit['social_block_facebook']);
+    variable_set('social_block_facebook_widget_faces', $edit['social_block_facebook_widget_faces']);
+    variable_set('social_block_facebook_widget_stream', $edit['social_block_facebook_widget_stream']);
+    variable_set('social_block_facebook_widget_header', $edit['social_block_facebook_widget_header']);
+    variable_set('social_block_facebook_widget_color', $edit['social_block_facebook_widget_color']);
+  }
+  return;
+}
+
+/**
+ * Implements hook_block_view().
+ *
+ * This hook generates the contents of the blocks themselves.
+ */
+function social_block_block_view($delta = '') {
+  //The $delta parameter tells us which block is being requested.
+  switch ($delta) {
+    case 'social':
+      $block['subject'] = t('Social Networks');
+      $block['content'] = social_block_contents($delta);
+      break;
+    case 'sharethis':
+      $block['content'] = social_block_contents($delta);
+      break;
+    case 'twitter_feed':
+    case 'twitter_feed_2':
+      $block['subject'] = t('Twitter Feed');
+      $block['content'] = social_block_contents($delta);
+      break;
+    case 'facebook_widget':
+      $block['content'] = social_block_contents($delta);
+      break;
+    case 'facebook_widget_240':
+      $block['content'] = social_block_contents($delta);
+      break;
+  }
+  return $block;
+}
+
+/**
+ * A module-defined block content function.
+ */
+function social_block_contents($which_block) {
+
+  switch ($which_block) {
+    case 'social':
+      $links = array();
+      $twitter = variable_get('social_block_twitter',  false);
+      $facebook = variable_get('social_block_facebook',  false);
+      $linkedin = variable_get('social_block_linkedin',  false);
+      $youtube = variable_get('social_block_youtube',  false);
+      $vimeo = variable_get('social_block_vimeo',  false);
+      if (!$facebook && !$twitter && !$linkedin && !$youtube){
+        return FALSE;
+      }
+      
+      $style = variable_get('social_block_style',  'none');
+      if ($style != 'none'){
+        drupal_add_css(drupal_get_path('module', 'social_block') . '/css/social-block.css');
+        drupal_add_css(drupal_get_path('module', 'social_block') . '/css/social-block-' . $style . '.css');
+        dpm(drupal_get_path('module', 'social_block') . '/css/social-block-' . $style . '.css');
+      }
+      
+      if ($facebook){
+        $links['facebook'] = array('title' => t('Facebook'), 'description' => t('Visit my Facebook page'), 'href' => $facebook, 'attributes' => array('class' => 'facebook'));
+      }
+      if ($twitter){
+        $links['twitter'] = array('title' => t('Twitter'), 'description' => 'Visit my Twitter page', 'href' => 'http://twitter.com/' . $twitter, 'attributes' => array('class' => 'twitter'));
+      }
+      if ($linkedin){
+        $links['linkedin'] = array('title' => t('LinkedIn'), 'description' => 'Visit my LinkedIn page', 'href' => $linkedin, 'attributes' => array('class' => 'linkedin'));
+      }
+      if ($youtube){
+        $links['linkedin'] = array('title' => t('YouTube'), 'description' => 'Visit my YouTube page', 'href' => $youtube, 'attributes' => array('class' => 'youtube'));
+      }
+      if ($vimeo){
+        $links['vimeo'] = array('title' => t('Vimeo'), 'description' => 'Visit my Vimeo page', 'href' => $vimeo, 'attributes' => array('class' => 'vimeo'));
+      }
+      
+      return array('#markup' => theme('links', array('links' => $links, 'attributes' => array('id' => 'social-block') )));
+      break;
+    case 'twitter_feed':
+    case 'twitter_feed_2':
+      $twitter = variable_get('social_block_twitter',  false);
+      if (function_exists('twitter_pull_render') && isset($twitter) && $twitter) {
+        $output .= twitter_pull_render('@' . $twitter, l('@' . $twitter, 'http://twitter.com/' . $twitter), variable_get('social_block_' . $which_block . '_num',  1));
+      }
+      else {
+        $output .= t("Twitter not currently available, sorry!  Make sure that the Twitter Pull module is enabled and you have entered your Twitter username on the block configuration page.");
+      }
+      
+      return theme('social_block_twitter_feed_wrapper', array('content' => $output, 'account' => $twitter, 'links' => variable_get('social_block_' . $which_block . '_links',  1)));
+      break;
+    
+    case 'sharethis':
+      if (function_exists('sharethis_node_view')){
+      
+        // This is taken from sharethis.module
+        $data_options = get_options_array();
+        
+        // The share buttons are simply spans of the form class='st_SERVICE_BUTTONTYPE' -- "st" stands for ShareThis.
+        $type = substr($data_options['buttons'], 4);
+        $type = $type == "_" ? "" : $type;
+        $service_array = explode(",", $data_options['services']);
+        $st_spans = "";
+        for ($i=0; $i<sizeof($service_array); $i++) {
+          // Strip the quotes from the element in the array (They are there for javascript)
+          $service = explode(":", $service_array[$i]);
+          $serviceCodeName = substr($service[1], 0, -1);
+          $display = "displaytext=";
+          $display .= $service[0] . "\"";
+          $display = ($type == "") ? "" : $display;
+          $st_spans .= "<span st_url=$mPath st_title='$mTitle' class='st_$serviceCodeName$type' $display></span>";
+        }
+    
+        // These are the ShareThis scripts:
+        // If switchTo5x is set to false, then the "classic" widget will be selected.
+        $is_five = $data_options['widget'] == 'st_multi' ? 'true' : 'false';
+        $publisher_id = $data_options['publisherID'];
+        $st_js = "<script type='text/javascript'>var switchTo5x=$is_five;</script>
+          <script type='text/javascript' src='http://w.sharethis.com/button/buttons.js'></script>
+          <script type='text/javascript'>stLight.options({publisher:'$publisher_id'});</script>";
+
+        // This puts the buttons on the node and adds the necessary scripts.
+        // You can change the weight to change whether the buttons are near the top or bottom of the node.
+        // Default is at the bottom:
+        return $st_spans . $st_js;
+      }
+      break;
+      
+    case 'facebook_widget':
+      $facebook = variable_get('social_block_facebook',  false);
+      if ($facebook){
+        $height = 62;
+        $stream = variable_get('social_block_facebook_widget_stream',  false);
+        $faces = variable_get('social_block_facebook_widget_faces',  true);
+        $header = variable_get('social_block_facebook_widget_header',  false);
+        if ($faces){
+          $height += 200;
+        }
+        if ($stream){
+          $height += 395;
+        }
+        if ($header){
+          $height += 28;
+        }
+        return theme('social_block_facebook_widget', array(
+          'url' => $facebook,
+          'width' => 300,
+          'height' => $height, 
+          'faces' => $faces, 
+          'stream' => $stream, 
+          'header' => $header,
+          'color' => variable_get('social_block_facebook_widget_color',  'light'),
+        ));
+      }
+      break;
+    case 'facebook_widget_240':
+      $facebook = variable_get('social_block_facebook',  false);
+      if ($facebook){
+        $height = 62;
+        $stream = variable_get('social_block_facebook_widget_stream',  false);
+        $faces = variable_get('social_block_facebook_widget_faces',  true);
+        $header = variable_get('social_block_facebook_widget_header',  false);
+        if ($faces){
+          $height += 200;
+        }
+        if ($stream){
+          $height += 395;
+        }
+        if ($header){
+          $height += 28;
+        }
+        return theme('social_block_facebook_widget_240', array(
+          'url' => $facebook,
+          'width' => 240,
+          'height' => $height, 
+          'faces' => $faces, 
+          'stream' => $stream, 
+          'header' => $header,
+          'color' => variable_get('social_block_facebook_widget_color',  'light'),
+        ));
+      }
+      break;
+  }
+}
+
+/**
+ * Implements hook_theme().
+ */
+function social_block_theme() {
+  return array(
+    'social_block_twitter_feed_wrapper' => array(
+      'template' => 'social-block-twitter-feed-wrapper',
+      'variables' => array('content' => '', 'account' => ''),
+    ),
+    'social_block_facebook_widget' => array(
+      'template' => 'social-block-facebook-widget',
+      'variables' => array('width' => 300, 'height' => 62, 'faces' => true, 'stream' => false, 'header' => false),
+    ),
+    'social_block_facebook_widget_240' => array(
+      'template' => 'social-block-facebook-widget-240',
+      'variables' => array('width' => 240, 'height' => 62, 'faces' => true, 'stream' => false, 'header' => false),
+    ),
+  );
+}

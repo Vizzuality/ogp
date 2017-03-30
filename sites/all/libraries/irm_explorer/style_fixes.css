@@ -1,0 +1,47 @@
+#page_pseudo_body__FOR_VIEWS__dom_elmt__id_name,
+#graph_view__outer_area_id {
+    font-family: "Open sans", sans-serif;
+    font-size: 11px;
+}
+#ogp_logo_graphic,
+#page_header {
+    display: none;
+}
+#idrc_logo_outer_box {
+    right: 0;
+    left: auto;
+    top: 86px;
+    z-index: 14;
+    min-height: 25px;
+}
+body.admin-menu #idrc_logo_outer_box {
+    top: 120px;
+}
+#idrc_logo_inner_logo_box {
+    height: 25px;
+}
+#graph_view__outer_area_id {
+    position: relative;
+    top: auto;
+    margin-top: 200px;
+    margin-bottom: 100px;
+}
+#table_view_main_header_area__search_n_options_area__reset_settings_button__id_name p,
+#table_view_main_header_area__search_n_options_area__export_data_button__id_name p {
+    font-size: 11px;
+    margin: 1em 0;
+}
+#table_view_main_header_area__search_n_options_area__text_search_field__INPUT_AREA__id_name {
+    box-shadow: none;
+    -webkit-box-shadow: none;
+    margin: 5px 10px;
+    padding: 0;
+    line-height: 5px;
+    height: auto;
+}
+.bottom_header_column {
+    background: #fff;
+}
+.page_pseudo_body__FOR_VIEWS_process__dom_elmt__class_name #table_view__countryNamesEtAl_area__headersArea__id_name {
+    width: 216px;
+}

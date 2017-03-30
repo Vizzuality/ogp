@@ -1,0 +1,12 @@
+<?php
+
+/**
+ * Implements hook_menu_position_rule_plugin().
+ */
+function og_menu_position_menu_position_rule_plugins() {
+  return array(
+    'og' => array(
+      'file' => 'plugins/og_menu_position.og.inc',
+    ),
+  );
+}

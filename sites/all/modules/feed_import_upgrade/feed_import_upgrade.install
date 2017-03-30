@@ -1,0 +1,140 @@
+<?php
+
+
+function feed_import_upgrade_schema() {
+	$schema['feed_import_upgrade_hashes'] = array(
+    'description' => 'Feed import hashes',
+    'fields' => array(
+      'id' => array(
+        'type' => 'serial',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+        'description' => 'Primary key',
+      ),
+
+      'feed_machine_name' => array(
+        'type' => 'varchar',
+        'length' => 64,
+        'not null' => TRUE,
+        'description' => 'Feed machine name',
+      ),
+
+      'feed_group' => array(
+        'type' => 'varchar',
+        'length' => 32,
+        'not null' => TRUE,
+        'description' => 'Feed group',
+      ),
+
+      'entity' => array(
+        'type' => 'varchar',
+        'length' => 64,
+        'not null' => TRUE,
+        'description' => 'Entity name',
+      ),
+
+      'entity_id' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+        'description' => 'Entity id',
+      ),
+
+      'hash' => array(
+        'type' => 'varchar',
+        'length' => 32,
+        'not null' => TRUE,
+        'description' => 'An uniq hash to identify feed item',
+      ),
+
+      'expire' => array(
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'default' => 0,
+        'description' => 'Timestamp when item expires. 0 = never expires, 1 = item is protected'
+      ),
+    ),
+    'primary key' => array('id'),
+    'indexes' => array(
+      'hash_index' => array('feed_group', 'entity', 'hash'),
+    ),
+  );
+  $schema['feed_import_upgrade_settings'] = array(
+    'description' => 'Feed import settings',
+    'fields' => array(
+      'id' => array(
+        'type' => 'serial',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+        'description' => 'Primary key',
+      ),
+
+      'name' => array(
+        'type' => 'varchar',
+        'length' => 64,
+        'not null' => TRUE,
+        'description' => 'Feed name',
+      ),
+
+      'machine_name' => array(
+        'type' => 'varchar',
+        'length' => 64,
+        'not null' => TRUE,
+        'description' => 'Unique machine name',
+      ),
+
+      'entity' => array(
+        'type' => 'varchar',
+        'length' => 64,
+        'not null' => TRUE,
+        'description' => 'Entity name',
+      ),
+      'cron_import' => array(
+        'type' => 'int',
+        'size' => 'tiny',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+        'description' => 'If feed is enabled to run at cron',
+      ),
+      'settings' => array(
+        'type' => 'blob',
+        'size' => 'big',
+        'not null' => TRUE,
+        'description' => 'Feed settings',
+      ),
+      'last_run' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+        'default' => 0,
+        'description' => 'Timestamp of last run',
+      ),
+      'last_run_duration' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+        'default' => 0,
+        'description' => 'Duration of last run in seconds',
+      ),
+      'last_run_items' => array(
+        'type' => 'int',
+        'not null' => TRUE,
+        'unsigned' => TRUE,
+        'default' => 0,
+        'description' => 'Last run number of items in feed',
+      ),
+    ),
+    'primary key' => array('id'),
+    'unique keys' => array(
+      'machine_name' => array('machine_name'),
+    ),
+  );
+
+  return $schema;
+}
+
+function feed_import_upgrade_uninstall() {
+	variable_del('feed_import_upgrade_state');
+	db_drop_table('feed_import_upgrade_hashes');
+  db_drop_table('feed_import_upgrade_settings');
+}

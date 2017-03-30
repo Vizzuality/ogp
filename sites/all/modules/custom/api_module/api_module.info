@@ -1,0 +1,7 @@
+name = API module
+description =  API module
+core = 7.x
+
+dependencies[] = restful
+
+registry_autoload[] = PSR-4

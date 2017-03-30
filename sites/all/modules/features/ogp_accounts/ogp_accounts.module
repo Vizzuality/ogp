@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the OGP Accounts feature.
+ */
+
+include_once 'ogp_accounts.features.inc';

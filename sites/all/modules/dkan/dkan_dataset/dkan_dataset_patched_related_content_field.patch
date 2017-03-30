@@ -1,0 +1,152 @@
+diff --git a/sites/all/modules/dkan/dkan_dataset/dkan_dataset_patched_contact_fields.patch b/sites/all/modules/dkan/dkan_dataset/dkan_dataset_patched_contact_fields.patch
+index 6077fbe..32de98a 100644
+--- a/sites/all/modules/dkan/dkan_dataset/dkan_dataset_patched_contact_fields.patch
++++ b/sites/all/modules/dkan/dkan_dataset/dkan_dataset_patched_contact_fields.patch
+@@ -169,7 +169,7 @@ index 0169a00..623fcb3 100644
+ -   *   field_data_dictionary, field_contact_name, field_contact_email,
+ +   *   field_data_dictionary, field_dataset_contact_name, field_dataset_contact_email,
+     *   field_public_access_level, field_additional_info, field_resources,
+-    *   field_related_content
++    *   field_dataset_related_content
+     * @param array $resources
+ @@ -369,9 +369,9 @@ class DkanDatasetWebTestCase extends DrupalWebTestCase {
+        // Data Dictionary.
+diff --git a/sites/all/modules/dkan/dkan_dataset/modules/dkan_dataset_api/dkan_dataset_api.inc b/sites/all/modules/dkan/dkan_dataset/modules/dkan_dataset_api/dkan_dataset_api.inc
+index 44ad4dd..dcb0cee 100644
+--- a/sites/all/modules/dkan/dkan_dataset/modules/dkan_dataset_api/dkan_dataset_api.inc
++++ b/sites/all/modules/dkan/dkan_dataset/modules/dkan_dataset_api/dkan_dataset_api.inc
+@@ -91,7 +91,7 @@ function dkan_open_data_build_rows($nodes) {
+ 
+       // Extended fields.
+       if ($accrual = strtolower(dkan_open_data_get_field_value($node, 'field_frequency', 'label'))) {
+-        $row->references = dkan_open_data_get_field_value($node, 'field_related_content', 'value');
++        $row->references = dkan_open_data_get_field_value($node, 'field_dataset_related_content', 'value');
+       }
+       $language = !isset($node->langauge) && $node->language != 'und' ? $node->language : 'english';
+       $row->language = array($language);
+@@ -289,7 +289,7 @@ function dkan_open_data_get_field_value($node, $field_name, $column_name) {
+       $field_value = isset($options[$key]) ? trim($options[$key]) : NULL;
+     }
+     // Link field, can be external or external path, preparing url if present.
+-    elseif ($field_name == 'field_related_content') {
++    elseif ($field_name == 'field_dataset_related_content') {
+       $field_value = $node_wrapper->$field_name->$column_name();
+       $references = '';
+       foreach ($field_value as $instance) {
+diff --git a/sites/all/modules/dkan/dkan_dataset/modules/dkan_dataset_content_types/dkan_dataset_content_types.features.field_base.inc b/sites/all/modules/dkan/dkan_dataset/modules/dkan_dataset_content_types/dkan_dataset_content_types.features.field_base.inc
+index 3ec328b..e16155f 100644
+--- a/sites/all/modules/dkan/dkan_dataset/modules/dkan_dataset_content_types/dkan_dataset_content_types.features.field_base.inc
++++ b/sites/all/modules/dkan/dkan_dataset/modules/dkan_dataset_content_types/dkan_dataset_content_types.features.field_base.inc
+@@ -356,13 +356,13 @@ function dkan_dataset_content_types_field_default_field_bases() {
+     'type' => 'list_text',
+   );
+ 
+-  // Exported field_base: 'field_related_content'
+-  $field_bases['field_related_content'] = array(
++  // Exported field_base: 'field_dataset_related_content'
++  $field_bases['field_dataset_related_content'] = array(
+     'active' => 1,
+     'cardinality' => -1,
+     'deleted' => 0,
+     'entity_types' => array(),
+-    'field_name' => 'field_related_content',
++    'field_name' => 'field_dataset_related_content',
+     'indexes' => array(),
+     'locked' => 0,
+     'module' => 'link',
+diff --git a/sites/all/modules/dkan/dkan_dataset/modules/dkan_dataset_content_types/dkan_dataset_content_types.features.field_instance.inc b/sites/all/modules/dkan/dkan_dataset/modules/dkan_dataset_content_types/dkan_dataset_content_types.features.field_instance.inc
+index 3f9854b..2708b38 100644
+--- a/sites/all/modules/dkan/dkan_dataset/modules/dkan_dataset_content_types/dkan_dataset_content_types.features.field_instance.inc
++++ b/sites/all/modules/dkan/dkan_dataset/modules/dkan_dataset_content_types/dkan_dataset_content_types.features.field_instance.inc
+@@ -483,8 +483,8 @@ uk-ogl|UK Open Government Licence (OGL)',
+     ),
+   );
+ 
+-  // Exported field_instance: 'node-dataset-field_related_content'
+-  $field_instances['node-dataset-field_related_content'] = array(
++  // Exported field_instance: 'node-dataset-field_dataset_related_content'
++  $field_instances['node-dataset-field_dataset_related_content'] = array(
+     'bundle' => 'dataset',
+     'default_value' => NULL,
+     'deleted' => 0,
+@@ -505,7 +505,7 @@ uk-ogl|UK Open Government Licence (OGL)',
+       ),
+     ),
+     'entity_type' => 'node',
+-    'field_name' => 'field_related_content',
++    'field_name' => 'field_dataset_related_content',
+     'label' => 'Related Content',
+     'required' => 0,
+     'settings' => array(
+diff --git a/sites/all/modules/dkan/dkan_dataset/modules/dkan_dataset_content_types/dkan_dataset_content_types.features.inc b/sites/all/modules/dkan/dkan_dataset/modules/dkan_dataset_content_types/dkan_dataset_content_types.features.inc
+index 0fa85ab..7723a48 100644
+--- a/sites/all/modules/dkan/dkan_dataset/modules/dkan_dataset_content_types/dkan_dataset_content_types.features.inc
++++ b/sites/all/modules/dkan/dkan_dataset/modules/dkan_dataset_content_types/dkan_dataset_content_types.features.inc
+@@ -204,7 +204,7 @@ function dkan_dataset_content_types_rdf_default_mappings() {
+         0 => 'dc:accessRights',
+       ),
+     ),
+-    'field_related_content' => array(
++    'field_dataset_related_content' => array(
+       'type' => 'property',
+       'predicates' => array(
+         0 => 'dc:relation',
+diff --git a/sites/all/modules/dkan/dkan_dataset/modules/dkan_dataset_content_types/dkan_dataset_content_types.field_group.inc b/sites/all/modules/dkan/dkan_dataset/modules/dkan_dataset_content_types/dkan_dataset_content_types.field_group.inc
+index 06491c1..0e340bd 100644
+--- a/sites/all/modules/dkan/dkan_dataset/modules/dkan_dataset_content_types/dkan_dataset_content_types.field_group.inc
++++ b/sites/all/modules/dkan/dkan_dataset/modules/dkan_dataset_content_types/dkan_dataset_content_types.field_group.inc
+@@ -75,7 +75,7 @@ function dkan_dataset_content_types_field_group_info() {
+       5 => 'field_frequency',
+       6 => 'field_granularity',
+       7 => 'field_public_access_level',
+-      8 => 'field_related_content',
++      8 => 'field_dataset_related_content',
+       9 => 'field_resources',
+       10 => 'field_spatial',
+       11 => 'field_spatial_geographical_cover',
+diff --git a/sites/all/modules/dkan/dkan_dataset/modules/dkan_dataset_content_types/dkan_dataset_content_types.info b/sites/all/modules/dkan/dkan_dataset/modules/dkan_dataset_content_types/dkan_dataset_content_types.info
+index c70d830..02a5572 100644
+--- a/sites/all/modules/dkan/dkan_dataset/modules/dkan_dataset_content_types/dkan_dataset_content_types.info
++++ b/sites/all/modules/dkan/dkan_dataset/modules/dkan_dataset_content_types/dkan_dataset_content_types.info
+@@ -44,7 +44,7 @@ features[field_base][] = field_license
+ features[field_base][] = field_link_api
+ features[field_base][] = field_link_remote_file
+ features[field_base][] = field_public_access_level
+-features[field_base][] = field_related_content
++features[field_base][] = field_dataset_related_content
+ features[field_base][] = field_resources
+ features[field_base][] = field_spatial
+ features[field_base][] = field_spatial_geographical_cover
+@@ -68,7 +68,7 @@ features[field_instance][] = node-dataset-field_frequency
+ features[field_instance][] = node-dataset-field_granularity
+ features[field_instance][] = node-dataset-field_license
+ features[field_instance][] = node-dataset-field_public_access_level
+-features[field_instance][] = node-dataset-field_related_content
++features[field_instance][] = node-dataset-field_dataset_related_content
+ features[field_instance][] = node-dataset-field_resources
+ features[field_instance][] = node-dataset-field_spatial
+ features[field_instance][] = node-dataset-field_spatial_geographical_cover
+diff --git a/sites/all/modules/dkan/dkan_dataset/tests/dkan_dataset.test b/sites/all/modules/dkan/dkan_dataset/tests/dkan_dataset.test
+index 623fcb3..e4e5f75 100644
+--- a/sites/all/modules/dkan/dkan_dataset/tests/dkan_dataset.test
++++ b/sites/all/modules/dkan/dkan_dataset/tests/dkan_dataset.test
+@@ -224,7 +224,7 @@ class DkanDatasetWebTestCase extends DrupalWebTestCase {
+    *   field_frequency, field_temporal_coverage, field_granularity,
+    *   field_data_dictionary, field_dataset_contact_name, field_dataset_contact_email,
+    *   field_public_access_level, field_additional_info, field_resources,
+-   *   field_related_content
++   *   field_dataset_related_content
+    * @param array $resources
+    *   Multi-dimensional array for each resource.
+    *   Args: title, body, field_link_remote_file, field_upload, field_format,
+@@ -378,8 +378,8 @@ class DkanDatasetWebTestCase extends DrupalWebTestCase {
+       'field_additional_info[und][0][first]' => $additional_first,
+       'field_additional_info[und][0][second]' => $additional_second,
+       // Related Content.
+-      'field_related_content[und][0][title]' => $related_title,
+-      'field_related_content[und][0][url]' => $related_url,
++      'field_dataset_related_content[und][0][title]' => $related_title,
++      'field_dataset_related_content[und][0][url]' => $related_url,
+     );
+ 
+     $this->drupalPost($this->getUrl(), $edit, 'Finish');

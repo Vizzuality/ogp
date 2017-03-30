@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the OGP Link feature.
+ */
+
+include_once 'ogp_link.features.inc';

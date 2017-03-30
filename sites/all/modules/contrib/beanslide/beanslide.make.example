@@ -1,0 +1,22 @@
+; Example make file for the beanslide module.
+api = 2
+core = 7.x
+
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;; LIBRARIES ;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;
+
+; jQuery Cycle
+; http://jquery.malsup.com/cycle/
+libraries[jquery.cycle][download][type] = "get"
+libraries[jquery.cycle][download][url] = "http://malsup.github.com/jquery.cycle.all.js"
+
+; jQuery ResponsiveSlides
+; http://responsive-slides.viljamis.com/
+libraries[responsiveslides][download][type] = "get"
+libraries[responsiveslides][download][url] = "https://github.com/viljamis/ResponsiveSlides.js/zipball/v1.32"
+
+; jQuery Vegas
+; http://vegas.jaysalvat.com/
+libraries[jquery.vegas][download][type] = "get"
+libraries[jquery.vegas][download][url] = "https://github.com/jaysalvat/vegas/zipball/v1.2"

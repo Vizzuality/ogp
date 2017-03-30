@@ -1,0 +1,128 @@
+// News or Events in full width regions.
+.not-front {
+  #main-content,
+  .region-highlighted,
+  .region-content-aside,
+  .region-tertiary-content {
+    #block-views-events-events-block-1,
+  	#block-views-news-news-block-1 {
+  		clear: both;
+  		margin: 1em 0;
+  		.view-content {
+  			display: table;
+        @media screen and (min-width: 768px) {
+          margin: 0 -15px;
+        }
+  		}
+  		.views-field {
+  	  	margin: 5px 15px;
+  	  }
+  		.views-row {
+  			@include faux-four-col;
+  		}
+  		// Only show 4 events when in full-width region.
+  		.view-events .views-row-last {
+  			display: none;
+  		}
+  	}
+  }
+} 
+
+.view-summit-tagged-posts,
+.view-blog-category-achive,
+.view-blog-category-term,
+.view-ogp-blog,
+.view-events,
+.view-news {
+	h2.block-title {
+    @include block-title;
+  }
+  h2.field-content.title,
+  h2.field-content.title a,
+  h2.views-field-title a,
+  .views-field-title a {
+    @include headline;
+  }
+  .views-field-field-date,
+  .views-field-created {
+    @include posted;
+  }
+}
+
+.view-country-commitment-categories {
+  .item-list{
+    ul {
+      padding:0;
+      li {
+        list-style-type:none;
+        margin:0;
+        border:none;
+        padding:0;
+        .field-content {
+          @include gray-sprite(check);
+          margin: 10px;
+          padding: 8px 0 8px 40px;
+          display:block;
+          font-size:1.6em;
+          color:$nublack;
+        }
+      }
+    }
+  }
+}
+.view-ogp-countries {
+  @include zen-grid-container;
+  .views-column-1 {
+    @include zen-grid-item(2,1);
+  }
+  .views-column-2 {
+    @include zen-grid-item(2,3);
+  }
+  .views-column-3 {
+    @include zen-grid-item(2,5);
+  }
+  .views-column-4 {
+    @include zen-grid-item(2,7);
+  }
+  .views-column-5 {
+    @include zen-grid-item(2,9);
+  }
+  .views-column-6 {
+    @include zen-grid-item(2,11);
+  }
+}
+
+.view-ogp-dkan-country-documents {
+  h5 a {
+    @include border-radius(4px);
+    color: #fff;
+    display: inline-block;
+    background-color: $pop;
+    border-color: $pop;
+    padding: 5px 15px;
+    margin: 1em 0 2em;
+    &:hover,
+    &:focus {
+      background-color: $accent;
+      border-color: $accent;
+      text-decoration: none;
+    }
+    &:before {
+      content: "\f019";
+      font-family: Fontawesome;
+      margin-right: 5px;
+    }
+  }
+  .view-empty {
+    margin: 25px 0;
+  }
+}
+
+.view-ogp-commitments {
+  ul,
+  .item-list ul li {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+  }
+}

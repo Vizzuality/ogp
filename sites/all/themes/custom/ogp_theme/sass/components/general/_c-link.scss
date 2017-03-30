@@ -1,0 +1,17 @@
+.c-link {
+
+  .icon {
+    margin-right: 5px;
+    margin-top: 4px;
+  }
+
+  .link {
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+
+    .text {
+      vertical-align: middle;
+    }
+  }
+}

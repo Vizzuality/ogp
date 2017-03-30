@@ -1,0 +1,43 @@
+.c-slider-dots {
+  position: absolute;
+  right: 0;
+  bottom: 40px;
+  left: 0;
+  width: 100%;
+  max-width: 1150px;
+  margin: 0 auto;
+
+  .dots-container {
+    position: absolute;
+    right: 25px;
+    bottom: 0;
+
+    li {
+      display: inline-block;
+      margin-right: 30px;
+      line-height: 0;
+
+      &:last-of-type {
+        margin-right: 0;
+      }
+
+      button {
+        width: 7px;
+        height: 7px;
+        padding: 0;
+        border: 0;
+        border-radius: 12px;
+        outline: 0;
+        background-color: rgba($color-22, .4);
+        font-size: 0;
+        cursor: pointer;
+      }
+
+      &.slick-active {
+        button {
+          background-color: $color-22;
+        }
+      }
+    }
+  }
+}

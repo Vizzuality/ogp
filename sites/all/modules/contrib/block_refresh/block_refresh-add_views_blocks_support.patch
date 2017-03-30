@@ -1,0 +1,15 @@
+diff --git a/sites/all/modules/contrib/block_refresh/js/block_refresh.js b/sites/all/modules/contrib/block_refresh/js/block_refresh.js
+index 5d07b65..acd9642 100644
+--- a/sites/all/modules/contrib/block_refresh/js/block_refresh.js
++++ b/sites/all/modules/contrib/block_refresh/js/block_refresh.js
+@@ -17,6 +17,10 @@
+           return;
+         }
+ 
++        if (block == 'views') {
++          element_content = '.view-content';
++        }
++
+         $(element).addClass('block-refresh-processed');
+ 
+         //Get argument from referring page and append to end of load request

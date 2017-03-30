@@ -1,0 +1,4 @@
+/* Superfish blocks */
+#block-superfish-1 { padding: 0 200px 45px 125px; width: 100%; }
+#block-superfish-1 li.sf-item-1 a { line-height: 45px; }
+#block-superfish-1 li.sf-depth-2 a { width: 33%; }

@@ -1,0 +1,3 @@
+name = Tweet Embed
+description = "A module which creates an Input Filter for embedding tweets from Twitter" 
+core = "7.x" 

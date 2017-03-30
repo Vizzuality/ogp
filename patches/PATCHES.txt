@@ -1,0 +1,59 @@
+; Fixing oembed warning message
+projects[oembed][subdir] = "contrib"
+projects[oembed][version] = "7.x-1.0-rc2"
+projects[oembed][patch][commit] = e60e11a
+
+; Allow manual paging on infinite scroll
+projects[views_infinite_scroll][subdir] = "contrib"
+projects[views_infinite_scroll][version] = "1.1"
+projects[twitter][patch][1316194] = https://drupal.org/files/views_infinite_scroll_manually-load-next-pages_1316194_d7.patch
+
+; Fix selected issue with facetapi_select
+; @todo: This should be re-evaluated if this is an issue.
+;projects[facetapi_select][subdir] = "contrib"
+;projects[facetapi_select][patch][1412442] = "https://drupal.org/files/facetapi_select-selected-values-1412442-11.patch"
+
+; Fix theme issue on admin pages related to sub path auto
+projects[subpathauto][subdir] = "contrib"
+projects[subpathauto][version] = "1.3"
+projects[subpathauto][patch][1814516] = https://drupal.org/files/subpathauto-theme_admin_pages-1814516-15.patch
+
+; Make file downlad links translateable
+projects[file_entity][subdir] = "contrib"
+projects[file_entity][version] = "7.x-2.0-alpha2"
+projects[file_entity][patch][2097261] = https://drupal.org/files/file_entity-download_link_i18n-2097261-1.patch
+
+; Add migrate functionality to redirect module
+projects[file_entity][subdir] = "contrib"
+projects[file_entity][version] = "7.x-1.0-rc1+6-dev"
+projects[file_entity][patch][1116408] = https://drupal.org/files/redirect-migrate-support-1116408-69.patch
+
+; Add autosubmit to facetapi_multiselect
+projects[facetapi_multiselect][subdir] = "contrib"
+projects[facetapi_multiselect][version] = "7.x-1.0-beta1"
+projects[facetapi_multiselect][patch][1806344] = https://drupal.org/files/new-options_autosubmit_remove-active_act_single_6.patch
+
+; Blacklist for subpath auto
+projects[subpathauto][subdir] = "contrib"
+projects[subpathauto][version] = "7.x-1.3"
+projects[subpathauto][patch][1252502] = https://drupal.org/files/subpath-auto-1252502-whitelist-and-blacklist.patch
+
+; Make entity translation work with field collection
+projects[field_collection][subdir] = "contrib"
+projects[field_collection][version] = "7.x-1.0-beta5+1-dev"
+projects[field_collection][patch][1344672] = https://drupal.org/files/field_collection-et-1344672-53.patch
+
+; Match media to make wysiwyg images work
+projects[media][subdir] = "contrib"
+projects[media][version] = "7.x-2.x-dev"
+projects[media][patch][2067063] = https://drupal.org/files/media-missing-attributes-2067063-57.patch
+
+; Update ckeditor to match previous media patch
+projects[ckeditor][subdir] = "contrib"
+projects[media][version] = "7.x-1.13+9-dev"
+projects[media][patch][1504696] = https://drupal.org/files/ckeditor-make_compatible-with-image-resize-patch_1504696_65.patch
+
+; Allow embedding of Youtube playlists
+projects[media_youtube][subdir] = "contrib"
+projects[media_youtube][version] = "7.x-3.x-dev"
+projects[media_youtube][patch][1405528] = https://www.drupal.org/files/issues/media_youtube-playlist-support-1405528-21.patch

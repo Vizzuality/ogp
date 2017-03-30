@@ -1,0 +1,299 @@
+<?php
+
+function feed_import_upgrade_menu() {
+	$items['admin/config/services/feed_import/upgrade'] = array(
+		'type' => MENU_CALLBACK,
+		'title' => 'Feed Import Upgrade',
+		'page callback' => 'drupal_get_form',
+		'page arguments' => array('feed_import_upgrade_upgrade_form'),
+		'access arguments' => array('administer content'),
+	);
+	return $items;
+}
+
+function feed_import_upgrade_upgrade_form($form, &$form_state) {
+	//variable_set('feed_import_upgrade_state', 1);
+	$state = variable_get('feed_import_upgrade_state', 1);
+
+	$msg = array();
+	switch ($state) {
+		case 1:
+			$msg[] = t('First, please try this upgrade on a copy of production site');
+			$msg[] = t('Disable Feed Import cron import');
+			$msg[] = t('Be sure that no import is currently running');
+			$msg[] = t('Create a backup');
+			$msg[] = t('Put the site in maintainance mode if this is a production site');
+			break;
+		case 2:
+			$msg[] = t('Disable and uninstall Feed Import 2');
+			$msg[] = t('Delete Feed Import 2 module directory');
+			$msg[] = t('Download and install Feed Import 3 module');
+			break;
+		case 3:
+			$msg[] = t('Check Feed Import feeds');
+			$msg[] = t('CSV or JSON paths must be rewritten');
+			$msg[] = t('Check Feed Import global settings');
+			$msg[] = t('Uninstall upgrade module and delete files');
+			break;
+	}
+
+	$form['msg'] = array(
+		'#prefix' => '<h1>' . t('Step @number', array('@number' => $state)) . '</h1>',
+		'#markup' => theme_item_list(array(
+			'items' => $msg,
+			'type' => 'ol',
+			'title' => t('Manually check items below'),
+			'attributes' => array()
+		)),
+
+	);
+
+	$form['state'] = array(
+		'#type' => 'value',
+		'#value' => $state,
+	);
+
+	if ($state < 3) {
+		$form['submit'] = array(
+			'#type' => 'submit',
+			'#value' => t('Proceed'),
+		);
+	}
+
+	return $form;
+}
+
+function feed_import_upgrade_upgrade_form_submit($form, &$form_state) {
+	$v = $form_state['values'];
+	if ($v['state'] < 3) {
+		set_time_limit(0);
+		feed_import_upgrade_perform((int) $v['state']);
+		variable_set('feed_import_upgrade_state', $v['state'] + 1);
+	}
+}
+
+
+function feed_import_upgrade_convert($conf) {
+	$items_count = 0;
+  $feed = array(
+      'name' => $conf['name'],
+      'machine_name' => $conf['machine_name'],
+      'entity' => $conf['entity_info']['#entity'],
+      'cron_import' => $conf['enabled'],
+      'last_run' => 0,
+      'last_run_duration' => 0,
+      'last_run_items' => 0,
+      'settings' => array(
+        'feed' => array(
+          'protect_on_invalid_source' => FALSE,
+          'protect_on_fewer_items' => 0,
+        ),
+        'processor' => array(
+          'name' => 'default',
+          'class' => 'FeedImportProcessor',
+          'options' => array(
+            'items_count' => &$items_count,
+            'skip_imported' => isset($conf['xpath']['#skip_imported_items'])
+																? $conf['xpath']['#skip_imported_items']
+																: FALSE,
+            'reset_cache' => 100,
+            'break_on_undefined_filter' => TRUE,
+            'skip_defined_functions_check' => FALSE,
+          ),
+        ),
+        'hashes' => array(
+          'name' => 'sqlv2compatible',
+          'class' => 'FeedImportSQLHashesv2Compatible',
+          'options' => array(
+            'ttl' => 0,
+            'insert_chunk' => 300,
+            'update_chunk' => 300,
+            'group' => $conf['machine_name'],
+          ),
+        ),
+        'filter' => array(
+          'name' => 'default',
+          'class' => 'FeedImportMultiFilter',
+          'options' => array(
+            'param' => variable_get('feed_import_field_param_name', '[field]'),
+            'include' => NULL,
+          ),
+        ),
+        'functions' => array(),
+      )
+			+ feed_import_upgrade_get_fields($conf['xpath']['#items'], $conf['xpath']['#process_function'])
+			+ feed_import_upgrade_reader($conf['xpath']['#process_function'], $conf['url'], $conf['xpath']['#root'], $conf['xpath']['#uniq'], $conf['xpath']['#settings'], $items_count),
+    );
+	return $feed;
+}
+
+
+function feed_import_upgrade_reader($name, $url, $root, $uniq, $settings, &$items_count) {
+	$r = array();
+  switch ($name) {
+    case 'processXML': default:
+			foreach ($settings as &$ns) {
+				if ($ns) {
+					$ns = implode('=', explode(' ', $ns, 2));
+				}
+			}
+			$settings = trim(implode(PHP_EOL, $settings));
+			$r['name'] = 'xml';
+			$r['class'] = 'SimpleXMLFIReader';
+			$r['options'] = array(
+				'url' => $url,
+				'parent' => $root,
+				'class' => 'SimpleXMLElement',
+				'options' => array(
+					256 => 256,
+					16384 => 16384,
+				),
+				'namespaces' => $settings,
+				'stream' => '',
+				'raw' => '',
+			);
+		break;
+	case 'processXMLChunked':
+			$r['name'] = 'xml-chunked';
+			$r['class'] = 'ChunkedXMLFIReader';
+			$r['options'] = array(
+				'url' => $url,
+				'parent' => $root,
+				'size' => (int) @$settings['chunk_size'],
+				'properties' => @$settings['xml_properties'],
+				'substr' => @$settings['substr_function'],
+				'stream' => '',
+				'class' => 'SimpleXMLElement',
+			);
+			$items_count = (int) @$settings['items_count'];
+		break;
+	case 'processXmlReader':
+	case 'processHTMLPage':
+		$r['name'] = 'dom';
+		$r['class'] = 'DomXMLFIReader';
+		$r['options'] = array(
+			'format' => $name == 'processHTMLPage' ? 'html' : 'xml',
+			'url' => $url,
+			'parent' => $root,
+			'php_func' => '',
+			'options' => array(
+				256 => 256,
+				16384 => 16384,
+			),
+			'silence_load_errors' => 0,
+			'strictErrorChecking' => 0,
+			'preserveWhiteSpace' => 0,
+			'resolveExternals' => 0,
+			'recover' => 0,
+			'normalizeDocument' => 0,
+			'stream' => '',
+			'raw' => '',
+		);
+		$items_count = (int) @$settings['items_count'];
+		break;
+	case 'processCSV':
+		$r['name'] = 'csv';
+		$r['class'] = 'CSVFIReader';
+		$r['options'] = array(
+			'url' => $url,
+			'stream' => '',
+		) + $settings;
+		break;
+	case 'processJSON':
+		$r['name'] = 'csv';
+		$r['class'] = 'CSVFIReader';
+		$r['options'] = array(
+			'url' => $url,
+			'parent' => $root,
+			'stream' => '',
+			'raw' => '',
+		);
+		break;
+  }
+
+	return array(
+		'uniq_path' => $uniq,
+		'reader' => $r,
+	);
+}
+
+function feed_import_upgrade_get_fields($fields) {
+  static $da = array(
+    'default_value' => 0,
+		'default_value_filtered' => 1,
+		'ignore_field' => 2,
+		'skip_item' => 3,
+  );
+
+  $ret = array('fields' => array(), 'static_fields' => array());
+  foreach ($fields as $k => $f) {
+    $r = array(
+			'field' => $f['#field'],
+			'column' => $f['#column'],
+			'paths' => trim($f['#xpath']),
+			'default_action' => $da[$f['#default_action']],
+			'default_value' => $f['#default_value'],
+			'update_mode' => 0,
+			'filters' => $f['#filter'],
+			'prefilters' => $f['#pre_filter'],
+		);
+
+		foreach (array('filters', 'prefilters') as $ft) {
+			foreach ($r[$ft] as &$fv) {
+				$fv = array(
+					'function' => $fv['#function'],
+					'params' => $fv['#params'],
+				);
+			}
+		}
+
+		if (!strlen($r['paths']) && $r['default_action'] == $da['default_value']) {
+			$ret['static_fields'][$k] = $r;
+		}
+		else {
+			$ret['fields'][$k] = $r;
+		}
+
+  }
+
+  return $ret;
+}
+
+
+
+function feed_import_upgrade_perform($state) {
+	switch ($state) {
+		case 1:
+			// Convert data from 2 to 3
+			$feeds = db_select('feed_import_settings', 'f')
+								->fields('f')
+								->execute();
+			foreach ($feeds as $feed) {
+				$feed = (array) $feed;
+				$feed['entity_info'] = unserialize($feed['entity_info']);
+				$feed['xpath'] = unserialize($feed['xpath']);
+				$feed = feed_import_upgrade_convert($feed);
+				$feed['settings'] = serialize($feed['settings']);
+				db_insert('feed_import_upgrade_settings')
+					->fields($feed)
+					->execute();
+			}
+			// Copy hashes
+			db_query('INSERT INTO {feed_import_upgrade_hashes} (feed_machine_name, feed_group, entity, entity_id, hash, expire) SELECT feed_machine_name, feed_machine_name as feed_group, entity, entity_id, hash, expire FROM {feed_import_hashes}');
+			return $state + 1;
+		case 2:
+			// Copy converted data to 3
+			_feed_import_upgrade_copy_table('feed_import_upgrade_settings', 'feed_import_settings');
+			// Copy hashes
+			_feed_import_upgrade_copy_table('feed_import_upgrade_hashes', 'feed_import_hashes');
+			return $state + 1;
+		case 3:
+			// Done
+			return $state;
+	}
+	return 0;
+}
+
+function _feed_import_upgrade_copy_table($src, $dest) {
+	return db_query('INSERT INTO {' . $dest . '} SELECT * FROM {' . $src . '}');
+}

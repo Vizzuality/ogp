@@ -1,0 +1,14 @@
+name = Social Networking Block
+description = Adds a simple block for a Facebook/Twitter link
+core = 7.x
+
+dependencies[] = block
+dependencies[] = sharethis
+
+files[] = social_block.module
+
+; Information added by drupal.org packaging script on 2013-06-18
+version = "7.x-1.x-dev"
+core = "7.x"
+datestamp = "1371517966"
+

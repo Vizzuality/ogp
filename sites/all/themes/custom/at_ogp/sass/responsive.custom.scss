@@ -1,0 +1,588 @@
+
+// _base.scss imports _custom.scss and other partials.
+@import "base";
+
+/*
+ * Smartphone sizes and up
+ */
+@media only screen and (max-width: 475px) {
+  body {
+    #{headings()} {
+      font-family:$font;
+      font-weight:100;
+    }
+  }
+  .front {
+    #main-content {
+      #block-views-ogp-activity-feed-block-2,
+      #block-views-ogp-news-and-events-blog-block,
+      #block-views-events-events-block-1,
+      #block-views-ogp-blog-block,
+      #block-views-ogp-opengov-tweets-block-1,
+      #block-fb-likebox-0,
+      #block-ogp-activity-stream-ogp-rss {
+        @include zen-clear();
+        @include zen-grid-item(12,1);
+      }
+    }
+  }
+  .front .region-tertiary-content {
+    #block-block-1,
+    #block-block-2,
+    #block-block-3,
+    #block-block-4 {
+      @include zen-clear();
+      @include zen-grid-item(12,1);
+    }
+    .block h2.block-title {
+      padding-top:70px;
+      width:100%;
+      margin:0 0 10px;
+      display:block;
+      text-align:center;
+      height:auto;
+    }
+  }
+  .front .flexslider .carousel-caption {
+    position:relative;
+    top:auto;
+    left:auto;
+    margin:-1px 0 0 0;
+  }
+  .flexslider {
+    .carousel-caption {
+      display:none;
+    }
+    h4 {
+      font-size:1.5em;
+      margin:-1px 0 0 0 !important;
+    }
+    p {
+      font-size:.85em;
+      margin:0;
+    }
+  }
+  .meeting-block-menu,
+  #block-ogp-country-nav {
+    ul a {
+      font-size:1em;
+      line-height:1.1em;
+      padding:10px 0;
+      height:25px;
+    }
+  }
+  #block-block-8:after,
+  #block-block-7:after {
+    border-width:40px;
+    margin-left:-40px;
+  }
+  #nav-wrapper {
+    height:125px;
+    position:relative;
+    #menu-bar {
+      height:auto;
+      #block-system-user-menu {
+        position:absolute;
+        top:75px;
+        left:160px;
+      }
+      #block-lang-dropdown-language {
+        position:absolute;
+        top:88px;
+        left:176px; 
+        width:100px;
+      }
+      #block-views-exp-ogp-search-search-block {
+        position:absolute;
+        top:50px;
+        left:170px; 
+      }
+    }
+  }
+  .view-irm-page .views-row .views-column-1,
+  .view-irm-page .views-row .views-column-2 {
+    @include zen-clear();
+    @include zen-grid-item(12,1);
+  }
+  .view-ogp-countries {
+    @include zen-grid-container;
+    .views-column-1 {
+      @include zen-grid-item(6,1);
+      text-align:center;
+    }
+    .views-column-2 {
+      @include zen-grid-item(6,1,right);
+      text-align:center;
+    }
+    .views-column-3 {
+      @include zen-clear();
+      @include zen-grid-item(6,1);
+      text-align:center;
+    }
+    .views-column-4 {
+      @include zen-grid-item(6,1,right);
+      text-align:center;
+    }
+    .views-column-5 {
+      @include zen-clear();
+      @include zen-grid-item(6,1);
+      text-align:center;
+    }
+    .views-column-6 {
+      @include zen-grid-item(6,1,right);
+      text-align:center;
+    }
+  }
+
+  .region-footer {
+    #block-menu-block-4, // about
+    #block-menu-block-3, // how it works
+    #block-menu-block-5, // get involved
+    #block-menu-block-6,
+    #block-menu-block-7,
+    #block-menu-block-8,
+    #block-block-6,
+    #block-block-10,
+    #block-menu-menu-footer-menu,
+    #block-masquerade-masquerade {
+      @include zen-clear();
+      @include zen-grid-item(12,1);
+    }
+    #block-block-6 {
+      margin:0;
+      .block-inner {
+        text-align:center;
+      }
+    }
+    #block-block-10 .block-inner {
+      text-align:center;
+      margin:0 10px 10px;
+      a.nuams-link {
+        float:none;
+        display:inline-block;
+      }
+      p {
+        display:inline-block;
+      }
+    }
+  }
+  
+  //Country and Summit Pages on small screens
+  #block-views-country-header-block .view-content {
+    .views-field-title-field h1 {
+      font-size: 2.7em;
+      padding: 5px 10px;
+      margin:0;
+      white-space: nowrap;
+    }
+  }
+  .meeting-block-menu,
+  #block-ogp-country-nav {
+    height:auto;
+    li {
+      line-height:1.15em;
+    }
+    ul a {
+      height:auto;
+      padding:10px;
+      width:auto;
+    }
+  }
+  #block-quicktabs-front-page-maps .map-legend-wrapper,
+  #block-ogp-map-country-map .map-legend-wrapper {
+    @include transparent(#000,.5);
+    padding:0;
+  }
+  .blog-footer-wrapper {
+    .region-blog-footer-left,
+    .region-blog-footer-mid,
+    .region-blog-footer-right {
+      @include zen-clear();
+      @include zen-grid-item(12,1);
+    }
+  }
+  .sidebar-second .content-inner {
+    padding: 0 15px;
+  }
+}
+
+
+/*
+ * Tablets
+ */
+@media only screen and (min-width: 476px) and (max-width: 768px) {
+  
+  /* 
+   * Float Region blocks example:
+   * In smaller screen sizes we can remove the float and widths so all blocks
+   * stack instead of displaying horizonally. The selector used here is an
+   * "attribute selector" which will match on any float block class. Use your
+   * inspector or Firebug to get the classes from the page output if you need
+   * more granular control over block alignment and stacking.
+   * 
+   * "Float Region blocks" is an extension for floating blocks in regions, see
+   * your themes appearance settings, under the Extensions tab.
+   */ 
+  .region[class*="float-blocks"] .block {
+    float: none;
+    width: 100%;
+  }
+  body {
+    h1, h2, h3, h4, h5, h6 {
+      font-family:$font;
+      font-weight:100;
+    }
+  }
+  .front {
+    #main-content {
+      #block-views-ogp-activity-feed-block-2,
+      #block-views-ogp-news-and-events-blog-block,
+      #block-views-events-events-block-1,
+      #block-views-ogp-blog-block,
+      #block-views-ogp-opengov-tweets-block-1,
+      #block-fb-likebox-0,
+      #block-ogp-activity-stream-ogp-rss {
+        @include zen-clear();
+        @include zen-grid-item(12,1);
+      }
+    }
+  }
+  .front .region-tertiary-content {
+    #block-block-1 {
+      @include zen-grid-item(6,1);
+    }
+    #block-block-2 {
+      clear:none;
+      @include zen-grid-item(6,7);
+    }
+    #block-block-3 {
+      @include zen-clear();
+      @include zen-grid-item(6,1);
+    }
+    #block-block-4 {
+      clear:none;
+      @include zen-grid-item(6,7);
+    }
+    .block h2.block-title {
+      display: table;
+      height: 2.5em;
+      line-height: 1em;
+      margin: 0;
+      padding-top: 70px;
+      text-align: center;
+      vertical-align: middle;
+      width: 100% !important;
+      font-weight:100;
+    }
+  }
+  .front .flexslider {
+    .views-field .carousel-caption {
+      h4 {
+        font-size:21px;
+        padding:.5em;
+      }
+      a {
+        font-size:21px;
+      }
+    }
+  }
+  .flexslider .views-field .carousel-caption {
+    h4 {
+      font-size:21px;
+      padding:.5em;
+    }
+    p {
+      font-size:16px;
+      padding:.5em;
+    }
+  }
+  #nav-wrapper {
+    height:110px;
+    position:relative;
+    #menu-bar {
+      height:auto;
+      #block-system-user-menu {
+        position:absolute;
+        top:70px;
+        left:160px;
+      }
+      #block-lang-dropdown-language {
+        position:absolute;
+        top:50px;
+        left:310px; 
+        width:100px;
+      }
+      #block-views-exp-ogp-search-search-block {
+        position:absolute;
+        top:47px;
+        left:170px; 
+      }
+    }
+  }
+  #block-block-8:after,
+  #block-block-7:after {
+    border-width:40px;
+    margin-left:-40px;
+  }
+  .meeting-block-menu, 
+  #block-ogp-country-nav {
+    ul a {
+      height:35px;
+      padding:5px 10px;
+    }
+  }
+  .view-irm-page .views-row .views-column-1,
+  .view-irm-page .views-row .views-column-2 {
+    @include zen-clear();
+    @include zen-grid-item(12,1);
+  }
+  .region-footer {
+    #block-menu-block-4, //about
+    #block-menu-block-3, //how it works
+    #block-menu-block-5, // get involved
+    #block-menu-menu-footer-menu,
+    #block-masquerade-masquerade {
+      @include zen-clear();
+      @include zen-grid-item(12,1);
+    }
+  }
+  .blog-footer-wrapper {
+    .region-blog-footer-left,
+    .region-blog-footer-mid,
+    .region-blog-footer-right {
+      @include zen-clear();
+      @include zen-grid-item(12,1);
+    }
+  }
+  .sidebar-second .content-inner {
+    padding: 0 15px;
+  }
+
+}
+
+/*
+ * Summit Schedule
+ */
+@media only screen and (max-width: 768px) {
+  .page-get-involved-london-summit-2013-agenda,
+  .page-get-involved-asia-pacific-regional-meeting-agenda {
+    #content-wrapper .container {
+      max-width:100%;
+      width:100%;
+    }
+  }
+  .event-agenda-global-view {
+    @include agenda-grid;
+    .sections-header {
+      display:none;
+    }
+    .view-header {
+      margin:1.5em 0 0.5em;
+    }
+    section.session {
+      margin:0 10px 10px;
+      &:nth-child(2n+2)  {
+        background-color: transparent;
+      }
+      span.date-display-single {
+        @include zen-grid-item(10,1);
+        @include border-radius(8px);
+        color:#fff;
+        background-color:$smoke;
+        font-size:2em;
+        line-height:1.25em;
+        padding:12px 24px;
+        text-align:center;
+        span.date-display-end {
+          display:inline-block;
+        }
+      }
+      p.title {
+        margin-top:12px;
+      }
+      .speakers {
+        display:block;
+      }
+      .track {
+        display:inline-block;
+      }
+      .room {
+        color:$smoke;
+        display:inline-block;
+        font-style: italic;
+      }
+      article.room-1,
+      article.room-2,
+      article.room-3,
+      article.room-4,
+      article.room-5,
+      article.room-6,
+      article.room-7,
+      article.room-8,
+      article.room-9 {
+        @include zen-clear();
+        @include zen-grid-item(10,1);
+        line-height:1.25em;
+      }
+    }
+  }
+
+  .view-americas-pacific-regional-meeting-session-grid.event-agenda-global-view,
+  .view-europe-pacific-regional-meeting-session-grid.event-agenda-global-view,
+  .view-asia-pacific-regional-meeting-session-grid.event-agenda-global-view {
+    section.session {
+      span.date-display-single {
+        @include zen-grid-item(10,1);
+        @include border-radius(8px);
+        color:#fff;
+        background-color:$smoke;
+        font-size:2em;
+        line-height:1.25em;
+        padding:12px 24px;
+        text-align:center;
+      }
+    }
+  }
+
+  .view-americas-pacific-regional-meeting-session-grid.event-agenda-global-view,
+  .view-europe-pacific-regional-meeting-session-grid.event-agenda-global-view {
+    section.session {
+      article.room-1,
+      article.room-2,
+      article.room-3,
+      article.room-4,
+      article.room-5,
+      article.room-6,
+      article.room-7,
+      article.room-8,
+      article.room-9 {
+        @include zen-clear();
+        @include zen-grid-item(10,1);
+        line-height:1.25em;
+      }
+    }
+  }
+
+  .view-americas-pacific-regional-meeting-session-grid.event-agenda-global-view,
+  .view-asia-pacific-regional-meeting-session-grid.event-agenda-global-view {
+    section.session {
+      article.room-1,
+      article.room-2,
+      article.room-3,
+      article.room-4,
+      article.room-5,
+      article.room-6,
+      article.room-7,
+      article.room-8,
+      article.room-9 {
+        @include zen-clear();
+        @include zen-grid-item(10,1);
+        line-height:1.25em;
+      }
+    }
+  }
+}
+
+/*
+ * Tablet sizes and up
+ */
+@media only screen and (min-width: 769px) {
+  body {
+    h1, h2, h3, h4, h5, h6 {
+      font-family:$font;
+      font-weight:100;
+    }
+    @include headings;
+  }
+
+  .meeting-block-menu,
+  #block-quicktabs-front-page-maps,
+  #block-views-country-header-block,
+  #block-ogp-country-nav,
+  .region-content-aside {
+    margin:0 -15px;
+  }
+  .flexslider {
+    .carousel-caption {
+      text-align:center;
+      h4 {
+        margin-bottom:15px;
+      }
+    }
+  }
+}
+
+// narrow screen
+@media only screen and (min-width: 750px) and (max-width:1024px) {
+  #block-block-8:after,
+  #block-block-7:after {
+    border-width:40px;
+    margin-left:-40px;
+  }
+}
+
+/*
+ * Desktops/laptops and up
+ */
+/* @media only screen and (min-width: 1025px) {} */
+
+// Responsive tables.
+.responsive-table-wrapper {
+  position: relative;
+  padding-bottom: 30px;
+
+  .responsive-table-wrapper-inner {
+    overflow-x: auto;
+  }
+
+  .scroll-table-button {
+    display: none;
+    position: absolute;
+    height: 30px;
+    width: 30px;
+    background-image: url(../css/images/bg_direction_nav.png);
+    background-repeat: no-repeat;
+    cursor: pointer;
+  }
+
+  .scroll-table-button-description {
+    display: none;
+    position: absolute;
+    bottom: 5px;
+    width: 100%;
+    text-align: center;
+  }
+
+  .scroll-table-button.left {
+    left: 0;
+    background-position: left center;
+  }
+
+  .scroll-table-button.right {
+    right: 0;
+    background-position: right center;
+  }
+}
+
+.responsive-table-wrapper.scroll-buttons {
+  .scroll-table-button-description,
+  .scroll-table-button {
+    display: block;
+  }
+}
+
+@media only screen and (max-width: 9999px) and (min-width: 10px) {
+  // Override responsive css that removes padding.
+  td,
+  th {
+    padding: 5px 7px !important;
+  }
+  .front {
+    #highlighted {
+      .container {
+        width: 100% !important;
+        max-width: 100% !important;
+      }
+    }
+  }
+}

@@ -1,0 +1,17 @@
+name = OGP Activity Stream
+description = Activity Stream view, dispaly suite and costumizations
+core = 7.x
+package = OGP
+version = 7.x-1.1
+project = ogp_activity_stream
+dependencies[] = ctools
+dependencies[] = ds
+dependencies[] = views
+dependencies[] = views_infinite_scroll
+features[ctools][] = ds:ds:1
+features[ctools][] = views:views_default:3.0
+features[ds_fields][] = activity_stream_item
+features[ds_view_modes][] = activity_stream
+features[features_api][] = api:2
+features[views_view][] = ogp_activity_feed
+features[views_view][] = ogp_rss

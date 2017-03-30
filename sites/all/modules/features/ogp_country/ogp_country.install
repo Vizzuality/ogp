@@ -1,0 +1,33 @@
+<?php
+
+/**
+ * Remove activities field validation as char(255).
+ */
+function ogp_country_update_7001() {
+  // Manual database changes.
+  if ($data = db_select('field_config', 'fc')
+      ->fields('fc', array('data'))
+      ->condition('field_name', 'field_activities', '=')
+      ->execute()
+      ->fetchField()) {
+    $data = unserialize($data);
+    if (!empty($data['settings']['max_length'])) {
+      unset($data['settings']['max_length']);
+      if (db_update('field_config')
+              ->fields(array(
+                'data' => serialize($data),
+              ))
+              ->condition('field_name', 'field_activities', '=')
+              ->execute()) {
+        // Clear caches.
+        field_cache_clear(TRUE);
+        return t('The field_activities updated.');
+      }
+      else {
+        throw new DrupalUpdateException('Something went wrong: can\'t update field_activities.');
+      }
+    }
+    return t('No field_activities update required.');
+  }
+  throw new DrupalUpdateException('Something went wrong.');
+}

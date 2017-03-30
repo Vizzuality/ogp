@@ -1,0 +1,44 @@
+<?php
+/**
+ * @file
+ * Install hooks for BeanSlide.
+ */
+
+/**
+ * Implements hook_install().
+ */
+function beanslide_install() {
+  // Make sure all bean types and fields are initialized.
+  drupal_static_reset('ctools_plugins');
+  drupal_static_reset('bean_load_plugin_class');
+  _field_info_collate_types(TRUE);
+
+  // Create fields for the beanslide bean type. Mimics logic found in
+  // features.field.inc, in the field_features_rebuild() function.
+  module_load_include('inc', 'beanslide', 'beanslide.field');
+  $fields = beanslide_get_default_fields();
+  foreach ($fields as $field) {
+    // Create only.
+    // TODO determine what to do, if anything, if these fields exist already.
+    $field_config = $field['field_config'];
+    if (!$existing_field = field_info_field($field_config['field_name'])) {
+      field_create_field($field_config);
+    }
+
+    // Create field instance (no update, again, see TODO above).
+    $field_instance = $field['field_instance'];
+    if (!$existing_instance = field_info_instance($field_instance['entity_type'], $field_instance['field_name'], $field_instance['bundle'])) {
+      field_create_instance($field_instance);
+    }
+  }
+
+  // Create a caption field group.
+  $groups = beanslide_get_default_field_groups();
+  ctools_include('export');
+  foreach ($groups as $group) {
+    $group = field_group_unpack($group);
+    ctools_export_crud_save('field_group', $group);
+    ctools_export_crud_enable('field_group', $group->identifier);
+  }
+  variable_set('menu_rebuild_needed', TRUE);
+}

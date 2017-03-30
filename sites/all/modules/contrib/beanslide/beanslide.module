@@ -1,0 +1,448 @@
+<?php
+/**
+ * @file
+ * Code for the Bean Slide module.
+ */
+
+/**
+ * Implements hook_bean_types_api_info().
+ */
+function beanslide_bean_types_api_info() {
+  return array(
+    'api' => 4,
+  );
+}
+
+/**
+ * Implements hook_bean_types().
+ */
+function beanslide_bean_types() {
+  $plugins = array();
+  $plugin_path = drupal_get_path('module', 'beanslide') . '/plugins/bean';
+
+  $plugins['beanslide'] = array(
+    'name' => 'beanslide',
+    'label' => t('Slideshow'),
+    'handler' => array(
+      'class' => 'BeanslideBean',
+      'parent' => 'BeanPlugin',
+      'path' => $plugin_path,
+      'file' => 'slideshow.inc',
+    ),
+    'editable' => TRUE,
+  );
+  return $plugins;
+}
+
+/**
+ * Implements hook_theme()
+ */
+function beanslide_theme($existing, $type, $theme, $path) {
+  return array(
+    'beanslide_collection' => array(
+      'variables' => array('bean' => NULL, 'items' => NULL, 'use_pager' => TRUE),
+    ),
+  );
+}
+
+/**
+ * Implements hook_contextual_links_view_alter().
+ * Customize our contextual links as per our display settings.
+ *
+ * (contextual.module should probably provide a better way of adding/customizing
+ * these links - currently it's very tied to the menu system).
+ */
+function field_collection_contextual_links_view_alter(&$element, &$items) {
+  // We only want our own contextual links
+  if (isset($element['#element']['#field']['type']) && $element['#element']['#field']['type'] === 'field_collection') {
+
+    if (!empty($element['#element']['#display']['settings']) && !empty($element['#links'])) {
+
+      $display_settings = $element['#element']['#display']['settings'];
+
+      foreach ($element['#links'] as $key => $link) {
+
+        // The keys of the links have the form: MODULENAME-LASTPATHSEGMENT
+        // @see menu_contextual_links() in menu.inc and
+        // @see contextual_pre_render_links() in contextual.module.
+        if (strpos($key, 'field-collection-') === 0) {
+          $op = substr($key, strlen('field-collection-'));
+          if (isset($display_settings[$op])) {
+
+            // Empty string indicates user does not want the link at all
+            if ($display_settings[$op] === '') {
+              unset($element['#links'][$key]);
+            }
+            // Otherwise just override the title with the setting
+            else {
+              $element['#links'][$key]['title'] = $display_settings[$op];
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_field_formatter_info().
+ */
+function beanslide_field_formatter_info() {
+  return array(
+    'beanslide_collection' => array(
+      'label' => t('Slideshow'),
+      'field types' => array('field_collection'),
+    ),
+  );
+}
+
+/**
+ * Implements hook_field_formatter_view().
+ */
+function beanslide_field_formatter_view($entity_type, $entity, $field, $instance, $langcode, $items, $display) {
+  $element = array();
+  switch ($display['type']) {
+    case 'beanslide_collection':
+
+      // Determine if the entity is a BeanSlide.
+      $is_beanslide = FALSE;
+      if ($entity_type === 'bean' && ($info = $entity->getInfo())) {
+        $is_beanslide = $info['name'] === 'beanslide';
+      }
+
+      $list_items = array();
+      foreach ($items as $delta => $item) {
+        if ($field_collection = field_collection_field_get_entity($item)) {
+          // Useful data for those interested in altering
+          $list_item = array();
+          $list_item['entity'] = $field_collection->view();
+          $list_item['#entity_type'] = $entity_type;
+          $list_item['#field'] = &$field;
+          $list_item['#instance'] = &$instance;
+          $list_item['#display'] = &$display;
+          $list_item['#field_collection_item'] = $field_collection;
+          $list_item['#theme_wrappers'] = array('field_collection_view');
+          $list_item['#attributes']['class'][] = 'field-collection-view';
+
+          // Add admin links for each item as contextual links.
+          $list_item['contextual_links'] = array(
+            '#type' => 'contextual_links',
+            '#contextual_links' => array(
+              'field_collection' => array(field_collection_field_get_path($field_collection->fieldInfo()), array($field_collection->item_id)),
+            ),
+            '#element' => $list_item,
+          );
+
+          if ($is_beanslide) {
+            // There's always one entry in field_collection_item, but its key varies.
+            $key = array_keys($list_item['entity']['field_collection_item']);
+            $key = array_pop($key);
+
+            // Set (okay, monkey-patch) the image style for each slide image.
+            $image_style = &$list_item['entity']['field_collection_item'][$key]['field_slide_image'][0]['#image_style'];
+            if ($entity->data['image_style'] == '<none>') {
+              $image_style = NULL;
+            }
+            else {
+              $image_style = $entity->data['image_style'];
+            }
+          }
+
+          $list_item['#attributes']['class'][] = 'contextual-links-region';
+          $list_items[] = array(
+            'data' => $list_item,
+            'class' => array('item-' . $delta),
+          );
+        }
+      }
+
+      $element = array(
+        '#theme' => 'beanslide_collection',
+        '#bean' => $entity,
+        '#items' => $list_items,
+        '#use_pager' => TRUE,
+        '#attached' => _beanslide_attach($entity),
+      );
+      break;
+  }
+
+  return $element;
+}
+
+/**
+ * Returns FAPI #attached array for needed JS and CSS for the given beanslide.
+ *
+ * @return array
+ *   Array formatted for FAPI '#attached' property.
+ */
+function _beanslide_attach($bean) {
+  $attach = array('js' => array(), 'css' => array());
+  $type = $bean->data['slideshow_plugin'];
+  // Remove the 'beanslide:' prefix.
+  if (strpos($type, 'beanslide:') === 0) {
+    $type = drupal_substr($type, 10);
+  }
+  $path = libraries_get_path($type);
+  switch ($type) {
+    case 'jquery.cycle':
+      $attach['js'][] = $path . '/jquery.cycle.all.js';
+      break;
+
+    case 'flexslider':
+      $attach['js'][]  = $path . '/jquery.flexslider-min.js';
+      $attach['css'][] = $path . '/flexslider.css';
+      break;
+
+    case 'jquery.vegas':
+      $attach['js'][]  = $path . '/jquery.vegas.js';
+      $attach['css'][] = $path . '/jquery.vegas.css';
+      break;
+
+    case 'responsiveslides':
+      $attach['js'][] = $path . '/responsiveslides.min.js';
+      $attach['css'][] = $path . '/responsiveslides.css';
+  }
+  $attach['js'][] = drupal_get_path('module', 'beanslide') . '/js/beanslide.js';
+  if ($bean->include_default_css) {
+    $attach['css'][] = drupal_get_path('module', 'beanslide') . '/css/beanslide.css';
+  }
+  return $attach;
+}
+
+/**
+ * Implements hook_menu_alter().
+ */
+function beanslide_menu_alter(&$items) {
+  $field = field_info_field('field_slide');
+  $path = field_collection_field_get_path($field);
+
+  $items[$path . '/add/%/%']['_tab'] = TRUE;
+  $items[$path . '/add/%/%']['tab_root'] = 'block';
+  $items[$path . '/add/%/%']['tab_parent'] = 'block';
+  $items[$path . '/add/%/%']['context'] = MENU_CONTEXT_INLINE;
+  $items[$path . '/add/%/%']['title'] = 'Add Slide';
+  $items[$path . '/add/%/%']['page callback'] = 'beanslide_item_add';
+}
+
+/**
+ * Implements hook_block_view_alter().
+ */
+function beanslide_block_view_alter(&$data, $block) {
+  // Add "add" link to block contextual links.
+  if ($block->module == 'bean' && isset($data['content']) && is_array($data['content']) && array_key_exists('bean', $data['content'])) {
+    foreach ($data['content']['bean'] as $id => $bean) {
+      if ($bean['#bundle'] == 'beanslide') {
+        $field = field_info_field('field_slide');
+        $path = field_collection_field_get_path($field);
+        $data['content']['#contextual_links']['field_collection'] = array($path . '/add', array('bean', $id));
+      }
+    }
+  }
+}
+
+/**
+ * Implements hook_form_FORM_ID_alter().
+ */
+function beanslide_form_bean_form_alter(&$form, $form_state) {
+  // provide a simpler form for ordering and editing slides.
+  if ($form['#bundle'] == 'beanslide') {
+    $path = drupal_get_path('module', 'beanslide');
+    drupal_add_js($path . '/js/beanslide.admin.js');
+    drupal_add_css($path . '/beanslide.admin.css');
+    $form['#submit'][] = 'beanslide_form_bean_form_submit';
+  }
+}
+
+/**
+ * Submit callback for beanslide form to redirect.
+ */
+function beanslide_form_bean_form_submit($form, &$form_state) {
+  if (isset($_GET['destination'])) {
+    $destination = drupal_get_destination();
+    $form_state['redirect'] = $destination['destination'];
+  }
+}
+
+/**
+ * Theme callback.
+ *
+ * Themes a field collection as a beanslide.
+ */
+function theme_beanslide_collection($variables) {
+  $bean      = $variables['bean'];
+  $items     = $variables['items'];
+  $use_pager = $variables['use_pager'];
+
+  // Collect image urls.
+  $images = array();
+  foreach ($items as $item_key => $data) {
+    $key = array_keys($data['data']['entity']['field_collection_item']);
+    $key = array_pop($key);
+    $item = &$data['data']['entity']['field_collection_item'][$key];
+
+    if ($bean->data['image_style'] == '<none>') {
+      $images[] = file_create_url($item['field_slide_image'][0]['#item']['uri']);
+    }
+    else {
+      $images[] = image_style_url($item['field_slide_image'][0]['#image_style'], $item['field_slide_image'][0]['#item']['uri']);
+    }
+  }
+
+  // Vegas displays all the images as "background" via CSS, so hang on to
+  // all the image urls, but don't render any image tags.
+  if ($bean->data['slideshow_plugin'] === 'jquery.vegas') {
+    unset($items[$item_key]['data']['entity']['field_collection_item'][$key]['field_slide_image']);
+  }
+
+  drupal_alter('beanslide_slideshow', $items, $slides, $bean);
+  foreach ($items as $key => $data) {
+    $items[$key] = drupal_render($data);
+  }
+
+  $output = theme('item_list', array('items' => $items, 'attributes' => array('class' => array('slides'))));
+
+  // Add unique id.
+  $id = drupal_html_id('beanslide');
+  $output = '<div id="' . $id . '" class="beanslide clearfix">' . $output . '</div>';
+
+  // Add settings for this slideshow.
+  $data = $bean->data;
+  $data['id'] = $id;
+  $data['images'] = $images;
+
+  if ($data['slideshow_plugin'] === 'jquery.vegas') {
+    $data['vegas_overlay'] = base_path() . libraries_get_path('jquery.vegas') . '/overlays/' . $data['vegas_overlay'];
+  }
+
+  drupal_add_js(array('beanslide' => array(
+    'slideshows' => array($data),
+  )), 'setting');
+
+  return $output;
+}
+
+/**
+ * Implements hook_image_default_styles().
+ */
+function beanslide_image_default_styles() {
+  $styles = array();
+
+  // Exported image style: beanslide-960
+  $styles['beanslide-960'] = array(
+    'name' => 'beanslide-960',
+    'effects' => array(
+      1 => array(
+        'label' => 'Scale',
+        'help' => 'Scaling will maintain the aspect-ratio of the original image. If only a single dimension is specified, the other dimension will be calculated.',
+        'effect callback' => 'image_scale_effect',
+        'dimensions callback' => 'image_scale_dimensions',
+        'form callback' => 'image_scale_form',
+        'summary theme' => 'image_scale_summary',
+        'module' => 'image',
+        'name' => 'image_scale',
+        'data' => array(
+          'width' => '960',
+          'height' => '',
+          'upscale' => 1,
+        ),
+        'weight' => '1',
+      ),
+    ),
+  );
+  return $styles;
+}
+
+/**
+ * Returns the plugin object for the given plugin type.
+ */
+function beanslide_get_plugin($type) {
+  if (empty($type)) {
+    $type = 'beanslide:null';
+  }
+
+  $plugins = &drupal_static(__FUNCTION__, array());
+  if (!isset($plugins[$type])) {
+    $plugin_info = beanslide_get_plugin_info($type);
+    try {
+      $plugins[$type] = new $plugin_info['class']();
+    }
+    catch (Exception $e) {
+      watchdog('beanslide', 'Bad beanslide plugin type: @type', array('@type' => $type));
+      throw $e;
+    }
+  }
+  return $plugins[$type];
+}
+
+/**
+ * Returns plugin info array for the given plugin type.
+ */
+function beanslide_get_plugin_info($type) {
+  if ($type === 'beanslide:null') {
+    return array(
+      'name' => t('Missing plugin'),
+      'description' => t('Plugin not selected, or missing.'),
+      'class' => 'BeanSlideNullPlugin',
+    );
+  }
+  $plugin_info = beanslide_get_plugin_info_all();
+  return isset($plugin_info[$type]) ? $plugin_info[$type] : FALSE;
+}
+
+/**
+ * Returns plugin info array for all plugin types.
+ */
+function beanslide_get_plugin_info_all() {
+  $plugin_info = &drupal_static(__FUNCTION__, array());
+  if (empty($plugin_info)) {
+    $plugin_info = module_invoke_all('beanslide_plugin_info');
+    drupal_alter('beanslide_plugin_info', $plugin_info);
+  }
+  return $plugin_info;
+}
+
+/**
+ * Implements hook_beanslide_plugin_info().
+ */
+function beanslide_beanslide_plugin_info() {
+  return array(
+    'beanslide:jquery.cycle' => array(
+      'name' => t('BeanSlide: jQuery Cycle'),
+      'description' => t('The old standard; a slideshow plugin that supports many different types of transition effects.'),
+      'url' => 'http://jquery.malsup.com/cycle/',
+      'class' => 'BeanSlideCyclePlugin',
+      'responsive' => FALSE,
+    ),
+    'beanslide:flexslider' => array(
+      'name' => t('BeanSlide: FlexSlider'),
+      'description' => t('FlexSlider: An awesome, fully responsive jQuery slider plugin.'),
+      'url' => 'http://www.woothemes.com/flexslider/',
+      'class' => 'BeanSlideFlexSliderPlugin',
+      'responsive' => TRUE,
+    ),
+    'beanslide:responsiveslides' => array(
+      'name' => t('BeanSlide: ResponsiveSlides'),
+      'description' => t('Simple & lightweight responsive slider plugin (in 1kb)'),
+      'url' => 'http://responsive-slides.viljamis.com/',
+      'class' => 'BeanSlideResponsiveSlidesPlugin',
+      'responsive' => TRUE,
+    ),
+    'beanslide:vegas' => array(
+      'name' => t('BeanSlide: jQuery Vegas'),
+      'description' => t('Vegas Background Slideshow'),
+      'url' => 'http://vegas.jaysalvat.com/',
+      'class' => 'BeanSlideVegasPlugin',
+      'responsive' => FALSE,
+    ),
+  );
+}
+
+/**
+ * #element_validate callback.
+ */
+function _beanslide_validate_positive_integer($element, &$form_state) {
+  $value = $element['#value'];
+  if ($value !== '' && (!is_numeric($value) || intval($value) != $value || $value < 0)) {
+    form_error($element, t('%name must be a positive integer.', array('%name' => $element['#title'])));
+  }
+}

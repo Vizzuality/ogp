@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the OGP News feature.
+ */
+
+include_once 'ogp_news.features.inc';

@@ -1,0 +1,67 @@
+//BreadCrumb menu
+.c-bread-crumb {
+  display: flex;
+  align-items: center;
+  height: 60px;
+  margin: 0;
+  padding-left: 190px;
+
+  li {
+    text-transform: capitalize;
+
+    &::after {
+      display: inline-block;
+      position: relative;
+      top: 3px;
+      width: 1px;
+      height: 15px;
+      margin: 0 15px;
+      background-color: $color-9;
+      content: '';
+    }
+
+    &:last-of-type {
+      max-width: calc(100vh - 200px);
+      padding-right: 20px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      overflow: hidden;
+
+      &::after {
+        display: none;
+      }
+    }
+
+    &.hidden {
+      display: none;
+    }
+  }
+
+  a {
+    color: $color-2;
+    text-transform: capitalize;
+  }
+
+  &.big-breadcrumb {
+    li {
+      display: none;
+
+      &:first-of-type {
+        display: inline-block;
+        max-width: calc(100vh - 200px);
+        padding-right: 20px;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        overflow: hidden;
+      }
+
+      &:nth-child(2) {
+        display: inline-block;
+      }
+
+      &:last-of-type {
+        display: inline-block;
+      }
+    }
+  }
+}

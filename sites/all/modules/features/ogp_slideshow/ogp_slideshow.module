@@ -1,0 +1,152 @@
+<?php
+
+/**
+ * @file
+ * Code for the ogp_slideshow feature.
+ */
+
+include_once 'ogp_slideshow.features.inc';
+
+define('FLIGHT_SLIDESHOW_VIEW', 'ogp_slideshow');
+define('FLIGHT_SLIDESHOW_VIEW_DISPLAY', 'default');
+
+
+/******************************* DISPLAY SUITE ***************************** */
+
+/**
+ * Implements hook_ds_fields_info().
+ */
+function ogp_slideshow_ds_fields_info($entity_type) {
+  $fields = array();
+
+  $default_view = module_exists('flight_slideshow') ? FLIGHT_SLIDESHOW_VIEW . ':' . FLIGHT_SLIDESHOW_VIEW_DISPLAY : '';
+
+  // views field simple renders a view
+  $fields[$entity_type] = array(
+    'ogp_slideshow_views_field' => array(
+      'title' => t('Views display'),
+      'field_type' => DS_FIELD_TYPE_FUNCTION,
+      'function' => '_ogp_slideshow_ds_views_field',
+      'properties' => array(
+        'settings' => array(
+          'views_display' => array('type' => 'select'),
+          'use_entity' => array('type' => 'boolean'),
+          'views_argument' => array('type' => 'textfield'),
+        ),
+        'default' => array(
+          'views_display' => '',
+          'use_entity' => 1,
+          'views_argument' => '',
+        ),
+      ),
+    ),
+  );
+
+  return $fields;
+}
+
+/**
+ * Implements hook_ds_field_format_summary().
+ */
+function ogp_slideshow_ds_field_format_summary($field) {
+  // Saved formatter settings are on $field['formatter_settings'];
+  $settings = isset($field['formatter_settings']) ? $field['formatter_settings'] : $field['properties']['default'];
+
+  $argument = ($settings['use_entity']) ? t('Using value from entity') : $settings['views_argument'];
+  return t('View: !view !brArgument: !argument!br', array(
+    '!view' => $settings['views_display'],
+    '!argument' => $argument,
+    '!br' => '<br/>',
+  ));
+}
+
+/**
+ * Implements hook_ds_field_settings_form().
+ */
+function ogp_slideshow_ds_field_settings_form($field) {
+  $form = array();
+  // Saved formatter settings are on $field['formatter_settings'];
+  $settings = isset($field['formatter_settings']) ? $field['formatter_settings'] : $field['properties']['default'];
+
+  switch($field['name']) {
+
+    case 'ogp_slideshow_views_field':
+      // View to use
+      $form['views_display'] = array(
+        '#type' => 'select',
+        '#title' => t('Select the view to use'),
+        '#options' => views_get_views_as_options(),
+        '#description' => t('The view/display chosen will be used to render the display.')
+      );
+      // Use entity id?
+      $form['use_entity'] = array(
+        '#type' => 'checkbox',
+        '#title' => t('Use this entity as the views argument?'),
+        '#description' => t('If checked, the entity id will be passed to views as the argument.')
+      );
+      // Custom argument(s)
+      $form['views_argument'] = array(
+        '#type' => 'textfield',
+        '#title' => t('Views argument to pass.'),
+        '#description' => t('Enter custom views argument(s). The token %entity_id may be used for the entity id.')
+      );
+      // Assign defaults
+      foreach($field['properties']['settings'] as $key => $value) {
+        $form[$key]['#default_value'] = isset($settings[$key]) ? $settings[$key] : '';
+      }
+      // State for view argument
+      $form['views_argument']['#states'] = array(
+        'visible' => array(
+          "#edit-fields-flight-config-views-field-settings-edit-form-settings-use-entity" => array('checked' => FALSE),
+        ),
+      );
+      break;
+  }
+
+  if(!empty($form)) {
+    return $form;
+  }
+}
+
+
+/**
+ * Field returns the rendered view.
+ */
+function _ogp_slideshow_ds_views_field(array $field) {
+  // Saved formatter settings are on $field['formatter_settings'];
+  $settings = isset($field['formatter_settings']) ? $field['formatter_settings'] : $field['properties']['default'];
+
+  // we have some settings
+  if(!empty($settings['views_display'])) {
+    // grab the view name +  display
+    $views_options = explode(':', $settings['views_display']);
+    $argument;
+    // using the entity id as argument
+    if(!empty($settings['use_entity'])) {
+      $argument = ogp_slideshow_get_entity_id($field['entity_type'], $field['entity']);
+    }
+    // see if any custom argument has been set
+    else if(!empty($settings['views_argument'])) {
+      // token present
+      if(strpos($settings['views_argument'], '%entity_id') !== FALSE) {
+        $id = ogp_slideshow_get_entity_id($field['entity_type'], $field['entity']);
+        $argument = str_replace($argument, $id);
+      }
+      else {
+        $argument = $settings['views_argument'];
+      }
+    }
+    // build view
+    return views_embed_view($views_options[0], $views_options[1], $argument);
+  }
+
+}
+
+
+/**
+ * Function returns entity specific ID for any entity
+ **/
+function ogp_slideshow_get_entity_id($entity_type, $entity) {
+  $ids = entity_extract_ids($entity_type, $entity);
+  return array_shift($ids);
+}

@@ -1,0 +1,31 @@
+.c-no-results {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  min-height: 300px;
+  width: 100%;
+
+  &.-short {
+    min-height: 120px;
+  }
+
+  &.-medium {
+    min-height: 200px;
+  }
+
+  &.-tall {
+    min-height: 300px;
+  }
+
+  &.-show {
+    display: flex;
+  }
+
+  &.-small {
+    justify-content: flex-start;
+    align-items: flex-start;
+    max-height: 80px;
+    min-height: 50px;
+  }
+}

@@ -1,0 +1,354 @@
+//
+// Custom sass variables and mixins
+//
+
+// Color Variables
+$pop:         #0099ff;  //bright blue
+$accent:      #0069a9; //#0C80D2;  //darker blue
+$nublack:     #33383c;  //almost black #262626
+$dark:        #2D2F3D;  //lighter black (map)
+$smoke:       #ababab;
+$blue:        #139eef;
+
+$page:         #fff;    // to match the page background, default is white
+$border:       #ccc;    // all borders set in global.styles - tables, fieldset, primary links
+$highlight:    #c00;    // required mark, form error highlight, "new" label on comments
+$ultralight:   #f5f5f5; // table row even, primary link inactive tabs
+$light:        #eee;    // table row odd active, primary link inactive hover
+$medium_light: #ebebeb; // table row even active
+$medium_dark:  #e5e5e5; // table thead
+$debug:        rgba(255, 192, 203, 0.5); // Full width wrapper test
+
+$thead:          $medium_dark;
+$tr_odd:         $page;
+$tr_even:        $ultralight;
+$tr_odd_active:  $light;
+$tr_even_active: $medium_light;
+
+$primary_task:        $ultralight;
+$primary_task_hover:  $light;
+$primary_task_active: $page;
+
+
+//
+// Font Variables
+
+$font:                        'PT Sans', sans-serif;
+$country:                     'PT Sans Narrow', Arial, Helvetica, sans-serif;
+$sans-serif-small:            Arial, Helvetica, sans-serif;
+$sans-serif-large:            Verdana, Geneva, 'DejaVu Sans', Arial, Helvetica, sans-serif;
+$sans-serif-arial-helvetica:  Arial, Helvetica, sans-serif;
+$calibri-candara:             Calibri, Candara, Arial, Helvetica, sans-serif;
+$serif-small:                 Garamond, Perpetua, 'Times New Roman', serif;
+$serif-large:                 Georgia, Baskerville, Palatino, 'Palatino Linotype', 'Book Antiqua', 'Times New Roman', serif;
+$modern-myriad:               'Segoe UI', 'Myriad Pro', Myriad, Arial, Helvetica, sans-serif;
+$lucida:                      'Lucida Sans Unicode', 'Lucida Sans', 'Lucida Grande', Verdana, Geneva, sans-serif;
+$impact:                      Impact, Haettenschweiler, 'Franklin Gothic Bold', Charcoal, 'Helvetica Inserat', 'Bitstream Vera Sans Bold', 'Arial Black', sans-serif;
+$mono:                        Consolas, Monaco, 'Courier New', Courier, monospace, sans-serif;
+$font-serif:                  'PT Serif', sans-serif;
+
+// Breakpoints 
+$break-small: 360px;
+$break-large: 960px;
+
+// Sprites
+$circle-layout:diagonal;
+@import "icon/circle/*.png";
+
+$blue-layout:diagonal;
+$blue-spacing: 20px;
+@import "icon/blue/*.png";
+
+$gray-layout:diagonal;
+$gray-spacing: 20px;
+@import "icon/gray/*.png";
+
+$social-layout:vertical;
+@import "icon/social/*.png";
+
+$flag-layout:horizontal;
+@import "icon/flag/*.png";
+
+@mixin flagit($country) {
+  @include flag-sprite($country);
+  //background-position: sprite-position($flag, $country, 0px, 0px);
+}
+
+//
+// Gutters
+$gutter-width: 10px;
+
+
+//
+// Markup free clearing
+// http://www.stubbornella.org/content/2012/05/02/cross-browser-debugging-css/
+//
+
+@mixin cf {
+  overflow: hidden;   // New formatting context in better browsers
+  *overflow: visible; // Protect IE7 and older from the overflow property
+  *zoom: 1;           // Give IE hasLayout, a new formatting context equivalent
+}
+
+
+//
+// Image replacement
+
+@mixin ir {
+  // Kellum Method
+  display: block !important;
+  text-indent: 100%;
+  white-space: nowrap;
+  overflow: hidden;
+  // Additional helpers
+  border: 0;                     // Remove the default border from elements like <button>
+  font: 0/0 a;                   // Crush the text down to take up no space
+  text-shadow: none;             // Remove any text shadows
+  color: transparent;            // Hide any residual text in Safari 4 and any mobile devices that may need it
+  background-color: transparent; // Hide the default background color on elements like <button>
+}
+
+
+//
+// element-invisible improved and more robust
+//
+@mixin element-invisible {
+  border: 0;
+  height: 1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute !important;
+  width: 1px;
+  @if $legacy-support-for-ie6 or $legacy-support-for-ie7 {
+    clip: rect(1px 1px 1px 1px); // IE6 and IE7 use the wrong syntax
+  }
+  clip: rect(1px, 1px, 1px, 1px);
+}
+
+
+//
+// Turns off the element-invisible effect
+//
+@mixin element-invisible-off {
+  position: static !important;
+  clip: auto;
+  height: auto;
+  width: auto;
+  overflow: auto;
+}
+
+@mixin element-focusable {
+  @include element-invisible;
+
+  &:active,
+  &:focus {
+    @include element-invisible-off;
+  }
+}
+
+
+//
+// Shift content offscreen, can be usefull when you reall need to do this
+//
+@mixin offscreen {
+  position: absolute;
+  top: -99999em;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  outline: 0;
+}
+
+
+//
+// Hide content from all users
+//
+@mixin element-hidden {
+  display: none;
+}
+
+
+//
+// The word "Unpublished" displayed underneath unpublished nodes and comments
+//
+@mixin unpublished {
+  color: pink; // target browsers that do not support rgba
+  color: rgba(239, 170, 170, 0.4);
+  font-family: $impact;
+  font-size: 50px;
+  font-weight: 700;
+  line-height: 1.2;
+  height: 0;
+  margin: 0;
+  padding: 0;
+  overflow: visible;
+  text-align: center;
+  text-transform: uppercase;
+  word-wrap: break-word;
+
+  @if $legacy-support-for-ie6 or $legacy-support-for-ie7 {
+    .ie6-7 &>* {
+      position: relative; // Otherwise these elements will appear below the "Unpublished" text.
+    }
+  }
+}
+
+@mixin block-title {
+  color: $pop;
+  font-size:1.7em;
+  margin-bottom:10px;
+}
+@mixin headline {
+  font-family: $headings-font-family;
+  font-size: 16px;
+  font-weight: bold;
+  line-height: 22px;
+  margin: 1em 0 .25em;
+  display: block;
+}
+@mixin posted {
+  font-size:.9em;
+  color:$smoke;
+  margin-bottom:1em;
+}
+
+@mixin faux-four-col {
+  display: table-cell;
+  @media screen and (min-width: 768px) {
+    width: 25%;
+    float: left;
+  }
+  @media screen and (min-width: 501px) and (max-width: 767px) {
+    width: 50%;
+    float: left;
+  }
+  @media screen and (max-width: 500px) {
+    width: 100%;
+    float: none;
+    display: block;
+    margin-bottom: 2em;
+  }
+}
+
+@mixin sidebar-list {
+  .item-list-facetapi-facetapi-links ul,
+  .item-list-facetapi-facetapi-links ul li,
+  .item-list ul,
+  .item-list ul li {
+    margin: 0;
+    padding: 0;
+    list-style-type: none;
+    list-style-image: none;
+  }
+  a {
+    @include border-radius(4px);
+    display: block;
+    padding: 2px 10px;
+    &.facetapi-active,
+    &:hover {
+      background: $medium_light;
+      text-decoration: none;
+    }
+    &:focus,
+    &:active {
+      text-decoration: none;
+    }
+  }
+}
+
+@mixin bump-out {
+  margin-left: -15px;
+  margin-right: -15px;
+}
+
+@mixin wide-screen {
+  max-width:960px;
+  margin:0 auto;
+}
+
+@mixin agenda-grid {
+  $zen-column-count: 10; 
+  $zen-gutter-width: 10px;
+}
+@mixin agenda-grid-3 {
+  $zen-column-count: 3;
+  $zen-gutter-width: 10px;
+}
+@mixin agenda-grid-4 {
+  $zen-column-count: 4;
+  $zen-gutter-width: 10px;
+}
+@mixin agenda-grid-5 {
+  $zen-column-count: 5;
+  $zen-gutter-width: 10px;
+}
+@mixin agenda-grid-6 {
+  $zen-column-count: 6;
+  $zen-gutter-width: 10px;
+}
+@mixin agenda-grid-7 {
+  $zen-column-count: 7;
+  $zen-gutter-width: 10px;
+}
+@mixin agenda-grid-8 {
+  $zen-column-count: 8;
+  $zen-gutter-width: 10px;
+}
+@mixin agenda-grid-9 {
+  $zen-column-count: 9;
+  $zen-gutter-width: 10px;
+}
+
+// Transparent Background
+// From: http://stackoverflow.com/questions/6902944/sass-mixin-for-background-transparency-back-to-ie8
+ 
+@mixin transparent-background {
+  background-color: transparent;
+  zoom: 1;
+}
+ 
+// The mixin
+@mixin transparent($color, $alpha) {
+  $rgba: rgba($color, $alpha);
+  $ie-hex-str: ie-hex-str($rgba);
+  @include transparent-background;
+  background-color: $rgba;
+  filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#{$ie-hex-str},endColorstr=#{$ie-hex-str});
+}
+@font-face {
+  font-family: 'dkan-flaticon';
+  src:url('../fonts/dkan-flaticon.eot?-w5vqwy');
+  src:url('../fonts/dkan-flaticon.eot?#iefix-w5vqwy') format('embedded-opentype'),
+    url('../fonts/dkan-flaticon.woff?-w5vqwy') format('woff'),
+    url('../fonts/dkan-flaticon.ttf?-w5vqwy') format('truetype'),
+    url('../fonts/dkan-flaticon.svg?-w5vqwy#dkan-flaticon') format('svg');
+  font-weight: normal;
+  font-style: normal;
+}
+
+[class^="icon-"], [class*=" icon-"] {
+  font-family: 'dkan-flaticon';
+  speak: none;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  text-transform: none;
+  line-height: 1;
+
+  /* Better Font Rendering =========== */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  /*text-shadow: 1px 1px 1px rgba(0,0,0,0.004);*/
+}
+
+// css aggregation overrides title sizes, must force them.
+@mixin headings {
+  h1 { font-size: 36px; }
+  h2, h2.block-title { font-size: 30px; }
+  .block-menu,
+  .block-menu-block {
+    h2.block-title {
+      font-size:1.5em;
+    }
+  }
+}

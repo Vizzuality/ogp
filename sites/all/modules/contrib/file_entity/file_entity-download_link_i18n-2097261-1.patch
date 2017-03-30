@@ -1,0 +1,13 @@
+diff --git a/file_entity.field.inc b/file_entity.field.inc
+index e4f2586..1c4f9a5 100644
+--- a/file_entity.field.inc
++++ b/file_entity.field.inc
+@@ -276,7 +276,7 @@ function file_entity_field_formatter_view($entity_type, $entity, $field, $instan
+         $element[$delta] = array(
+           '#theme' => 'file_entity_download_link',
+           '#file' => $file,
+-          '#text' => $settings['text'],
++          '#text' => t($settings['text']),
+         );
+       }
+     }

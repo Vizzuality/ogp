@@ -1,0 +1,131 @@
+diff --git a/facetapi_multiselect.module b/facetapi_multiselect.module
+index 229003d..ed8c4f1 100644
+--- a/facetapi_multiselect.module
++++ b/facetapi_multiselect.module
+@@ -69,6 +69,13 @@ function facetapi_multiselect_form($form, &$form_state, $widget, $element) {
+     '#value' => t('Submit'),
+   );
+ 
++  $build = $widget->getBuild();
++  $settings = $build['#settings']->settings;
++
++  if ($settings['auto_submit']) {
++    $form['#attached']['js'][] = drupal_get_path('module', 'facetapi_multiselect') . '/js/facetapi_multiselect_autosubmit.js';
++  }
++
+   return $form;
+ }
+ 
+diff --git a/js/facetapi_multiselect_autosubmit.js b/js/facetapi_multiselect_autosubmit.js
+index e69de29..8425e0a 100644
+--- a/js/facetapi_multiselect_autosubmit.js
++++ b/js/facetapi_multiselect_autosubmit.js
+@@ -0,0 +1,10 @@
++(function($){
++  Drupal.behaviors.facetapi_multiselect = {
++    attach: function (context, settings) {
++      $('form[id^="facetapi-multiselect-form"] .form-submit', context).hide();
++      $('form[id^="facetapi-multiselect-form"] select', context).change(function () {
++        $(this).closest('form').submit();
++      });
++    }
++  };
++})(jQuery);
+diff --git a/plugins/facetapi/facetapi_multiselect.inc b/plugins/facetapi/facetapi_multiselect.inc
+index 55e6c12..0b0a1dc 100644
+--- a/plugins/facetapi/facetapi_multiselect.inc
++++ b/plugins/facetapi/facetapi_multiselect.inc
+@@ -27,11 +27,14 @@ class FacetapiMultiSelectWidget extends FacetapiWidgetLinks {
+    * Builds an array of #options for our select element.
+    */
+   public function buildOptions($element) {
++    $settings = $this->settings->settings;
+     $options = array();
+     foreach ($element as $item) {
+       if (empty($item['#item_children'])) {
+-        $key = $this->getOptionKey($item);
+-        $options[$key] = $item['#markup'];
++        if (!$item['#active'] && $settings['remove_selected']) {
++          $key = $this->getOptionKey($item);
++          $options[$key] = $settings['add_count'] ? $item['#markup'] . ' (' . $item['#count'] . ')' : $item['#markup'];
++        }
+       }
+       else {
+         // Recursively add any children of the item to the #options array (this
+@@ -64,10 +67,76 @@ class FacetapiMultiSelectWidget extends FacetapiWidgetLinks {
+    * Gets the key to use for an item in the select element #options array.
+    */
+   protected function getOptionKey($item) {
++    $settings = $this->settings->settings;
++    if ($settings['act_single'] && isset($item['#query']['f'])) {
++      return implode('&', $item['#query']['f']);
++    }
+     // Set the key to the filter that will appear in the URL if this item is
+     // selected. We need to do it this way (rather than using $item['#query'])
+     // so that multiple selections can be combined together in the form's
+     // submit handler.
+     return $this->facet['field alias'] . ':' . $item['#indexed_value'];
+   }
++
++  /**
++   * Allows the widget to provide additional settings to the form.
++   */
++  function settingsForm(&$form, &$form_state) {
++    $form['widget']['widget_settings']['links'][$this->id]['add_count'] = array(
++      '#type' => 'checkbox',
++      '#title' => t('Add count'),
++      '#description' => t('Add available item count in brackets.'),
++      '#default_value' => $this->settings->settings['add_count'],
++      '#states' => array(
++        'visible' => array(
++          'select[name="widget"]' => array('value' => $this->id),
++        ),
++      ),
++    );
++    $form['widget']['widget_settings']['links'][$this->id]['remove_selected'] = array(
++      '#type' => 'checkbox',
++      '#title' => t('Remove selected'),
++      '#description' => t('Remove selected options from select list.'),
++      '#default_value' => $this->settings->settings['remove_selected'],
++      '#states' => array(
++        'visible' => array(
++          'select[name="widget"]' => array('value' => $this->id),
++        ),
++      ),
++    );
++    $form['widget']['widget_settings']['links'][$this->id]['auto_submit'] = array(
++      '#type' => 'checkbox',
++      '#title' => t('Autosubmit'),
++      '#description' => t('Hide submit button and submit selection automatically.'),
++      '#default_value' => $this->settings->settings['auto_submit'],
++      '#states' => array(
++        'visible' => array(
++          'select[name="widget"]' => array('value' => $this->id),
++        ),
++      ),
++    );
++    $form['widget']['widget_settings']['links'][$this->id]['act_single'] = array(
++      '#type' => 'checkbox',
++      '#title' => t('Act as single select element'),
++      '#description' => t('Change query path to work with facets from connected fields.'),
++      '#default_value' => $this->settings->settings['act_single'],
++      '#states' => array(
++        'visible' => array(
++          'select[name="widget"]' => array('value' => $this->id),
++        ),
++      ),
++    );
++  }
++
++  /**
++   * Returns defaults for the settings this widget provides.
++   */
++  function getDefaultSettings() {
++    return array(
++      'add_count' => 0,
++      'remove_selected' => 0,
++      'auto_submit' => 0,
++      'act_single' => 0,
++    );
++  }
+ }

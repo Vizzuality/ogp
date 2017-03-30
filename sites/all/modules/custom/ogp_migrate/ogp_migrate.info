@@ -1,0 +1,6 @@
+name = OGP Drupal Migration
+description = Migrate OGP content from D6 website
+core = 7.x
+dependencies[] = migrate_d2d
+
+files[] = node.inc

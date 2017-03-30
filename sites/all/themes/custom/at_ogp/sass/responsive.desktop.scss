@@ -1,0 +1,119 @@
+
+// _base.scss imports _custom.scss and other partials.
+@import "base";
+
+/*
+ *   Important Information about this CSS File
+ *
+ * - Do not delete or rename this file, if you do not use it leave it blank (delete
+ *   everything) and the file will be skipped when you enable Production Mode in
+ *   the Global theme settings.
+ *
+ * - Read the _README file in this directory, it contains useful help and other information.
+ */
+/* 
+.navbar-static-top .container, 
+.navbar-fixed-top .container, 
+.navbar-fixed-bottom .container 
+*/
+
+
+
+body.page-countries #content-wrapper {
+	.container {
+		width:100% !important;
+		max-width:100% !important;
+	}
+	#block-block-7,
+	#map,
+	#map-legend-wrapper {
+		//@include wide-screen;
+	}
+}
+
+body.node-type-country-page,
+body.og-context-node {
+	.container {
+		width:100% !important;
+		max-width:100% !important;
+	}
+	#header-wrapper,
+	#menu-bar,
+	#block-block-7,
+	#map,
+	#map-legend-wrapper,
+	#block-ogp-country-nav .item-list,
+	#columns,
+	#footer .region-inner {
+		@include wide-screen;
+	}
+}
+
+body.summit-2013 {
+	#secondary-content-wrapper .container {
+		width:100% !important;
+		max-width:100% !important;	
+	}
+}
+
+body.page-independent-reporting-mechanism {
+	.container {
+		width:100% !important;
+		max-width:100% !important;
+		padding: 0;
+	}
+	#header-wrapper,
+	#menu-bar,
+	#block-block-8,
+	#content,
+	#footer .region-inner {
+		@include wide-screen;
+	}
+}
+
+.container.irm-landing {
+  width:100% !important;
+  max-width:100% !important;
+
+  #header-wrapper,
+  #menu-bar,
+  #block-block-8,
+  #block-block-15,
+  #tasks,
+  #content,
+  #footer .region-inner {
+    @include wide-screen;
+  }
+}
+
+body.front {
+	#content-wrapper .container {
+		width:100% !important;
+		max-width:100% !important;
+	}
+	#header-wrapper,
+	#menu-bar,
+	#block-block-7,
+	#map,
+	#map-legend-wrapper,
+	#tertiary-content-wrapper,
+	#main-content,
+	#footer .region-inner {
+		@include wide-screen;
+	}
+}
+
+body,
+#{headings()} {
+	font-family:$font;
+	font-weight:100;
+	@include headings;
+}
+#tertiary-column-wrapper,
+.region-tertiary-content,
+.region-footer,
+#content-wrapper {
+	h2.block-title  {
+	  color:$pop;
+	}
+}

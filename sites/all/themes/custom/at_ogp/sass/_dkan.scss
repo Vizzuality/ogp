@@ -1,0 +1,123 @@
+.download a {
+  color: transparent;
+  font-weight: normal;
+  height: 50px;
+  left: 0;
+  position: absolute;
+  text-decoration: none;
+  top: 0;
+  width: 35px;
+  z-index: 0;
+}
+.download a:before {
+  content: "\e626";
+  color: olive;
+  font-family: "dkan-flaticon";
+  font-size: 50px;
+  font-style: normal;
+  font-weight: normal;
+  font-variant: normal;
+  left: -10px;
+  line-height: 1;
+  position: absolute;
+  speak: none;
+  text-transform: none;
+  text-decoration: none;
+  text-indent: none;
+  top: -2px;
+  vertical-align: middle;
+  z-index: 2;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  text-shadow: 1px 1px 1px rgba(0,0,0,0.004);
+}
+
+.download a[data-format=doc]:before {
+  content: "\e62e";
+  color: #2F4994;
+}
+.download a[data-format=docx]:before {
+  content: "\e62f";
+  color: #476096;
+}
+.download a[data-format=data]:before {
+  content: "\e626";
+  color: olive;
+}
+.download a[data-format=api]:before {
+  content: "\e608";
+  color: #ec96be;
+}
+.download a[data-format=csv]:before {
+  content: "\e622";
+  color: #dfb100;
+}
+.download a[data-format=html]:before {
+  content: "\e645";
+  color: #55a1ce;
+}
+.download a[data-format=jpg]:before,
+.download a[data-format=jpeg]:before {
+  content: "\e64f";
+  color: blue;
+}
+.download a[data-format=json]:before {
+  content: "\e651";
+  color: #ef7100;
+}
+.download a[data-format=pdf]:before {
+  content: "\e67b";
+  color: #e0051e;
+}
+.download a[data-format=png]:before {
+  content: "\e67f";
+  color: purple;
+}
+.download a[data-format=rdf]:before {
+  content: "\e68a";
+  color: #0b4498;
+}
+.download a[data-format=txt]:before {
+  content: "\e6a1";
+  color:#70C6E5;  
+}
+.download a[data-format=xls]:before {
+  content: "\e6af";
+  color: #2db55d;  
+}
+.download a[data-format=xlsx]:before {
+  content: "\e6b0";
+  color:#70C6E5;  
+}
+.download a[data-format=xml]:before {
+  content: "\e6b1";
+  color: #ef7100;  
+}
+.download a[data-format=zip]:before {
+  content: "\e6b3";
+  color: #686868;  
+}
+
+.node-resource .download .format-label {
+  display: block;
+  color: black;
+  font-weight: bold;
+  height: auto;
+  min-height: 50px;
+  padding: 0 0 0 40px;
+  position: relative;
+  text-indent: 0;
+  text-decoration: none;
+  width: auto;
+  z-index: 0;
+}
+.node-resource .download .format-label:before {
+  font-family: "dkan-flaticon" ;
+  font-weight: normal;
+  vertical-align: middle;
+  height: auto;
+  width: auto;
+  min-width: 65px;
+  text-decoration: none;
+  z-index: 2;
+}

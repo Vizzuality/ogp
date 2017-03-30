@@ -1,0 +1,110 @@
+<?php
+
+/**
+ * @file
+ * Install file for ogp_map feature.
+ */
+
+/**
+ * Create content for Steering Committee and Action Plan Cycles maps.
+ */
+function ogp_map_update_7001() {
+  if (!db_table_exists('field_data_field_ogp_sc_country')) {
+    throw new DrupalUpdateException('Please revert ogp_map feature before running updates.');
+  }
+  // Create content for Steering Committee map.
+  // US, UK, Norway, Brazil, Mexico, Indonesia, Philippines, South Africa, Tanzania
+  $sc = array(
+    288 => 'US',
+    303 => 'UK',
+    2832 => 'Norway',
+    294 => 'Brazil',
+    293 => 'Mexico',
+    295 => 'Indonesia',
+    287 => 'Philippines',
+    291 => 'South Africa',
+    269 => 'Tanzania',
+  );
+  // Fetch all existing values for Steering Committee countries.
+  $result = db_select('field_data_field_ogp_sc_country', 'c')
+      ->fields('c', array('field_ogp_sc_country_target_id'))
+      ->condition('bundle', 'ogp_steering_committee', '=')
+      ->condition('field_ogp_sc_country_target_id', array_keys($sc), 'IN')
+      ->execute()
+      ->fetchAllKeyed(0, 0);
+  // Ignore all exisitng.
+  if (!empty($result)) {
+    foreach ($result as $entity_id) {
+      unset($sc[$entity_id]);
+    }
+  }
+
+  // Create new content.
+  if (!empty($sc)) {
+    foreach ($sc as $entity_id => $country) {
+      $node = new stdClass();
+      $node->title = $country . ' Steering Committee';
+      $node->type = 'ogp_steering_committee';
+      node_object_prepare($node);
+      $node->language = LANGUAGE_NONE;
+      $node->uid = 1;
+      $node->status = 1;
+      $node->promote = 0;
+      $node->comment = 1;
+      $node->field_ogp_sc_country[LANGUAGE_NONE][]['target_id'] = $entity_id;
+      $node = node_submit($node);
+      node_save($node);
+    }
+  }
+
+  // Create content for Action Plan Cycles.
+  $cohort = ogp_map_countries_data('country_cohort');
+  $apc = array();
+  foreach ($cohort as $value) {
+    // Default state - Developing Action Plan
+    $apc[$value['nid']] = array('apc' => 0, 'country' => $value['country'],);
+    switch ($value['cohort']) {
+      // Countries labeled as 'Cohort 1 are now labeled as '2nd Action Plan Cycle'
+      case 1:
+        $apc[$value['nid']]['apc'] = 2;
+        break;
+      // Countries labeled as 'Cohort 3' or 'Cohort 2' are now labeled as '1st Action Plan Cycle'
+      case 2:
+      case 3:
+        $apc[$value['nid']]['apc'] = 1;
+        break;
+    }
+  }
+  // Fetch all existing values for Action Plan Cycles countries.
+  $result = db_select('field_data_field_ogp_sc_country', 'c')
+      ->fields('c', array('field_ogp_sc_country_target_id'))
+      ->condition('bundle', 'ogp_action_plan_cycles', '=')
+      ->condition('field_ogp_sc_country_target_id', array_keys($apc), 'IN')
+      ->execute()
+      ->fetchAllKeyed(0, 0);
+  // Ignore all exisitng.
+  if (!empty($result)) {
+    foreach ($result as $entity_id) {
+      unset($apc[$entity_id]);
+    }
+  }
+
+  // Create new content.
+  if (!empty($apc)) {
+    foreach ($apc as $entity_id => $value) {
+      $node = new stdClass();
+      $node->title = $value['country'] . ' Action Plan Cycles';
+      $node->type = 'ogp_action_plan_cycles';
+      node_object_prepare($node);
+      $node->language = LANGUAGE_NONE;
+      $node->uid = 1;
+      $node->status = 1;
+      $node->promote = 0;
+      $node->comment = 1;
+      $node->field_ogp_sc_country[LANGUAGE_NONE][]['target_id'] = $entity_id;
+      $node->field_apc_ap_developed[LANGUAGE_NONE][]['value'] = $value['apc'];
+      $node = node_submit($node);
+      node_save($node);
+    }
+  }
+}

@@ -1,0 +1,7 @@
+<?php
+/**
+ * @file
+ * Code for the OGP Media feature.
+ */
+
+include_once 'ogp_media.features.inc';

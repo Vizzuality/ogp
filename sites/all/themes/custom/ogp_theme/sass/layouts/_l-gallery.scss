@@ -1,0 +1,36 @@
+.l-gallery {
+  margin-bottom: 30px;
+
+  .select2-container {
+    margin: 40px 0;
+  }
+
+  #contributorsText {
+    border-bottom: dashed 1px rgba($color-5, 0.2);
+    padding-bottom: 20px;
+
+    &.-hidden {
+      display: none;
+    }
+  }
+
+  #contentContainer {
+    position: relative;
+    min-height: 200px;
+
+    .c-loader {
+      background-color: transparent;
+    }
+  }
+
+  .tab-content {
+
+    &.-hidden {
+      display: none;
+    }
+  }
+
+  .-hidden {
+    display: none;
+  }
+}
