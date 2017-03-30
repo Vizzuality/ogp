@@ -30,7 +30,8 @@
 ######################
 .DS_Store*
 ehthumbs.db
-Icon
+Icon
+
 Thumbs.db
 ._*
 
@@ -38,6 +39,18 @@ Thumbs.db
 ######################
 *.un~
 
-# SASS #
-##########
-.sass-cache
+
+# Devel
+FirePHPCore
+FirePHPCore/*
+
+# Node Modules
+/node_modules/
+
+# scripts
+/sites/all/themes/custom/ogp_theme/scripts/bundle.js.map
+/sites/all/themes/custom/ogp_theme/scripts/bundle-min.js
+/sites/all/themes/custom/ogp_theme/css/main.css.map
+/sites/all/themes/custom/ogp_theme/css/main.css
+/sites/default/settings.php
+/sites/default/settings.local.php
