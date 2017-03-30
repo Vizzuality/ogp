@@ -48,5 +48,4 @@ FirePHPCore/*
 /node_modules/
 
 # scripts
-/sites/default/settings.php
 /sites/default/settings.local.php
