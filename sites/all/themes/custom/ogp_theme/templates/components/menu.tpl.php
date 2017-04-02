@@ -2,9 +2,11 @@
 $main_menu = menu_build_tree('menu-main-menu-2-0');
 $path = explode('/', drupal_get_path_alias());
 ?>
-<nav class="c-main-menu <?php if (drupal_is_front_page() == false) {
-    echo '-page';
-} ?>">
+<?php if (drupal_is_front_page()) { ?>
+  <nav class="c-main-menu">
+<?php } else { ?>
+  <nav class="c-main-menu -page">
+<?php } ?>
     <ul class="primary-menu">
         <?php foreach ($main_menu as $primary_link) {
             $link = $primary_link['link'];

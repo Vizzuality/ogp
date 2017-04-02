@@ -1021,7 +1021,7 @@ function showCountriesDetail(id) {
       }
     });
 
-    $.getJSON('/apiJSON/resource?filter[country]=' + id, function (data) {
+    $.getJSON('/apiJSON/documents?filter[country]=' + id, function (data) {
       var dataCache = data.data;
       initLinksSelectorContainer(dataCache, actionPlansContainer, ['cycle_start', 'cycle_end'], docTypes.actionPlans);
       initLinksSelectorContainer(dataCache, reportsContainer, ['cycle_start', 'cycle_end'], docTypes.reports);
@@ -1462,6 +1462,28 @@ function initCountryTabs(onChangeCountryTab) {
 }
 'use strict';
 
+function showDocumentResourcePage() {
+  (function ($) {
+    // cache dom
+    var tileContainer = $('#resourceDocsTiles');
+    var searchEl = $('.c-tile');
+    var searchText = $('.c-tile .tile');
+    var searchContainer = $('#resourceTilesSearch input');
+
+    // fetch content and append
+    $.getJSON('/apiJSON/resource', function (data) {
+      setSearchPlaceholder(searchContainer, data.data[0].label);
+      setSearchListeners(searchEl, searchText);
+      if (data.data.length) {
+        appendTiles(data.data, tileContainer, 4);
+      } else {
+        showNoResults();
+      }
+    });
+  })(jQuery);
+}
+'use strict';
+
 function showHomePage() {
   (function ($) {
     // Slider that appear on Home page
@@ -1550,28 +1572,6 @@ function showHomePage() {
 }
 'use strict';
 
-function showDocumentResourcePage() {
-  (function ($) {
-    // cache dom
-    var tileContainer = $('#resourceDocsTiles');
-    var searchEl = $('.c-tile');
-    var searchText = $('.c-tile .tile');
-    var searchContainer = $('#resourceTilesSearch input');
-
-    // fetch content and append
-    $.getJSON('/apiJSON/resource', function (data) {
-      setSearchPlaceholder(searchContainer, data.data[0].label);
-      setSearchListeners(searchEl, searchText);
-      if (data.data.length) {
-        appendTiles(data.data, tileContainer, 4);
-      } else {
-        showNoResults();
-      }
-    });
-  })(jQuery);
-}
-'use strict';
-
 function showGroupResourcesDetail(id) {
   (function ($) {
 
@@ -1590,7 +1590,7 @@ function showGroupResourcesDetail(id) {
       tilesContainer.html('');
       searchContainer.val('');
       var filterGroup = currentNode === 'All Resources' ? '' : 'filter[group_resource]=' + currentNode + '&';
-      $.getJSON('/apiJSON/resources_info?' + filterGroup + 'filter[sub_group]=' + sub_group_id, function (data) {
+      $.getJSON('/apiJSON/resources?' + filterGroup + 'filter[sub_group]=' + sub_group_id, function (data) {
         if (data.data.length) {
           appendTiles(data.data, tilesContainer, 4);
         } else {
@@ -1607,7 +1607,7 @@ function showGroupResourcesDetail(id) {
       setSearchPlaceholder(searchContainer, data.data[0].label);
       setSearchListeners(searchEl, searchText);
       var filterGroup = currentNode === 'All Resources' ? '' : 'filter[group_resource]=' + currentNode + '&';
-      $.getJSON('/apiJSON/resources_info?' + filterGroup + 'filter[sub_group]=' + data.data[0].id + '&sort=-post_highlighted', function (resources) {
+      $.getJSON('/apiJSON/resources?' + filterGroup + 'filter[sub_group]=' + data.data[0].id + '&sort=-post_highlighted', function (resources) {
         if (resources.data.length) {
           appendTiles(resources.data, tilesContainer, 4);
         } else {
@@ -1628,7 +1628,7 @@ function showGroupResourcesPage() {
     // fetch content and append
     $.getJSON('/apiJSON/group_resources', function (data) {
       data.data.forEach(function (resource) {
-        var html = '\n          <div class="column small-12 medium-4 c-tile">\n            <a href="' + resource.alias + '" class="tile -tall">\n              <span class="text -tile -white">\n                ' + resource.label + '\n              </span>\n            </a>\n          </div>\n        ';
+        var html = '\n          <div class="column small-12 medium-4 c-tile">\n            <a href="/' + resource.alias + '" class="tile -tall">\n              <span class="text -tile -white">\n                ' + resource.label + '\n              </span>\n            </a>\n          </div>\n        ';
         tileContainer.append(html);
       });
       removeLoader('.l-section', null, true);
@@ -1639,8 +1639,8 @@ function showGroupResourcesPage() {
 
 function showResourcesDetail(id) {
   (function ($) {
-    $.getJSON('/apiJSON/resources_info?filter[id]=' + id, function (data) {
-      buildExploreMoreTiles('resources_info', 'group_resource', data.data[0].group_resource[0]);
+    $.getJSON('/apiJSON/resources?filter[id]=' + id, function (data) {
+      buildExploreMoreTiles('resources', 'group_resource', data.data[0].group_resource[0]);
     });
   })(jQuery);
 }
@@ -1884,9 +1884,9 @@ function showThemesDetail(id) {
         placeholder: 'All countries'
       });
       $('.select2').addClass('-green-select');
-      $.getJSON('/apiJSON/countries?fields=id,name,label&sort=label', function (data) {
+      $.getJSON('/apiJSON/countries?fields=id,label&sort=label', function (data) {
         data.data.forEach(function (country) {
-          var option = '<option value="' + country.id + '">' + country.name.name + '</option>';
+          var option = '<option value="' + country.id + '">' + country.label + '</option>';
           countrySelector.append(option);
         });
       });
@@ -1915,7 +1915,7 @@ function showThemesDetail(id) {
 
     function showContent(container, endpoint, countryFilter) {
       container.html('');
-      var countryQuery = countryFilter ? '&filter[country]=' + countryFilter : '';
+      var countryQuery = countryFilter && endpoint !== 'modelcommitments' ? '&filter[country]=' + countryFilter : '';
       $.getJSON('/apiJSON/' + endpoint + '?filter[theme]=' + id + countryQuery, function (data) {
         hideNoResults();
         if (data.data.length) {

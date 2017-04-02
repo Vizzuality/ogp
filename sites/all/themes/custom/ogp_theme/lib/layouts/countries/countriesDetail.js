@@ -242,7 +242,7 @@ function showCountriesDetail(id) {
       }
     });
 
-    $.getJSON(`/apiJSON/resource?filter[country]=${id}`, (data) => {
+    $.getJSON(`/apiJSON/documents?filter[country]=${id}`, (data) => {
       const dataCache = data.data;
       initLinksSelectorContainer(dataCache, actionPlansContainer, ['cycle_start', 'cycle_end'], docTypes.actionPlans);
       initLinksSelectorContainer(dataCache, reportsContainer, ['cycle_start', 'cycle_end'], docTypes.reports);
