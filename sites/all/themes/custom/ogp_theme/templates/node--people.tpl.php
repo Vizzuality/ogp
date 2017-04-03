@@ -15,7 +15,7 @@ $field_countries_poc = field_get_items('node', $node, 'field_countries_poc');
         <div class="column small-12 medium-8 content-header">
             <h1 class="text -title"><?php echo $node->title ?></h1>
             <h2 class="text"><?php echo $field_job_title ?></h2>
-            <a href="#" class="-disabled text -small-bold -uppercase -blue tag"><?php echo $field_countries_involved[0][entity]->title; ?></a>
+            <a href="/<?php echo (drupal_get_path_alias('node/' . $field_countries_involved[0][target_id])) ?>" class="text -small-bold -uppercase -blue tag"><?php echo $field_countries_involved[0][entity]->title; ?></a>
         </div>
 
     </div>
@@ -25,6 +25,23 @@ $field_countries_poc = field_get_items('node', $node, 'field_countries_poc');
             <div class="text -body-content">
                 <p><?php echo $node->body[$node->language][0]['value']; ?></p>
             </div>
+
+            <?php if ($field_countries_poc) { ?>
+                <div class="container-contact">
+                    <h2 class="text -section-title-small "><?php echo $fields['field_countries_poc']['label'] ?></h2>
+                    <div class="text -body-content">
+                      <?php
+                        for ($i = 0; $i < $iMax = count($field_countries_poc); $i++) {
+                          if($i === (count($field_countries_poc) - 1)) {
+                            echo '<a class="text -blue -small-bold" href="/'. drupal_get_path_alias('node/' . $field_countries_poc[$i][target_id]) .'">' . $field_countries_poc[$i][entity]->title .'</a>';
+                          } else {
+                            echo '<a class="text -blue -small-bold" href="/'. drupal_get_path_alias('node/' . $field_countries_poc[$i][target_id]) .'">' . $field_countries_poc[$i][entity]->title  . ', </a>';
+                          }
+                        }
+                      ?>
+                    </div>
+                </div>
+            <?php } ?>
 
             <?php if ($field_contact) { ?>
                 <div class="container-contact">
