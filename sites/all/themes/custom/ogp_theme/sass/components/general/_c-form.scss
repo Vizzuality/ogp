@@ -11,6 +11,11 @@
 
   label {
     margin-bottom: 10px;
+    font-family: $font-family-1;
+    font-size: 12px;
+    text-transform: uppercase;
+    color: $color-22;
+    font-weight: $font-weight-semi-bold;
   }
 
   textarea {
@@ -69,7 +74,24 @@
     }
   }
 
-  .c-button, button {
+  .description {
+    display: none;
+  }
+
+  .offset {
+    margin-top: 27px;
+  }
+
+  .form-submit {
+    background: $color-1;
+    color: $color-4;
+    text-transform: uppercase;
+    font-weight: $font-weight-semi-bold;
+    font-size: 12px;
+    font-style: normal;
+  }
+
+  .c-button, button{
     max-width: 220px;
     position: absolute;
     right: 0;

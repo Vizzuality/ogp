@@ -154,6 +154,11 @@ function getAbsolutePath() {
         addBanner('newsletter');
       }
 
+      // Pages
+      if ($(context).find('#loginPage').length !== 0) {
+        addBanner('newsletter');
+      }
+
       //build subscribe modal
       buildSubscribeModal();
 
