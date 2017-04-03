@@ -14,7 +14,7 @@ use Drupal\restful\Plugin\resource\ResourceNode;
  * @package Drupal\api_module\Plugin\resource\entity\node\documents
  *
  * @Resource(
- *   name = "resource:1.0",
+ *   name = "documents:1.0",
  *   resource = "documents",
  *   label = "Documents",
  *   description = "Export the resource with all authentication providers.",
@@ -43,10 +43,6 @@ class Documents__1_0 extends ResourceNode{
       'property' => 'body'
     );
 
-    $public_fields['all'] = array(
-
-    );
-
     $public_fields['country'] = array(
       'property' => 'field_country_resource',
     );
@@ -55,28 +51,12 @@ class Documents__1_0 extends ResourceNode{
       'property' => 'field_ogp_document_type'
     );
 
-    $public_fields['group_resource'] = array(
-      'property' => 'field_group_resource'
-    );
-
-    $public_fields['subgroup_resource'] = array(
-      'property' => 'field_sub_group'
-    );
-
     $public_fields['link'] = array(
-      'property' => 'field_link_api'
+      'property' => 'field_link'
     );
 
-    $public_fields['publication_date'] = array(
-      'property' => 'field_date_published'
-    );
-
-    $public_fields['cycle_start'] = array(
-      'property' => 'field_cycle_start_date'
-    );
-
-    $public_fields['cycle_end'] = array(
-      'property' => 'field_cycle_end_date'
+    $public_fields['date'] = array(
+      'property' => 'field_date'
     );
 
     $public_fields['alias'] = array(

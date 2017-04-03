@@ -76,7 +76,7 @@ function initCountryBox(container, country, activeTab) {
   const html = `
     <div class="column small-12 medium-6" id="country-${country.id}">
       <div class="c-country-tile">
-        <a class="text -title-x-small" href="${country.alias}">${country.label}&nbsp;<svg class="icon -blue -medium arrow"><use xlink:href="#icon-arrow"></use></svg></a>
+        <a class="text -title-x-small" href="/${country.alias}">${country.label}&nbsp;<svg class="icon -blue -medium arrow"><use xlink:href="#icon-arrow"></use></svg></a>
         <div class="first-info text">
           <span>Total Commitments ${parseInt(country.current_commitments_count) + parseInt(country.starred_commitments_count) + parseInt(country.irm_commitments_count)}</span>
           <span>Action Plans ${country.action_plan_count}</span>

@@ -18,28 +18,23 @@ function appendSelectOptionsFromData(selector, options) {
 
 function getSelectOptionsFromData(data, optionName, type) {
   let options = [];
-  if (optionName.length > 1) {
-    data.forEach(function(item) {
-      if (type.indexOf(item.type) > -1) {
-        const optionStart = item[optionName[0]];
-        const optionEnd = item[optionName[1]];
-        const option = `${optionStart}-${optionEnd}`;
-        if ( options.indexOf(option) === -1 ) {
-          options.push(option);
+  data.forEach(function(item) {
+    if (item.type && type.some(index => item.type.indexOf(index) >= 0) && item.date) {
+      let startDate, endDate;
+      startDate = moment(item.date.value).year();
+      if ( options.indexOf(startDate) === -1 ) {
+        options.push(startDate);
+      }
+      if (item.date.value2) {
+        endDate = moment(item.date.value2).year();
+        if ( options.indexOf(endDate) === -1 ) {
+          options.push(endDate);
         }
       }
-    });
-  } else {
-    data.forEach(function(item) {
-      if (type.indexOf(item.type) > -1) {
-        const option = item[optionName];
-        if ( options.indexOf(option) === -1 ) {
-          options.push(option);
-        }
-      }
-    });
-  }
+    }
+  });
   options.sort();
+  options.reverse();
 
   return options;
 }

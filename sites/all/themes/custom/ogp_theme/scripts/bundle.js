@@ -517,28 +517,26 @@ function appendSelectOptionsFromData(selector, options) {
 
 function getSelectOptionsFromData(data, optionName, type) {
   var options = [];
-  if (optionName.length > 1) {
-    data.forEach(function (item) {
-      if (type.indexOf(item.type) > -1) {
-        var optionStart = item[optionName[0]];
-        var optionEnd = item[optionName[1]];
-        var option = optionStart + "-" + optionEnd;
-        if (options.indexOf(option) === -1) {
-          options.push(option);
+  data.forEach(function (item) {
+    if (item.type && type.some(function (index) {
+      return item.type.indexOf(index) >= 0;
+    }) && item.date) {
+      var startDate = void 0,
+          endDate = void 0;
+      startDate = moment(item.date.value).year();
+      if (options.indexOf(startDate) === -1) {
+        options.push(startDate);
+      }
+      if (item.date.value2) {
+        endDate = moment(item.date.value2).year();
+        if (options.indexOf(endDate) === -1) {
+          options.push(endDate);
         }
       }
-    });
-  } else {
-    data.forEach(function (item) {
-      if (type.indexOf(item.type) > -1) {
-        var option = item[optionName];
-        if (options.indexOf(option) === -1) {
-          options.push(option);
-        }
-      }
-    });
-  }
+    }
+  });
   options.sort();
+  options.reverse();
 
   return options;
 }
@@ -862,8 +860,10 @@ function showCountriesDetail(id) {
       var container = $(view + ' .links-container');
       var html = '';
       data.forEach(function (link) {
-        if (type.indexOf(link.type) > -1) {
-          if (link.publication_date === activeFilter || activeFilter.indexOf(link.cycle_start) > -1 && activeFilter.indexOf(link.cycle_end) > -1) {
+        if (link.type && type.some(function (index) {
+          return link.type.indexOf(index) >= 0;
+        })) {
+          if (link.date && moment(link.date.value).year() === parseInt(activeFilter) || link.date && moment(link.date.value2).year() === parseInt(activeFilter)) {
             html += buildRelLink(link);
           }
         }
@@ -1023,9 +1023,9 @@ function showCountriesDetail(id) {
 
     $.getJSON('/apiJSON/documents?filter[country]=' + id, function (data) {
       var dataCache = data.data;
-      initLinksSelectorContainer(dataCache, actionPlansContainer, ['cycle_start', 'cycle_end'], docTypes.actionPlans);
-      initLinksSelectorContainer(dataCache, reportsContainer, ['cycle_start', 'cycle_end'], docTypes.reports);
-      initLinksSelectorContainer(dataCache, lettersContainer, ['publication_date'], docTypes.letters);
+      initLinksSelectorContainer(dataCache, actionPlansContainer, ['date'], docTypes.actionPlans);
+      initLinksSelectorContainer(dataCache, reportsContainer, ['date'], docTypes.reports);
+      initLinksSelectorContainer(dataCache, lettersContainer, ['date'], docTypes.letters);
       removeLoader('#resourceDocsContainer', null, true);
     });
 
@@ -1424,7 +1424,7 @@ function setCountryDataTiles(container, country) {
 }
 
 function initCountryBox(container, country, activeTab) {
-  var html = '\n    <div class="column small-12 medium-6" id="country-' + country.id + '">\n      <div class="c-country-tile">\n        <a class="text -title-x-small" href="' + country.alias + '">' + country.label + '&nbsp;<svg class="icon -blue -medium arrow"><use xlink:href="#icon-arrow"></use></svg></a>\n        <div class="first-info text">\n          <span>Total Commitments ' + (parseInt(country.current_commitments_count) + parseInt(country.starred_commitments_count) + parseInt(country.irm_commitments_count)) + '</span>\n          <span>Action Plans ' + country.action_plan_count + '</span>\n          <span>Member since ' + moment(parseInt(country.memberSince) * 1000).format('YYYY') + '</span>\n        </div>\n        <div class="row data-tiles"></div>\n      </div>\n    </div>\n  ';
+  var html = '\n    <div class="column small-12 medium-6" id="country-' + country.id + '">\n      <div class="c-country-tile">\n        <a class="text -title-x-small" href="/' + country.alias + '">' + country.label + '&nbsp;<svg class="icon -blue -medium arrow"><use xlink:href="#icon-arrow"></use></svg></a>\n        <div class="first-info text">\n          <span>Total Commitments ' + (parseInt(country.current_commitments_count) + parseInt(country.starred_commitments_count) + parseInt(country.irm_commitments_count)) + '</span>\n          <span>Action Plans ' + country.action_plan_count + '</span>\n          <span>Member since ' + moment(parseInt(country.memberSince) * 1000).format('YYYY') + '</span>\n        </div>\n        <div class="row data-tiles"></div>\n      </div>\n    </div>\n  ';
   $('.content-tiles', container).append(html);
 }
 

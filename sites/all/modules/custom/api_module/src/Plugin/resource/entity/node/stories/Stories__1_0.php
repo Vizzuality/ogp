@@ -87,12 +87,12 @@ class Stories__1_0 extends ResourceNode{
       )
     );
 
-    // $public_fields['image'] = array(
-    //   'property' => 'field_blog_post_header_image',
-    //   'process_callbacks' => array(
-    //     array($this, 'getStyleUrl')
-    //   )
-    // );
+    $public_fields['image'] = array(
+      'property' => 'field_photo',
+      'process_callbacks' => array(
+        array($this, 'getStyleUrl')
+      )
+    );
 
     $public_fields['created'] = array(
       'property' => 'created'
