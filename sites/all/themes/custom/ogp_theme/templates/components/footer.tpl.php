@@ -6,16 +6,16 @@
       <div class="column small-12 medium-3">
         <ul class="site-links">
           <li class="text -dynamic-link"><a href="/stories" href="#">stories</a></li>
-          <li class="text -dynamic-link"><a href="/countries" href="#">countries</a></li>
-          <li class="text -dynamic-link"><a href="/theme" href="#">commitments</a></li>
+          <li class="text -dynamic-link"><a href="/countries" href="#">participants</a></li>
           <li class="text -dynamic-link"><a href="/resources" href="#">resources</a></li>
+          <li class="text -dynamic-link"><a href="/theme" href="#">themes</a></li>
         </ul>
       </div>
       <div class="column small-12 medium-3">
         <ul class="site-links">
-          <li class="text -dynamic-link"><a href="#">open government</a></li>
-          <li class="text -dynamic-link"><a href="#">the ogp</a></li>
-          <li class="text -dynamic-link"><a href="#">news</a></li>
+          <li class="text -dynamic-link"><a href="/about">about</a></li>
+          <li class="text -dynamic-link"><a href="/groups">groups</a></li>
+          <li class="text -dynamic-link"><a href="#">news & events</a></li>
         </ul>
       </div>
       <div class="column small-12 medium-3">
