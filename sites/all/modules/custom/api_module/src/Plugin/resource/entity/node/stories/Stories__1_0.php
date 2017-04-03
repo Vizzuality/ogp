@@ -79,7 +79,7 @@ class Stories__1_0 extends ResourceNode{
     );
 
     $public_fields['author'] = array(
-      'property' => 'field_blog_authors',
+      'property' => 'field_content_authors',
       'resource' => array(
         'name' => 'users',
         'majorVersion' => '1',
