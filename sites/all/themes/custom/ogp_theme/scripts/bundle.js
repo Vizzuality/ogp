@@ -347,7 +347,7 @@ function pushDefaultModal(id, query, countryData, dataLabel, buttonText, buttonL
         }
       });
     }
-    var html = '\n      <div class="modal-header">\n        <div class="header-info">\n          <h3 class="text -module-title">' + countryData[0].label + '</h3>\n          <p class="text -meta">Member since ' + moment(parseInt(countryData[0].memberSince)).format('YYYY') + ', Action plan 1</p>\n        </div>\n        <div class="c-data-number">\n          <h3 class="text -number">' + data.count + '</h3>\n          <p class="text -small-bold">' + dataLabel + '</p>\n        </div>\n      </div>\n      <div class="content-wrapper -scroll ' + (modalType === 'slider' ? 'stories-slider' : '') + '">\n        ' + dataInfo + '\n      </div>\n      <div class="button-container -fixed">\n        <a href="/' + buttonLink + '" class="c-button -tall -green-back -box">' + buttonText + '</a>\n        <a href="' + countryData[0].alias + '" class="c-button -tall -green-back -box">VIEW COUNTRY</a>\n      </div>\n    ';
+    var html = '\n      <div class="modal-header">\n        <div class="header-info">\n          <h3 class="text -module-title">' + countryData[0].label + '</h3>\n          <p class="text -meta">Member since ' + moment(parseInt(countryData[0].memberSince) * 1000).format('YYYY') + ', Action plan 1</p>\n        </div>\n        <div class="c-data-number">\n          <h3 class="text -number">' + data.count + '</h3>\n          <p class="text -small-bold">' + dataLabel + '</p>\n        </div>\n      </div>\n      <div class="content-wrapper -scroll ' + (modalType === 'slider' ? 'stories-slider' : '') + '">\n        ' + dataInfo + '\n      </div>\n      <div class="button-container -fixed">\n        <a href="/' + buttonLink + '" class="c-button -tall -green-back -box">' + buttonText + '</a>\n        <a href="' + countryData[0].alias + '" class="c-button -tall -green-back -box">VIEW COUNTRY</a>\n      </div>\n    ';
     setDataToModal(id, html);
     if (modalType === 'slider') {
       $('.stories-slider').slick({
@@ -365,7 +365,7 @@ function pushDefaultModal(id, query, countryData, dataLabel, buttonText, buttonL
 function pushSmallModal(id, query, countryData, firstDataLabel, secondDataLabel, buttonText, buttonLink) {
 
   $.getJSON('apiJSON/' + query, function (data) {
-    var html = '\n      <div class="content-wrapper">\n        <h3 class="text -module-title">' + countryData[0].label + '</h3>\n        <p class="text -meta">Member since ' + moment(parseInt(countryData[0].memberSince)).format('YYYY') + '</p>\n        <div class="data-container">\n          <div class="c-data-number -with-padding">\n            <h4 class="text -number">' + data.count + '</h4>\n            <span class="text -small-bold">' + firstDataLabel + '</span>\n          </div>\n          <div class="c-data-number -with-padding">\n            <h4 class="text -number">3</h4>\n            <span class="text -small-bold">' + secondDataLabel + '</span>\n          </div>\n        </div>\n      </div>\n      <div class="button-container">\n        <a class="c-button -box -tall -green-back -white" href="' + buttonLink + '">' + buttonText + '</a>\n        <a class="c-button -box -tall -green-back -white" href="' + countryData[0].alias + '">View country</a>\n      </div>\n    ';
+    var html = '\n      <div class="content-wrapper">\n        <h3 class="text -module-title">' + countryData[0].label + '</h3>\n        <p class="text -meta">Member since ' + moment(parseInt(countryData[0].memberSince) * 1000).format('YYYY') + '</p>\n        <div class="data-container">\n          <div class="c-data-number -with-padding">\n            <h4 class="text -number">' + data.count + '</h4>\n            <span class="text -small-bold">' + firstDataLabel + '</span>\n          </div>\n          <div class="c-data-number -with-padding">\n            <h4 class="text -number">3</h4>\n            <span class="text -small-bold">' + secondDataLabel + '</span>\n          </div>\n        </div>\n      </div>\n      <div class="button-container">\n        <a class="c-button -box -tall -green-back -white" href="' + buttonLink + '">' + buttonText + '</a>\n        <a class="c-button -box -tall -green-back -white" href="' + countryData[0].alias + '">View country</a>\n      </div>\n    ';
     setDataToModal(id, html);
   });
 }
@@ -1275,7 +1275,7 @@ function showCountriesPage() {
     var layers = {
       action: {
         sql: 'SELECT * FROM countries_homepage',
-        cartocss: '#layer {polygon-fill: ramp([actionplan],(#66bc29, #2d4f00, #cc3300), ("Developing action plan","Implementing action plan", "Inactive"),category);line-width: 1;line-color: #FFF;line-opacity: 0.5;}',
+        cartocss: '#layer{polygon-fill:ramp([actionplan],(#2d4f00,#66bc29,#2d4f00,#c30,#2d4f00,#66bc29,#2d4f00),("Implementing 1st action plan and Developing 2nd action plan","Developing action plan","Implementing 2nd action plan","Implementing 1st action plan","Developing 1st Action Plan","Implementing action plan"),"=");line-width:1;line-color:#FFF;line-opacity:.5}',
         interactivity: 'the_geom, nid, country, cartodb_id',
         name: 'action'
       },
@@ -1493,6 +1493,28 @@ function initCountryTabs(onChangeCountryTab) {
 }
 'use strict';
 
+function showDocumentResourcePage() {
+  (function ($) {
+    // cache dom
+    var tileContainer = $('#resourceDocsTiles');
+    var searchEl = $('.c-tile');
+    var searchText = $('.c-tile .tile');
+    var searchContainer = $('#resourceTilesSearch input');
+
+    // fetch content and append
+    $.getJSON('/apiJSON/resource', function (data) {
+      setSearchPlaceholder(searchContainer, data.data[0].label);
+      setSearchListeners(searchEl, searchText);
+      if (data.data.length) {
+        appendTiles(data.data, tileContainer, 4);
+      } else {
+        showNoResults();
+      }
+    });
+  })(jQuery);
+}
+'use strict';
+
 function showHomePage() {
   (function ($) {
     // Slider that appear on Home page
@@ -1533,7 +1555,7 @@ function showHomePage() {
       type: 'cartodb',
       sublayers: [{
         sql: 'SELECT * FROM countries_homepage',
-        cartocss: '#layer {polygon-fill: ramp([actionplan],(#66bc29, #2d4f00, #cc3300), ("Developing action plan","Implementing action plan", "Inactive"),category);line-width: 1;line-color: #FFF;line-opacity: 0.5;}',
+        cartocss: '#layer{polygon-fill:ramp([actionplan],(#2d4f00,#66bc29,#2d4f00,#c30,#2d4f00,#66bc29,#2d4f00),("Implementing 1st action plan and Developing 2nd action plan","Developing action plan","Implementing 2nd action plan","Implementing 1st action plan","Developing 1st Action Plan","Implementing action plan"),"=");line-width:1;line-color:#FFF;line-opacity:.5}',
         interactivity: 'the_geom, nid, country, cartodb_id'
       }]
     }).addTo(map).done(function (layer) {
@@ -1576,28 +1598,6 @@ function showHomePage() {
         $('.tooltip').remove();
       });
       map.invalidateSize();
-    });
-  })(jQuery);
-}
-'use strict';
-
-function showDocumentResourcePage() {
-  (function ($) {
-    // cache dom
-    var tileContainer = $('#resourceDocsTiles');
-    var searchEl = $('.c-tile');
-    var searchText = $('.c-tile .tile');
-    var searchContainer = $('#resourceTilesSearch input');
-
-    // fetch content and append
-    $.getJSON('/apiJSON/resource', function (data) {
-      setSearchPlaceholder(searchContainer, data.data[0].label);
-      setSearchListeners(searchEl, searchText);
-      if (data.data.length) {
-        appendTiles(data.data, tileContainer, 4);
-      } else {
-        showNoResults();
-      }
     });
   })(jQuery);
 }
