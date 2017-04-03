@@ -1,9 +1,8 @@
-function showGroupList() {
+function showPageList() {
   (function($) {
     let page = 1;
     let totalPages = 0;
     let sortValue = 'asc';
-    const tableContainer = $('.container-info-table');
 
     $('.sort-field').click(function() {
       if (sortValue === 'asc') {
@@ -15,43 +14,43 @@ function showGroupList() {
       }
       page = 1;
       showLoader('#tableContainer');
-      showGroups(page, sortValue);
+      showPages(page, sortValue);
     });
 
     function setPaginationListerners() {
       $('.onClickPagination').on('click', function(e) {
         showLoader('#tableContainer');
         const pageNum = $(this).data('value');
-        showGroups(pageNum, sortValue);
+        showPages(pageNum, sortValue);
       })
     }
 
-    function showGroups(page, sort) {
+    function showPages(pageNumber, sort) {
       let sortApi = '';
-
       if (sort === 'asc') {
         sortApi = 'sort=label'
       } else {
         sortApi = 'sort-=label'
       }
 
-      $.getJSON(`/apiJSON/working_group?&page=${page}&${sortApi}`, function (working) {
-        totalPages = getPageCount(working.count, 5);
+      $.getJSON(`/apiJSON/page?&page=${pageNumber}&${sortApi}`, function (pageresult) {
+        totalPages = getPageCount(pageresult.count, 5);
         if (page === 1) {
-          $.getJSON(`/apiJSON/working_group?date&page=${page}&${sortApi}`, function (workingTable) {
-            createTable(workingTable, 'groups');
-            initPagination(page, totalPages, 'workingGroupList');
+          $.getJSON(`/apiJSON/page?date&page=${pageNumber}&${sortApi}`, function (pageTable) {
+            createTable(pageTable, 'pages');
+            initPagination(pageNumber, totalPages, 'pagesList');
             setPaginationListerners();
             removeLoader('#tableContainer', null, true);
           });
         } else {
-          createTable(working, 'groups');
+          createTable(pageresult, 'pages');
           removeLoader('#tableContainer', null, true);
-          initPagination(page, totalPages, 'workingGroupList');
+          initPagination(pageNumber, totalPages, 'pagesList');
           setPaginationListerners();
         }
       });
     }
-    showGroups(page, sortValue);
+
+    showPages(page, sortValue);
   })(jQuery);
 }

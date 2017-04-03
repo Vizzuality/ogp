@@ -149,6 +149,12 @@ function getAbsolutePath() {
         addBanner('newsletter');
       }
 
+      // Pages
+      if ($(context).find('#pagesList').length !== 0) {
+        showPageList();
+        addBanner('newsletter');
+      }
+
       //build subscribe modal
       buildSubscribeModal();
     }
@@ -544,6 +550,31 @@ function getSelectOptionsFromData(data, optionName, type) {
 function buildSelector(selector, options) {
   //build selector
   appendSelectOptions(selector, options);
+}
+'use strict';
+
+function createTable(data, type) {
+  var html = '';
+  var tableContainer = $('.container-info-table');
+  var length = data.data.length;
+  switch (type) {
+    case 'pages':
+      for (var i = 0; i < length; i += 1) {
+        if (data.data[i].body) {
+          html += '\n            <tr class="text">\n              <th class="text -small-bold">' + data.data[i].label + '</th>\n              <th class="text">' + data.data[i].page_category.label + '</th>\n              <th class="text -blue -capitalize">' + moment.unix(data.data[i].date).startOf('month').fromNow() + '</th>\n              <th><a class="text -blue -capitalize" href="' + data.data[i].alias + '">Go to Page <svg class="icon -blue -medium"><use xlink:href="#icon-arrow"></use></svg></a></th>\n            </tr>\n          ';
+        }
+      }
+      break;
+    case 'groups':
+      for (var _i = 0; _i < length; _i += 1) {
+        html += '\n          <tr class="text">\n            <th class="text -small-bold">' + data.data[_i].label + '</th>\n            <th class="text -body">\n              ' + addDots(data.data[_i].body.value, 120) + '\n            </th>\n            <th class="text">' + data.data[_i].name.name + '</th>\n            <th class="text -blue -capitalize">' + moment.unix(data.data[_i].date).startOf('month').fromNow() + '</th>\n            <th><a class="text -blue -capitalize" href="' + data.data[_i].alias + '">Go to Working Group <svg class="icon -blue -medium"><use xlink:href="#icon-arrow"></use></svg></a></th>\n          </tr>\n        ';
+      }
+      break;
+    default:
+      break;
+  }
+
+  tableContainer.html(html);
 }
 'use strict';
 
@@ -1462,28 +1493,6 @@ function initCountryTabs(onChangeCountryTab) {
 }
 'use strict';
 
-function showDocumentResourcePage() {
-  (function ($) {
-    // cache dom
-    var tileContainer = $('#resourceDocsTiles');
-    var searchEl = $('.c-tile');
-    var searchText = $('.c-tile .tile');
-    var searchContainer = $('#resourceTilesSearch input');
-
-    // fetch content and append
-    $.getJSON('/apiJSON/resource', function (data) {
-      setSearchPlaceholder(searchContainer, data.data[0].label);
-      setSearchListeners(searchEl, searchText);
-      if (data.data.length) {
-        appendTiles(data.data, tileContainer, 4);
-      } else {
-        showNoResults();
-      }
-    });
-  })(jQuery);
-}
-'use strict';
-
 function showHomePage() {
   (function ($) {
     // Slider that appear on Home page
@@ -1568,6 +1577,86 @@ function showHomePage() {
       });
       map.invalidateSize();
     });
+  })(jQuery);
+}
+'use strict';
+
+function showDocumentResourcePage() {
+  (function ($) {
+    // cache dom
+    var tileContainer = $('#resourceDocsTiles');
+    var searchEl = $('.c-tile');
+    var searchText = $('.c-tile .tile');
+    var searchContainer = $('#resourceTilesSearch input');
+
+    // fetch content and append
+    $.getJSON('/apiJSON/resource', function (data) {
+      setSearchPlaceholder(searchContainer, data.data[0].label);
+      setSearchListeners(searchEl, searchText);
+      if (data.data.length) {
+        appendTiles(data.data, tileContainer, 4);
+      } else {
+        showNoResults();
+      }
+    });
+  })(jQuery);
+}
+'use strict';
+
+function showPageList() {
+  (function ($) {
+    var page = 1;
+    var totalPages = 0;
+    var sortValue = 'asc';
+
+    $('.sort-field').click(function () {
+      if (sortValue === 'asc') {
+        $('.triangle-sort').css('transform', 'rotate(180deg)'); // use this functions, because jquery method addClass not work with svg.
+        sortValue = 'desc';
+      } else {
+        $('.triangle-sort').css('transform', 'rotate(0deg)');
+        sortValue = 'asc';
+      }
+      page = 1;
+      showLoader('#tableContainer');
+      showPages(page, sortValue);
+    });
+
+    function setPaginationListerners() {
+      $('.onClickPagination').on('click', function (e) {
+        showLoader('#tableContainer');
+        var pageNum = $(this).data('value');
+        showPages(pageNum, sortValue);
+      });
+    }
+
+    function showPages(pageNumber, sort) {
+      var sortApi = '';
+      if (sort === 'asc') {
+        sortApi = 'sort=label';
+      } else {
+        sortApi = 'sort-=label';
+      }
+
+      $.getJSON('/apiJSON/page?&page=' + pageNumber + '&' + sortApi, function (pageresult) {
+        totalPages = getPageCount(pageresult.count, 5);
+        if (page === 1) {
+          $.getJSON('/apiJSON/page?date&page=' + pageNumber + '&' + sortApi, function (pageTable) {
+            createTable(pageTable, 'pages');
+            initPagination(pageNumber, totalPages, 'pagesList');
+            setPaginationListerners();
+            removeLoader('#tableContainer', null, true);
+          });
+        } else {
+          createTable(pageresult, 'pages');
+          removeLoader('#tableContainer', null, true);
+          initPagination(pageNumber, totalPages, 'pagesList');
+          setPaginationListerners();
+        }
+      });
+    }
+
+    showPages(page, sortValue);
   })(jQuery);
 }
 'use strict';
@@ -2043,26 +2132,18 @@ function showGroupList() {
         totalPages = getPageCount(working.count, 5);
         if (page === 1) {
           $.getJSON('/apiJSON/working_group?date&page=' + page + '&' + sortApi, function (workingTable) {
-            createTable(workingTable);
+            createTable(workingTable, 'groups');
             initPagination(page, totalPages, 'workingGroupList');
             setPaginationListerners();
             removeLoader('#tableContainer', null, true);
           });
         } else {
-          createTable(working);
+          createTable(working, 'groups');
           removeLoader('#tableContainer', null, true);
           initPagination(page, totalPages, 'workingGroupList');
           setPaginationListerners();
         }
       });
-    }
-
-    function createTable(data) {
-      var html = '';
-      for (var i = 0; i < data.data.length; i += 1) {
-        html += '\n          <tr class="text">\n            <th class="text -small-bold">' + data.data[i].label + '</th>\n            <th class="text -body">\n              ' + addDots(data.data[i].body.value, 120) + '\n            </th>\n            <th class="text">' + data.data[i].name.name + '</th>\n            <th class="text -blue -capitalize">' + moment(parseInt(data.data[i].date) * 1000).startOf('month').fromNow() + '</th>\n            <th><a class="text -blue -capitalize" href="' + data.data[i].alias + '">Go to Working Group <svg class="icon -blue -medium"><use xlink:href="#icon-arrow"></use></svg></a></th>\n          </tr>\n        ';
-      }
-      tableContainer.html(html);
     }
     showGroups(page, sortValue);
   })(jQuery);
