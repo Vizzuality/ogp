@@ -4,7 +4,7 @@
  * Page
  */
 ?>
-<div id="pagesList" class="l-pages-list">
+<div id="pagesList" class="l-list-page">
   <?php include(drupal_get_path('theme', 'ogp_theme').'/templates/components/header.tpl.php'); ?>
   <div class="l-page">
     <div class="row">

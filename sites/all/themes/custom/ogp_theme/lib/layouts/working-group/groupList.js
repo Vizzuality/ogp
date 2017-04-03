@@ -39,36 +39,18 @@ function showGroupList() {
         totalPages = getPageCount(working.count, 5);
         if (page === 1) {
           $.getJSON(`/apiJSON/working_group?date&page=${page}&${sortApi}`, function (workingTable) {
-            createTable(workingTable);
+            createTable(workingTable, 'groups');
             initPagination(page, totalPages, 'workingGroupList');
             setPaginationListerners();
             removeLoader('#tableContainer', null, true);
           });
         } else {
-          createTable(working);
+          createTable(working, 'groups');
           removeLoader('#tableContainer', null, true);
           initPagination(page, totalPages, 'workingGroupList');
           setPaginationListerners();
         }
       });
-    }
-
-    function createTable(data) {
-      let html = '';
-      for (let i = 0; i < data.data.length; i += 1) {
-        html += `
-          <tr class="text">
-            <th class="text -small-bold">${data.data[i].label}</th>
-            <th class="text -body">
-              ${addDots(data.data[i].body.value, 120)}
-            </th>
-            <th class="text">${data.data[i].name.name}</th>
-            <th class="text -blue -capitalize">${moment(parseInt(data.data[i].date) * 1000).startOf('month').fromNow()}</th>
-            <th><a class="text -blue -capitalize" href="${data.data[i].alias}">Go to Working Group <svg class="icon -blue -medium"><use xlink:href="#icon-arrow"></use></svg></a></th>
-          </tr>
-        `;
-      }
-      tableContainer.html(html);
     }
     showGroups(page, sortValue);
   })(jQuery);
