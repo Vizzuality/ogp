@@ -77,8 +77,9 @@ function showCountriesDetail(id) {
       const container = $(`${view} .links-container`);
       let html = '';
       data.forEach(function(link) {
-        if (type.indexOf(link.type) > -1) {
-          if (link.publication_date === activeFilter || (activeFilter.indexOf(link.cycle_start) > -1 && activeFilter.indexOf(link.cycle_end) > -1) ) {
+        if (link.type && type.some(index => link.type.indexOf(index) >= 0)) {
+          if ((link.date && moment(link.date.value).year() === parseInt(activeFilter)) ||
+              (link.date && moment(link.date.value2).year() === parseInt(activeFilter))) {
             html += buildRelLink(link);
           }
         }
@@ -244,9 +245,9 @@ function showCountriesDetail(id) {
 
     $.getJSON(`/apiJSON/documents?filter[country]=${id}`, (data) => {
       const dataCache = data.data;
-      initLinksSelectorContainer(dataCache, actionPlansContainer, ['cycle_start', 'cycle_end'], docTypes.actionPlans);
-      initLinksSelectorContainer(dataCache, reportsContainer, ['cycle_start', 'cycle_end'], docTypes.reports);
-      initLinksSelectorContainer(dataCache, lettersContainer, ['publication_date'], docTypes.letters);
+      initLinksSelectorContainer(dataCache, actionPlansContainer, ['date'], docTypes.actionPlans);
+      initLinksSelectorContainer(dataCache, reportsContainer, ['date'], docTypes.reports);
+      initLinksSelectorContainer(dataCache, lettersContainer, ['date'], docTypes.letters);
       removeLoader('#resourceDocsContainer', null, true);
     });
 
