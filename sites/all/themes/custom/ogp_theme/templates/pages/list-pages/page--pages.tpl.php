@@ -4,12 +4,12 @@
  * Page
  */
 ?>
-<div id="workingGroupList" class="l-list-page">
+<div id="pagesList" class="l-list-page">
   <?php include(drupal_get_path('theme', 'ogp_theme').'/templates/components/header.tpl.php'); ?>
   <div class="l-page">
     <div class="row">
       <div class="column small-12 medium-6 content-header">
-        <h1 class="text -title">Groups</h1>
+        <h1 class="text -title">Pages</h1>
       </div>
     </div>
 
@@ -22,14 +22,12 @@
               <th class="sort-field">Title
                 <svg class="icon -medium triangle-sort"><use xlink:href="#icon-triangle-down"></use></svg>
               </th>
-              <th>Description</th>
-              <th>Manager</th>
-              <th>Created</th>
+              <th>Category</th>
+              <th>Date</th>
               <th>Link</th>
             </tr>
           </thead>
           <tbody class="container-info-table">
-
           </tbody>
         </table>
       </div>

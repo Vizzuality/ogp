@@ -148,6 +148,12 @@ function getAbsolutePath() {
         addBanner('newsletter');
       }
 
+      // Pages
+      if ($(context).find('#pagesList').length !== 0) {
+        showPageList();
+        addBanner('newsletter');
+      }
+
       //build subscribe modal
       buildSubscribeModal();
 
