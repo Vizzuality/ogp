@@ -119,7 +119,7 @@ function pushDefaultModal(id, query, countryData, dataLabel, buttonText, buttonL
       <div class="modal-header">
         <div class="header-info">
           <h3 class="text -module-title">${countryData[0].label}</h3>
-          <p class="text -meta">Member since ${moment(parseInt(countryData[0].memberSince) * 1000).format('YYYY')}, Action plan 1</p>
+          <p class="text -meta">Member since ${moment.unix(countryData[0].memberSince).format('YYYY')}, Action plan 1</p>
         </div>
         <div class="c-data-number">
           <h3 class="text -number">${data.count}</h3>
@@ -154,7 +154,7 @@ function pushSmallModal(id, query, countryData, firstDataLabel, secondDataLabel,
     const html = `
       <div class="content-wrapper">
         <h3 class="text -module-title">${countryData[0].label}</h3>
-        <p class="text -meta">Member since ${moment(parseInt(countryData[0].memberSince) * 1000).format('YYYY')}</p>
+        <p class="text -meta">Member since ${moment.unix(countryData[0].memberSince).format('YYYY')}</p>
         <div class="data-container">
           <div class="c-data-number -with-padding">
             <h4 class="text -number">${data.count}</h4>

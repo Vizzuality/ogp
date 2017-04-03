@@ -80,7 +80,7 @@ function initCountryBox(container, country, activeTab) {
         <div class="first-info text">
           <span>Total Commitments ${parseInt(country.current_commitments_count) + parseInt(country.starred_commitments_count) + parseInt(country.irm_commitments_count)}</span>
           <span>Action Plans ${country.action_plan_count}</span>
-          <span>Member since ${moment(parseInt(country.memberSince) * 1000).format('YYYY')}</span>
+          <span>Member since ${moment.unix(country.memberSince).format('YYYY')}</span>
         </div>
         <div class="row data-tiles"></div>
       </div>
