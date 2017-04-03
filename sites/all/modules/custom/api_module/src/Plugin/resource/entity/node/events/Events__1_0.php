@@ -52,7 +52,7 @@ class Events__1_0 extends ResourceNode{
     );
 
     $public_fields['image'] = array(
-      'property' => 'field_media',
+      'property' => 'field_country_cover_photo',
       'process_callbacks' => array(
         array($this, 'getStyleUrl')
       )

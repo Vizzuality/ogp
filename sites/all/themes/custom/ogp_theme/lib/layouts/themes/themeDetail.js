@@ -38,9 +38,9 @@ function showThemesDetail(id) {
         placeholder: 'All countries',
       });
       $('.select2').addClass('-green-select');
-      $.getJSON(`/apiJSON/countries?fields=id,name,label&sort=label`, function(data) {
+      $.getJSON(`/apiJSON/countries?fields=id,label&sort=label`, function(data) {
         data.data.forEach(function(country) {
-          const option = `<option value="${country.id}">${country.name.name}</option>`;
+          const option = `<option value="${country.id}">${country.label}</option>`;
           countrySelector.append(option);
         });
       });
@@ -69,7 +69,7 @@ function showThemesDetail(id) {
 
     function showContent(container, endpoint, countryFilter) {
       container.html('');
-      const countryQuery = countryFilter ? `&filter[country]=${countryFilter}` : '';
+      const countryQuery = countryFilter && (endpoint !== 'modelcommitments') ? `&filter[country]=${countryFilter}` : '';
       $.getJSON(`/apiJSON/${endpoint}?filter[theme]=${id}${countryQuery}`, function(data) {
         hideNoResults();
         if (data.data.length) {

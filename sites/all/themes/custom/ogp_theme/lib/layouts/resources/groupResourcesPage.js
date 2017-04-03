@@ -8,7 +8,7 @@ function showGroupResourcesPage() {
       data.data.forEach(function(resource) {
         const html = `
           <div class="column small-12 medium-4 c-tile">
-            <a href="${resource.alias}" class="tile -tall">
+            <a href="/${resource.alias}" class="tile -tall">
               <span class="text -tile -white">
                 ${resource.label}
               </span>

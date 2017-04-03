@@ -21,9 +21,9 @@ use Drupal\restful\Plugin\resource\ResourceNode;
  *   authenticationTypes = TRUE,
  *   authenticationOptional = TRUE,
  *   dataProvider = {
- *     "entityType": "node",
+ *     "entityType": "taxonomy_term",
  *     "bundles": {
- *       "sub_group_resource"
+ *       "resources_sub_group"
  *     },
  *   },
  *   majorVersion = 1,
@@ -40,20 +40,20 @@ class SubGroupResource__1_0 extends ResourceNode{
     $public_fields = parent::publicFields();
 
     $public_fields['alias'] = array(
-      'property' => 'nid',
+      'property' => 'tid',
       'process_callbacks' => array(
         array($this, 'getAlias')
       )
     );
 
-    $public_fields['label'] = array(
-      'property' => 'field_short_name_sub',
-    );
+    // $public_fields['label'] = array(
+    //   'property' => 'field_short_name_sub',
+    // );
 
     return $public_fields;
   }
 
   public function getAlias($value) {
-    return drupal_get_path_alias('node/' . $value);
+    return drupal_get_path_alias('taxonomy/term/' . $value);
   }
 }

@@ -43,14 +43,14 @@ class Modelcommitments__1_0 extends ResourceNode{
       'property' => 'field_theme_model',
     );
 
-    $public_fields['country'] = array(
-      'property' => 'field_country_model',
-      'resource' => array(
-        'name' => 'countries',
-        'majorVersion' => '1',
-        'minorVersion' => '0'
-      )
-    );
+    // $public_fields['country'] = array(
+    //   'property' => 'field_country_model',
+    //   'resource' => array(
+    //     'name' => 'countries',
+    //     'majorVersion' => '1',
+    //     'minorVersion' => '0'
+    //   )
+    // );
 
     $public_fields['log'] = array(
       'property' => 'log'
@@ -69,15 +69,11 @@ class Modelcommitments__1_0 extends ResourceNode{
     );
 
     $public_fields['standardsguidance'] = array(
-      'property' => 'field_standards_guidance_model'
+      'property' => 'field_standards_title'
     );
 
     $public_fields['linkstandardsguidance'] = array(
-      'property' => 'field_link_standards_model'
-    );
-
-    $public_fields['linkstandardsguidance'] = array(
-      'property' => 'field_link_standards_model'
+      'property' => 'field_standards_link'
     );
 
     $public_fields['strength'] = array(

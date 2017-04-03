@@ -56,7 +56,7 @@ class Countries__1_0 extends ResourceNode{
     );
 
     $public_fields['name'] = array(
-      'property' => 'field_country',
+      'property' => 'title',
     );
 
     $public_fields['current_themes'] = array(

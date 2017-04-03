@@ -2,21 +2,21 @@
 
 /**
   * @file
-  * Contains \Drupal\api_module\Plugin\resource\entity\node\resources_info;
+  * Contains \Drupal\api_module\Plugin\resource\entity\node\resources;
 */
 
-namespace Drupal\api_module\Plugin\resource\entity\node\resources_info;
+namespace Drupal\api_module\Plugin\resource\entity\node\resources;
 
 use Drupal\restful\Plugin\resource\ResourceNode;
 
 /**
- * Class ResourcesInfo__1_0
- * @package Drupal\api_module\Plugin\resource\entity\node\resources_info
+ * Class Resources__1_0
+ * @package Drupal\api_module\Plugin\resource\entity\node\resources
  *
  * @Resource(
- *   name = "resources_info:1.0",
- *   resource = "resources_info",
- *   label = "Resources Info",
+ *   name = "resources:1.0",
+ *   resource = "resources",
+ *   label = "Resources",
  *   description = "Export the resources_info with all authentication providers.",
  *   authenticationTypes = TRUE,
  *   authenticationOptional = TRUE,
@@ -31,7 +31,7 @@ use Drupal\restful\Plugin\resource\ResourceNode;
  * )
  */
 
-class ResourcesInfo__1_0 extends ResourceNode{
+class Resources__1_0 extends ResourceNode{
   /**
   * {@inheritdoc}
   */
@@ -40,11 +40,11 @@ class ResourcesInfo__1_0 extends ResourceNode{
     $public_fields = parent::publicFields();
 
     $public_fields['sub_group'] = array(
-      'property' => 'field_sub_group_resource_info'
+      'property' => 'field_sub_group'
     );
 
     $public_fields['group_resource'] = array(
-      'property' => 'field_group_resource_term'
+      'property' => 'field_group_resource_info'
     );
 
     $public_fields['body'] = array(
@@ -52,11 +52,11 @@ class ResourcesInfo__1_0 extends ResourceNode{
     );
 
     $public_fields['resource_links'] = array(
-      'property' => 'field_link_file_resource_info'
+      'property' => 'field_related_content'
     );
 
     $public_fields['post_date'] = array(
-      'property' => 'field_post_date_resource'
+      'property' => 'created'
     );
 
     $public_fields['post_highlighted'] = array(

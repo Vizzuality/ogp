@@ -2,21 +2,21 @@
 
 /**
   * @file
-  * Contains \Drupal\api_module\Plugin\resource\entity\node\resource;
+  * Contains \Drupal\api_module\Plugin\resource\entity\node\documents;
 */
 
-namespace Drupal\api_module\Plugin\resource\entity\node\resource;
+namespace Drupal\api_module\Plugin\resource\entity\node\documents;
 
 use Drupal\restful\Plugin\resource\ResourceNode;
 
 /**
- * Class Resource__1_0
- * @package Drupal\api_module\Plugin\resource\entity\node\resource
+ * Class Documents__1_0
+ * @package Drupal\api_module\Plugin\resource\entity\node\documents
  *
  * @Resource(
  *   name = "resource:1.0",
- *   resource = "resource",
- *   label = "Resource Documents",
+ *   resource = "documents",
+ *   label = "Documents",
  *   description = "Export the resource with all authentication providers.",
  *   authenticationTypes = TRUE,
  *   authenticationOptional = TRUE,
@@ -31,7 +31,7 @@ use Drupal\restful\Plugin\resource\ResourceNode;
  * )
  */
 
-class Resource__1_0 extends ResourceNode{
+class Documents__1_0 extends ResourceNode{
   /**
   * {@inheritdoc}
   */

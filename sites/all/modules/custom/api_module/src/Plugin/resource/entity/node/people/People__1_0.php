@@ -23,7 +23,7 @@ use Drupal\restful\Plugin\resource\ResourceNode;
  *   dataProvider = {
  *     "entityType": "node",
  *     "bundles": {
- *       "people_involved"
+ *       "people"
  *     },
  *   },
  *   majorVersion = 1,
@@ -40,7 +40,7 @@ class People__1_0 extends ResourceNode{
     $public_fields = parent::publicFields();
 
     $public_fields['country'] = array(
-      'property' => 'field_country_people',
+      'property' => 'field_countries_involved',
     );
 
     $public_fields['body'] = array(

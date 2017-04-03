@@ -1,0 +1,41 @@
+<?php
+/**
+ * @file
+ * Main file of the bulkdelete module.
+ *
+ * This module will give you an easy UI to delete nodes by type. Use with care!
+ */
+
+/**
+ * Implements hook_menu().
+ */
+function bulkdelete_menu() {
+  $items = array();
+
+  $items['admin/content/bulkdelete'] = array(
+    'title'            => 'Bulk delete nodes',
+    'page callback'    => 'drupal_get_form',
+    'page arguments'   => array('bulkdelete_form'),
+    'access arguments' => array('administer nodes'),
+    'type'             => MENU_LOCAL_TASK,
+    'weight'           => 11,
+    'file'             => 'bulkdelete.admin.inc',
+  );
+
+  return $items;
+}
+
+/**
+ * The cache must not be cleared as the last batch operation,
+ * but after the batch is finished.
+ * This function is called by the batch 'finished' parameter.
+ * @param $success
+ * @param $results
+ * @param $operations
+ */
+function _bulkdelete_batch_finished($success, $results, $operations) {
+  cache_clear_all();
+  $message = $success ? t('Bulkdelete performed successfully.') : t('Bulkdelete has not been finished successfully.');
+  watchdog('bulkdelete', $message);
+  drupal_set_message($message);
+}
