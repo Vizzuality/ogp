@@ -57,15 +57,15 @@
      }
 
      .content-wrapper {
-       margin: 50px;
+      margin: 50px;
 
        .-title-x-small {
-         margin-bottom: 20px;
+        margin-bottom: 20px;
        }
 
        &.-scroll {
-         overflow: auto;
-         max-height: 350px;
+        max-height: 150px;
+        overflow: auto;
        }
      }
 
