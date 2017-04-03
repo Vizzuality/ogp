@@ -10,9 +10,6 @@ $field_job_title = field_get_items('node', $node, 'field_job_title')[0]['value']
 $field_countries_involved = field_get_items('node', $node, 'field_countries_involved');
 $field_countries_poc = field_get_items('node', $node, 'field_countries_poc');
 ?>
-<script>
-    console.log(<?= json_encode($field_countries_poc); ?>);
-</script>
 <div id="peopleInvolved" class="l-people-involved l-page -tall">
     <div class="row">
         <div class="column small-12 medium-8 content-header">
