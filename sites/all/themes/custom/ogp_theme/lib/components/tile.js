@@ -150,7 +150,7 @@ function appendTilesDetailedNews(data, container, gridNum) {
             <a href="${item.alias}"><h3 class="text -tile-detail ${item.image.length === '0' ? '-white' : ''}">${item.label ? item.label : ''}</h3></a>
             <div class="meta">
               <span class="text -meta-large ${item.image.length === '0' ? '-white' : ''}">${moment.unix(parseInt(item.date)).format('DD MMMM YYYY ')}</span>
-              <span class="text -meta-large ${item.image.length === '0' ? '-white' : ''}"></span>
+              <span class="text -meta-large ${item.image.length === '0' ? '-white' : ''}">${item.name.name}</span>
             </div>
           </div>
         </div>
