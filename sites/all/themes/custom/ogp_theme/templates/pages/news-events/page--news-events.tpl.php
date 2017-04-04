@@ -35,8 +35,8 @@
       <div class="row">
         <div class="columns small-12">
           <div class="c-content-banner -hidden">
-            <span class="text -small-bold -white">Event</span>
-            <span class="text -white banner-date"></span>
+            <span class="text -small-bold -white banner-type-date-event">Event</span>
+            <span class="text -white banner-date -section-title-small -banner-event"></span>
             <a class="banner-link" href="">
               <h2 class="text -title -white banner-title"></h2>
             </a>
