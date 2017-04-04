@@ -655,10 +655,11 @@ function appendSmallTiles(data, topContainer, gridNum, customClass) {
 
 function appendTilesEvent(data, container) {
   if (data.length > 0) {
+    var html = '';
     data.forEach(function (item) {
-      var html = '\n        <div class="event-tile-container">\n          <div>\n            <h3 class="text -title-x-small">' + moment(item.date.value).format('MMMM, DD') + '</h3>\n            <span class="text language-text">Language: English</span>\n          </div>\n          <div>\n            <a class="text -interactive -blue" href="' + item.alias + '">' + item.label + '</a>\n          </div>\n        </div>\n      ';
-      container.append(html);
+      html += '\n        <div class="small-12 medium-3 event-tile-container">\n          <div>\n            <h3 class="text -title-x-small">' + moment(item.date.value).format('MMMM, DD') + '</h3>\n            <span class="text language-text">Language: English</span>\n          </div>\n          <div>\n            <a class="text -interactive -blue" href="' + item.alias + '">' + item.label + '</a>\n          </div>\n        </div>\n      ';
     });
+    container.html(html);
   }
 }
 
@@ -692,7 +693,7 @@ function appendTilesDetailedNews(data, container, gridNum) {
   var gridWidth = 12 / gridNum;
   var html = '';
   data.forEach(function (item) {
-    html += '\n      <div class="column small-12 medium-6 c-tile">\n        <div class="tile-detailed" style="background-image: url(\'' + (item.image.length === '0' ? item.image : '') + '\')">\n          <div class="' + (item.image === '0' ? 'overlay' : '') + '"></div>\n          <div class="tile-content">\n            <a href="' + item.alias + '"><h3 class="text -tile-detail ' + (item.image.length === '0' ? '-white' : '') + '">' + (item.label ? item.label : '') + '</h3></a>\n            <div class="meta">\n              <span class="text -meta-large ' + (item.image.length === '0' ? '-white' : '') + '">' + moment.unix(parseInt(item.date)).format('DD MMMM YYYY ') + '</span>\n              <span class="text -meta-large ' + (item.image.length === '0' ? '-white' : '') + '"></span>\n            </div>\n          </div>\n        </div>\n      </div>\n    ';
+    html += '\n      <div class="column small-12 medium-6 c-tile">\n        <div class="tile-detailed" style="background-image: url(\'' + (item.image.length === '0' ? item.image : '') + '\')">\n          <div class="' + (item.image === '0' ? 'overlay' : '') + '"></div>\n          <span class="text -uppercase -blue -small-bold">News</span>\n          <div class="tile-content">\n            <a href="' + item.alias + '"><h3 class="text -tile-detail ' + (item.image.length === '0' ? '-white' : '') + '">' + (item.label ? item.label : '') + '</h3></a>\n            <div class="meta">\n              <span class="text -meta-large ' + (item.image.length === '0' ? '-white' : '') + '">' + moment.unix(parseInt(item.date)).format('DD MMMM YYYY ') + '</span>\n              <span class="text -meta-large ' + (item.image.length === '0' ? '-white' : '') + '"></span>\n            </div>\n          </div>\n        </div>\n      </div>\n    ';
   });
   container.html(html);
 }
@@ -1845,6 +1846,80 @@ function showPageList() {
 }
 'use strict';
 
+function showGroupResourcesDetail(id) {
+  (function ($) {
+
+    // cache dom
+    var currentNode = $('#groupResourcesDetail').data('node');
+    var tabsContainer = $('#groupResourcesTabs .tabs-container');
+    var searchContainer = $('#resourceTilesSearch input');
+    var tilesContainer = $('#tilesContainer');
+    var searchEl = $('.c-tile');
+    var searchText = $('.c-tile .tile');
+
+    // custom callback for tabs component
+    var onChangeTab = function onChangeTab(sub_group_id, label) {
+      hideNoResults('#noResultsContainer');
+      showLoader('.l-section');
+      tilesContainer.html('');
+      searchContainer.val('');
+      var filterGroup = currentNode === 'All Resources' ? '' : 'filter[group_resource]=' + currentNode + '&';
+      $.getJSON('/apiJSON/resources?' + filterGroup + 'filter[sub_group]=' + sub_group_id, function (data) {
+        if (data.data.length) {
+          appendTiles(data.data, tilesContainer, 4);
+        } else {
+          showNoResults('#noResultsContainer', 'No resources available', 'tall', 'grey', 'xxlarge');
+        }
+        removeLoader('.l-section', null, true);
+      });
+      setSearchPlaceholder(searchContainer, label);
+    };
+
+    // fetch content and append
+    $.getJSON('/apiJSON/sub_group_resource', function (data) {
+      buildTabs(data.data, tabsContainer, onChangeTab);
+      setSearchPlaceholder(searchContainer, data.data[0].label);
+      setSearchListeners(searchEl, searchText);
+      var filterGroup = currentNode === 'All Resources' ? '' : 'filter[group_resource]=' + currentNode + '&';
+      $.getJSON('/apiJSON/resources?' + filterGroup + 'filter[sub_group]=' + data.data[0].id + '&sort=-post_highlighted', function (resources) {
+        if (resources.data.length) {
+          appendTiles(resources.data, tilesContainer, 4);
+        } else {
+          showNoResults('#noResultsContainer', 'No resources available', 'tall', 'grey', 'xxlarge');
+        }
+        removeLoader('.l-section', null, true);
+      });
+    });
+  })(jQuery);
+}
+'use strict';
+
+function showGroupResourcesPage() {
+  (function ($) {
+    // cache dom
+    var tileContainer = $('#groupResourcesTiles');
+
+    // fetch content and append
+    $.getJSON('/apiJSON/group_resources', function (data) {
+      data.data.forEach(function (resource) {
+        var html = '\n          <div class="column small-12 medium-4 c-tile">\n            <a href="/' + resource.alias + '" class="tile -tall">\n              <span class="text -tile -white">\n                ' + resource.label + '\n              </span>\n            </a>\n          </div>\n        ';
+        tileContainer.append(html);
+      });
+      removeLoader('.l-section', null, true);
+    });
+  })(jQuery);
+}
+'use strict';
+
+function showResourcesDetail(id) {
+  (function ($) {
+    $.getJSON('/apiJSON/resources?filter[id]=' + id, function (data) {
+      buildExploreMoreTiles('resources', 'group_resource', data.data[0].group_resource[0]);
+    });
+  })(jQuery);
+}
+'use strict';
+
 function showStoryDetail(id) {
   (function ($) {
 
@@ -2287,80 +2362,6 @@ function showWorkingGroupDetail(id) {
         containerInfo.append('\n          <div class="tab-content -hidden ' + data.data[i].id + '">\n            <h3 class="text -section-title">' + data.data[i].label + '</h3>\n            <div class="text -body-content">\n              <p class="text -body-content">\n                ' + data.data[i].body.value + '\n              </p>\n            </div>\n          </div>\n        ');
       }
       removeLoader('.working-group-content', null, true);
-    });
-  })(jQuery);
-}
-'use strict';
-
-function showGroupResourcesDetail(id) {
-  (function ($) {
-
-    // cache dom
-    var currentNode = $('#groupResourcesDetail').data('node');
-    var tabsContainer = $('#groupResourcesTabs .tabs-container');
-    var searchContainer = $('#resourceTilesSearch input');
-    var tilesContainer = $('#tilesContainer');
-    var searchEl = $('.c-tile');
-    var searchText = $('.c-tile .tile');
-
-    // custom callback for tabs component
-    var onChangeTab = function onChangeTab(sub_group_id, label) {
-      hideNoResults('#noResultsContainer');
-      showLoader('.l-section');
-      tilesContainer.html('');
-      searchContainer.val('');
-      var filterGroup = currentNode === 'All Resources' ? '' : 'filter[group_resource]=' + currentNode + '&';
-      $.getJSON('/apiJSON/resources?' + filterGroup + 'filter[sub_group]=' + sub_group_id, function (data) {
-        if (data.data.length) {
-          appendTiles(data.data, tilesContainer, 4);
-        } else {
-          showNoResults('#noResultsContainer', 'No resources available', 'tall', 'grey', 'xxlarge');
-        }
-        removeLoader('.l-section', null, true);
-      });
-      setSearchPlaceholder(searchContainer, label);
-    };
-
-    // fetch content and append
-    $.getJSON('/apiJSON/sub_group_resource', function (data) {
-      buildTabs(data.data, tabsContainer, onChangeTab);
-      setSearchPlaceholder(searchContainer, data.data[0].label);
-      setSearchListeners(searchEl, searchText);
-      var filterGroup = currentNode === 'All Resources' ? '' : 'filter[group_resource]=' + currentNode + '&';
-      $.getJSON('/apiJSON/resources?' + filterGroup + 'filter[sub_group]=' + data.data[0].id + '&sort=-post_highlighted', function (resources) {
-        if (resources.data.length) {
-          appendTiles(resources.data, tilesContainer, 4);
-        } else {
-          showNoResults('#noResultsContainer', 'No resources available', 'tall', 'grey', 'xxlarge');
-        }
-        removeLoader('.l-section', null, true);
-      });
-    });
-  })(jQuery);
-}
-'use strict';
-
-function showGroupResourcesPage() {
-  (function ($) {
-    // cache dom
-    var tileContainer = $('#groupResourcesTiles');
-
-    // fetch content and append
-    $.getJSON('/apiJSON/group_resources', function (data) {
-      data.data.forEach(function (resource) {
-        var html = '\n          <div class="column small-12 medium-4 c-tile">\n            <a href="/' + resource.alias + '" class="tile -tall">\n              <span class="text -tile -white">\n                ' + resource.label + '\n              </span>\n            </a>\n          </div>\n        ';
-        tileContainer.append(html);
-      });
-      removeLoader('.l-section', null, true);
-    });
-  })(jQuery);
-}
-'use strict';
-
-function showResourcesDetail(id) {
-  (function ($) {
-    $.getJSON('/apiJSON/resources?filter[id]=' + id, function (data) {
-      buildExploreMoreTiles('resources', 'group_resource', data.data[0].group_resource[0]);
     });
   })(jQuery);
 }

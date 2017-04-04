@@ -77,9 +77,10 @@ function appendSmallTiles(data, topContainer, gridNum, customClass) {
 
 function appendTilesEvent(data, container) {
   if (data.length > 0) {
+    let html = '';
     data.forEach((item) => {
-      const html = `
-        <div class="event-tile-container">
+      html += `
+        <div class="small-12 medium-3 event-tile-container">
           <div>
             <h3 class="text -title-x-small">${moment(item.date.value).format('MMMM, DD')}</h3>
             <span class="text language-text">Language: English</span>
@@ -89,8 +90,8 @@ function appendTilesEvent(data, container) {
           </div>
         </div>
       `;
-      container.append(html);
     });
+    container.html(html);
   }
 }
 
@@ -144,6 +145,7 @@ function appendTilesDetailedNews(data, container, gridNum) {
       <div class="column small-12 medium-6 c-tile">
         <div class="tile-detailed" style="background-image: url('${item.image.length === '0' ? item.image : ''}')">
           <div class="${item.image === '0' ? 'overlay' : ''}"></div>
+          <span class="text -uppercase -blue -small-bold">News</span>
           <div class="tile-content">
             <a href="${item.alias}"><h3 class="text -tile-detail ${item.image.length === '0' ? '-white' : ''}">${item.label ? item.label : ''}</h3></a>
             <div class="meta">

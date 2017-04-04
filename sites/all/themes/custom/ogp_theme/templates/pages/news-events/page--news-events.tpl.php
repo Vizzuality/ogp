@@ -47,29 +47,12 @@
 
       <div class="tiles-container-event row">
         <div class="columns small-12 events-tiles" id="eventsTiles"></div>
-<<<<<<< HEAD
       </div>
 
       <div class="row">
         <div class="columns small-12">
           <div class="container-load-more">
             <span class="c-button -box -large -center column small-12 medium-5 large-3 vertical page-count" data-value="1">More events</span>
-          </div>
-        </div>
-=======
->>>>>>> add styles for events tiles
-      </div>
-
-    </section>
-
-    <section id="newsContainer" class="l-section">
-      <div class="c-loader"><div class="loader"></div></div>
-      <div class="tiles-container-news row content-tiles events-tiles" id="newsTiles">
-      </div>
-      <div class="row">
-        <div class="columns small-12">
-          <div class="container-load-more">
-            <a class="c-button -box -large -center column small-12 medium-5 large-3 vertical" href="">More events</a>
           </div>
         </div>
       </div>
