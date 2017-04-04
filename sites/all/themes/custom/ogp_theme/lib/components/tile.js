@@ -136,6 +136,28 @@ function appendTilesDetailed(data, container, gridNum) {
   container.html(html);
 }
 
+function appendTilesDetailedNews(data, container, gridNum) {
+  const gridWidth = 12 / gridNum;
+  let html = '';
+  data.forEach((item) => {
+    html +=`
+      <div class="column small-12 medium-6 c-tile">
+        <div class="tile-detailed" style="background-image: url('${item.image.length === '0' ? item.image : ''}')">
+          <div class="${item.image === '0' ? 'overlay' : ''}"></div>
+          <div class="tile-content">
+            <a href="${item.alias}"><h3 class="text -tile-detail ${item.image.length === '0' ? '-white' : ''}">${item.label ? item.label : ''}</h3></a>
+            <div class="meta">
+              <span class="text -meta-large ${item.image.length === '0' ? '-white' : ''}">${moment.unix(parseInt(item.date)).format('DD MMMM YYYY ')}</span>
+              <span class="text -meta-large ${item.image.length === '0' ? '-white' : ''}"></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  });
+  container.html(html);
+}
+
 function appendCountriesInfoBars(item, topContainer) {
   const container = $(`${topContainer} .data-tiles`);
   let html = '';

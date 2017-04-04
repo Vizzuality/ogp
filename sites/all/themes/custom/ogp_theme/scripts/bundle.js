@@ -688,6 +688,15 @@ function appendTilesDetailed(data, container, gridNum) {
   container.html(html);
 }
 
+function appendTilesDetailedNews(data, container, gridNum) {
+  var gridWidth = 12 / gridNum;
+  var html = '';
+  data.forEach(function (item) {
+    html += '\n      <div class="column small-12 medium-6 c-tile">\n        <div class="tile-detailed" style="background-image: url(\'' + (item.image.length === '0' ? item.image : '') + '\')">\n          <div class="' + (item.image === '0' ? 'overlay' : '') + '"></div>\n          <div class="tile-content">\n            <a href="' + item.alias + '"><h3 class="text -tile-detail ' + (item.image.length === '0' ? '-white' : '') + '">' + (item.label ? item.label : '') + '</h3></a>\n            <div class="meta">\n              <span class="text -meta-large ' + (item.image.length === '0' ? '-white' : '') + '">' + moment.unix(parseInt(item.date)).format('DD MMMM YYYY ') + '</span>\n              <span class="text -meta-large ' + (item.image.length === '0' ? '-white' : '') + '"></span>\n            </div>\n          </div>\n        </div>\n      </div>\n    ';
+  });
+  container.html(html);
+}
+
 function appendCountriesInfoBars(item, topContainer) {
   var container = $(topContainer + ' .data-tiles');
   var html = '';
@@ -1514,28 +1523,6 @@ function initCountryTabs(onChangeCountryTab) {
 }
 'use strict';
 
-function showDocumentResourcePage() {
-  (function ($) {
-    // cache dom
-    var tileContainer = $('#resourceDocsTiles');
-    var searchEl = $('.c-tile');
-    var searchText = $('.c-tile .tile');
-    var searchContainer = $('#resourceTilesSearch input');
-
-    // fetch content and append
-    $.getJSON('/apiJSON/resource', function (data) {
-      setSearchPlaceholder(searchContainer, data.data[0].label);
-      setSearchListeners(searchEl, searchText);
-      if (data.data.length) {
-        appendTiles(data.data, tileContainer, 4);
-      } else {
-        showNoResults();
-      }
-    });
-  })(jQuery);
-}
-'use strict';
-
 function showHomePage() {
   (function ($) {
     // Slider that appear on Home page
@@ -1624,6 +1611,86 @@ function showHomePage() {
 }
 'use strict';
 
+function showDocumentResourcePage() {
+  (function ($) {
+    // cache dom
+    var tileContainer = $('#resourceDocsTiles');
+    var searchEl = $('.c-tile');
+    var searchText = $('.c-tile .tile');
+    var searchContainer = $('#resourceTilesSearch input');
+
+    // fetch content and append
+    $.getJSON('/apiJSON/resource', function (data) {
+      setSearchPlaceholder(searchContainer, data.data[0].label);
+      setSearchListeners(searchEl, searchText);
+      if (data.data.length) {
+        appendTiles(data.data, tileContainer, 4);
+      } else {
+        showNoResults();
+      }
+    });
+  })(jQuery);
+}
+'use strict';
+
+function showPageList() {
+  (function ($) {
+    var page = 1;
+    var totalPages = 0;
+    var sortValue = 'asc';
+
+    $('.sort-field').click(function () {
+      if (sortValue === 'asc') {
+        $('.triangle-sort').css('transform', 'rotate(180deg)'); // use this functions, because jquery method addClass not work with svg.
+        sortValue = 'desc';
+      } else {
+        $('.triangle-sort').css('transform', 'rotate(0deg)');
+        sortValue = 'asc';
+      }
+      page = 1;
+      showLoader('#tableContainer');
+      showPages(page, sortValue);
+    });
+
+    function setPaginationListerners() {
+      $('.onClickPagination').on('click', function (e) {
+        showLoader('#tableContainer');
+        var pageNum = $(this).data('value');
+        showPages(pageNum, sortValue);
+      });
+    }
+
+    function showPages(pageNumber, sort) {
+      var sortApi = '';
+      if (sort === 'asc') {
+        sortApi = 'sort=label';
+      } else {
+        sortApi = 'sort-=label';
+      }
+
+      $.getJSON('/apiJSON/page?&page=' + pageNumber + '&' + sortApi, function (pageresult) {
+        totalPages = getPageCount(pageresult.count, 5);
+        if (page === 1) {
+          $.getJSON('/apiJSON/page?date&page=' + pageNumber + '&' + sortApi, function (pageTable) {
+            createTable(pageTable, 'pages');
+            initPagination(pageNumber, totalPages, 'pagesList');
+            setPaginationListerners();
+            removeLoader('#tableContainer', null, true);
+          });
+        } else {
+          createTable(pageresult, 'pages');
+          removeLoader('#tableContainer', null, true);
+          initPagination(pageNumber, totalPages, 'pagesList');
+          setPaginationListerners();
+        }
+      });
+    }
+
+    showPages(page, sortValue);
+  })(jQuery);
+}
+'use strict';
+
 function showNewsEventsPage() {
   (function ($) {
 
@@ -1640,10 +1707,7 @@ function showNewsEventsPage() {
     var typeSelector = $('.type-filter');
     var coverEvents = $('.c-content-banner');
     var eventsContainer = $('#eventsTiles');
-<<<<<<< HEAD
     var newsContainer = $('#newsTiles');
-=======
->>>>>>> add styles for events tiles
 
     // public functions
     function buildHighlightedEvent(event) {
@@ -1732,11 +1796,7 @@ function showNewsEventsPage() {
               removeLoader('#eventsContainer', null, true);
             });
           } else {
-<<<<<<< HEAD
             appendTilesEvent(events.data, eventsContainer);
-=======
-            appendTilesEvent(stories.data, eventsContainer);
->>>>>>> add styles for events tiles
             removeLoader('#eventsContainer', null, true);
           }
         } else {
@@ -1781,64 +1841,6 @@ function showNewsEventsPage() {
     showEvents(countryFilter, typeFilter, page);
     showNews(countryFilter, typeFilter, page);
     onClickPagination();
-  })(jQuery);
-}
-'use strict';
-
-function showPageList() {
-  (function ($) {
-    var page = 1;
-    var totalPages = 0;
-    var sortValue = 'asc';
-
-    $('.sort-field').click(function () {
-      if (sortValue === 'asc') {
-        $('.triangle-sort').css('transform', 'rotate(180deg)'); // use this functions, because jquery method addClass not work with svg.
-        sortValue = 'desc';
-      } else {
-        $('.triangle-sort').css('transform', 'rotate(0deg)');
-        sortValue = 'asc';
-      }
-      page = 1;
-      showLoader('#tableContainer');
-      showPages(page, sortValue);
-    });
-
-    function setPaginationListerners() {
-      $('.onClickPagination').on('click', function (e) {
-        showLoader('#tableContainer');
-        var pageNum = $(this).data('value');
-        showPages(pageNum, sortValue);
-      });
-    }
-
-    function showPages(pageNumber, sort) {
-      var sortApi = '';
-      if (sort === 'asc') {
-        sortApi = 'sort=label';
-      } else {
-        sortApi = 'sort-=label';
-      }
-
-      $.getJSON('/apiJSON/page?&page=' + pageNumber + '&' + sortApi, function (pageresult) {
-        totalPages = getPageCount(pageresult.count, 5);
-        if (page === 1) {
-          $.getJSON('/apiJSON/page?date&page=' + pageNumber + '&' + sortApi, function (pageTable) {
-            createTable(pageTable, 'pages');
-            initPagination(pageNumber, totalPages, 'pagesList');
-            setPaginationListerners();
-            removeLoader('#tableContainer', null, true);
-          });
-        } else {
-          createTable(pageresult, 'pages');
-          removeLoader('#tableContainer', null, true);
-          initPagination(pageNumber, totalPages, 'pagesList');
-          setPaginationListerners();
-        }
-      });
-    }
-
-    showPages(page, sortValue);
   })(jQuery);
 }
 'use strict';

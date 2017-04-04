@@ -67,11 +67,18 @@
       <div class="tiles-container-news row content-tiles events-tiles" id="newsTiles">
       </div>
       <div class="row">
-        <div class="columns small-12 container-load-more ">
-          <a class="c-button -box -large -center column small-12 medium-5 large-3 vertical" href="">More events</a>
+        <div class="columns small-12">
+          <div class="container-load-more">
+            <a class="c-button -box -large -center column small-12 medium-5 large-3 vertical" href="">More events</a>
+          </div>
         </div>
       </div>
 
+    </section>
+
+    <section id="eventsContainer" class="l-section">
+      <div class="tiles-container-news row content-tiles events-tiles" id="newsTiles">
+      </div>
       <div class="row">
         <div class="column small-12">
           <div class="c-pagination"></div>
