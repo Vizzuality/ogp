@@ -53,7 +53,6 @@ function initMapLayer(map, countriesData, layers, cartoQueryLink) {
       if (layer.layers[0].options.name !== 'participants') {
         showLoader('.l-map');
       }
-      console.log(layer.layers[0].options.name);
       switch (layer.layers[0].options.name) {
         case 'action':
           $.getJSON(`${cartoQueryLink} SELECT * FROM countries_homepage WHERE cartodb_id = ${data.cartodb_id}`, function (actionPlanData) {
