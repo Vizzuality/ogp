@@ -1119,6 +1119,7 @@ function initMapLayer(map, countriesData, layers, cartoQueryLink) {
       if (layer.layers[0].options.name !== 'participants') {
         showLoader('.l-map');
       }
+      console.log(layer.layers[0].options.name);
       switch (layer.layers[0].options.name) {
         case 'action':
           $.getJSON(cartoQueryLink + ' SELECT * FROM countries_homepage WHERE cartodb_id = ' + data.cartodb_id, function (actionPlanData) {
@@ -1148,6 +1149,11 @@ function initMapLayer(map, countriesData, layers, cartoQueryLink) {
         case 'commitment':
           $.getJSON(cartoQueryLink + ' SELECT * FROM currentcommitments_countries WHERE cartodb_id = ' + data.cartodb_id, function (commitmentsData) {
             updateMapModal(commitmentsData.rows[0].countryid, 'commitment', countriesData);
+          });
+          break;
+        case 'participants':
+          $.getJSON(cartoQueryLink + ' SELECT * FROM working_group WHERE cartodb_id = ' + data.cartodb_id, function (participantsData) {
+            document.location.href = '' + window.location.origin + participantsData.rows[0].path;
           });
           break;
         default:
@@ -1274,7 +1280,7 @@ function showCountriesPage() {
     var cartoQueryLink = 'https://jmonaco.carto.com/api/v2/sql?q=';
     var layers = {
       action: {
-        sql: 'SELECT * FROM countries_homepage WHERE the_geom IS NOT NULL',
+        sql: 'SELECT * FROM countries_homepage',
         cartocss: '#layer{polygon-fill:ramp([actionplan],(#2d4f00,#66bc29,#2d4f00,#c30,#2d4f00,#66bc29,#2d4f00),("Implementing 1st action plan and Developing 2nd action plan","Developing action plan","Implementing 2nd action plan","Implementing 1st action plan","Developing 1st Action Plan","Implementing action plan"),"=");line-width:1;line-color:#FFF;line-opacity:.5}',
         interactivity: 'the_geom, nid, country, cartodb_id',
         name: 'action'
@@ -1554,7 +1560,7 @@ function showHomePage() {
       user_name: 'jmonaco',
       type: 'cartodb',
       sublayers: [{
-        sql: 'SELECT * FROM countries_homepage WHERE the_geom IS NOT NULL',
+        sql: 'SELECT * FROM countries_homepage',
         cartocss: '#layer{polygon-fill:ramp([actionplan],(#2d4f00,#66bc29,#2d4f00,#c30,#2d4f00,#66bc29,#2d4f00),("Implementing 1st action plan and Developing 2nd action plan","Developing action plan","Implementing 2nd action plan","Implementing 1st action plan","Developing 1st Action Plan","Implementing action plan"),"=");line-width:1;line-color:#FFF;line-opacity:.5}',
         interactivity: 'the_geom, nid, country, cartodb_id'
       }]
@@ -1599,64 +1605,6 @@ function showHomePage() {
       });
       map.invalidateSize();
     });
-  })(jQuery);
-}
-'use strict';
-
-function showPageList() {
-  (function ($) {
-    var page = 1;
-    var totalPages = 0;
-    var sortValue = 'asc';
-
-    $('.sort-field').click(function () {
-      if (sortValue === 'asc') {
-        $('.triangle-sort').css('transform', 'rotate(180deg)'); // use this functions, because jquery method addClass not work with svg.
-        sortValue = 'desc';
-      } else {
-        $('.triangle-sort').css('transform', 'rotate(0deg)');
-        sortValue = 'asc';
-      }
-      page = 1;
-      showLoader('#tableContainer');
-      showPages(page, sortValue);
-    });
-
-    function setPaginationListerners() {
-      $('.onClickPagination').on('click', function (e) {
-        showLoader('#tableContainer');
-        var pageNum = $(this).data('value');
-        showPages(pageNum, sortValue);
-      });
-    }
-
-    function showPages(pageNumber, sort) {
-      var sortApi = '';
-      if (sort === 'asc') {
-        sortApi = 'sort=label';
-      } else {
-        sortApi = 'sort-=label';
-      }
-
-      $.getJSON('/apiJSON/page?&page=' + pageNumber + '&' + sortApi, function (pageresult) {
-        totalPages = getPageCount(pageresult.count, 5);
-        if (page === 1) {
-          $.getJSON('/apiJSON/page?date&page=' + pageNumber + '&' + sortApi, function (pageTable) {
-            createTable(pageTable, 'pages');
-            initPagination(pageNumber, totalPages, 'pagesList');
-            setPaginationListerners();
-            removeLoader('#tableContainer', null, true);
-          });
-        } else {
-          createTable(pageresult, 'pages');
-          removeLoader('#tableContainer', null, true);
-          initPagination(pageNumber, totalPages, 'pagesList');
-          setPaginationListerners();
-        }
-      });
-    }
-
-    showPages(page, sortValue);
   })(jQuery);
 }
 'use strict';
@@ -1731,6 +1679,64 @@ function showResourcesDetail(id) {
     $.getJSON('/apiJSON/resources?filter[id]=' + id, function (data) {
       buildExploreMoreTiles('resources', 'group_resource', data.data[0].group_resource[0]);
     });
+  })(jQuery);
+}
+'use strict';
+
+function showPageList() {
+  (function ($) {
+    var page = 1;
+    var totalPages = 0;
+    var sortValue = 'asc';
+
+    $('.sort-field').click(function () {
+      if (sortValue === 'asc') {
+        $('.triangle-sort').css('transform', 'rotate(180deg)'); // use this functions, because jquery method addClass not work with svg.
+        sortValue = 'desc';
+      } else {
+        $('.triangle-sort').css('transform', 'rotate(0deg)');
+        sortValue = 'asc';
+      }
+      page = 1;
+      showLoader('#tableContainer');
+      showPages(page, sortValue);
+    });
+
+    function setPaginationListerners() {
+      $('.onClickPagination').on('click', function (e) {
+        showLoader('#tableContainer');
+        var pageNum = $(this).data('value');
+        showPages(pageNum, sortValue);
+      });
+    }
+
+    function showPages(pageNumber, sort) {
+      var sortApi = '';
+      if (sort === 'asc') {
+        sortApi = 'sort=label';
+      } else {
+        sortApi = 'sort-=label';
+      }
+
+      $.getJSON('/apiJSON/page?&page=' + pageNumber + '&' + sortApi, function (pageresult) {
+        totalPages = getPageCount(pageresult.count, 5);
+        if (page === 1) {
+          $.getJSON('/apiJSON/page?date&page=' + pageNumber + '&' + sortApi, function (pageTable) {
+            createTable(pageTable, 'pages');
+            initPagination(pageNumber, totalPages, 'pagesList');
+            setPaginationListerners();
+            removeLoader('#tableContainer', null, true);
+          });
+        } else {
+          createTable(pageresult, 'pages');
+          removeLoader('#tableContainer', null, true);
+          initPagination(pageNumber, totalPages, 'pagesList');
+          setPaginationListerners();
+        }
+      });
+    }
+
+    showPages(page, sortValue);
   })(jQuery);
 }
 'use strict';
