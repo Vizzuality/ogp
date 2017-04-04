@@ -667,7 +667,7 @@ function appendTilesDetailed(data, container, gridNum) {
       });
     }
 
-    html += '\n      <div class="column small-12 medium-' + gridWidth + ' c-tile">\n        <div class="tile-detailed" style="background-image: url(\'' + (item.image ? item.image : '') + '\')">\n          <div class="' + (item.image ? 'overlay' : '') + '"></div>\n          <div class="tile-content">\n            <div class="topics text -dynamic-link ' + (item.image ? '-white' : '') + '">' + topicsHtml + '</div>\n            <a href="' + item.alias + '"><h3 class="text -tile-detail ' + (item.image ? '-white' : '') + '">' + (item.title ? item.title : '') + '</h3></a>\n            <div class="meta">\n              <span class="text -meta-large ' + (item.image ? '-white' : '') + '">' + creationDate.getDay() + ' ' + monthNames[creationDate.getMonth()] + ' ' + creationDate.getFullYear() + '</span>\n              <span class="text -meta-large ' + (item.image ? '-white' : '') + '">' + (item.author.length ? item.author[0].label : '') + '</span>\n            </div>\n          </div>\n        </div>\n      </div>\n    ';
+    html += '\n      <div class="column small-12 medium-' + gridWidth + ' c-tile">\n        <div class="tile-detailed" style="background-image: url(\'' + (item.image ? item.image : '') + '\')">\n          <div class="' + (item.image ? 'overlay' : '') + '"></div>\n          <div class="tile-content">\n            <div class="topics text -dynamic-link ' + (item.image ? '-white' : '') + '">' + topicsHtml + '</div>\n            <a href="' + item.alias + '"><h3 class="text -tile-detail ' + (item.image ? '-white' : '') + '">' + (item.title ? item.title : '') + '</h3></a>\n            <div class="meta">\n              <span class="text -meta-large ' + (item.image ? '-white' : '') + '">' + creationDate.getDay() + ' ' + monthNames[creationDate.getMonth()] + ' ' + creationDate.getFullYear() + '</span>\n              <span class="text -meta-large ' + (item.image ? '-white' : '') + '">' + (item.author[0] ? item.author[0].label : '') + '</span>\n            </div>\n          </div>\n        </div>\n      </div>\n    ';
   });
   container.html(html);
 }
@@ -1498,6 +1498,28 @@ function initCountryTabs(onChangeCountryTab) {
 }
 'use strict';
 
+function showDocumentResourcePage() {
+  (function ($) {
+    // cache dom
+    var tileContainer = $('#resourceDocsTiles');
+    var searchEl = $('.c-tile');
+    var searchText = $('.c-tile .tile');
+    var searchContainer = $('#resourceTilesSearch input');
+
+    // fetch content and append
+    $.getJSON('/apiJSON/resource', function (data) {
+      setSearchPlaceholder(searchContainer, data.data[0].label);
+      setSearchListeners(searchEl, searchText);
+      if (data.data.length) {
+        appendTiles(data.data, tileContainer, 4);
+      } else {
+        showNoResults();
+      }
+    });
+  })(jQuery);
+}
+'use strict';
+
 function showHomePage() {
   (function ($) {
     // Slider that appear on Home page
@@ -1581,28 +1603,6 @@ function showHomePage() {
         $('.tooltip').remove();
       });
       map.invalidateSize();
-    });
-  })(jQuery);
-}
-'use strict';
-
-function showDocumentResourcePage() {
-  (function ($) {
-    // cache dom
-    var tileContainer = $('#resourceDocsTiles');
-    var searchEl = $('.c-tile');
-    var searchText = $('.c-tile .tile');
-    var searchContainer = $('#resourceTilesSearch input');
-
-    // fetch content and append
-    $.getJSON('/apiJSON/resource', function (data) {
-      setSearchPlaceholder(searchContainer, data.data[0].label);
-      setSearchListeners(searchEl, searchText);
-      if (data.data.length) {
-        appendTiles(data.data, tileContainer, 4);
-      } else {
-        showNoResults();
-      }
     });
   })(jQuery);
 }
@@ -1816,7 +1816,9 @@ function showStoriesPage() {
       $('.banner-link', coverEvents).attr('href', story.alias);
       $('.banner-title', coverEvents).html(story.label);
       $('.banner-date', coverEvents).html(moment(parseInt(story.created)).format('D MMMM YYYY'));
-      $('.banner-author', coverEvents).html(getAuthors(story.author));
+      if (story.author[0]) {
+        $('.banner-author', coverEvents).html(getAuthors(story.author));
+      }
       $('.c-content-banner').removeClass('-hidden');
     }
 
@@ -1864,7 +1866,9 @@ function showStoriesPage() {
           totalPages = getPageCount(stories.count, 6);
           if (page === 1) {
             $.getJSON('/apiJSON/stories?sort=-created', function (highlightedStory) {
-              buildHighlightedEvent(highlightedStory.data[0]);
+              if (highlightedStory.data[0]) {
+                buildHighlightedEvent(highlightedStory.data[0]);
+              }
               appendTilesDetailed(stories.data, storiesContainer, 2);
               initPagination(page, totalPages, 'storiesPage');
               setPaginationListerners();

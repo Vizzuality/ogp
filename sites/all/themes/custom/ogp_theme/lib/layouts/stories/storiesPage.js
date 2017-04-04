@@ -21,7 +21,9 @@ function showStoriesPage() {
       $('.banner-link', coverEvents).attr('href', story.alias);
       $('.banner-title', coverEvents).html(story.label);
       $('.banner-date', coverEvents).html(moment(parseInt(story.created)).format('D MMMM YYYY'));
-      $('.banner-author', coverEvents).html(getAuthors(story.author));
+      if (story.author[0]) {
+        $('.banner-author', coverEvents).html(getAuthors(story.author));
+      }
       $('.c-content-banner').removeClass('-hidden');
     }
 
@@ -69,7 +71,9 @@ function showStoriesPage() {
           totalPages = getPageCount(stories.count, 6);
           if (page === 1) {
             $.getJSON(`/apiJSON/stories?sort=-created`, function (highlightedStory) {
-              buildHighlightedEvent(highlightedStory.data[0]);
+              if (highlightedStory.data[0]) {
+                buildHighlightedEvent(highlightedStory.data[0]);
+              }
               appendTilesDetailed(stories.data, storiesContainer, 2);
               initPagination(page, totalPages, 'storiesPage');
               setPaginationListerners();

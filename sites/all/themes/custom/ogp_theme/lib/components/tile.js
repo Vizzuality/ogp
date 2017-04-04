@@ -107,7 +107,7 @@ function appendTilesDetailed(data, container, gridNum) {
             <a href="${item.alias}"><h3 class="text -tile-detail ${item.image ? '-white' : ''}">${item.title ? item.title : ''}</h3></a>
             <div class="meta">
               <span class="text -meta-large ${item.image ? '-white' : ''}">${creationDate.getDay()} ${monthNames[creationDate.getMonth()]} ${creationDate.getFullYear()}</span>
-              <span class="text -meta-large ${item.image ? '-white' : ''}">${item.author.length ? item.author[0].label : ''}</span>
+              <span class="text -meta-large ${item.image ? '-white' : ''}">${item.author[0] ? item.author[0].label : ''}</span>
             </div>
           </div>
         </div>
