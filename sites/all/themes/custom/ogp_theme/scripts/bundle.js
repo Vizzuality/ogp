@@ -347,7 +347,7 @@ function pushDefaultModal(id, query, countryData, dataLabel, buttonText, buttonL
         }
       });
     }
-    var html = '\n      <div class="modal-header">\n        <div class="header-info">\n          <h3 class="text -module-title">' + countryData[0].label + '</h3>\n          <p class="text -meta">Member since ' + moment(parseInt(countryData[0].memberSince)).format('YYYY') + ', Action plan 1</p>\n        </div>\n        <div class="c-data-number">\n          <h3 class="text -number">' + data.count + '</h3>\n          <p class="text -small-bold">' + dataLabel + '</p>\n        </div>\n      </div>\n      <div class="content-wrapper -scroll ' + (modalType === 'slider' ? 'stories-slider' : '') + '">\n        ' + dataInfo + '\n      </div>\n      <div class="button-container -fixed">\n        <a href="/' + buttonLink + '" class="c-button -tall -green-back -box">' + buttonText + '</a>\n        <a href="' + countryData[0].alias + '" class="c-button -tall -green-back -box">VIEW COUNTRY</a>\n      </div>\n    ';
+    var html = '\n      <div class="modal-header">\n        <div class="header-info">\n          <h3 class="text -module-title">' + countryData[0].label + '</h3>\n          <p class="text -meta">Member since ' + moment.unix(countryData[0].memberSince).format('YYYY') + ', Action plan 1</p>\n        </div>\n        <div class="c-data-number">\n          <h3 class="text -number">' + data.count + '</h3>\n          <p class="text -small-bold">' + dataLabel + '</p>\n        </div>\n      </div>\n      <div class="content-wrapper -scroll ' + (modalType === 'slider' ? 'stories-slider' : '') + '">\n        ' + dataInfo + '\n      </div>\n      <div class="button-container -fixed">\n        <a href="/' + buttonLink + '" class="c-button -tall -green-back -box">' + buttonText + '</a>\n        <a href="' + countryData[0].alias + '" class="c-button -tall -green-back -box">VIEW COUNTRY</a>\n      </div>\n    ';
     setDataToModal(id, html);
     if (modalType === 'slider') {
       $('.stories-slider').slick({
@@ -365,7 +365,7 @@ function pushDefaultModal(id, query, countryData, dataLabel, buttonText, buttonL
 function pushSmallModal(id, query, countryData, firstDataLabel, secondDataLabel, buttonText, buttonLink) {
 
   $.getJSON('apiJSON/' + query, function (data) {
-    var html = '\n      <div class="content-wrapper">\n        <h3 class="text -module-title">' + countryData[0].label + '</h3>\n        <p class="text -meta">Member since ' + moment(parseInt(countryData[0].memberSince)).format('YYYY') + '</p>\n        <div class="data-container">\n          <div class="c-data-number -with-padding">\n            <h4 class="text -number">' + data.count + '</h4>\n            <span class="text -small-bold">' + firstDataLabel + '</span>\n          </div>\n          <div class="c-data-number -with-padding">\n            <h4 class="text -number">3</h4>\n            <span class="text -small-bold">' + secondDataLabel + '</span>\n          </div>\n        </div>\n      </div>\n      <div class="button-container">\n        <a class="c-button -box -tall -green-back -white" href="' + buttonLink + '">' + buttonText + '</a>\n        <a class="c-button -box -tall -green-back -white" href="' + countryData[0].alias + '">View country</a>\n      </div>\n    ';
+    var html = '\n      <div class="content-wrapper">\n        <h3 class="text -module-title">' + countryData[0].label + '</h3>\n        <p class="text -meta">Member since ' + moment.unix(countryData[0].memberSince).format('YYYY') + '</p>\n        <div class="data-container">\n          <div class="c-data-number -with-padding">\n            <h4 class="text -number">' + data.count + '</h4>\n            <span class="text -small-bold">' + firstDataLabel + '</span>\n          </div>\n          <div class="c-data-number -with-padding">\n            <h4 class="text -number">3</h4>\n            <span class="text -small-bold">' + secondDataLabel + '</span>\n          </div>\n        </div>\n      </div>\n      <div class="button-container">\n        <a class="c-button -box -tall -green-back -white" href="' + buttonLink + '">' + buttonText + '</a>\n        <a class="c-button -box -tall -green-back -white" href="' + countryData[0].alias + '">View country</a>\n      </div>\n    ';
     setDataToModal(id, html);
   });
 }
@@ -1150,6 +1150,11 @@ function initMapLayer(map, countriesData, layers, cartoQueryLink) {
             updateMapModal(commitmentsData.rows[0].countryid, 'commitment', countriesData);
           });
           break;
+        case 'participants':
+          $.getJSON(cartoQueryLink + ' SELECT * FROM working_group WHERE cartodb_id = ' + data.cartodb_id, function (participantsData) {
+            document.location.href = '' + window.location.origin + participantsData.rows[0].path;
+          });
+          break;
         default:
       }
     });
@@ -1275,7 +1280,7 @@ function showCountriesPage() {
     var layers = {
       action: {
         sql: 'SELECT * FROM countries_homepage',
-        cartocss: '#layer {polygon-fill: ramp([actionplan],(#66bc29, #2d4f00, #cc3300), ("Developing action plan","Implementing action plan", "Inactive"),category);line-width: 1;line-color: #FFF;line-opacity: 0.5;}',
+        cartocss: '#layer{polygon-fill:ramp([actionplan],(#2d4f00,#66bc29,#2d4f00,#c30,#2d4f00,#66bc29,#2d4f00),("Implementing 1st action plan and Developing 2nd action plan","Developing action plan","Implementing 2nd action plan","Implementing 1st action plan","Developing 1st Action Plan","Implementing action plan"),"=");line-width:1;line-color:#FFF;line-opacity:.5}',
         interactivity: 'the_geom, nid, country, cartodb_id',
         name: 'action'
       },
@@ -1455,7 +1460,7 @@ function setCountryDataTiles(container, country) {
 }
 
 function initCountryBox(container, country, activeTab) {
-  var html = '\n    <div class="column small-12 medium-6" id="country-' + country.id + '">\n      <div class="c-country-tile">\n        <a class="text -title-x-small" href="/' + country.alias + '">' + country.label + '&nbsp;<svg class="icon -blue -medium arrow"><use xlink:href="#icon-arrow"></use></svg></a>\n        <div class="first-info text">\n          <span>Total Commitments ' + (parseInt(country.current_commitments_count) + parseInt(country.starred_commitments_count) + parseInt(country.irm_commitments_count)) + '</span>\n          <span>Action Plans ' + country.action_plan_count + '</span>\n          <span>Member since ' + moment(parseInt(country.memberSince) * 1000).format('YYYY') + '</span>\n        </div>\n        <div class="row data-tiles"></div>\n      </div>\n    </div>\n  ';
+  var html = '\n    <div class="column small-12 medium-6" id="country-' + country.id + '">\n      <div class="c-country-tile">\n        <a class="text -title-x-small" href="/' + country.alias + '">' + country.label + '&nbsp;<svg class="icon -blue -medium arrow"><use xlink:href="#icon-arrow"></use></svg></a>\n        <div class="first-info text">\n          <span>Total Commitments ' + (parseInt(country.current_commitments_count) + parseInt(country.starred_commitments_count) + parseInt(country.irm_commitments_count)) + '</span>\n          <span>Action Plans ' + country.action_plan_count + '</span>\n          <span>Member since ' + moment.unix(country.memberSince).format('YYYY') + '</span>\n        </div>\n        <div class="row data-tiles"></div>\n      </div>\n    </div>\n  ';
   $('.content-tiles', container).append(html);
 }
 
@@ -1533,7 +1538,7 @@ function showHomePage() {
       type: 'cartodb',
       sublayers: [{
         sql: 'SELECT * FROM countries_homepage',
-        cartocss: '#layer {polygon-fill: ramp([actionplan],(#66bc29, #2d4f00, #cc3300), ("Developing action plan","Implementing action plan", "Inactive"),category);line-width: 1;line-color: #FFF;line-opacity: 0.5;}',
+        cartocss: '#layer{polygon-fill:ramp([actionplan],(#2d4f00,#66bc29,#2d4f00,#c30,#2d4f00,#66bc29,#2d4f00),("Implementing 1st action plan and Developing 2nd action plan","Developing action plan","Implementing 2nd action plan","Implementing 1st action plan","Developing 1st Action Plan","Implementing action plan"),"=");line-width:1;line-color:#FFF;line-opacity:.5}',
         interactivity: 'the_geom, nid, country, cartodb_id'
       }]
     }).addTo(map).done(function (layer) {

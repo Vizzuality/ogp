@@ -84,6 +84,11 @@ function initMapLayer(map, countriesData, layers, cartoQueryLink) {
             updateMapModal(commitmentsData.rows[0].countryid, 'commitment', countriesData);
           });
           break;
+        case 'participants':
+          $.getJSON(`${cartoQueryLink} SELECT * FROM working_group WHERE cartodb_id = ${data.cartodb_id}`, function (participantsData) {
+            document.location.href = `${window.location.origin}${participantsData.rows[0].path}`;
+          });
+          break;
         default:
       }
     });
