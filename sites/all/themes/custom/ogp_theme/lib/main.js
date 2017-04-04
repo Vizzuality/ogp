@@ -127,6 +127,13 @@ function getAbsolutePath() {
       }
 
       // News and Events
+
+      if ($(context).find('#newsEventsPage').length !== 0) {
+        showNewsEventsPage();
+        addBanner('writestory');
+        addBanner('newsletter');
+      }
+
       if ($(context).find('#newsTemplate').length !== 0) {
         addBanner('writestory');
         addBanner('newsletter');
