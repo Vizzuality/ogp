@@ -76,7 +76,8 @@
 
     </section>
 
-    <section id="eventsContainer" class="l-section">
+    <section id="newsContainer" class="l-section">
+      <div class="c-loader"><div class="loader"></div></div>
       <div class="tiles-container-news row content-tiles events-tiles" id="newsTiles">
       </div>
       <div class="row">
