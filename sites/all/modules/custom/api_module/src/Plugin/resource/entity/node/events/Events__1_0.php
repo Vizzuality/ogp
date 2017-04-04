@@ -22,6 +22,7 @@ use Drupal\restful\Plugin\resource\ResourceNode;
  *   authenticationOptional = TRUE,
  *   dataProvider = {
  *     "entityType": "node",
+ *     "range" = 4,
  *     "bundles": {
  *       "event"
  *     },

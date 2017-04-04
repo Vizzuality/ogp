@@ -653,6 +653,15 @@ function appendSmallTiles(data, topContainer, gridNum, customClass) {
   }
 }
 
+function appendTilesEvent(data, container) {
+  if (data.length > 0) {
+    data.forEach(function (item) {
+      var html = '\n        <div class="event-tile-container">\n          <div>\n            <h3 class="text -title-x-small">' + moment(item.date.value).format('MMMM, DD') + '</h3>\n            <span class="text language-text">Language: English</span>\n          </div>\n          <div>\n            <a class="text -interactive -blue" href="' + item.alias + '">' + item.label + '</a>\n          </div>\n        </div>\n      ';
+      container.append(html);
+    });
+  }
+}
+
 // append tiles to div
 function appendTilesDetailed(data, container, gridNum) {
   var monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
@@ -1631,7 +1640,10 @@ function showNewsEventsPage() {
     var typeSelector = $('.type-filter');
     var coverEvents = $('.c-content-banner');
     var eventsContainer = $('#eventsTiles');
+<<<<<<< HEAD
     var newsContainer = $('#newsTiles');
+=======
+>>>>>>> add styles for events tiles
 
     // public functions
     function buildHighlightedEvent(event) {
@@ -1720,7 +1732,11 @@ function showNewsEventsPage() {
               removeLoader('#eventsContainer', null, true);
             });
           } else {
+<<<<<<< HEAD
             appendTilesEvent(events.data, eventsContainer);
+=======
+            appendTilesEvent(stories.data, eventsContainer);
+>>>>>>> add styles for events tiles
             removeLoader('#eventsContainer', null, true);
           }
         } else {

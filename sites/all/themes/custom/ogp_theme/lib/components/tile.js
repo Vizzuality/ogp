@@ -75,6 +75,25 @@ function appendSmallTiles(data, topContainer, gridNum, customClass) {
   }
 }
 
+function appendTilesEvent(data, container) {
+  if (data.length > 0) {
+    data.forEach((item) => {
+      const html = `
+        <div class="event-tile-container">
+          <div>
+            <h3 class="text -title-x-small">${moment(item.date.value).format('MMMM, DD')}</h3>
+            <span class="text language-text">Language: English</span>
+          </div>
+          <div>
+            <a class="text -interactive -blue" href="${item.alias}">${item.label}</a>
+          </div>
+        </div>
+      `;
+      container.append(html);
+    });
+  }
+}
+
 // append tiles to div
 function appendTilesDetailed(data, container, gridNum) {
   const monthNames = ["January", "February", "March", "April", "May", "June",

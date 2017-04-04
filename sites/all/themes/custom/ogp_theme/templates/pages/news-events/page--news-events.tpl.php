@@ -47,6 +47,7 @@
 
       <div class="tiles-container-event row">
         <div class="columns small-12 events-tiles" id="eventsTiles"></div>
+<<<<<<< HEAD
       </div>
 
       <div class="row">
@@ -55,6 +56,8 @@
             <span class="c-button -box -large -center column small-12 medium-5 large-3 vertical page-count" data-value="1">More events</span>
           </div>
         </div>
+=======
+>>>>>>> add styles for events tiles
       </div>
 
     </section>

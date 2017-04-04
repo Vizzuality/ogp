@@ -39,6 +39,32 @@
   }
 
   // content specific styles
+
+  .tiles-container-event {
+    position: relative;
+    min-height: 200px;
+    margin-top: 20px;
+
+    .events-tiles {
+      display: flex;
+      flex-direction: row;
+
+      .event-tile-container {
+        display: flex;
+        flex-basis: 25%;
+        flex-direction: column;
+        justify-content: space-between;
+        padding: 0 70px 0 30px;
+        border-left: 2px solid $color-9;
+
+        .language-text {
+          display: block;
+          margin-top: 15px;
+        }
+      }
+    }
+  }
+
   .story-detail {
     text-align: right;
   }
