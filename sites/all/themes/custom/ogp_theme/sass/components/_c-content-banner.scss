@@ -27,6 +27,11 @@
   .banner-date,
   .banner-author {
     display: block;
+
+    &.-banner-event {
+      margin-top: 40px;
+      margin-bottom: -20px;
+    }
   }
 
   .c-button {

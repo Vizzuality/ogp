@@ -75,6 +75,26 @@ function appendSmallTiles(data, topContainer, gridNum, customClass) {
   }
 }
 
+function appendTilesEvent(data, container) {
+  if (data.length > 0) {
+    let html = '';
+    data.forEach((item) => {
+      html += `
+        <div class="small-12 medium-3 event-tile-container">
+          <div>
+            <h3 class="text -title-x-small">${moment(item.date.value).format('MMMM, DD')}</h3>
+            <span class="text language-text">Language: ${item.language ? item.language : 'not specified'}</span>
+          </div>
+          <div>
+            <a class="text -interactive -blue" href="${item.alias}">${item.label}</a>
+          </div>
+        </div>
+      `;
+    });
+    container.html(html);
+  }
+}
+
 // append tiles to div
 function appendTilesDetailed(data, container, gridNum) {
   const monthNames = ["January", "February", "March", "April", "May", "June",
@@ -108,6 +128,29 @@ function appendTilesDetailed(data, container, gridNum) {
             <div class="meta">
               <span class="text -meta-large ${item.image ? '-white' : ''}">${creationDate.getDay()} ${monthNames[creationDate.getMonth()]} ${creationDate.getFullYear()}</span>
               <span class="text -meta-large ${item.image ? '-white' : ''}">${item.author[0] ? item.author[0].label : ''}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    `;
+  });
+  container.html(html);
+}
+
+function appendTilesDetailedNews(data, container, gridNum) {
+  const gridWidth = 12 / gridNum;
+  let html = '';
+  data.forEach((item) => {
+    html +=`
+      <div class="column small-12 medium-6 c-tile">
+        <div class="tile-detailed" style="background-image: url('${item.image.length === '0' ? item.image : ''}')">
+          <div class="${item.image === '0' ? 'overlay' : ''}"></div>
+          <span class="text -uppercase -blue -small-bold">News</span>
+          <div class="tile-content">
+            <a href="${item.alias}"><h3 class="text -tile-detail ${item.image.length === '0' ? '-white' : ''}">${item.label ? item.label : ''}</h3></a>
+            <div class="meta">
+              <span class="text -meta-large ${item.image.length === '0' ? '-white' : ''}">${moment.unix(parseInt(item.date)).format('DD MMMM YYYY ')}</span>
+              <span class="text -meta-large ${item.image.length === '0' ? '-white' : ''}">${item.name.name}</span>
             </div>
           </div>
         </div>

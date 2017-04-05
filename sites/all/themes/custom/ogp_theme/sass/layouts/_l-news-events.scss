@@ -1,5 +1,18 @@
 .l-news-events {
 
+  .container-load-more {
+    display: flex;
+    align-content: center;
+    align-items: center;
+    justify-content: center;
+    padding: 30px 0;
+    background-color: $color-2;
+  }
+
+  .tiles-container-news {
+    margin-top: 50px;
+  }
+
   .image-back {
     position: relative;
     background-image: url('../images/cover/cover2.jpeg');

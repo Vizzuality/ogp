@@ -128,6 +128,13 @@ function getAbsolutePath() {
       }
 
       // News and Events
+
+      if ($(context).find('#newsEventsPage').length !== 0) {
+        showNewsEventsPage();
+        addBanner('writestory');
+        addBanner('newsletter');
+      }
+
       if ($(context).find('#newsTemplate').length !== 0) {
         addBanner('writestory');
         addBanner('newsletter');
@@ -646,6 +653,16 @@ function appendSmallTiles(data, topContainer, gridNum, customClass) {
   }
 }
 
+function appendTilesEvent(data, container) {
+  if (data.length > 0) {
+    var html = '';
+    data.forEach(function (item) {
+      html += '\n        <div class="small-12 medium-3 event-tile-container">\n          <div>\n            <h3 class="text -title-x-small">' + moment(item.date.value).format('MMMM, DD') + '</h3>\n            <span class="text language-text">Language: ' + (item.language ? item.language : 'not specified') + '</span>\n          </div>\n          <div>\n            <a class="text -interactive -blue" href="' + item.alias + '">' + item.label + '</a>\n          </div>\n        </div>\n      ';
+    });
+    container.html(html);
+  }
+}
+
 // append tiles to div
 function appendTilesDetailed(data, container, gridNum) {
   var monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
@@ -668,6 +685,15 @@ function appendTilesDetailed(data, container, gridNum) {
     }
 
     html += '\n      <div class="column small-12 medium-' + gridWidth + ' c-tile">\n        <div class="tile-detailed" style="background-image: url(\'' + (item.image ? item.image : '') + '\')">\n          <div class="' + (item.image ? 'overlay' : '') + '"></div>\n          <div class="tile-content">\n            <div class="topics text -dynamic-link ' + (item.image ? '-white' : '') + '">' + topicsHtml + '</div>\n            <a href="' + item.alias + '"><h3 class="text -tile-detail ' + (item.image ? '-white' : '') + '">' + (item.title ? item.title : '') + '</h3></a>\n            <div class="meta">\n              <span class="text -meta-large ' + (item.image ? '-white' : '') + '">' + creationDate.getDay() + ' ' + monthNames[creationDate.getMonth()] + ' ' + creationDate.getFullYear() + '</span>\n              <span class="text -meta-large ' + (item.image ? '-white' : '') + '">' + (item.author[0] ? item.author[0].label : '') + '</span>\n            </div>\n          </div>\n        </div>\n      </div>\n    ';
+  });
+  container.html(html);
+}
+
+function appendTilesDetailedNews(data, container, gridNum) {
+  var gridWidth = 12 / gridNum;
+  var html = '';
+  data.forEach(function (item) {
+    html += '\n      <div class="column small-12 medium-6 c-tile">\n        <div class="tile-detailed" style="background-image: url(\'' + (item.image.length === '0' ? item.image : '') + '\')">\n          <div class="' + (item.image === '0' ? 'overlay' : '') + '"></div>\n          <span class="text -uppercase -blue -small-bold">News</span>\n          <div class="tile-content">\n            <a href="' + item.alias + '"><h3 class="text -tile-detail ' + (item.image.length === '0' ? '-white' : '') + '">' + (item.label ? item.label : '') + '</h3></a>\n            <div class="meta">\n              <span class="text -meta-large ' + (item.image.length === '0' ? '-white' : '') + '">' + moment.unix(parseInt(item.date)).format('DD MMMM YYYY ') + '</span>\n              <span class="text -meta-large ' + (item.image.length === '0' ? '-white' : '') + '">' + item.name.name + '</span>\n            </div>\n          </div>\n        </div>\n      </div>\n    ';
   });
   container.html(html);
 }
@@ -823,6 +849,28 @@ function showStarredCommitmentDetail(id) {
   (function ($) {
     $('#theme-menu').addClass('active');
     buildExploreMoreTiles('starredcommitments');
+  })(jQuery);
+}
+'use strict';
+
+function showDocumentResourcePage() {
+  (function ($) {
+    // cache dom
+    var tileContainer = $('#resourceDocsTiles');
+    var searchEl = $('.c-tile');
+    var searchText = $('.c-tile .tile');
+    var searchContainer = $('#resourceTilesSearch input');
+
+    // fetch content and append
+    $.getJSON('/apiJSON/resource', function (data) {
+      setSearchPlaceholder(searchContainer, data.data[0].label);
+      setSearchListeners(searchEl, searchText);
+      if (data.data.length) {
+        appendTiles(data.data, tileContainer, 4);
+      } else {
+        showNoResults();
+      }
+    });
   })(jQuery);
 }
 'use strict';
@@ -1498,28 +1546,6 @@ function initCountryTabs(onChangeCountryTab) {
 }
 'use strict';
 
-function showDocumentResourcePage() {
-  (function ($) {
-    // cache dom
-    var tileContainer = $('#resourceDocsTiles');
-    var searchEl = $('.c-tile');
-    var searchText = $('.c-tile .tile');
-    var searchContainer = $('#resourceTilesSearch input');
-
-    // fetch content and append
-    $.getJSON('/apiJSON/resource', function (data) {
-      setSearchPlaceholder(searchContainer, data.data[0].label);
-      setSearchListeners(searchEl, searchText);
-      if (data.data.length) {
-        appendTiles(data.data, tileContainer, 4);
-      } else {
-        showNoResults();
-      }
-    });
-  })(jQuery);
-}
-'use strict';
-
 function showHomePage() {
   (function ($) {
     // Slider that appear on Home page
@@ -1604,6 +1630,160 @@ function showHomePage() {
       });
       map.invalidateSize();
     });
+  })(jQuery);
+}
+'use strict';
+
+function showNewsEventsPage() {
+  (function ($) {
+
+    // cache
+    var countryFilter = 0;
+    var typeFilter = 0;
+    var page = 1;
+    var totalPages = 0;
+    var totalPagesEvents = 0;
+    var pageEvents = 1;
+
+    //selectors
+    var countrySelector = $('.country-filter');
+    var typeSelector = $('.type-filter');
+    var coverEvents = $('.c-content-banner');
+    var eventsContainer = $('#eventsTiles');
+    var newsContainer = $('#newsTiles');
+
+    // public functions
+    function buildHighlightedEvent(event) {
+      if (event.image) {
+        $('.c-content-banner').css('background-image', 'url(' + event.image + ')');
+      }
+      if (moment() > moment(event.date.value)) {
+        $('.banner-type-date-event').html('Past Event');
+      } else {
+        $('.banner-type-date-event').html('Upcoming Event');
+      }
+      $('.banner-link', coverEvents).attr('href', event.alias);
+      $('.banner-title', coverEvents).html(event.label);
+      $('.banner-date', coverEvents).html(moment(event.date.value).format('MMMM DD, hh:mm a'));
+      $('.c-content-banner').removeClass('-hidden');
+    }
+
+    function setPageCount(val) {
+      $('.page-count').data('value', val);
+    }
+
+    function getCurrentPage() {
+      var pageCount = $('.page-count').data('value');
+      return pageCount;
+    }
+
+    function onClickPagination() {
+      $('.page-count').on('click', function () {
+        setPageCount(getCurrentPage() + 1);
+        pageEvents = getCurrentPage();
+        if (totalPagesEvents > getCurrentPage()) {
+          showLoader('#eventsContainer');
+          showEvents(countryFilter, typeFilter, getCurrentPage());
+        }
+      });
+    }
+
+    function buildSelector(selector, placeholder, endpoint, query) {
+      selector.select2({
+        minimumResultsForSearch: Infinity,
+        containerCssClass: '-green -tall',
+        dropdownCssClass: '-green',
+        placeholder: '' + placeholder
+      });
+      selector.append('<option value="0">' + placeholder + '</option>');
+
+      $.getJSON('/apiJSON/' + endpoint + '?' + query, function (data) {
+        data.data.forEach(function (data) {
+          var option = '<option value="' + data.id + '">' + data.label + '</option>';
+          selector.append(option);
+        });
+
+        selector.on('change', function () {
+          // showLoader('#newsContainer');
+          showLoader('#eventsContainer');
+          countryFilter = countrySelector.val();
+          typeFilter = typeSelector.val();
+          page = 1;
+          // showNews(countryFilter, typeFilter, page);
+          showEvents(countryFilter, typeFilter, page);
+        });
+      });
+    }
+
+    function setPaginationListerners() {
+      countryFilter = countrySelector.val();
+      typeFilter = typeSelector.val();
+      $('.onClickPagination').on('click', function (e) {
+        showLoader('#newsContainer');
+        var pageNum = $(this).data('value');
+        showNews(countryFilter, typeFilter, pageNum);
+      });
+    }
+
+    function showEvents(country, type, page) {
+      var activeCountry = parseInt(country) > 0 ? 'filter[country]=' + country + '&' : '';
+      var activeType = parseInt(type) > 0 ? 'filter[category]=' + type + '&' : '';
+      var activeFilters = '' + activeCountry + activeType + '&page=' + page;
+      $.getJSON('/apiJSON/events?' + activeFilters + '&sort=-date', function (events) {
+        totalPagesEvents = getPageCount(events.count, 4);
+        if (events.data.length > 0) {
+          if (pageEvents === 1) {
+            $.getJSON('/apiJSON/events?sort=-date', function (highlightedEvent) {
+              buildHighlightedEvent(highlightedEvent.data[0]);
+              appendTilesEvent(events.data, eventsContainer);
+              removeLoader('#eventsContainer', null, true);
+            });
+          } else {
+            appendTilesEvent(events.data, eventsContainer);
+            removeLoader('#eventsContainer', null, true);
+          }
+        } else {
+          showNoResults('#eventsContainer', 'No events with these filters', 'tall', 'grey', 'xxlarge');
+          removeLoader('#eventsContainer', null, true);
+        }
+      });
+    }
+
+    function showNews(country, type, page) {
+      var activeCountry = parseInt(country) > 0 ? 'filter[country]=' + country + '&' : '';
+      var activeType = parseInt(type) > 0 ? 'filter[category]=' + type + '&' : '';
+      var activeFilters = '' + activeCountry + activeType + '&page=' + page;
+      $.getJSON('/apiJSON/news?' + activeFilters + '&sort=-date', function (news) {
+        if (news.data.length > 0) {
+          totalPages = getPageCount(news.count, 4);
+          if (page === 1) {
+            $.getJSON('/apiJSON/news?sort=-date', function (highlightedNews) {
+              buildHighlightedEvent(highlightedNews.data[0]);
+              appendTilesDetailedNews(news.data, newsContainer, 2);
+              initPagination(page, totalPages, 'newsEventsPage');
+              setPaginationListerners();
+              removeLoader('#newsContainer', null, true);
+            });
+          } else {
+            appendTilesDetailedNews(news.data, newsContainer, 2);
+            removeLoader('#newsContainer', null, true);
+            initPagination(page, totalPages, 'newsEventsPage');
+            setPaginationListerners();
+          }
+        } else {
+          showNoResults('#newsTiles', 'No news with these filters', 'tall', 'grey', 'xxlarge');
+          $('.c-pagination').html('');
+          removeLoader('#newsContainer', null, true);
+        }
+      });
+    }
+
+    // build page
+    buildSelector(countrySelector, 'All countries', 'countries', 'fields=id,label&sort=label');
+    buildSelector(typeSelector, 'All story types', 'stories_categories', 'fields=id,label&sort=label');
+    showEvents(countryFilter, typeFilter, page);
+    showNews(countryFilter, typeFilter, page);
+    onClickPagination();
   })(jQuery);
 }
 'use strict';

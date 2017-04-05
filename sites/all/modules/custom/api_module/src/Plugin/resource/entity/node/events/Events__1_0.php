@@ -22,6 +22,7 @@ use Drupal\restful\Plugin\resource\ResourceNode;
  *   authenticationOptional = TRUE,
  *   dataProvider = {
  *     "entityType": "node",
+ *     "range" = 4,
  *     "bundles": {
  *       "event"
  *     },
@@ -49,6 +50,10 @@ class Events__1_0 extends ResourceNode{
 
     $public_fields['date'] = array(
       'property' => 'field_date',
+    );
+
+    $public_fields['language'] = array(
+      'property' => 'field_language_event',
     );
 
     $public_fields['image'] = array(
