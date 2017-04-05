@@ -26,11 +26,29 @@
       }
     }
 
-
     li {
       margin-left: 60px;
-      cursor: pointer;
       color: $color-4;
+      cursor: pointer;
+
+      &.-world-icon {
+        display: flex;
+        position: relative;
+        justify-content: center;
+        margin-left: 140px;
+
+        &::before {
+          display: block;
+          position: absolute;
+          top: 50%;
+          left: -60px;
+          width: 1px;
+          height: 25px;
+          transform: translate(0, -50%);
+          background-color: rgba($color-4, .5);
+          content: '';
+        }
+      }
 
       a {
         color: $color-4;
@@ -40,6 +58,10 @@
     .dropdown {
       position: relative;
       display: inline-block;
+
+      &.-language-dropdown {
+        margin-left: 10px;
+      }
 
       &::after {
         @include triangle(8px, $color-4, bottom);
@@ -162,6 +184,14 @@
 
     li {
       color: $color-22;
+
+      &.-world-icon {
+        color: red;
+
+        &::before {
+          background-color: rgba($color-6, .5);
+        }
+      }
 
       a {
         color: $color-22;
