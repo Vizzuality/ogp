@@ -22,9 +22,9 @@ function showStoriesPage() {
       if (story.author[0]) {
         story.author.forEach(function(author ,index) {
           if (index === story.author.length - 1) {
-            authorsHtml += `<a class="text -white" href="${author.alias}">${author.label}</a>`;
+            authorsHtml += `<a class="text -white" href="/${author.alias}">${author.label}</a>`;
           } else {
-            authorsHtml += `<a class="text -white" href="${author.alias}">${author.label}, </a>`;
+            authorsHtml += `<a class="text -white" href="/${author.alias}">${author.label}, </a>`;
           }
         });
       }
