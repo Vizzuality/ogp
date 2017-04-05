@@ -65,7 +65,7 @@ $research_body = field_get_items('node', $research, 'body')[0]['value'];
               <div class="text -body-content starredcommitments"><?php echo $starred_body ?></div>
               <div class="text -body-content -hidden modelcommitments"><?php echo $model_body ?></div>
               <div class="text -body-content -hidden expert"><?php echo $expert_body ?></div>
-              <div class="text -body-content -hidden stories"><?php echo $tories_body ?></div>
+              <div class="text -body-content -hidden stories"><?php echo $stories_body ?></div>
               <div class="text -body-content -hidden research"><?php echo $research_body ?></div>
             </div>
           </div>

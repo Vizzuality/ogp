@@ -23,7 +23,7 @@ $path = explode('/', drupal_get_path_alias());
                         <ul class="menu-list">
                             <?php foreach ($sub_menu as $sub_menu_link) {
                                 $sub_link = $sub_menu_link['link'];
-                                if ($sub_link['link'] && $sub_link['link']['hidden'] == 0) { ?>
+                                if ($sub_link && $sub_link['hidden'] == 0) { ?>
                                     <li class="text -menu">
                                         <a href="/<?php echo $sub_link['link_path'] ?>"><?php echo $sub_link['link_title'] ?></a>
                                     </li>

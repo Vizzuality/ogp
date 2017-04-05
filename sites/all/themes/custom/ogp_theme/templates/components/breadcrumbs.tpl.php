@@ -37,7 +37,7 @@
       'title' => $node->title
     );
     $breadcrumbs[sizeof($breadcrumbs) - 1] = (object)$current_node;
-  } else if ( $page['content']['system_main']['term_heading']['term']['field_group']['#object'] ) {
+  } else if ( isset($page['content']['system_main']['term_heading']['term']['field_group']['#object']) ) {
     $term = $page['content']['system_main']['term_heading']['term']['field_group']['#object'];
     $current_term = array(
       'title' => $term->name

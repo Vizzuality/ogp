@@ -1997,15 +1997,10 @@ function showStoriesPage() {
       }
       $('.banner-link', coverEvents).attr('href', story.alias);
       $('.banner-title', coverEvents).html(story.label);
-<<<<<<< HEAD
       $('.banner-date', coverEvents).html(moment(parseInt(story.created)).format('D MMMM YYYY'));
       if (story.author[0]) {
         $('.banner-author', coverEvents).html(getAuthors(story.author));
       }
-=======
-      $('.banner-date', coverEvents).html(moment.unix(parseInt(story.created)).format('D MMMM YYYY'));
-      $('.banner-author', coverEvents).html(getAuthors(story.author));
->>>>>>> fix dates bugs
       $('.c-content-banner').removeClass('-hidden');
     }
 
