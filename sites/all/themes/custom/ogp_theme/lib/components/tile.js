@@ -83,7 +83,7 @@ function appendTilesEvent(data, container) {
         <div class="small-12 medium-3 event-tile-container">
           <div>
             <h3 class="text -title-x-small">${moment(item.date.value).format('MMMM, DD')}</h3>
-            <span class="text language-text">Language: English</span>
+            <span class="text language-text">Language: ${item.language ? item.language : 'not specified'}</span>
           </div>
           <div>
             <a class="text -interactive -blue" href="${item.alias}">${item.label}</a>

@@ -52,6 +52,10 @@ class Events__1_0 extends ResourceNode{
       'property' => 'field_date',
     );
 
+    $public_fields['language'] = array(
+      'property' => 'field_language_event',
+    );
+
     $public_fields['image'] = array(
       'property' => 'field_country_cover_photo',
       'process_callbacks' => array(
