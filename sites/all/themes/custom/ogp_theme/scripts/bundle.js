@@ -684,7 +684,7 @@ function appendTilesDetailed(data, container, gridNum) {
       });
     }
 
-    html += '\n      <div class="column small-12 medium-' + gridWidth + ' c-tile">\n        <div class="tile-detailed" style="background-image: url(\'' + (item.image ? item.image : '') + '\')">\n          <div class="' + (item.image ? 'overlay' : '') + '"></div>\n          <div class="tile-content">\n            <div class="topics text -dynamic-link ' + (item.image ? '-white' : '') + '">' + topicsHtml + '</div>\n            <a href="' + item.alias + '"><h3 class="text -tile-detail ' + (item.image ? '-white' : '') + '">' + (item.title ? item.title : '') + '</h3></a>\n            <div class="meta">\n              <span class="text -meta-large ' + (item.image ? '-white' : '') + '">' + creationDate.getDay() + ' ' + monthNames[creationDate.getMonth()] + ' ' + creationDate.getFullYear() + '</span>\n              <span class="text -meta-large ' + (item.image ? '-white' : '') + '">' + (item.author[0] ? item.author[0].label : '') + '</span>\n            </div>\n          </div>\n        </div>\n      </div>\n    ';
+    html += '\n      <div class="column small-12 medium-' + gridWidth + ' c-tile">\n        <div class="tile-detailed" style="background-image: url(\'' + (item.image ? item.image : '') + '\')">\n          <div class="' + (item.image ? 'overlay' : '') + '"></div>\n          <div class="tile-content">\n            <div class="topics text -dynamic-link ' + (item.image ? '-white' : '') + '">' + topicsHtml + '</div>\n            <a href="' + item.alias + '"><h3 class="text -tile-detail ' + (item.image ? '-white' : '') + '">' + (item.title ? item.title : '') + '</h3></a>\n            <div class="meta">\n              <span class="text -meta-large ' + (item.image ? '-white' : '') + '">' + moment.unix(parseInt(item.created)).format('D MMMM YYYY') + '</span>\n              <span class="text -meta-large ' + (item.image ? '-white' : '') + '">' + (item.author[0] ? item.author[0].label : '') + '</span>\n            </div>\n          </div>\n        </div>\n      </div>\n    ';
   });
   container.html(html);
 }
@@ -1929,7 +1929,7 @@ function showStoryDetail(id) {
     $.getJSON('/apiJSON/stories/' + id, function (data) {
       // cache
       var story = data.data[0];
-      var creationDate = convertPostDate(story.created, 'dd/mm/yyyy');
+      var creationDate = moment.unix(parseInt(story.created)).format('D MMMM YYYY');
       var metaHtml = '';
       // set country tags
       if (story.country.length) {
@@ -1997,10 +1997,15 @@ function showStoriesPage() {
       }
       $('.banner-link', coverEvents).attr('href', story.alias);
       $('.banner-title', coverEvents).html(story.label);
+<<<<<<< HEAD
       $('.banner-date', coverEvents).html(moment(parseInt(story.created)).format('D MMMM YYYY'));
       if (story.author[0]) {
         $('.banner-author', coverEvents).html(getAuthors(story.author));
       }
+=======
+      $('.banner-date', coverEvents).html(moment.unix(parseInt(story.created)).format('D MMMM YYYY'));
+      $('.banner-author', coverEvents).html(getAuthors(story.author));
+>>>>>>> fix dates bugs
       $('.c-content-banner').removeClass('-hidden');
     }
 
