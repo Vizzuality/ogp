@@ -864,6 +864,28 @@ function showStarredCommitmentDetail(id) {
 }
 'use strict';
 
+function showDocumentResourcePage() {
+  (function ($) {
+    // cache dom
+    var tileContainer = $('#resourceDocsTiles');
+    var searchEl = $('.c-tile');
+    var searchText = $('.c-tile .tile');
+    var searchContainer = $('#resourceTilesSearch input');
+
+    // fetch content and append
+    $.getJSON('/apiJSON/resource', function (data) {
+      setSearchPlaceholder(searchContainer, data.data[0].label);
+      setSearchListeners(searchEl, searchText);
+      if (data.data.length) {
+        appendTiles(data.data, tileContainer, 4);
+      } else {
+        showNoResults();
+      }
+    });
+  })(jQuery);
+}
+'use strict';
+
 function showCountriesDetail(id) {
   (function ($) {
 
@@ -1535,28 +1557,6 @@ function initCountryTabs(onChangeCountryTab) {
 }
 'use strict';
 
-function showDocumentResourcePage() {
-  (function ($) {
-    // cache dom
-    var tileContainer = $('#resourceDocsTiles');
-    var searchEl = $('.c-tile');
-    var searchText = $('.c-tile .tile');
-    var searchContainer = $('#resourceTilesSearch input');
-
-    // fetch content and append
-    $.getJSON('/apiJSON/resource', function (data) {
-      setSearchPlaceholder(searchContainer, data.data[0].label);
-      setSearchListeners(searchEl, searchText);
-      if (data.data.length) {
-        appendTiles(data.data, tileContainer, 4);
-      } else {
-        showNoResults();
-      }
-    });
-  })(jQuery);
-}
-'use strict';
-
 function showHomePage() {
   (function ($) {
     // Slider that appear on Home page
@@ -1940,6 +1940,7 @@ function showStoryDetail(id) {
       var story = data.data[0];
       var creationDate = moment.unix(parseInt(story.created)).format('D MMMM YYYY');
       var metaHtml = '';
+      var authorsHtml = '<strong class="text">Authors: </strong>';
       // set country tags
       if (story.country.length) {
         var countries = story.country;
@@ -1962,14 +1963,21 @@ function showStoryDetail(id) {
 
       // set author and topics
       if (story.author[0]) {
-        var authors = getAuthors(story.author);
-        $('.author').append('<strong>Authors: ' + authors + '</strong>');
+        story.author.forEach(function (author, index) {
+          if (index === story.author.length - 1) {
+            authorsHtml += '<a class="text" href="' + author.alias + '">' + author.label + '</a>';
+          } else {
+            authorsHtml += '<a class="text" href="' + author.alias + '">' + author.label + ', </a>';
+          }
+        });
+        $('.author').append(authorsHtml);
       }
+
       if (story.topic[0]) {
-        $('.topic').append('<strong>Topics: </strong>');
+        $('.topic').append('<strong class="text">Topics: </strong>');
         story.topic.forEach(function (topic) {
           var pathTheme = '' + topic.alias;
-          $('.topic').append('<a href="' + pathTheme + '">' + topic.label + '</a> ');
+          $('.topic').append('<a class="text" href="' + pathTheme + '">' + topic.label + '</a> ');
         });
       }
 
