@@ -110,7 +110,7 @@ function appendTilesDetailed(data, container, gridNum) {
     // build topics
     if (item.topic[0]) {
       item.topic.forEach(function(topic ,index) {
-        if ( index === item.topic.length - 1 ) {
+        if (index === item.topic.length - 1) {
           topicsHtml += `<a href="${topic.alias}">${topic.label}</a>`;
         } else {
           topicsHtml += `<a href="${topic.alias}">${topic.label}, </a>`;
