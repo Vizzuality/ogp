@@ -19,8 +19,8 @@ $ogp_process_link = field_get_items('node', $ogp_process, 'field_link')[0]['valu
   <?php include(drupal_get_path('theme', 'ogp_theme').'/templates/components/header.tpl.php'); ?>
 
     <div class="l-home-page" id="content">
-      <div class="slider-cover-home slider-image-0">
-          <div class="c-slider-home-page">
+      <div class="slider-cover-home">
+          <div class="c-slider-home-page slider-image-0">
             <div class="row">
               <div class="column small-12 medium-9">
                 <div class="container slider-0">
