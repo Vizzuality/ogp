@@ -97,15 +97,12 @@ function appendTilesEvent(data, container) {
 
 // append tiles to div
 function appendTilesDetailed(data, container, gridNum) {
-  const monthNames = ["January", "February", "March", "April", "May", "June",
-      "July", "August", "September", "October", "November", "December"
-    ];
   const gridWidth = 12 / gridNum;
   let html = '';
   data.forEach((item) => {
     // get variables
-    const creationDate = new Date(item.created * 1e3);
     let topicsHtml = '';
+    let authorsHtml = '';
 
     // build topics
     if (item.topic[0]) {
@@ -114,6 +111,16 @@ function appendTilesDetailed(data, container, gridNum) {
           topicsHtml += `<a href="${topic.alias}">${topic.label}</a>`;
         } else {
           topicsHtml += `<a href="${topic.alias}">${topic.label}, </a>`;
+        }
+      });
+    }
+
+    if (item.author[0]) {
+      item.author.forEach(function(author ,index) {
+        if (index === item.author.length - 1) {
+          authorsHtml += `<a class="text -blue" href="${author.alias}">${author.label}</a>`;
+        } else {
+          authorsHtml += `<a class="text -blue" href="${author.alias}">${author.label}, </a>`;
         }
       });
     }
@@ -127,7 +134,7 @@ function appendTilesDetailed(data, container, gridNum) {
             <a href="${item.alias}"><h3 class="text -tile-detail ${item.image ? '-white' : ''}">${item.title ? item.title : ''}</h3></a>
             <div class="meta">
               <span class="text -meta-large ${item.image ? '-white' : ''}">${moment.unix(parseInt(item.created)).format('D MMMM YYYY')}</span>
-              <span class="text -meta-large ${item.image ? '-white' : ''}">${item.author[0] ? item.author[0].label : ''}</span>
+              <a class="text -meta-large ${item.image ? '-white' : ''}">${authorsHtml}</a>
             </div>
           </div>
         </div>
