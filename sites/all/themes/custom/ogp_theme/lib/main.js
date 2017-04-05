@@ -44,6 +44,7 @@ function getAbsolutePath() {
       // home page
       if ($(context).find('#homePage').length !== 0) {
         showHomePage();
+        showSliderHomePage();
         addBanner('involved');
       }
 

@@ -1,3 +1,11 @@
 .l-home-page {
+  min-height: 750px;
   margin-top: -90px;
+  background-image: url('../images/cover/cover1.jpg');
+  background-repeat: no-repeat;
+  background-size: cover;
+
+  .slider-cover-home {
+    min-height: 750px;
+  }
 }
