@@ -10,6 +10,11 @@
       display: flex;
       justify-content: flex-start;
 
+      &.-country-tabs-container {
+        display: flex;
+        justify-content: space-between;
+      }
+
       .tab {
         height: 50px;
         display: flex;

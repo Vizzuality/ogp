@@ -5,7 +5,7 @@ function showStoryDetail(id) {
     $.getJSON(`/apiJSON/stories/${id}`, function (data) {
       // cache
       const story = data.data[0];
-      const creationDate = convertPostDate(story.created, 'dd/mm/yyyy');
+      const creationDate = moment.unix(parseInt(story.created)).format('D MMMM YYYY');
       let metaHtml = '';
       // set country tags
       if (story.country.length) {

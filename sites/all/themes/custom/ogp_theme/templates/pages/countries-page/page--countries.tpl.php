@@ -158,7 +158,7 @@
       <div class="tabs">
         <div class="row">
           <div class="column small-12">
-            <ul class="tabs-container">
+            <ul class="tabs-container -country-tabs-container">
               <li class="tab text -tab -selected" data-node="starred">starred commitments</li>
               <li class="tab text -tab" data-node="potential">potential impact</li>
               <li class="tab text -tab" data-node="relevance">relevance to OGP values</li>
