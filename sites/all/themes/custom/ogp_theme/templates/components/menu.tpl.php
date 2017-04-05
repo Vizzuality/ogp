@@ -35,7 +35,8 @@ $path = explode('/', drupal_get_path_alias());
                 </li>
             <?php }
         } ?>
-        <li class="text -menu dropdown" id="transifexSelector"></li>
+        <li class="text -menu -world-icon"><svg class="icon -medium"><use xlink:href="#icon-world"></use></svg></li>
+        <li class="text -menu dropdown -language-dropdown" id="transifexSelector"></li>
         <li class="text -menu">
             <svg class="icon -medium">
                 <use xlink:href="#icon-search"></use>
