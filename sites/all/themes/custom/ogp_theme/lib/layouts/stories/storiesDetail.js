@@ -7,6 +7,7 @@ function showStoryDetail(id) {
       const story = data.data[0];
       const creationDate = moment.unix(parseInt(story.created)).format('D MMMM YYYY');
       let metaHtml = '';
+      let authorsHtml = '<strong class="text">Authors: </strong>';
       // set country tags
       if (story.country.length) {
         const countries = story.country;
@@ -29,14 +30,21 @@ function showStoryDetail(id) {
 
       // set author and topics
       if (story.author[0]) {
-        const authors = getAuthors(story.author);
-        $('.author').append(`<strong>Authors: ${authors}</strong>`);
+        story.author.forEach(function(author ,index) {
+          if (index === story.author.length - 1) {
+            authorsHtml += `<a class="text" href="${author.alias}">${author.label}</a>`;
+          } else {
+            authorsHtml += `<a class="text" href="${author.alias}">${author.label}, </a>`;
+          }
+        });
+        $('.author').append(authorsHtml);
       }
+
       if (story.topic[0]) {
-        $('.topic').append('<strong>Topics: </strong>');
+        $('.topic').append('<strong class="text">Topics: </strong>');
         story.topic.forEach(function(topic) {
           const pathTheme = `${topic.alias}`;
-          $('.topic').append(`<a href="${pathTheme}">${topic.label}</a> `);
+          $('.topic').append(`<a class="text" href="${pathTheme}">${topic.label}</a> `);
         });
       }
 

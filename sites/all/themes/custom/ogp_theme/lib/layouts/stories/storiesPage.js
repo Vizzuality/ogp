@@ -6,6 +6,7 @@ function showStoriesPage() {
     let typeFilter = 0;
     let page = 1;
     let totalPages = 0;
+    let authorsHtml = '';
 
     //selectors
     const countrySelector = $('.country-filter');
@@ -18,11 +19,20 @@ function showStoriesPage() {
       if (story.image) {
         $('.c-content-banner').css('background-image', `url(${story.image})`);
       }
+      if (story.author[0]) {
+        story.author.forEach(function(author ,index) {
+          if (index === story.author.length - 1) {
+            authorsHtml += `<a class="text -white" href="/${author.alias}">${author.label}</a>`;
+          } else {
+            authorsHtml += `<a class="text -white" href="/${author.alias}">${author.label}, </a>`;
+          }
+        });
+      }
       $('.banner-link', coverEvents).attr('href', story.alias);
       $('.banner-title', coverEvents).html(story.label);
       $('.banner-date', coverEvents).html(moment(parseInt(story.created)).format('D MMMM YYYY'));
       if (story.author[0]) {
-        $('.banner-author', coverEvents).html(getAuthors(story.author));
+        $('.banner-author', coverEvents).html(authorsHtml);
       }
       $('.c-content-banner').removeClass('-hidden');
     }

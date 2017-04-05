@@ -665,13 +665,12 @@ function appendTilesEvent(data, container) {
 
 // append tiles to div
 function appendTilesDetailed(data, container, gridNum) {
-  var monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
   var gridWidth = 12 / gridNum;
   var html = '';
   data.forEach(function (item) {
     // get variables
-    var creationDate = new Date(item.created * 1e3);
     var topicsHtml = '';
+    var authorsHtml = '';
 
     // build topics
     if (item.topic[0]) {
@@ -684,7 +683,17 @@ function appendTilesDetailed(data, container, gridNum) {
       });
     }
 
-    html += '\n      <div class="column small-12 medium-' + gridWidth + ' c-tile">\n        <div class="tile-detailed" style="background-image: url(\'' + (item.image ? item.image : '') + '\')">\n          <div class="' + (item.image ? 'overlay' : '') + '"></div>\n          <div class="tile-content">\n            <div class="topics text -dynamic-link ' + (item.image ? '-white' : '') + '">' + topicsHtml + '</div>\n            <a href="' + item.alias + '"><h3 class="text -tile-detail ' + (item.image ? '-white' : '') + '">' + (item.title ? item.title : '') + '</h3></a>\n            <div class="meta">\n              <span class="text -meta-large ' + (item.image ? '-white' : '') + '">' + moment.unix(parseInt(item.created)).format('D MMMM YYYY') + '</span>\n              <span class="text -meta-large ' + (item.image ? '-white' : '') + '">' + (item.author[0] ? item.author[0].label : '') + '</span>\n            </div>\n          </div>\n        </div>\n      </div>\n    ';
+    if (item.author[0]) {
+      item.author.forEach(function (author, index) {
+        if (index === item.author.length - 1) {
+          authorsHtml += '<a class="text -blue" href="' + author.alias + '">' + author.label + '</a>';
+        } else {
+          authorsHtml += '<a class="text -blue" href="' + author.alias + '">' + author.label + ', </a>';
+        }
+      });
+    }
+
+    html += '\n      <div class="column small-12 medium-' + gridWidth + ' c-tile">\n        <div class="tile-detailed" style="background-image: url(\'' + (item.image ? item.image : '') + '\')">\n          <div class="' + (item.image ? 'overlay' : '') + '"></div>\n          <div class="tile-content">\n            <div class="topics text -dynamic-link ' + (item.image ? '-white' : '') + '">' + topicsHtml + '</div>\n            <a href="' + item.alias + '"><h3 class="text -tile-detail ' + (item.image ? '-white' : '') + '">' + (item.title ? item.title : '') + '</h3></a>\n            <div class="meta">\n              <span class="text -meta-large ' + (item.image ? '-white' : '') + '">' + moment.unix(parseInt(item.created)).format('D MMMM YYYY') + '</span>\n              <a class="text -meta-large ' + (item.image ? '-white' : '') + '">' + authorsHtml + '</a>\n            </div>\n          </div>\n        </div>\n      </div>\n    ';
   });
   container.html(html);
 }
@@ -1931,6 +1940,7 @@ function showStoryDetail(id) {
       var story = data.data[0];
       var creationDate = moment.unix(parseInt(story.created)).format('D MMMM YYYY');
       var metaHtml = '';
+      var authorsHtml = '<strong class="text">Authors: </strong>';
       // set country tags
       if (story.country.length) {
         var countries = story.country;
@@ -1953,14 +1963,21 @@ function showStoryDetail(id) {
 
       // set author and topics
       if (story.author[0]) {
-        var authors = getAuthors(story.author);
-        $('.author').append('<strong>Authors: ' + authors + '</strong>');
+        story.author.forEach(function (author, index) {
+          if (index === story.author.length - 1) {
+            authorsHtml += '<a class="text" href="' + author.alias + '">' + author.label + '</a>';
+          } else {
+            authorsHtml += '<a class="text" href="' + author.alias + '">' + author.label + ', </a>';
+          }
+        });
+        $('.author').append(authorsHtml);
       }
+
       if (story.topic[0]) {
-        $('.topic').append('<strong>Topics: </strong>');
+        $('.topic').append('<strong class="text">Topics: </strong>');
         story.topic.forEach(function (topic) {
           var pathTheme = '' + topic.alias;
-          $('.topic').append('<a href="' + pathTheme + '">' + topic.label + '</a> ');
+          $('.topic').append('<a class="text" href="' + pathTheme + '">' + topic.label + '</a> ');
         });
       }
 
@@ -1983,6 +2000,7 @@ function showStoriesPage() {
     var typeFilter = 0;
     var page = 1;
     var totalPages = 0;
+    var authorsHtml = '';
 
     //selectors
     var countrySelector = $('.country-filter');
@@ -1995,11 +2013,20 @@ function showStoriesPage() {
       if (story.image) {
         $('.c-content-banner').css('background-image', 'url(' + story.image + ')');
       }
+      if (story.author[0]) {
+        story.author.forEach(function (author, index) {
+          if (index === story.author.length - 1) {
+            authorsHtml += '<a class="text -white" href="/' + author.alias + '">' + author.label + '</a>';
+          } else {
+            authorsHtml += '<a class="text -white" href="/' + author.alias + '">' + author.label + ', </a>';
+          }
+        });
+      }
       $('.banner-link', coverEvents).attr('href', story.alias);
       $('.banner-title', coverEvents).html(story.label);
       $('.banner-date', coverEvents).html(moment(parseInt(story.created)).format('D MMMM YYYY'));
       if (story.author[0]) {
-        $('.banner-author', coverEvents).html(getAuthors(story.author));
+        $('.banner-author', coverEvents).html(authorsHtml);
       }
       $('.c-content-banner').removeClass('-hidden');
     }
