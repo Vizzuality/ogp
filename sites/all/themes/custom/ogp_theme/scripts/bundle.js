@@ -44,6 +44,7 @@ function getAbsolutePath() {
       // home page
       if ($(context).find('#homePage').length !== 0) {
         showHomePage();
+        showSliderHomePage();
         addBanner('involved');
       }
 
@@ -1640,6 +1641,20 @@ function showHomePage() {
         $('.tooltip').remove();
       });
       map.invalidateSize();
+    });
+  })(jQuery);
+}
+'use strict';
+
+function showSliderHomePage() {
+  (function ($) {
+    $.getJSON('/apiJSON/stories?fields=label,alias,image&sort=-created', function (stories) {
+      for (var i = 0; i < 3; i += 1) {
+        if (stories.data[i].image) {
+          $('.slider-image-' + i).css('background-image', 'url(' + stories.data[i].image + ')');
+        }
+        $('.slider-' + i).html('\n          <div>\n            <h1 class="title-text -white">\n              <a href="' + stories.data[i].alias + '">' + stories.data[i].label + '</a>\n            </h1>\n            <div class="small-12 medium-5 large-4">\n              <a class="c-button -box" href="' + stories.data[i].alias + '">Explore the story</a>\n            <div>\n          </div>\n        ');
+      }
     });
   })(jQuery);
 }

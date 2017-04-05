@@ -1,6 +1,6 @@
 function showSliderHomePage() {
   (function ($) {
-    $.getJSON(`/apiJSON/stories?sort=-created`, function (stories) {
+    $.getJSON(`/apiJSON/stories?fields=label,alias,image&sort=-created`, function (stories) {
       for (let i = 0; i < 3; i += 1) {
         if (stories.data[i].image) {
           $(`.slider-image-${i}`).css('background-image', `url(${stories.data[i].image})`);
