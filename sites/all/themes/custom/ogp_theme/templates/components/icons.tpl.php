@@ -100,10 +100,15 @@
 <title>triangle-down</title>
 <path d="M5 6h10l-5 9-5-9z"></path>
 </symbol>
-<symbol id="icon-world" viewBox="0 0 32 32">
+<symbol id="icon-world-white" viewBox="0 0 32 32">
 <title>world</title>
 <path fill="#fff" style="fill: var(--color1, #fff)" d="M8.4 16c0.6-1.6 3.2-2 4.4-1.4s2.2 0 3.4 1.4c1 1.4 2 1 2.2 3s-2.6 5.6-3.2 6.6c-0.8 1-2.8-0.2-2.8-3s-1.4-3-2.2-3.2c-1-0.4-3-0.6-1.8-3.4zM13.4 7s-0.4 1 0.4 1.2c2 0.4 2.2 1 3 2s-0.2 2-0.4 3.2c-0.2 1 0.6 1.6 2.4 1.2 2.4-0.6 2.6 2 4 1.8 1.2-0.2 2.2 1.8 2.8 2 0.2-0.8 0.4-1.6 0.4-2.4 0-3.8-2.2-7-5.2-8.8-0.8-0.2-1.6-0.2-2.4-0.2-1.6 0-3-1-5 0z"></path>
 <path fill="none" stroke="#fff" stroke-width="4" stroke-miterlimit="4" stroke-linecap="butt" stroke-linejoin="miter" style="stroke: var(--color1, #fff)" d="M30 16c0 7.732-6.268 14-14 14s-14-6.268-14-14c0-7.732 6.268-14 14-14s14 6.268 14 14z"></path>
+</symbol>
+<symbol id="icon-world-black" viewBox="0 0 32 32">
+<title>world</title>
+<path fill="#333" style="fill: var(--color1, #333)" d="M8.4 16c0.6-1.6 3.2-2 4.4-1.4s2.2 0 3.4 1.4c1 1.4 2 1 2.2 3s-2.6 5.6-3.2 6.6c-0.8 1-2.8-0.2-2.8-3s-1.4-3-2.2-3.2c-1-0.4-3-0.6-1.8-3.4zM13.4 7s-0.4 1 0.4 1.2c2 0.4 2.2 1 3 2s-0.2 2-0.4 3.2c-0.2 1 0.6 1.6 2.4 1.2 2.4-0.6 2.6 2 4 1.8 1.2-0.2 2.2 1.8 2.8 2 0.2-0.8 0.4-1.6 0.4-2.4 0-3.8-2.2-7-5.2-8.8-0.8-0.2-1.6-0.2-2.4-0.2-1.6 0-3-1-5 0z"></path>
+<path fill="none" stroke="#333" stroke-width="4" stroke-miterlimit="4" stroke-linecap="butt" stroke-linejoin="miter" style="stroke: var(--color1, #333)" d="M30 16c0 7.732-6.268 14-14 14s-14-6.268-14-14c0-7.732 6.268-14 14-14s14 6.268 14 14z"></path>
 </symbol>
 </defs>
 </svg>

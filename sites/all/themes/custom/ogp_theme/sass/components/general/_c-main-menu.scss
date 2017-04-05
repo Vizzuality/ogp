@@ -185,6 +185,14 @@
     li {
       color: $color-22;
 
+      &.-world-icon {
+        color: red;
+
+        &::before {
+          background-color: rgba($color-6, .5);
+        }
+      }
+
       a {
         color: $color-22;
       }
