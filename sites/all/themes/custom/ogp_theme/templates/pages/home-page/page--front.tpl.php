@@ -18,11 +18,34 @@ $ogp_process_link = field_get_items('node', $ogp_process, 'field_link')[0]['valu
 
   <?php include(drupal_get_path('theme', 'ogp_theme').'/templates/components/header.tpl.php'); ?>
 
-  <?php if ($content = render($page['content'])): ?>
     <div class="l-home-page" id="content">
-      <?php print $content; ?>
+      <div class="slider-cover-home">
+          <div class="c-slider-home-page slider-image-0">
+            <div class="row">
+              <div class="column small-12 medium-9">
+                <div class="container slider-0">
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="c-slider-home-page slider-image-1">
+            <div class="row">
+              <div class="column small-12 medium-9">
+                <div class="container slider-1">
+                </div>
+              </div>
+            </div>
+          </div>
+          <div class="c-slider-home-page slider-image-2">
+            <div class="row">
+              <div class="column small-12 medium-9">
+                <div class="container slider-2">
+                </div>
+              </div>
+            </div>
+          </div>
+      </div>
     </div>
-  <?php endif; ?>
 
   <div class="l-full-width -short">
 

@@ -20,17 +20,6 @@ function getAbsolutePath() {
       // global actions
       /////////////////
 
-      // initialise any slider on pages
-      $('.slider-container').slick({
-        dots: true,
-        arrows: false,
-        speed: 500,
-        fade: true,
-        cssEase: 'linear',
-        dotsClass: 'dots-container',
-        appendDots: '.c-slider-dots'
-      });
-
       // listener for anchor smooth scrolling
       smoothScroll();
 
@@ -44,6 +33,7 @@ function getAbsolutePath() {
       // home page
       if ($(context).find('#homePage').length !== 0) {
         showHomePage();
+        showSliderHomePage();
         addBanner('involved');
       }
 
