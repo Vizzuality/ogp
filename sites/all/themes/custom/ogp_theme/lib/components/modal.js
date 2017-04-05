@@ -93,6 +93,7 @@ function pushDefaultModal(id, query, countryData, dataLabel, buttonText, buttonL
     if (data.data.length > 0) {
       const trimmedData = modalType === 'slider' ? data.data.slice(0,3): data.data;
       trimmedData.forEach(function(data) {
+        console.log(data);
         if (modalType === 'list') {
           dataInfo += `
             <a href="${data.alias}">
@@ -119,7 +120,7 @@ function pushDefaultModal(id, query, countryData, dataLabel, buttonText, buttonL
       <div class="modal-header">
         <div class="header-info">
           <h3 class="text -module-title">${countryData[0].label}</h3>
-          <p class="text -meta">Member since ${moment.unix(countryData[0].memberSince).format('YYYY')}, Action plan 1</p>
+          <p class="text -meta">Member since ${moment.unix(countryData[0].memberSince).format('YYYY')}, Action plan ${countryData[0].action_plan_count}</p>
         </div>
         <div class="c-data-number">
           <h3 class="text -number">${data.count}</h3>
