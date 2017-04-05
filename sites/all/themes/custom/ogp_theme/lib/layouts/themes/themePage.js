@@ -14,7 +14,7 @@ function showThemesPage() {
         if (data.data.length) {
           appendTiles(data.data, themesContainer, 3);
         } else {
-          showNoResults('#tilesNoResults', 'No themes available', 'tall', 'grey', 'xxlarge');
+          showNoResults('#tilesNoResults', 'No themes available', 'tall', 'grey', 'xxlarge', 'blue');
         }
         removeLoader('.l-section', null, true);
       });
@@ -50,7 +50,7 @@ function showThemesPage() {
 
       // show empty results
       if (results === 0) {
-        showNoResults('#noResultsContainer', 'No themes available', 'tall', 'grey', 'xxlarge');
+        showNoResults('#noResultsContainer', 'No themes available', 'tall', 'grey', 'xxlarge', 'blue');
       } else {
         hideNoResults('#noResultsContainer');
       }

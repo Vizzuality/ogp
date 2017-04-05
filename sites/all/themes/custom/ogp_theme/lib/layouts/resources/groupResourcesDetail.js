@@ -20,7 +20,7 @@ function showGroupResourcesDetail(id) {
         if (data.data.length) {
           appendTiles(data.data, tilesContainer, 4);
         } else {
-          showNoResults('#noResultsContainer', 'No resources available', 'tall', 'grey', 'xxlarge');
+          showNoResults('#noResultsContainer', 'No resources available', 'tall', 'grey', 'xxlarge', 'blue');
         }
         removeLoader('.l-section', null, true);
       });
@@ -37,7 +37,7 @@ function showGroupResourcesDetail(id) {
         if (resources.data.length) {
           appendTiles(resources.data, tilesContainer, 4);
         } else {
-          showNoResults('#noResultsContainer', 'No resources available', 'tall', 'grey', 'xxlarge');
+          showNoResults('#noResultsContainer', 'No resources available', 'tall', 'grey', 'xxlarge', 'blue');
         }
         removeLoader('.l-section', null, true);
       });

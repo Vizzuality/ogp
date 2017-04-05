@@ -453,8 +453,8 @@ function initPagination(page, totalPages, containerId) {
 }
 "use strict";
 
-function showNoResults(container, text, size, color, iconSize) {
-  var html = "\n    <div class=\"c-no-results -" + size + " column small-12\">\n      <svg class=\"icon -" + iconSize + "\"><use xlink:href=\"#icon-compass\"></use></svg>\n      <p class=\"text -" + color + "\">" + text + "</p>\n    </div>\n  ";
+function showNoResults(container, text, size, color, iconSize, type) {
+  var html = "\n    <div class=\"c-no-results -" + size + " column small-12\">\n      <svg class=\"icon -" + iconSize + "\"><use xlink:href=\"#icon-compass-" + type + "\"></use></svg>\n      <p class=\"text -" + color + "\">" + text + "</p>\n    </div>\n  ";
   $(container).html(html);
 }
 
@@ -496,7 +496,7 @@ function setSearchListeners() {
 
     // show empty results
     if (results === 0) {
-      showNoResults('#noResultsContainer', 'No resources available', 'tall', 'grey', 'xxlarge');
+      showNoResults('#noResultsContainer', 'No resources available', 'tall', 'grey', 'xxlarge', 'blue');
     } else {
       hideNoResults('#noResultsContainer');
     }
@@ -927,7 +927,7 @@ function showCountriesDetail(id) {
         }
       });
       if (html === '') {
-        showNoResults(container, 'No documents available', 'short', 'grey', 'xlarge');
+        showNoResults(container, 'No documents available', 'short', 'grey', 'xlarge', 'grey');
       } else {
         container.html(html);
       }
@@ -1022,7 +1022,7 @@ function showCountriesDetail(id) {
           var completionData = [{ theme: 'Mid term percentage', value: country.midterm_percentage }, { theme: 'End of term percentage', value: country.endofterm_percentage }];
           _appendLoadingBar(completionContainer, completionData);
         } else {
-          showNoResults('.completion-container', 'Not yet reviewed', 'short', 'white', 'xlarge');
+          showNoResults('.completion-container', 'Not yet reviewed', 'short', 'white', 'xlarge', 'grey');
         }
       }
       removeLoader('#countryHeaderBanner', null, true);
@@ -1038,7 +1038,7 @@ function showCountriesDetail(id) {
           setPaginationListerners('currentCommitmentsAccordion', 'current_commitment', currentPageCount);
         }
       } else {
-        showNoResults('#currentCommitmentsAccordion .c-accordion', 'No current commitments', 'medium', 'grey', 'xxlarge');
+        showNoResults('#currentCommitmentsAccordion .c-accordion', 'No current commitments', 'medium', 'grey', 'xxlarge', 'blue');
       }
       removeLoader('#currentCommitmentsAccordion', null, true);
     });
@@ -1053,7 +1053,7 @@ function showCountriesDetail(id) {
           setPaginationListerners('irmReviewedCommitmentsAccordion', 'irm_commitments', irmPageCount);
         }
       } else {
-        showNoResults('#irmReviewedCommitmentsAccordion .c-accordion', 'No reviewed commitments', 'medium', 'grey', 'xxlarge');
+        showNoResults('#irmReviewedCommitmentsAccordion .c-accordion', 'No reviewed commitments', 'medium', 'grey', 'xxlarge', 'blue');
       }
       removeLoader('#irmReviewedCommitmentsAccordion', null, true);
     });
@@ -1064,7 +1064,7 @@ function showCountriesDetail(id) {
         _appendStories('.c-activity-stream ul', data.data);
         $('.item-bridge').removeClass('-hidden');
       } else {
-        showNoResults('.c-activity-stream ul', 'No recent activity', 'medium', 'white', 'xlarge');
+        showNoResults('.c-activity-stream ul', 'No recent activity', 'medium', 'white', 'xlarge', 'grey');
       }
       removeLoader('.c-activity-stream');
     });
@@ -1460,28 +1460,28 @@ function setCountryDataTiles(container, country) {
       var trimCommitments = country.starred_commitments.slice(0, 2);
       appendSmallTiles(trimCommitments, '#country-' + country.id, 2, '-short -country');
     } else {
-      showNoResults('#country-' + country.id + ' .data-tiles', 'No starred commitments', 'medium', 'grey', 'xlarge');
+      showNoResults('#country-' + country.id + ' .data-tiles', 'No starred commitments', 'medium', 'grey', 'xlarge', 'grey');
     }
   } else if (activeTab === 'potential') {
     if (country.year_action_plan !== null) {
       appendCountriesInfoBars(country, '#country-' + country.id);
     } else {
-      showNoResults('#country-' + country.id + ' .data-tiles', 'No data available', 'medium', 'grey', 'xlarge');
+      showNoResults('#country-' + country.id + ' .data-tiles', 'No data available', 'medium', 'grey', 'xlarge', 'grey');
     }
   } else if (activeTab === 'relevance') {
     if (country.access_information || country.civic_participation || country.public_accountability || country.unclear) {
       appendCountriesRelevance(country, '#country-' + country.id);
     } else {
-      showNoResults('#country-' + country.id + ' .data-tiles', 'No data available', 'medium', 'grey', 'xlarge');
+      showNoResults('#country-' + country.id + ' .data-tiles', 'No data available', 'medium', 'grey', 'xlarge', 'grey');
     }
   } else if (activeTab === 'thematic') {
     if (country.current_themes) {
       appendCountriesThematicBars(country, '#country-' + country.id);
     } else {
-      showNoResults('#country-' + country.id + ' .data-tiles', 'No data available', 'medium', 'grey', 'xlarge');
+      showNoResults('#country-' + country.id + ' .data-tiles', 'No data available', 'medium', 'grey', 'xlarge', 'grey');
     }
   } else {
-    showNoResults('#country-' + country.id + ' .data-tiles', 'No data available', 'medium', 'grey', 'large');
+    showNoResults('#country-' + country.id + ' .data-tiles', 'No data available', 'medium', 'grey', 'large', 'grey');
   }
   removeLoader('#countriesContentContainer', null, true);
 }
@@ -1758,7 +1758,7 @@ function showNewsEventsPage() {
             removeLoader('#eventsContainer', null, true);
           }
         } else {
-          showNoResults('#eventsContainer', 'No events with these filters', 'tall', 'grey', 'xxlarge');
+          showNoResults('#eventsContainer', 'No events with these filters', 'tall', 'grey', 'xxlarge', 'blue');
           removeLoader('#eventsContainer', null, true);
         }
       });
@@ -1786,7 +1786,7 @@ function showNewsEventsPage() {
             setPaginationListerners();
           }
         } else {
-          showNoResults('#newsTiles', 'No news with these filters', 'tall', 'grey', 'xxlarge');
+          showNoResults('#newsTiles', 'No news with these filters', 'tall', 'grey', 'xxlarge', 'blue');
           $('.c-pagination').html('');
           removeLoader('#newsContainer', null, true);
         }
@@ -1883,7 +1883,7 @@ function showGroupResourcesDetail(id) {
         if (data.data.length) {
           appendTiles(data.data, tilesContainer, 4);
         } else {
-          showNoResults('#noResultsContainer', 'No resources available', 'tall', 'grey', 'xxlarge');
+          showNoResults('#noResultsContainer', 'No resources available', 'tall', 'grey', 'xxlarge', 'blue');
         }
         removeLoader('.l-section', null, true);
       });
@@ -1900,7 +1900,7 @@ function showGroupResourcesDetail(id) {
         if (resources.data.length) {
           appendTiles(resources.data, tilesContainer, 4);
         } else {
-          showNoResults('#noResultsContainer', 'No resources available', 'tall', 'grey', 'xxlarge');
+          showNoResults('#noResultsContainer', 'No resources available', 'tall', 'grey', 'xxlarge', 'blue');
         }
         removeLoader('.l-section', null, true);
       });
@@ -2094,7 +2094,7 @@ function showStoriesPage() {
             setPaginationListerners();
           }
         } else {
-          showNoResults('#storiesTiles', 'No stories with these filters', 'tall', 'grey', 'xxlarge');
+          showNoResults('#storiesTiles', 'No stories with these filters', 'tall', 'grey', 'xxlarge', 'blue');
           $('.c-pagination').html('');
           removeLoader('#storiesContainer', null, true);
         }
@@ -2232,7 +2232,7 @@ function showThemesDetail(id) {
         if (data.data.length) {
           appendTilesWithoutBackground(data.data, container, 2, '-themes');
         } else {
-          showNoResults(container, 'No content available', 'tall', 'grey', 'xxlarge');
+          showNoResults(container, 'No content available', 'tall', 'grey', 'xxlarge', 'blue');
         }
         removeLoader('#themesDetail', null, true);
       });
@@ -2263,7 +2263,7 @@ function showThemesPage() {
         if (data.data.length) {
           appendTiles(data.data, themesContainer, 3);
         } else {
-          showNoResults('#tilesNoResults', 'No themes available', 'tall', 'grey', 'xxlarge');
+          showNoResults('#tilesNoResults', 'No themes available', 'tall', 'grey', 'xxlarge', 'blue');
         }
         removeLoader('.l-section', null, true);
       });
@@ -2298,7 +2298,7 @@ function showThemesPage() {
 
       // show empty results
       if (results === 0) {
-        showNoResults('#noResultsContainer', 'No themes available', 'tall', 'grey', 'xxlarge');
+        showNoResults('#noResultsContainer', 'No themes available', 'tall', 'grey', 'xxlarge', 'blue');
       } else {
         hideNoResults('#noResultsContainer');
       }

@@ -107,7 +107,7 @@ function showNewsEventsPage() {
             removeLoader('#eventsContainer', null, true);
           }
         } else {
-          showNoResults('#eventsContainer', 'No events with these filters', 'tall', 'grey', 'xxlarge');
+          showNoResults('#eventsContainer', 'No events with these filters', 'tall', 'grey', 'xxlarge', 'blue');
           removeLoader('#eventsContainer', null, true);
         }
       });
@@ -135,7 +135,7 @@ function showNewsEventsPage() {
             setPaginationListerners();
           }
         } else {
-          showNoResults('#newsTiles', 'No news with these filters', 'tall', 'grey', 'xxlarge');
+          showNoResults('#newsTiles', 'No news with these filters', 'tall', 'grey', 'xxlarge', 'blue');
           $('.c-pagination').html('');
           removeLoader('#newsContainer', null, true);
         }

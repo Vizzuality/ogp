@@ -1,7 +1,7 @@
-function showNoResults(container, text, size, color, iconSize) {
+function showNoResults(container, text, size, color, iconSize, type) {
   const html = `
     <div class="c-no-results -${size} column small-12">
-      <svg class="icon -${iconSize}"><use xlink:href="#icon-compass"></use></svg>
+      <svg class="icon -${iconSize}"><use xlink:href="#icon-compass-${type}"></use></svg>
       <p class="text -${color}">${text}</p>
     </div>
   `;

@@ -85,7 +85,7 @@ function showCountriesDetail(id) {
         }
       });
       if (html === '') {
-        showNoResults(container, 'No documents available', 'short', 'grey', 'xlarge');
+        showNoResults(container, 'No documents available', 'short', 'grey', 'xlarge', 'grey');
       } else {
         container.html(html);
       }
@@ -184,7 +184,7 @@ function showCountriesDetail(id) {
           ];
           _appendLoadingBar(completionContainer, completionData);
         } else {
-          showNoResults(`.completion-container`, 'Not yet reviewed', 'short', 'white', 'xlarge');
+          showNoResults(`.completion-container`, 'Not yet reviewed', 'short', 'white', 'xlarge', 'grey');
         }
       }
       removeLoader('#countryHeaderBanner', null, true);
@@ -201,7 +201,7 @@ function showCountriesDetail(id) {
           setPaginationListerners('currentCommitmentsAccordion', 'current_commitment', currentPageCount);
         }
       } else {
-        showNoResults(`#currentCommitmentsAccordion .c-accordion`, 'No current commitments', 'medium', 'grey', 'xxlarge');
+        showNoResults(`#currentCommitmentsAccordion .c-accordion`, 'No current commitments', 'medium', 'grey', 'xxlarge', 'blue');
       }
       removeLoader('#currentCommitmentsAccordion', null, true);
     });
@@ -217,7 +217,7 @@ function showCountriesDetail(id) {
           setPaginationListerners('irmReviewedCommitmentsAccordion', 'irm_commitments', irmPageCount);
         }
       } else {
-        showNoResults(`#irmReviewedCommitmentsAccordion .c-accordion`, 'No reviewed commitments', 'medium', 'grey', 'xxlarge');
+        showNoResults(`#irmReviewedCommitmentsAccordion .c-accordion`, 'No reviewed commitments', 'medium', 'grey', 'xxlarge', 'blue');
       }
       removeLoader('#irmReviewedCommitmentsAccordion', null, true);
     });
@@ -228,7 +228,7 @@ function showCountriesDetail(id) {
         _appendStories('.c-activity-stream ul', data.data);
         $('.item-bridge').removeClass('-hidden');
       } else {
-        showNoResults('.c-activity-stream ul', 'No recent activity', 'medium', 'white', 'xlarge');
+        showNoResults('.c-activity-stream ul', 'No recent activity', 'medium', 'white', 'xlarge', 'grey');
       }
       removeLoader('.c-activity-stream');
     });
