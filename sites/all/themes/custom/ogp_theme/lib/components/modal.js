@@ -101,8 +101,8 @@ function pushDefaultModal(id, query, countryData, dataLabel, buttonText, buttonL
           `;
         } else if (modalType === 'grid'){
           dataInfo += `
-            <span class="text -small-bold -blue">${data.label}</span>
-            <p class="text -body-content">${data.body.value}</p>
+            <a class="text -small-bold -blue" href="${data.alias}">${data.label}</a>
+            <p class="text -body-content">${addDots(data.body.value, 100)}</p>
           `;
         } else if (modalType === 'slider') {
           dataInfo += `
