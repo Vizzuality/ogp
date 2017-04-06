@@ -335,7 +335,6 @@ function pushDefaultModal(id, query, countryData, dataLabel, buttonText, buttonL
     if (data.data.length > 0) {
       var trimmedData = modalType === 'slider' ? data.data.slice(0, 3) : data.data;
       trimmedData.forEach(function (data) {
-        console.log(data);
         if (modalType === 'list') {
           dataInfo += '\n            <a href="' + data.alias + '">\n              <h2 class="text -title-x-small">' + data.label + '</h2>\n            </a>\n          ';
         } else if (modalType === 'grid') {
@@ -380,7 +379,7 @@ function setMapModalContent(id, type, countryId, countriesData) {
       pushDefaultModal(id, 'starredcommitments?filter[country]=' + countryId, countryData, 'starred commitments', 'latest stories', '/stories', 'list');
       break;
     case 'event':
-      pushDefaultModal(id, 'events?filter[country]=' + countryId, countryData, 'upcoming events', 'go to events', '/events', 'list');
+      pushDefaultModal(id, 'events?filter[country]=' + countryId, countryData, 'events', 'go to events', '/events', 'list');
       break;
     case 'commitment':
       var currentFilter = $('.select-legend-dropdown').val() ? '&filter[theme_id]=' + $('.select-legend-dropdown').val() : '';
