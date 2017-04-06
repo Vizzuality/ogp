@@ -1676,6 +1676,7 @@ function showIrmReports() {
     var totalPages = 0;
 
     //selectors
+    var countrySelector = $('.country-filter');
     var tabsContainer = $('.tabs-container');
     var containerInfo = $('#container-info');
     var irmContainer = $('#downloadContainer');
@@ -1723,6 +1724,32 @@ function showIrmReports() {
       });
     }
 
+    function buildSelector(selector, placeholder, endpoint, query) {
+      selector.select2({
+        minimumResultsForSearch: Infinity,
+        containerCssClass: '-green -tall',
+        dropdownCssClass: '-green',
+        placeholder: '' + placeholder
+      });
+      selector.append('<option value="0">' + placeholder + '</option>');
+
+      $.getJSON('/apiJSON/' + endpoint + '?' + query, function (data) {
+        data.data.forEach(function (data) {
+          var option = '<option value="' + data.id + '">' + data.label + '</option>';
+          selector.append(option);
+        });
+
+        selector.on('change', function () {
+          showLoader('#storiesContainer');
+          countryFilter = countrySelector.val();
+          typeFilter = typeSelector.val();
+          page = 1;
+          showStories(countryFilter, typeFilter, page);
+        });
+      });
+    }
+
+    buildSelector(countrySelector, 'All countries', 'countries', 'fields=id,label&sort=label');
     onClickPagination();
     initIRMTabs(onChangeIRMTabs);
     showTilesIrmoReports(countryFilter, typeFilter, page);
