@@ -89,6 +89,11 @@
       font-size: $font-size-xxsmall;
       font-weight: 600;
       color: $color-2;
+      height: 40px;
+
+      &:hover {
+        background-color: $color-3;
+      }
     }
   }
 
@@ -105,6 +110,12 @@
 
     .select2-selection__rendered {
       color: $color-4 !important;
+    }
+
+    .select2-results__option {
+      &:hover {
+        background-color: darken($color-1, 5%) !important;
+      }
     }
 
     .select2-selection__arrow {
