@@ -50,13 +50,15 @@
       </div>
 
       <div class="column small-12 medium-12 l-gallery" id="container-info">
-        <div class="row content-tiles tab-content download" id="downloadContainer">
+        <div class="row content-tiles tab-content download" id="tab-loader">
           <div class="column small-12 medium-12">
             <div class="small-12 medium-3">
               <div class="c-selector -tall">
                 <select class="country-filter"></select>
               </div>
             </div>
+          </div>
+          <div class="row content-tiles" id="downloadContainer">
           </div>
           <div class="c-loader"><div class="loader"></div></div>
         </div>
@@ -69,7 +71,7 @@
         <div class="c-pagination-click">
           <div class="reload-thematic" data-value="1">
             <svg class="icon icon-reload"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-loading"></use></svg>
-            <span class="text -blue -small-bold">LOAD MORE COUNTRIES</span>
+            <span class="text -blue -small-bold">LOAD MORE IRM REPORTS</span>
           </div>
         </div>
       </div>

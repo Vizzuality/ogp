@@ -78,8 +78,8 @@ function appendSmallTiles(data, topContainer, gridNum, customClass) {
 function appendTilesIRM(data, topContainer, count) {
   if (data.length > 0) {
     let html = `
-    <div class="column small-12 medium-6" id="country-37482">
-      <div class="c-country-tile">
+    <div class="column small-12 medium-6">
+      <div class="column c-country-tile">
         <a class="text -title-x-small" href="${data[0].country.alias}">${data[0].country.label}<svg class="icon -blue -medium arrow"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-arrow"></use></svg></a>
         <div class="first-info text">
           <span class="text">Total reports ${count}</span>

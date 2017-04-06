@@ -651,7 +651,7 @@ function appendSmallTiles(data, topContainer, gridNum, customClass) {
 
 function appendTilesIRM(data, topContainer, count) {
   if (data.length > 0) {
-    var html = '\n    <div class="column small-12 medium-6" id="country-37482">\n      <div class="c-country-tile">\n        <a class="text -title-x-small" href="' + data[0].country.alias + '">' + data[0].country.label + '<svg class="icon -blue -medium arrow"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-arrow"></use></svg></a>\n        <div class="first-info text">\n          <span class="text">Total reports ' + count + '</span>\n        </div>\n        <div class="row data-tiles">';
+    var html = '\n    <div class="column small-12 medium-6">\n      <div class="column c-country-tile">\n        <a class="text -title-x-small" href="' + data[0].country.alias + '">' + data[0].country.label + '<svg class="icon -blue -medium arrow"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-arrow"></use></svg></a>\n        <div class="first-info text">\n          <span class="text">Total reports ' + count + '</span>\n        </div>\n        <div class="row data-tiles">';
     for (var i = 0; i < data.length; i += 1) {
       html += '\n      <div class="column small-12 large-6 c-tile -short -hiden">\n        <a href="/' + data[i].alias + '" class="tile">\n          <div class=""></div>\n          <span class="text -tile -white">' + data[i].label + '</span>\n        </a>\n      </div>';
     }
@@ -1704,20 +1704,24 @@ function showIrmReports() {
     function onClickPagination() {
       $('.c-pagination-click').on('click', function () {
         setPageCount(getCurrentPage() + 1);
-        showLoader('#downloadContainer');
-        showTilesIrmoReports(countryFilter, typeFilter, getCurrentPage());
+        showLoader('#tab-loader');
+        showTilesIrmoReports(countryFilter, getCurrentPage());
       });
     }
 
-    function showTilesIrmoReports(country, type, page) {
-      $.getJSON('/apiJSON/countries?fields=id,label&sort=-label&range=4&page=' + page, function (countries) {
+    function showTilesIrmoReports(country, pageNext) {
+      var activeCountry = parseInt(country) > 0 ? 'filter[id]=' + country + '&' : '';
+      $.getJSON('/apiJSON/countries?' + activeCountry + 'fields=id,label&sort=label&range=4&page=' + pageNext, function (countries) {
         for (var i = 0; i < countries.data.length; i += 1) {
           $.getJSON('/apiJSON/documents?filter[type]=2704&filter[country]=' + countries.data[i].id + '&sort=-date&range=2', function (reports) {
             if (reports.data.length > 0) {
               appendTilesIRM(reports.data, irmContainer, reports.count);
-              removeLoader('#downloadContainer', null, true);
+              removeLoader('#tab-loader', null, true);
             } else {
-              removeLoader('#downloadContainer', null, true);
+              if (activeCountry !== '') {
+                showNoResults('#downloadContainer', 'No IRM Reports with these filters', 'tall', 'grey', 'xxlarge', 'blue');
+              }
+              removeLoader('#tab-loader', null, true);
             }
           });
         }
@@ -1732,7 +1736,6 @@ function showIrmReports() {
         placeholder: '' + placeholder
       });
       selector.append('<option value="0">' + placeholder + '</option>');
-
       $.getJSON('/apiJSON/' + endpoint + '?' + query, function (data) {
         data.data.forEach(function (data) {
           var option = '<option value="' + data.id + '">' + data.label + '</option>';
@@ -1740,11 +1743,11 @@ function showIrmReports() {
         });
 
         selector.on('change', function () {
-          showLoader('#storiesContainer');
+          $(irmContainer).html('');
+          showLoader('#tab-loader');
           countryFilter = countrySelector.val();
-          typeFilter = typeSelector.val();
           page = 1;
-          showStories(countryFilter, typeFilter, page);
+          showTilesIrmoReports(countryFilter, page);
         });
       });
     }
@@ -1752,7 +1755,7 @@ function showIrmReports() {
     buildSelector(countrySelector, 'All countries', 'countries', 'fields=id,label&sort=label');
     onClickPagination();
     initIRMTabs(onChangeIRMTabs);
-    showTilesIrmoReports(countryFilter, typeFilter, page);
+    showTilesIrmoReports(countryFilter, page);
   })(jQuery);
 }
 'use strict';
