@@ -51,9 +51,19 @@
 
       <div class="column small-12 medium-12 l-gallery" id="container-info">
         <div class="row content-tiles tab-content download" id="downloadContainer">
+          <div class="c-loader"><div class="loader"></div></div>
         </div>
         <div class="tab-content comment -hidden">
           <h3 class="text -section-title">Comment</h3>
+        </div>
+      </div>
+
+      <div class="column small-12">
+        <div class="c-pagination-click">
+          <div class="reload-thematic" data-value="1">
+            <svg class="icon icon-reload"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-loading"></use></svg>
+            <span class="text -blue -small-bold">LOAD MORE COUNTRIES</span>
+          </div>
         </div>
       </div>
     </div>

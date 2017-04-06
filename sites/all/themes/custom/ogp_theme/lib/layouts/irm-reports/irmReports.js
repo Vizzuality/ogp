@@ -24,22 +24,19 @@ function showIrmReports() {
     }
 
     function setPageCount(val) {
-      $('.page-count').data('value', val);
+      $('.reload-thematic').data('value', val);
     }
 
     function getCurrentPage() {
-      const pageCount = $('.page-count').data('value');
+      const pageCount = $('.reload-thematic').data('value');
       return pageCount;
     }
 
     function onClickPagination() {
-      $('.page-count').on('click', function() {
+      $('.c-pagination-click').on('click', function() {
         setPageCount(getCurrentPage() + 1);
-        pageEvents = getCurrentPage();
-        if (totalPages > getCurrentPage()) {
-          showLoader('#downloadContainer');
-          showEvents(countryFilter, typeFilter, getCurrentPage());
-        }
+        showLoader('#downloadContainer');
+        showTilesIrmoReports(countryFilter, typeFilter, getCurrentPage());
       });
     }
 
@@ -48,16 +45,17 @@ function showIrmReports() {
         for (let i = 0; i < countries.data.length; i += 1) {
           $.getJSON(`/apiJSON/documents?filter[type]=2704&filter[country]=${countries.data[i].id}&sort=-date&range=2`, function (reports) {
             if (reports.data.length > 0) {
-              appendTilesIRM(reports.data, irmContainer);
+              appendTilesIRM(reports.data, irmContainer, reports.count);
               removeLoader('#downloadContainer', null, true);
             } else {
-              // showNoResults('#newsTiles', 'No news with these filters', 'tall', 'grey', 'xxlarge', 'blue');
               removeLoader('#downloadContainer', null, true);
             }
           });
         }
       });
     }
+
+    onClickPagination();
     initIRMTabs(onChangeIRMTabs);
     showTilesIrmoReports(countryFilter, typeFilter, page);
 

@@ -649,12 +649,14 @@ function appendSmallTiles(data, topContainer, gridNum, customClass) {
   }
 }
 
-function appendTilesIRM(data, topContainer) {
+function appendTilesIRM(data, topContainer, count) {
   if (data.length > 0) {
-    data.forEach(function (item) {
-      var html = '\n      <div class="column small-12 medium-6" id="country-37482">\n            <div class="c-country-tile">\n              <a class="text -title-x-small" href="' + data[0].country.alias + '">' + data[0].country.label + '<svg class="icon -blue -medium arrow"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-arrow"></use></svg></a>\n              <div class="first-info text">\n                <span>' + data.count + '</span>\n              </div>\n              <div class="row data-tiles">\n              <div class="column small-12 large-6 c-tile -short">\n                <a href="/starred-commitments/11-standardization-corruption-complaints" class="tile">\n                  <div class=""></div>\n                  <span class="text -tile -white">1.1 Standardization of corruption complaints </span>\n                </a>\n              </div>\n              <div class="column small-12 large-6 c-tile -short">\n                <a href="/starred-commitments/13-implementation-public-expenses-module-open-data-format" class="tile">\n                  <div class=""></div>\n                  <span class="text -tile -white">1.3 Implementation of public expenses module in "open data" format </span>\n                </a>\n              </div>\n            </div>\n            </div>\n          </div>\n      ';
-      // $(`${topContainer.selector}`).append(html);
-    });
+    var html = '\n    <div class="column small-12 medium-6" id="country-37482">\n      <div class="c-country-tile">\n        <a class="text -title-x-small" href="' + data[0].country.alias + '">' + data[0].country.label + '<svg class="icon -blue -medium arrow"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-arrow"></use></svg></a>\n        <div class="first-info text">\n          <span class="text">Total reports ' + count + '</span>\n        </div>\n        <div class="row data-tiles">';
+    for (var i = 0; i < data.length; i += 1) {
+      html += '\n      <div class="column small-12 large-6 c-tile -short -hiden">\n        <a href="/' + data[i].alias + '" class="tile">\n          <div class=""></div>\n          <span class="text -tile -white">' + data[i].label + '</span>\n        </a>\n      </div>';
+    }
+    html += '</div></div></div>';
+    $('' + topContainer.selector).append(html);
   }
 }
 
@@ -1690,22 +1692,19 @@ function showIrmReports() {
     }
 
     function setPageCount(val) {
-      $('.page-count').data('value', val);
+      $('.reload-thematic').data('value', val);
     }
 
     function getCurrentPage() {
-      var pageCount = $('.page-count').data('value');
+      var pageCount = $('.reload-thematic').data('value');
       return pageCount;
     }
 
     function onClickPagination() {
-      $('.page-count').on('click', function () {
+      $('.c-pagination-click').on('click', function () {
         setPageCount(getCurrentPage() + 1);
-        pageEvents = getCurrentPage();
-        if (totalPages > getCurrentPage()) {
-          showLoader('#downloadContainer');
-          showEvents(countryFilter, typeFilter, getCurrentPage());
-        }
+        showLoader('#downloadContainer');
+        showTilesIrmoReports(countryFilter, typeFilter, getCurrentPage());
       });
     }
 
@@ -1714,16 +1713,17 @@ function showIrmReports() {
         for (var i = 0; i < countries.data.length; i += 1) {
           $.getJSON('/apiJSON/documents?filter[type]=2704&filter[country]=' + countries.data[i].id + '&sort=-date&range=2', function (reports) {
             if (reports.data.length > 0) {
-              appendTilesIRM(reports.data, irmContainer);
+              appendTilesIRM(reports.data, irmContainer, reports.count);
               removeLoader('#downloadContainer', null, true);
             } else {
-              // showNoResults('#newsTiles', 'No news with these filters', 'tall', 'grey', 'xxlarge', 'blue');
               removeLoader('#downloadContainer', null, true);
             }
           });
         }
       });
     }
+
+    onClickPagination();
     initIRMTabs(onChangeIRMTabs);
     showTilesIrmoReports(countryFilter, typeFilter, page);
   })(jQuery);
