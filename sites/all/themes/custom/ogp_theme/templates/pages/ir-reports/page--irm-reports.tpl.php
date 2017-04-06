@@ -48,7 +48,9 @@
           </div>
           <div class="column small-12 medium-12 l-gallery" id="container-info">
             <div class="tab-content download">
-              <h3 class="text -section-title">Download</h3>
+              <div class="row content-tiles">
+                
+              </div>
             </div>
             <div class="tab-content comment -hidden">
               <h3 class="text -section-title">Comment</h3>

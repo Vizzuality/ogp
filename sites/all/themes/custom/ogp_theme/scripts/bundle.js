@@ -1348,7 +1348,7 @@ function showCountriesPage() {
         name: 'event'
       },
       commitment: {
-        sql: 'SELECT country, Min(cartodb_id) cartodb_id, count(country), st_centroid(the_geom_webmercator) the_geom_webmercator FROM currentcommitments_countries WHERE country IS NOT NULL AND the_geom_webmercator IS NOT NULL AND LENGTH(country) > 0 GROUP BY the_geom_webmercator, country ORDER BY country DESC',
+        sql: 'SELECT country,Min(countryid) countryid, Min(cartodb_id) cartodb_id, count(country), st_centroid(the_geom_webmercator) the_geom_webmercator FROM currentcommitments_countries WHERE country IS NOT NULL AND the_geom_webmercator IS NOT NULL AND LENGTH(country) > 0 GROUP BY the_geom_webmercator, country ORDER BY country DESC',
         cartocss: '#layer::z1 {marker-width: 30;marker-fill: #ffa200;marker-fill-opacity: 1;marker-line-width: 1;marker-line-color: #4b392f;marker-line-opacity: 0.1;marker-allow-overlap:true;marker-comp-op: src;[zoom = 2] {marker-width: 30;}[zoom = 3] {marker-width: 35;}[zoom = 4] {marker-width: 40;}[zoom = 5] {marker-width:45;} [zoom = 6] {marker-width: 45;}} #layer::z1 {text-name: [count];text-face-name: "DejaVu Sans Book";text-size: 10;text-fill: #FFFFFF;text-label-position-tolerance: 0;text-halo-radius: 0;text-halo-fill: #6F808D;text-dy: 0;text-allow-overlap: true;}',
         interactivity: 'cartodb_id, the_geom_webmercator, country',
         name: 'commitment'
@@ -1658,6 +1658,11 @@ function showSliderHomePage() {
 function showIrmReports() {
   (function ($) {
 
+    // cache
+    var page = 1;
+    var totalPages = 0;
+
+    //selectors
     var tabsContainer = $('.tabs-container');
     var containerInfo = $('#container-info');
 
@@ -1670,6 +1675,47 @@ function showIrmReports() {
     function initIRMTabs(onChange) {
       initTabs();
       setTabListeners(onChange);
+    }
+
+    function setPageCount(val) {
+      $('.page-count').data('value', val);
+    }
+
+    function getCurrentPage() {
+      var pageCount = $('.page-count').data('value');
+      return pageCount;
+    }
+
+    function onClickPagination() {
+      $('.page-count').on('click', function () {
+        setPageCount(getCurrentPage() + 1);
+        pageEvents = getCurrentPage();
+        if (totalPagesEvents > getCurrentPage()) {
+          showLoader('#eventsContainer');
+          showEvents(countryFilter, typeFilter, getCurrentPage());
+        }
+      });
+    }
+
+    function showTilesIrmoReports() {
+      $.getJSON('/apiJSON/events?sort=-date', function (events) {
+        totalPagesEvents = getPageCount(events.count, 4);
+        if (events.data.length > 0) {
+          if (pageEvents === 1) {
+            $.getJSON('/apiJSON/events?sort=-date', function (highlightedEvent) {
+              buildHighlightedEvent(highlightedEvent.data[0]);
+              appendTilesEvent(events.data, eventsContainer);
+              removeLoader('#eventsContainer', null, true);
+            });
+          } else {
+            appendTilesEvent(events.data, eventsContainer);
+            removeLoader('#eventsContainer', null, true);
+          }
+        } else {
+          showNoResults('#eventsContainer', 'No events with these filters', 'tall', 'grey', 'xxlarge', 'blue');
+          removeLoader('#eventsContainer', null, true);
+        }
+      });
     }
 
     initIRMTabs(onChangeIRMTabs);
