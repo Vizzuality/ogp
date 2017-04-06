@@ -29,16 +29,6 @@
     <div id="countriesMap" class="map"></div>
 
     <div class="c-map-legend-countries">
-
-      <div class="close-layers">
-        <div class="close-layers-icon open">
-          <span></span>
-          <span></span>
-          <span></span>
-          <span></span>
-        </div>
-        <span class="text-top-legend">Close the layers</span>
-      </div>
       <div class="scroll-contain-legend -scroll">
         <div class="container-all-legends">
           <div class="action-plans-filter">

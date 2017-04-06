@@ -95,7 +95,6 @@
       right: -20px !important;
       width: 260px !important;
       margin-top: 20px;
-      padding: 35px 30px;
       border-radius: 0;
       background-color: $color-2;
       box-shadow: 0 0 8px 0 rgba($color-5, .1);
@@ -118,14 +117,18 @@
       }
 
       li {
-        margin-bottom: 20px;
+        padding: 15px 20px;
         margin-left: 0;
-        padding: 0;
         text-indent: 0;
         color: $color-3;
 
         &:hover {
-          background: transparent;
+          background: $color-4;
+          color: $color-2;
+
+          a {
+            color: $color-2;
+          }
         }
 
         &::before {
