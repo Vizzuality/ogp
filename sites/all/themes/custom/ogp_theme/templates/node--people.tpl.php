@@ -55,11 +55,11 @@ $field_countries_poc = field_get_items('node', $node, 'field_countries_poc');
                             $result .= $t[0];
 
                         if(filter_var($field_contact[0]['value'], FILTER_VALIDATE_EMAIL)) {
-                            echo '<strong>Email: </strong><p>'.$field_contact[0]['value'].'</p>';
+                            echo '<strong>Email: <a href="mailto:' . $field_contact[0]['value'] . '"></strong><p>'.$field_contact[0]['value'].'</p></a>';
                         }
 
                         if($result === '@') {
-                            echo '<strong>Twitter: </strong><p>'.$field_contact[0]['value'].'</p>';
+                            echo '<strong>Twitter: <a href="mailto:' . str_replace('@', '', $field_contact[0]['value']) . '"></strong><p>'.$field_contact[0]['value'].'</p></a>';
                         }
                         ?>
                     </div>

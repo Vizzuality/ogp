@@ -159,6 +159,78 @@ function getAbsolutePath() {
 })(jQuery);
 'use strict';
 
+function convertPostDate(date, format) {
+  var dateString = new Date(date * 1e3);
+  var dd = dateString.getDate();
+  var mm = dateString.getMonth() + 1; //January is 0!
+  var yyyy = dateString.getFullYear();
+
+  if (format === 'dd/mm/yyyy') {
+    if (dd < 10) {
+      dd = '0' + dd;
+    }
+
+    if (mm < 10) {
+      mm = '0' + mm;
+    }
+  }
+
+  dateString = dd + '/' + mm + '/' + yyyy;
+
+  return dateString;
+}
+
+function convertEventDate(date) {
+  var myDate = moment(date, 'YYYY-M-DD HH:mm:ss');
+  return myDate.format('MMMM D, YYYY - hh:mm');
+}
+
+function dateDiff(date) {
+  return moment().diff(date, 'days');
+}
+'use strict';
+
+function smoothScroll() {
+  $('a[href*="#"]:not([href="#"])').click(function () {
+    if (location.pathname.replace(/^\//, '') == this.pathname.replace(/^\//, '') && location.hostname == this.hostname) {
+      var target = $(this.hash);
+      target = target.length ? target : $('[name=' + this.hash.slice(1) + ']');
+      if (target.length) {
+        $('html, body').animate({
+          scrollTop: target.offset().top
+        }, 500);
+        return false;
+      }
+    }
+  });
+}
+'use strict';
+
+function getAuthors(data) {
+  var authorString = '';
+  if (data[0]) {
+    data.forEach(function (author, index) {
+      if (index === data.length - 1) {
+        authorString += '' + author.label;
+      } else {
+        authorString += author.label + ', ';
+      }
+    });
+  }
+  return authorString;
+}
+'use strict';
+
+function addDots(string, limit) {
+  var dots = '...';
+  if (string.length > limit) {
+    string = string.substring(0, limit) + dots;
+  }
+
+  return string;
+}
+'use strict';
+
 function closeAccordionSection() {
   $('.c-accordion .accordion-section-title').removeClass('active');
   $('.c-accordion .accordion-section-content').slideUp(200).removeClass('open');
@@ -666,9 +738,9 @@ function appendTilesDetailed(data, container, gridNum) {
     if (item.topic[0]) {
       item.topic.forEach(function (topic, index) {
         if (index === item.topic.length - 1) {
-          topicsHtml += '<a href="' + topic.alias + '">' + topic.label + '</a>';
+          topicsHtml += '<a href="/' + topic.alias + '">' + topic.label + '</a>';
         } else {
-          topicsHtml += '<a href="' + topic.alias + '">' + topic.label + ', </a>';
+          topicsHtml += '<a href="/' + topic.alias + '">' + topic.label + ', </a>';
         }
       });
     }
@@ -676,14 +748,14 @@ function appendTilesDetailed(data, container, gridNum) {
     if (item.author[0]) {
       item.author.forEach(function (author, index) {
         if (index === item.author.length - 1) {
-          authorsHtml += '<a class="text -blue" href="' + author.alias + '">' + author.label + '</a>';
+          authorsHtml += '<a class="text -blue" href="/' + author.alias + '">' + author.label + '</a>';
         } else {
-          authorsHtml += '<a class="text -blue" href="' + author.alias + '">' + author.label + ', </a>';
+          authorsHtml += '<a class="text -blue" href="/' + author.alias + '">' + author.label + ', </a>';
         }
       });
     }
 
-    html += '\n      <div class="column small-12 medium-' + gridWidth + ' c-tile">\n        <div class="tile-detailed" style="background-image: url(\'' + (item.image ? item.image : '') + '\')">\n          <div class="' + (item.image ? 'overlay' : '') + '"></div>\n          <div class="tile-content">\n            <div class="topics text -dynamic-link ' + (item.image ? '-white' : '') + '">' + topicsHtml + '</div>\n            <a href="' + item.alias + '"><h3 class="text -tile-detail ' + (item.image ? '-white' : '') + '">' + (item.title ? item.title : '') + '</h3></a>\n            <div class="meta">\n              <span class="text -meta-large ' + (item.image ? '-white' : '') + '">' + moment.unix(parseInt(item.created)).format('D MMMM YYYY') + '</span>\n              <a class="text -meta-large ' + (item.image ? '-white' : '') + '">' + authorsHtml + '</a>\n            </div>\n          </div>\n        </div>\n      </div>\n    ';
+    html += '\n      <div class="column small-12 medium-' + gridWidth + ' c-tile">\n        <div class="tile-detailed" style="background-image: url(\'' + (item.image ? item.image : '') + '\')">\n          <div class="' + (item.image ? 'overlay' : '') + '"></div>\n          <div class="tile-content">\n            <div class="topics text -dynamic-link ' + (item.image ? '-white' : '') + '">' + topicsHtml + '</div>\n            <a href="/' + item.alias + '"><h3 class="text -tile-detail ' + (item.image ? '-white' : '') + '">' + (item.title ? item.title : '') + '</h3></a>\n            <div class="meta">\n              <span class="text -meta-large ' + (item.image ? '-white' : '') + '">' + moment.unix(parseInt(item.created)).format('D MMMM YYYY') + '</span>\n              <a class="text -meta-large ' + (item.image ? '-white' : '') + '">' + authorsHtml + '</a>\n            </div>\n          </div>\n        </div>\n      </div>\n    ';
   });
   container.html(html);
 }
@@ -692,7 +764,7 @@ function appendTilesDetailedNews(data, container, gridNum) {
   var gridWidth = 12 / gridNum;
   var html = '';
   data.forEach(function (item) {
-    html += '\n      <div class="column small-12 medium-6 c-tile">\n        <div class="tile-detailed" style="background-image: url(\'' + (item.image.length === '0' ? item.image : '') + '\')">\n          <div class="' + (item.image === '0' ? 'overlay' : '') + '"></div>\n          <span class="text -uppercase -blue -small-bold">News</span>\n          <div class="tile-content">\n            <a href="' + item.alias + '"><h3 class="text -tile-detail ' + (item.image.length === '0' ? '-white' : '') + '">' + (item.label ? item.label : '') + '</h3></a>\n            <div class="meta">\n              <span class="text -meta-large ' + (item.image.length === '0' ? '-white' : '') + '">' + moment.unix(parseInt(item.date)).format('DD MMMM YYYY ') + '</span>\n              <span class="text -meta-large ' + (item.image.length === '0' ? '-white' : '') + '">' + item.name.name + '</span>\n            </div>\n          </div>\n        </div>\n      </div>\n    ';
+    html += '\n      <div class="column small-12 medium-6 c-tile">\n        <div class="tile-detailed" style="background-image: url(\'' + (item.image.length === '0' ? item.image : '') + '\')">\n          <div class="' + (item.image === '0' ? 'overlay' : '') + '"></div>\n          <span class="text -uppercase -blue -small-bold">News</span>\n          <div class="tile-content">\n            <a href="/' + item.alias + '"><h3 class="text -tile-detail ' + (item.image.length === '0' ? '-white' : '') + '">' + (item.label ? item.label : '') + '</h3></a>\n            <div class="meta">\n              <span class="text -meta-large ' + (item.image.length === '0' ? '-white' : '') + '">' + moment.unix(parseInt(item.date)).format('DD MMMM YYYY ') + '</span>\n              <span class="text -meta-large ' + (item.image.length === '0' ? '-white' : '') + '">' + item.name.name + '</span>\n            </div>\n          </div>\n        </div>\n      </div>\n    ';
   });
   container.html(html);
 }
@@ -715,78 +787,6 @@ function appendCountriesThematicBars(item, topContainer) {
   var container = $(topContainer + ' .data-tiles');
   var html = '\n    <div class="column small-12">\n      <div class="c-country-thematic-bar">\n        <div class="thematic-bar">\n        <div class="thematic-bar">\n          <h4>' + item.current_themes[0] + ' ' + (item.current_percentage.length > 0 ? '(' + item.current_percentage[0] + '%)' : '') + '</h4>\n          <div class="' + (item.current_percentage[0] ? 'bar-border' : 'bar-border -hiden') + '">\n            <div class="' + (item.current_percentage[0] ? 'bar -green' : 'bar -hiden') + '" style="' + (item.current_percentage[0] ? 'width:' + item.current_percentage[0] + '%' : '') + '" >\n              <span class="' + (item.current_percentage[0] ? 'bar-error -hiden' : 'bar-error') + '">Sorry, nothing to see.</span>\n            </div>\n          </div>\n          <h4>' + item.current_themes[1] + ' ' + (item.current_percentage[1] ? '(' + item.current_percentage[1] + '%)' : '') + '</h4>\n          <div class="' + (item.current_percentage[1] ? 'bar-border' : 'bar-border -hiden') + '">\n            <div class="' + (item.current_percentage[1] ? 'bar -green' : 'bar -hiden') + '" style="' + (item.current_percentage[1] ? 'width:' + item.current_percentage[1] + '%' : '') + '" >\n              <span class="' + (item.current_percentage[1] ? 'bar-error -hiden' : 'bar-error') + '">Sorry, nothing to see.</span>\n            </div>\n          </div>\n          <h4>' + item.current_themes[2] + ' ' + (item.current_percentage[2] ? '(' + item.current_percentage[2] + '%)' : '') + '</h4>\n          <div class="' + (item.current_percentage[2] ? 'bar-border' : 'bar-border -hiden') + '">\n            <div class="' + (item.current_percentage[2] ? 'bar -green' : 'bar -hiden') + '" style="' + (item.current_percentage[2] ? 'width:' + item.current_percentage[2] + '%' : '') + '" >\n              <span class="' + (item.current_percentage[2] ? 'bar-error -hiden' : 'bar-error') + '">Sorry, nothing to see.</span>\n            </div>\n          </div>\n        </div>\n        </div>\n        <a href="http://www.opengovpartnership.org/explorer/all-data.html" target="_blank" class="text -blue">For data definitions and more data, see the OGP Explorer</a>\n      </div>\n    </div>\n  ';
   container.html(html);
-}
-'use strict';
-
-function convertPostDate(date, format) {
-  var dateString = new Date(date * 1e3);
-  var dd = dateString.getDate();
-  var mm = dateString.getMonth() + 1; //January is 0!
-  var yyyy = dateString.getFullYear();
-
-  if (format === 'dd/mm/yyyy') {
-    if (dd < 10) {
-      dd = '0' + dd;
-    }
-
-    if (mm < 10) {
-      mm = '0' + mm;
-    }
-  }
-
-  dateString = dd + '/' + mm + '/' + yyyy;
-
-  return dateString;
-}
-
-function convertEventDate(date) {
-  var myDate = moment(date, 'YYYY-M-DD HH:mm:ss');
-  return myDate.format('MMMM D, YYYY - hh:mm');
-}
-
-function dateDiff(date) {
-  return moment().diff(date, 'days');
-}
-'use strict';
-
-function smoothScroll() {
-  $('a[href*="#"]:not([href="#"])').click(function () {
-    if (location.pathname.replace(/^\//, '') == this.pathname.replace(/^\//, '') && location.hostname == this.hostname) {
-      var target = $(this.hash);
-      target = target.length ? target : $('[name=' + this.hash.slice(1) + ']');
-      if (target.length) {
-        $('html, body').animate({
-          scrollTop: target.offset().top
-        }, 500);
-        return false;
-      }
-    }
-  });
-}
-'use strict';
-
-function getAuthors(data) {
-  var authorString = '';
-  if (data[0]) {
-    data.forEach(function (author, index) {
-      if (index === data.length - 1) {
-        authorString += '' + author.label;
-      } else {
-        authorString += author.label + ', ';
-      }
-    });
-  }
-  return authorString;
-}
-'use strict';
-
-function addDots(string, limit) {
-  var dots = '...';
-  if (string.length > limit) {
-    string = string.substring(0, limit) + dots;
-  }
-
-  return string;
 }
 'use strict';
 
@@ -1803,64 +1803,6 @@ function showNewsEventsPage() {
 }
 'use strict';
 
-function showPageList() {
-  (function ($) {
-    var page = 1;
-    var totalPages = 0;
-    var sortValue = 'asc';
-
-    $('.sort-field').click(function () {
-      if (sortValue === 'asc') {
-        $('.triangle-sort').css('transform', 'rotate(180deg)'); // use this functions, because jquery method addClass not work with svg.
-        sortValue = 'desc';
-      } else {
-        $('.triangle-sort').css('transform', 'rotate(0deg)');
-        sortValue = 'asc';
-      }
-      page = 1;
-      showLoader('#tableContainer');
-      showPages(page, sortValue);
-    });
-
-    function setPaginationListerners() {
-      $('.onClickPagination').on('click', function (e) {
-        showLoader('#tableContainer');
-        var pageNum = $(this).data('value');
-        showPages(pageNum, sortValue);
-      });
-    }
-
-    function showPages(pageNumber, sort) {
-      var sortApi = '';
-      if (sort === 'asc') {
-        sortApi = 'sort=label';
-      } else {
-        sortApi = 'sort-=label';
-      }
-
-      $.getJSON('/apiJSON/page?&page=' + pageNumber + '&' + sortApi, function (pageresult) {
-        totalPages = getPageCount(pageresult.count, 5);
-        if (page === 1) {
-          $.getJSON('/apiJSON/page?date&page=' + pageNumber + '&' + sortApi, function (pageTable) {
-            createTable(pageTable, 'pages');
-            initPagination(pageNumber, totalPages, 'pagesList');
-            setPaginationListerners();
-            removeLoader('#tableContainer', null, true);
-          });
-        } else {
-          createTable(pageresult, 'pages');
-          removeLoader('#tableContainer', null, true);
-          initPagination(pageNumber, totalPages, 'pagesList');
-          setPaginationListerners();
-        }
-      });
-    }
-
-    showPages(page, sortValue);
-  })(jQuery);
-}
-'use strict';
-
 function showGroupResourcesDetail(id) {
   (function ($) {
 
@@ -1935,6 +1877,64 @@ function showResourcesDetail(id) {
 }
 'use strict';
 
+function showPageList() {
+  (function ($) {
+    var page = 1;
+    var totalPages = 0;
+    var sortValue = 'asc';
+
+    $('.sort-field').click(function () {
+      if (sortValue === 'asc') {
+        $('.triangle-sort').css('transform', 'rotate(180deg)'); // use this functions, because jquery method addClass not work with svg.
+        sortValue = 'desc';
+      } else {
+        $('.triangle-sort').css('transform', 'rotate(0deg)');
+        sortValue = 'asc';
+      }
+      page = 1;
+      showLoader('#tableContainer');
+      showPages(page, sortValue);
+    });
+
+    function setPaginationListerners() {
+      $('.onClickPagination').on('click', function (e) {
+        showLoader('#tableContainer');
+        var pageNum = $(this).data('value');
+        showPages(pageNum, sortValue);
+      });
+    }
+
+    function showPages(pageNumber, sort) {
+      var sortApi = '';
+      if (sort === 'asc') {
+        sortApi = 'sort=label';
+      } else {
+        sortApi = 'sort-=label';
+      }
+
+      $.getJSON('/apiJSON/page?&page=' + pageNumber + '&' + sortApi, function (pageresult) {
+        totalPages = getPageCount(pageresult.count, 5);
+        if (page === 1) {
+          $.getJSON('/apiJSON/page?date&page=' + pageNumber + '&' + sortApi, function (pageTable) {
+            createTable(pageTable, 'pages');
+            initPagination(pageNumber, totalPages, 'pagesList');
+            setPaginationListerners();
+            removeLoader('#tableContainer', null, true);
+          });
+        } else {
+          createTable(pageresult, 'pages');
+          removeLoader('#tableContainer', null, true);
+          initPagination(pageNumber, totalPages, 'pagesList');
+          setPaginationListerners();
+        }
+      });
+    }
+
+    showPages(page, sortValue);
+  })(jQuery);
+}
+'use strict';
+
 function showStoryDetail(id) {
   (function ($) {
 
@@ -1969,9 +1969,9 @@ function showStoryDetail(id) {
       if (story.author[0]) {
         story.author.forEach(function (author, index) {
           if (index === story.author.length - 1) {
-            authorsHtml += '<a class="text" href="' + author.alias + '">' + author.label + '</a>';
+            authorsHtml += '<a class="text" href="/' + author.alias + '">' + author.label + '</a>';
           } else {
-            authorsHtml += '<a class="text" href="' + author.alias + '">' + author.label + ', </a>';
+            authorsHtml += '<a class="text" href="/' + author.alias + '">' + author.label + ', </a>';
           }
         });
         $('.author').append(authorsHtml);
@@ -1979,9 +1979,13 @@ function showStoryDetail(id) {
 
       if (story.topic[0]) {
         $('.topic').append('<strong class="text">Topics: </strong>');
-        story.topic.forEach(function (topic) {
+        story.topic.forEach(function (topic, index) {
           var pathTheme = '' + topic.alias;
-          $('.topic').append('<a class="text" href="' + pathTheme + '">' + topic.label + '</a> ');
+          if (index === story.topic.length - 1) {
+            $('.topic').append('<a class="text" href="/' + pathTheme + '">' + topic.label + '</a>');
+          } else {
+            $('.topic').append('<a class="text" href="/' + pathTheme + '">' + topic.label + '</a>, ');
+          }
         });
       }
 

@@ -4,6 +4,29 @@
     margin-bottom: 40px;
   }
 
+  .meta {
+    display: block;
+    margin-bottom: 50px;
+
+    .text {
+
+      &::after {
+        content: '';
+        border-right: solid 1px $color-4;
+        width: 1px;
+        margin-left: 5px;
+        margin-right: 3px;
+      }
+
+      &:last-child {
+
+        &:after {
+          border-right: 0px;
+        }
+      }
+    }
+  }
+
   .text {
 
     &.-title {
@@ -16,11 +39,6 @@
     }
 
     &.-section-title {
-      margin-bottom: 50px;
-    }
-
-    &.-date {
-      display: block;
       margin-bottom: 50px;
     }
   }

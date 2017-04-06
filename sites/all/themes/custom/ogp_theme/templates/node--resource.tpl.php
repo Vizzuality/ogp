@@ -7,7 +7,7 @@
  $date = format_date($node->changed, 'custom', 'd/m/Y');
  $body = field_get_items('node', $node, 'body')[0]['value'];
  $documents = field_get_items('node', $node, 'field_link_api');
- $type = field_get_items('node', $node, 'field_ogp_document_type')[0]['taxonomy_term'];
+ $type = field_get_items('node', $node, 'field_ogp_document_type');
  $publication_date = field_get_items('node', $node, 'field_date_published')[0]['value'];
  $start_date = field_get_items('node', $node, 'field_cycle_start_date')[0]['value'];
  $end_date = field_get_items('node', $node, 'field_cycle_end_date')[0]['value'];
@@ -20,7 +20,11 @@
     <div class="row">
       <div class="column small-12 medium-9">
         <h1 class="text -title -white"><?php echo $node->title ?></h1>
-        <span class="text -date -white"><?php echo $type->name ?></span>
+        <div class="meta">
+          <?php foreach ($type as $category) { ?>
+            <span class="text -date -white"><?php echo $category['taxonomy_term']->name ?></span>
+          <?php } ?>
+        </div>
       </div>
     </div>
   </div>
@@ -42,5 +46,17 @@
     </div>
     </div>
   </div>
+
+  <?php foreach($type as $key => $item) {
+    if (in_array('Report Comments', get_object_vars($item['taxonomy_term']))) { ?>
+      <div class="l-comments">
+        <div class="row">
+          <div class="column small-12 medium-8 medium-offset-2">
+            <?php print render($content['disqus']); ?>
+          </div>
+        </div>
+      </div>
+    <?php }
+  } ?>
 
 </div>
