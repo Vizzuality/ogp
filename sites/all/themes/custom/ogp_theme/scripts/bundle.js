@@ -1396,7 +1396,7 @@ function showCountriesPage() {
       countriesMap = initCountriesMap();
       $('.select-legend-dropdown').select2({
         minimumResultsForSearch: Infinity,
-        placeholder: 'All themes'
+        placeholder: 'All themesw'
       });
       $('#countriesSearch select').select2({
         containerCssClass: '-tall',
