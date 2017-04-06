@@ -101,8 +101,8 @@ function pushDefaultModal(id, query, countryData, dataLabel, buttonText, buttonL
           `;
         } else if (modalType === 'grid'){
           dataInfo += `
-            <span class="text -small-bold -blue">${data.label}</span>
-            <p class="text -body-content">${data.body.value}</p>
+            <a class="text -small-bold -blue" href="${data.alias}">${data.label}</a>
+            <p class="text -body-content">${addDots(data.body.value, 100)}</p>
           `;
         } else if (modalType === 'slider') {
           dataInfo += `
@@ -119,7 +119,7 @@ function pushDefaultModal(id, query, countryData, dataLabel, buttonText, buttonL
       <div class="modal-header">
         <div class="header-info">
           <h3 class="text -module-title">${countryData[0].label}</h3>
-          <p class="text -meta">Member since ${moment.unix(countryData[0].memberSince).format('YYYY')}, Action plan 1</p>
+          <p class="text -meta">Member since ${moment.unix(countryData[0].memberSince).format('YYYY')}, Action plan ${countryData[0].action_plan_count}</p>
         </div>
         <div class="c-data-number">
           <h3 class="text -number">${data.count}</h3>
@@ -187,7 +187,7 @@ function setMapModalContent(id, type, countryId, countriesData) {
       pushDefaultModal(id, `starredcommitments?filter[country]=${countryId}`, countryData, 'starred commitments', 'latest stories', '/stories', 'list');
       break;
     case 'event':
-      pushDefaultModal(id, `events?filter[country]=${countryId}`, countryData, 'upcoming events', 'go to events', '/events', 'list');
+      pushDefaultModal(id, `events?filter[country]=${countryId}`, countryData, 'events', 'go to events', '/events', 'list');
       break;
     case 'commitment':
       const currentFilter = $('.select-legend-dropdown').val() ? `&filter[theme_id]=${$('.select-legend-dropdown').val()}` : '';

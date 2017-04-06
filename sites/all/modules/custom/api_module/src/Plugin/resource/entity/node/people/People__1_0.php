@@ -43,6 +43,10 @@ class People__1_0 extends ResourceNode{
       'property' => 'field_countries_involved',
     );
 
+    $public_fields['country_poc'] = array(
+      'property' => 'field_countries_poc',
+    );
+
     $public_fields['body'] = array(
       'property' => 'body',
     );
