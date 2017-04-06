@@ -30,7 +30,7 @@ function showStoriesPage() {
       }
       $('.banner-link', coverEvents).attr('href', story.alias);
       $('.banner-title', coverEvents).html(story.label);
-      $('.banner-date', coverEvents).html(moment(parseInt(story.created)).format('D MMMM YYYY'));
+      $('.banner-date', coverEvents).html(moment.unix(story.created).format('D MMMM YYYY'));
       if (story.author[0]) {
         $('.banner-author', coverEvents).html(authorsHtml);
       }

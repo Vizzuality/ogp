@@ -17,12 +17,14 @@
     <div class="row">
       <div class="column small-12 medium-9">
         <h1 class="text -title -white"><?php echo $node->title ?></h1>
-        <span class="text -date -white">
-          <?php
-            $date = date_create($post_date[0]['value']);
-            echo date_format($date,"d/m/Y");
-          ?>
-        </span>
+        <div class="meta">
+          <span class="text -date -white">
+            <?php
+              $date = date_create($post_date[0]['value']);
+              echo date_format($date,"d/m/Y");
+            ?>
+          </span>
+        </div>
       </div>
     </div>
   </div>
