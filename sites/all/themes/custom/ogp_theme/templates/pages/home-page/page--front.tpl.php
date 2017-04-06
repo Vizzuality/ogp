@@ -109,14 +109,14 @@ $ogp_process_link = field_get_items('node', $ogp_process, 'field_link')[0]['valu
             <div class="container">
               <span class="circle-text text -blue">Participation /<br>Co-creation</span>
               <ol>
-                <li class="first"><a href="http://ogp.vizzuality.com/resources/eligibility-criteria" target="_blank">Check Eligibility</a></li>
-                <li class="second"><a href="http://ogp.vizzuality.com/resources/ogp-process-step-1-how-join" target="_blank">Signal Intent</a></li>
-                <li class="third"><a href="http://ogp.vizzuality.com/resources/ogp-process-step-2-develop-action-plan" target="_blank">Create Action Plan</a></li>
+                <li class="first"><a href="/resources/eligibility-criteria">Check Eligibility</a></li>
+                <li class="second"><a href="/resources/ogp-process-step-1-how-join">Signal Intent</a></li>
+                <li class="third"><a href="/resources/ogp-process-step-2-develop-action-plan">Create Action Plan</a></li>
                 <li class="fourth"><a href="/resources" target="_blank">Implement Commitments</a></li>
-                <li class="fifth"><a href="/resources/government/ogp-process-step-4-government-self-assessment" target="_blank" class="-disabled">First Year Self-assessment</a></li>
+                <li class="fifth"><a href="/resources/government/ogp-process-step-4-government-self-assessment">First Year Self-assessment</a></li>
                 <li class="sixth"><a href="/irm" target="_blank">IRM Progress Report</a></li>
                 <li class="seventh">Assess Progress</li>
-                <li class="eighth"><a href="/resources/civil-society/ogp-process-step-4-civil-society-shadow-reporting" target="_blank" class="-disabled">Second Year Self-assessment</a></li>
+                <li class="eighth"><a href="/resources/civil-society/ogp-process-step-4-civil-society-shadow-reporting" target="_blank">Second Year Self-assessment</a></li>
                 <li class="nineth"><a href="/irm" target="_blank">IRM End-of-Term Report</a></li>
                 <li class="tenth"><a href="/resources/ogp-process-step-3-create-multistakeholder-forum" target="_blank">Next Action Plan</a></li>
               </ol>
