@@ -37,6 +37,28 @@
       </div>
     </div>
 
+    <div class="c-tabs -horizontal">
+      <div class="tabs">
+        <div class="row">
+          <div class="column small-12">
+            <ul class="tabs-container">
+              <li class="tab text -tab -selected" data-node="download">download</li>
+              <li class="tab text -tab" data-node="comment">comment</li>
+            </ul>
+          </div>
+          <div class="column small-12 medium-12 l-gallery" id="container-info">
+            <div class="tab-content download">
+              <h3 class="text -section-title">Download</h3>
+            </div>
+            <div class="tab-content comment -hidden">
+              <h3 class="text -section-title">Comment</h3>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
   </div>
 
   <div class="banners-container"></div>

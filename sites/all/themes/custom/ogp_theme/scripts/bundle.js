@@ -1653,10 +1653,27 @@ function showSliderHomePage() {
     });
   })(jQuery);
 }
-"use strict";
+'use strict';
 
 function showIrmReports() {
-  (function ($) {})(jQuery);
+  (function ($) {
+
+    var tabsContainer = $('.tabs-container');
+    var containerInfo = $('#container-info');
+
+    // custom callback for tabs component
+    var onChangeIRMTabs = function onChangeIRMTabs(id, label) {
+      $('.tab-content').addClass('-hidden');
+      $('.' + id).removeClass('-hidden');
+    };
+
+    function initIRMTabs(onChange) {
+      initTabs();
+      setTabListeners(onChange);
+    }
+
+    initIRMTabs(onChangeIRMTabs);
+  })(jQuery);
 }
 'use strict';
 
