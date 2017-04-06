@@ -1,0 +1,7 @@
+function showIrmReports() {
+  (function($) {
+
+    
+
+  })(jQuery);
+}
