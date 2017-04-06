@@ -52,7 +52,11 @@ class Resources__1_0 extends ResourceNode{
     );
 
     $public_fields['resource_links'] = array(
-      'property' => 'field_related_content'
+      'property' => 'field_attachment'
+    );
+
+    $public_fields['resource_links_spanish'] = array(
+      'property' => 'field_spanish_versions'
     );
 
     $public_fields['post_date'] = array(
