@@ -46,28 +46,28 @@ function setCountryDataTiles(container, country) {
       const trimCommitments = country.starred_commitments.slice(0, 2);
       appendSmallTiles(trimCommitments, `#country-${country.id}`, 2, '-short -country');
     } else {
-      showNoResults(`#country-${country.id} .data-tiles`, 'No starred commitments', 'medium', 'grey', 'xlarge');
+      showNoResults(`#country-${country.id} .data-tiles`, 'No starred commitments', 'medium', 'grey', 'xlarge', 'grey');
     }
   } else if (activeTab === 'potential') {
     if (country.year_action_plan !== null) {
       appendCountriesInfoBars(country, `#country-${country.id}`);
     } else {
-      showNoResults(`#country-${country.id} .data-tiles`, 'No data available', 'medium', 'grey', 'xlarge');
+      showNoResults(`#country-${country.id} .data-tiles`, 'No data available', 'medium', 'grey', 'xlarge', 'grey');
     }
   } else if (activeTab === 'relevance') {
     if (country.access_information || country.civic_participation || country.public_accountability || country.unclear) {
       appendCountriesRelevance(country, `#country-${country.id}`);
     } else {
-      showNoResults(`#country-${country.id} .data-tiles`, 'No data available', 'medium', 'grey', 'xlarge');
+      showNoResults(`#country-${country.id} .data-tiles`, 'No data available', 'medium', 'grey', 'xlarge', 'grey');
     }
   } else if (activeTab === 'thematic') {
     if (country.current_themes) {
       appendCountriesThematicBars(country, `#country-${country.id}`);
     } else {
-      showNoResults(`#country-${country.id} .data-tiles`, 'No data available', 'medium', 'grey', 'xlarge');
+      showNoResults(`#country-${country.id} .data-tiles`, 'No data available', 'medium', 'grey', 'xlarge', 'grey');
     }
   } else {
-    showNoResults(`#country-${country.id} .data-tiles`, 'No data available', 'medium', 'grey', 'large');
+    showNoResults(`#country-${country.id} .data-tiles`, 'No data available', 'medium', 'grey', 'large', 'grey');
   }
   removeLoader('#countriesContentContainer', null, true);
 }

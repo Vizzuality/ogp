@@ -96,7 +96,7 @@ function showStoriesPage() {
             setPaginationListerners();
           }
         } else {
-          showNoResults('#storiesTiles', 'No stories with these filters', 'tall', 'grey', 'xxlarge');
+          showNoResults('#storiesTiles', 'No stories with these filters', 'tall', 'grey', 'xxlarge', 'blue');
           $('.c-pagination').html('');
           removeLoader('#storiesContainer', null, true);
         }

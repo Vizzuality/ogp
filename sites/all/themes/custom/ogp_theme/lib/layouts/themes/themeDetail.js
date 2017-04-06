@@ -75,7 +75,7 @@ function showThemesDetail(id) {
         if (data.data.length) {
           appendTilesWithoutBackground(data.data, container, 2, '-themes');
         } else {
-          showNoResults(container, 'No content available', 'tall', 'grey', 'xxlarge');
+          showNoResults(container, 'No content available', 'tall', 'grey', 'xxlarge', 'blue');
         }
         removeLoader('#themesDetail', null, true);
       });

@@ -31,7 +31,7 @@ function setSearchListeners() {
 
     // show empty results
     if (results === 0) {
-      showNoResults('#noResultsContainer', 'No resources available', 'tall', 'grey', 'xxlarge');
+      showNoResults('#noResultsContainer', 'No resources available', 'tall', 'grey', 'xxlarge', 'blue');
     } else {
       hideNoResults('#noResultsContainer');
     }
