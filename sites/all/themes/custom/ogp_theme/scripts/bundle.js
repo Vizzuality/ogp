@@ -649,6 +649,15 @@ function appendSmallTiles(data, topContainer, gridNum, customClass) {
   }
 }
 
+function appendTilesIRM(data, topContainer) {
+  if (data.length > 0) {
+    data.forEach(function (item) {
+      var html = '\n      <div class="column small-12 medium-6" id="country-37482">\n            <div class="c-country-tile">\n              <a class="text -title-x-small" href="' + data[0].country.alias + '">' + data[0].country.label + '<svg class="icon -blue -medium arrow"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-arrow"></use></svg></a>\n              <div class="first-info text">\n                <span>' + data.count + '</span>\n              </div>\n              <div class="row data-tiles">\n              <div class="column small-12 large-6 c-tile -short">\n                <a href="/starred-commitments/11-standardization-corruption-complaints" class="tile">\n                  <div class=""></div>\n                  <span class="text -tile -white">1.1 Standardization of corruption complaints </span>\n                </a>\n              </div>\n              <div class="column small-12 large-6 c-tile -short">\n                <a href="/starred-commitments/13-implementation-public-expenses-module-open-data-format" class="tile">\n                  <div class=""></div>\n                  <span class="text -tile -white">1.3 Implementation of public expenses module in "open data" format </span>\n                </a>\n              </div>\n            </div>\n            </div>\n          </div>\n      ';
+      // $(`${topContainer.selector}`).append(html);
+    });
+  }
+}
+
 function appendTilesEvent(data, container) {
   if (data.length > 0) {
     var html = '';
@@ -1659,12 +1668,15 @@ function showIrmReports() {
   (function ($) {
 
     // cache
+    var countryFilter = 0;
+    var typeFilter = 0;
     var page = 1;
     var totalPages = 0;
 
     //selectors
     var tabsContainer = $('.tabs-container');
     var containerInfo = $('#container-info');
+    var irmContainer = $('#downloadContainer');
 
     // custom callback for tabs component
     var onChangeIRMTabs = function onChangeIRMTabs(id, label) {
@@ -1690,35 +1702,30 @@ function showIrmReports() {
       $('.page-count').on('click', function () {
         setPageCount(getCurrentPage() + 1);
         pageEvents = getCurrentPage();
-        if (totalPagesEvents > getCurrentPage()) {
-          showLoader('#eventsContainer');
+        if (totalPages > getCurrentPage()) {
+          showLoader('#downloadContainer');
           showEvents(countryFilter, typeFilter, getCurrentPage());
         }
       });
     }
 
-    function showTilesIrmoReports() {
-      $.getJSON('/apiJSON/events?sort=-date', function (events) {
-        totalPagesEvents = getPageCount(events.count, 4);
-        if (events.data.length > 0) {
-          if (pageEvents === 1) {
-            $.getJSON('/apiJSON/events?sort=-date', function (highlightedEvent) {
-              buildHighlightedEvent(highlightedEvent.data[0]);
-              appendTilesEvent(events.data, eventsContainer);
-              removeLoader('#eventsContainer', null, true);
-            });
-          } else {
-            appendTilesEvent(events.data, eventsContainer);
-            removeLoader('#eventsContainer', null, true);
-          }
-        } else {
-          showNoResults('#eventsContainer', 'No events with these filters', 'tall', 'grey', 'xxlarge', 'blue');
-          removeLoader('#eventsContainer', null, true);
+    function showTilesIrmoReports(country, type, page) {
+      $.getJSON('/apiJSON/countries?fields=id,label&sort=-label&range=4&page=' + page, function (countries) {
+        for (var i = 0; i < countries.data.length; i += 1) {
+          $.getJSON('/apiJSON/documents?filter[type]=2704&filter[country]=' + countries.data[i].id + '&sort=-date&range=2', function (reports) {
+            if (reports.data.length > 0) {
+              appendTilesIRM(reports.data, irmContainer);
+              removeLoader('#downloadContainer', null, true);
+            } else {
+              // showNoResults('#newsTiles', 'No news with these filters', 'tall', 'grey', 'xxlarge', 'blue');
+              removeLoader('#downloadContainer', null, true);
+            }
+          });
         }
       });
     }
-
     initIRMTabs(onChangeIRMTabs);
+    showTilesIrmoReports(countryFilter, typeFilter, page);
   })(jQuery);
 }
 'use strict';

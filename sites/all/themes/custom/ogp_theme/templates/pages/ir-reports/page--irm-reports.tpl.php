@@ -15,51 +15,48 @@
 
   <?php include(drupal_get_path('theme', 'ogp_theme').'/templates/components/header.tpl.php'); ?>
 
-  <!-- Stories page view/block -->
-  <div class="l-page l-irm-reports">
+    <div class="l-page l-irm-reports">
 
-    <div class="row">
-      <div class="column small-12 medium-8 content-header">
-        <h1 class="text -title"><?php echo $irmReports_heading ?></h1>
-        <div class="text -body-content"><?php echo $irmReports_body ?></div>
-      </div>
-      <div class="column small-12 medium-8 content-header medium-offset-2">
-        <h2 class="text -section-title-small"><?php echo $irmReports_heading_introduction ?></h2>
-        <div class="text -body-content">
-          <?php echo $irmReports_body_introduction ?>
+      <div class="row">
+        <div class="column small-12 medium-8 content-header">
+          <h1 class="text -title"><?php echo $irmReports_heading ?></h1>
+          <div class="text -body-content"><?php echo $irmReports_body ?></div>
+        </div>
+        <div class="column small-12 medium-8 content-header medium-offset-2">
+          <h2 class="text -section-title-small"><?php echo $irmReports_heading_introduction ?></h2>
+          <div class="text -body-content">
+            <?php echo $irmReports_body_introduction ?>
+          </div>
         </div>
       </div>
-    </div>
 
-    <div class="row">
-      <div class="column small-12 medium-8 content-header">
-        <h2 class="text -section-title tiles-heading">Most Recent IRM Reports</h2>
+      <div class="row">
+        <div class="column small-12 medium-8 content-header">
+          <h2 class="text -section-title tiles-heading">Most Recent IRM Reports</h2>
+        </div>
       </div>
-    </div>
 
-    <div class="c-tabs -horizontal">
-      <div class="tabs">
-        <div class="row">
-          <div class="column small-12">
-            <ul class="tabs-container">
-              <li class="tab text -tab -selected" data-node="download">download</li>
-              <li class="tab text -tab" data-node="comment">comment</li>
-            </ul>
-          </div>
-          <div class="column small-12 medium-12 l-gallery" id="container-info">
-            <div class="tab-content download">
-              <div class="row content-tiles">
-                
-              </div>
-            </div>
-            <div class="tab-content comment -hidden">
-              <h3 class="text -section-title">Comment</h3>
+      <div class="c-tabs -horizontal">
+        <div class="tabs">
+          <div class="row">
+            <div class="column small-12">
+              <ul class="tabs-container">
+                <li class="tab text -tab -selected" data-node="download">download</li>
+                <li class="tab text -tab" data-node="comment">comment</li>
+              </ul>
             </div>
           </div>
         </div>
       </div>
+
+      <div class="column small-12 medium-12 l-gallery" id="container-info">
+        <div class="row content-tiles tab-content download" id="downloadContainer">
+        </div>
+        <div class="tab-content comment -hidden">
+          <h3 class="text -section-title">Comment</h3>
+        </div>
+      </div>
     </div>
-  </div>
 
   </div>
 

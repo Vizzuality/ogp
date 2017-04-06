@@ -75,6 +75,38 @@ function appendSmallTiles(data, topContainer, gridNum, customClass) {
   }
 }
 
+function appendTilesIRM(data, topContainer) {
+  if (data.length > 0) {
+    data.forEach((item) => {
+      const html = `
+      <div class="column small-12 medium-6" id="country-37482">
+            <div class="c-country-tile">
+              <a class="text -title-x-small" href="${data[0].country.alias}">${data[0].country.label}<svg class="icon -blue -medium arrow"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-arrow"></use></svg></a>
+              <div class="first-info text">
+                <span>${data.count}</span>
+              </div>
+              <div class="row data-tiles">
+              <div class="column small-12 large-6 c-tile -short">
+                <a href="/starred-commitments/11-standardization-corruption-complaints" class="tile">
+                  <div class=""></div>
+                  <span class="text -tile -white">1.1 Standardization of corruption complaints </span>
+                </a>
+              </div>
+              <div class="column small-12 large-6 c-tile -short">
+                <a href="/starred-commitments/13-implementation-public-expenses-module-open-data-format" class="tile">
+                  <div class=""></div>
+                  <span class="text -tile -white">1.3 Implementation of public expenses module in "open data" format </span>
+                </a>
+              </div>
+            </div>
+            </div>
+          </div>
+      `;
+      // $(`${topContainer.selector}`).append(html);
+    });
+  }
+}
+
 function appendTilesEvent(data, container) {
   if (data.length > 0) {
     let html = '';
