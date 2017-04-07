@@ -87,9 +87,19 @@ function setDataToModal(id, html) {
   openModal(id);
 }
 
-function pushDefaultModal(id, query, countryData, dataLabel, buttonText, buttonLink, modalType) {
+function pushDefaultModal(id, query, countryData, dataLabel, buttonText, buttonLink, modalType, secondData) {
   $.getJSON(`apiJSON/${query}`, function (data) {
     let dataInfo = '';
+    let id_people= [];
+    if (secondData.data.length > 0) {
+      for (let i = 0; i < secondData.data.length; i += 1) {
+        id_people[i] = secondData.data[i].id;
+        dataInfo += `
+          <a class="text -small-bold -blue" href="${secondData.data[i].alias}">${secondData.data[i].label} (point of contact)</a>
+          <p class="text -body-content">${addDots(secondData.data[i].body.value, 100)}</p>
+        `;
+      }
+    }
     if (data.data.length > 0) {
       const trimmedData = modalType === 'slider' ? data.data.slice(0,3): data.data;
       trimmedData.forEach(function(data) {
@@ -99,11 +109,13 @@ function pushDefaultModal(id, query, countryData, dataLabel, buttonText, buttonL
               <h2 class="text -title-x-small">${data.label}</h2>
             </a>
           `;
-        } else if (modalType === 'grid'){
-          dataInfo += `
-            <a class="text -small-bold -blue" href="${data.alias}">${data.label}</a>
-            <p class="text -body-content">${addDots(data.body.value, 100)}</p>
-          `;
+        } else if (modalType === 'grid') {
+          if ($.inArray(data.id, id_people) === -1) {
+            dataInfo += `
+              <a class="text -small-bold -blue" href="${data.alias}">${data.label}</a>
+              <p class="text -body-content">${addDots(data.body.value, 100)}</p>
+            `;
+          }
         } else if (modalType === 'slider') {
           dataInfo += `
             <div class="slide">
@@ -181,23 +193,25 @@ function setMapModalContent(id, type, countryId, countriesData) {
   });
   switch (type) {
     case 'actionPlan':
-      pushSmallModal(id, `irm_commitments?filter[country]=${countryId}`, countryData, 'commitments', 'themes covered', 'latest stories', '/stories');
+      pushSmallModal(id, `irm_commitments?filter[country]=${countryId}`, countryData, 'commitments', 'themes covered', 'latest stories', '/stories', '');
       break;
     case 'starred':
-      pushDefaultModal(id, `starredcommitments?filter[country]=${countryId}`, countryData, 'starred commitments', 'latest stories', '/stories', 'list');
+      pushDefaultModal(id, `starredcommitments?filter[country]=${countryId}`, countryData, 'starred commitments', 'latest stories', '/stories', 'list', '');
       break;
     case 'event':
-      pushDefaultModal(id, `events?filter[country]=${countryId}`, countryData, 'events', 'go to events', '/events', 'list');
+      pushDefaultModal(id, `events?filter[country]=${countryId}`, countryData, 'events', 'go to events', '/events', 'list', '');
       break;
     case 'commitment':
       const currentFilter = $('.select-legend-dropdown').val() ? `&filter[theme_id]=${$('.select-legend-dropdown').val()}` : '';
-      pushDefaultModal(id, `current_commitment?filter[country]=${countryId}${currentFilter}`, countryData, 'current commitments', 'explore this theme', '/theme', 'list');
+      pushDefaultModal(id, `current_commitment?filter[country]=${countryId}${currentFilter}`, countryData, 'current commitments', 'explore this theme', '/theme', 'list', '');
       break;
     case 'people':
-      pushDefaultModal(id, `people?filter[country]=${countryId}`, countryData, 'people involved', 'latest stories', '/stories', 'grid');
+      $.getJSON(`apiJSON/people?filter[country_poc]=${countryId}`, function (poc) {
+        pushDefaultModal(id, `people?filter[country]=${countryId}`, countryData, 'people involved', 'latest stories', '/stories', 'grid', poc);
+      });
       break;
     case 'stories':
-      pushDefaultModal(id, `stories?filter[country]=${countryId}`, countryData, 'stories', 'latest stories', '/stories', 'slider');
+      pushDefaultModal(id, `stories?filter[country]=${countryId}`, countryData, 'stories', 'latest stories', '/stories', 'slider', '');
       break;
     default:
       break;

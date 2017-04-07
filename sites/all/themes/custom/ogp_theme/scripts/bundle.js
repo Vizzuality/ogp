@@ -335,16 +335,25 @@ function setDataToModal(id, html) {
   openModal(id);
 }
 
-function pushDefaultModal(id, query, countryData, dataLabel, buttonText, buttonLink, modalType) {
+function pushDefaultModal(id, query, countryData, dataLabel, buttonText, buttonLink, modalType, secondData) {
   $.getJSON('apiJSON/' + query, function (data) {
     var dataInfo = '';
+    var id_people = [];
+    if (secondData.data.length > 0) {
+      for (var i = 0; i < secondData.data.length; i += 1) {
+        id_people[i] = secondData.data[i].id;
+        dataInfo += '\n          <a class="text -small-bold -blue" href="' + secondData.data[i].alias + '">' + secondData.data[i].label + ' (point of contact)</a>\n          <p class="text -body-content">' + addDots(secondData.data[i].body.value, 100) + '</p>\n        ';
+      }
+    }
     if (data.data.length > 0) {
       var trimmedData = modalType === 'slider' ? data.data.slice(0, 3) : data.data;
       trimmedData.forEach(function (data) {
         if (modalType === 'list') {
           dataInfo += '\n            <a href="' + data.alias + '">\n              <h2 class="text -title-x-small">' + data.label + '</h2>\n            </a>\n          ';
         } else if (modalType === 'grid') {
-          dataInfo += '\n            <a class="text -small-bold -blue" href="' + data.alias + '">' + data.label + '</a>\n            <p class="text -body-content">' + addDots(data.body.value, 100) + '</p>\n          ';
+          if ($.inArray(data.id, id_people) === -1) {
+            dataInfo += '\n              <a class="text -small-bold -blue" href="' + data.alias + '">' + data.label + '</a>\n              <p class="text -body-content">' + addDots(data.body.value, 100) + '</p>\n            ';
+          }
         } else if (modalType === 'slider') {
           dataInfo += '\n            <div class="slide">\n              <a href="' + (data.topic[0] ? data.topic[0].alias : '') + '" class="text -small-bold -blue">' + (data.topic[0] ? data.topic[0].label : '') + '</a>\n              <h2 class="text -title-x-small">' + data.label + '</h2>\n              <p class="text -meta">' + (data.author[0] ? data.author[0].label : '') + '</p>\n            </div>\n          ';
         }
@@ -379,23 +388,25 @@ function setMapModalContent(id, type, countryId, countriesData) {
   });
   switch (type) {
     case 'actionPlan':
-      pushSmallModal(id, 'irm_commitments?filter[country]=' + countryId, countryData, 'commitments', 'themes covered', 'latest stories', '/stories');
+      pushSmallModal(id, 'irm_commitments?filter[country]=' + countryId, countryData, 'commitments', 'themes covered', 'latest stories', '/stories', '');
       break;
     case 'starred':
-      pushDefaultModal(id, 'starredcommitments?filter[country]=' + countryId, countryData, 'starred commitments', 'latest stories', '/stories', 'list');
+      pushDefaultModal(id, 'starredcommitments?filter[country]=' + countryId, countryData, 'starred commitments', 'latest stories', '/stories', 'list', '');
       break;
     case 'event':
-      pushDefaultModal(id, 'events?filter[country]=' + countryId, countryData, 'events', 'go to events', '/events', 'list');
+      pushDefaultModal(id, 'events?filter[country]=' + countryId, countryData, 'events', 'go to events', '/events', 'list', '');
       break;
     case 'commitment':
       var currentFilter = $('.select-legend-dropdown').val() ? '&filter[theme_id]=' + $('.select-legend-dropdown').val() : '';
-      pushDefaultModal(id, 'current_commitment?filter[country]=' + countryId + currentFilter, countryData, 'current commitments', 'explore this theme', '/theme', 'list');
+      pushDefaultModal(id, 'current_commitment?filter[country]=' + countryId + currentFilter, countryData, 'current commitments', 'explore this theme', '/theme', 'list', '');
       break;
     case 'people':
-      pushDefaultModal(id, 'people?filter[country]=' + countryId, countryData, 'people involved', 'latest stories', '/stories', 'grid');
+      $.getJSON('apiJSON/people?filter[country_poc]=' + countryId, function (poc) {
+        pushDefaultModal(id, 'people?filter[country]=' + countryId, countryData, 'people involved', 'latest stories', '/stories', 'grid', poc);
+      });
       break;
     case 'stories':
-      pushDefaultModal(id, 'stories?filter[country]=' + countryId, countryData, 'stories', 'latest stories', '/stories', 'slider');
+      pushDefaultModal(id, 'stories?filter[country]=' + countryId, countryData, 'stories', 'latest stories', '/stories', 'slider', '');
       break;
     default:
       break;
@@ -804,70 +815,6 @@ function addDots(string, limit) {
   }
 
   return string;
-}
-'use strict';
-
-function showCurrentCommitmentDetail(id) {
-  (function ($) {
-
-    function buildCurrentCommitment() {
-      $.getJSON('/apiJSON/current_commitment/' + id, function (data) {
-        if (data.data[0].lead_institution[0]) {
-          $('#currentCommitmentContent .lead').html(data.data[0].lead_institution[0]);
-        }
-        if (data.data[0].support_institution[0]) {
-          $('#currentCommitmentContent .support').html(data.data[0].support_institution[0]);
-        }
-      });
-    }
-
-    $('#theme-menu').addClass('active');
-    buildCurrentCommitment();
-    buildExploreMoreTiles('current_commitment');
-  })(jQuery);
-}
-'use strict';
-
-function showIrmCommitmentDetail(id) {
-  (function ($) {
-    $('#theme-menu').addClass('active');
-    buildExploreMoreTiles('irm_commitments');
-  })(jQuery);
-}
-'use strict';
-
-function showModelCommitmentDetail(id) {
-  (function ($) {
-
-    var onChangeTab = function onChangeTab(id, label) {
-      $('.tab-container').addClass('-hidden');
-      $('#' + id + ' .tab-container').removeClass('-hidden');
-    };
-
-    function fetchModelCommitmentDetail() {
-      $.getJSON('/apiJSON/modelcommitments/' + id, function (data) {
-        $('.strength-info').html('<strong>Strength: </strong>' + data.data[0].strength.label);
-        $('.contributor-info').html('<strong>Contributors: </strong>' + data.data[0].contributors);
-        $('#justification .container').html(data.data[0].justification);
-        appendTilesStandards(data.data[0].standardsguidance, $('#standards .container'), 2);
-        removeLoader('.l-section', null, true);
-      });
-    }
-
-    // init view
-    initTabs();
-    setTabListeners(onChangeTab);
-    fetchModelCommitmentDetail();
-    buildExploreMoreTiles('modelcommitments');
-  })(jQuery);
-}
-'use strict';
-
-function showStarredCommitmentDetail(id) {
-  (function ($) {
-    $('#theme-menu').addClass('active');
-    buildExploreMoreTiles('starredcommitments');
-  })(jQuery);
 }
 'use strict';
 
@@ -1539,6 +1486,70 @@ function showCountriesData(countriesData, activeTab, container, countryId) {
 function initCountryTabs(onChangeCountryTab) {
   initTabs();
   setTabListeners(onChangeCountryTab);
+}
+'use strict';
+
+function showCurrentCommitmentDetail(id) {
+  (function ($) {
+
+    function buildCurrentCommitment() {
+      $.getJSON('/apiJSON/current_commitment/' + id, function (data) {
+        if (data.data[0].lead_institution[0]) {
+          $('#currentCommitmentContent .lead').html(data.data[0].lead_institution[0]);
+        }
+        if (data.data[0].support_institution[0]) {
+          $('#currentCommitmentContent .support').html(data.data[0].support_institution[0]);
+        }
+      });
+    }
+
+    $('#theme-menu').addClass('active');
+    buildCurrentCommitment();
+    buildExploreMoreTiles('current_commitment');
+  })(jQuery);
+}
+'use strict';
+
+function showIrmCommitmentDetail(id) {
+  (function ($) {
+    $('#theme-menu').addClass('active');
+    buildExploreMoreTiles('irm_commitments');
+  })(jQuery);
+}
+'use strict';
+
+function showModelCommitmentDetail(id) {
+  (function ($) {
+
+    var onChangeTab = function onChangeTab(id, label) {
+      $('.tab-container').addClass('-hidden');
+      $('#' + id + ' .tab-container').removeClass('-hidden');
+    };
+
+    function fetchModelCommitmentDetail() {
+      $.getJSON('/apiJSON/modelcommitments/' + id, function (data) {
+        $('.strength-info').html('<strong>Strength: </strong>' + data.data[0].strength.label);
+        $('.contributor-info').html('<strong>Contributors: </strong>' + data.data[0].contributors);
+        $('#justification .container').html(data.data[0].justification);
+        appendTilesStandards(data.data[0].standardsguidance, $('#standards .container'), 2);
+        removeLoader('.l-section', null, true);
+      });
+    }
+
+    // init view
+    initTabs();
+    setTabListeners(onChangeTab);
+    fetchModelCommitmentDetail();
+    buildExploreMoreTiles('modelcommitments');
+  })(jQuery);
+}
+'use strict';
+
+function showStarredCommitmentDetail(id) {
+  (function ($) {
+    $('#theme-menu').addClass('active');
+    buildExploreMoreTiles('starredcommitments');
+  })(jQuery);
 }
 'use strict';
 
