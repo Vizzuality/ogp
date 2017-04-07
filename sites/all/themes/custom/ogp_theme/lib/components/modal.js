@@ -105,13 +105,11 @@ function pushDefaultModal(id, query, countryData, dataLabel, buttonText, buttonL
             <p class="text -body-content">${addDots(data.body.value, 100)}</p>
           `;
         } else if (modalType === 'slider') {
-          console.log(data);
           dataInfo += `
-            <div class="slide -stories-modal">
-              <a href="${data.topic[0] ? data.topic[0].alias : ''}" class="text -small-bold -blue theme-text">${data.topic[0] ? data.topic[0].label : ''}</a>
-              <a class="text -tile-detail -dark title-text" href="${data.alias}">${data.label}</a>
-              <span class="text -meta -blank date-text"> (${moment.unix(parseInt(data.created)).format('D MMMM YYYY')})</span>
-              <p class="text authors"><a class="text -small-bold -blank" href="${data.author[0] ? data.author[0].alias : ''}">${data.author[0] ? data.author[0].label : ''}</a></p>
+            <div class="slide">
+              <a href="${data.topic[0] ? data.topic[0].alias : ''}" class="text -small-bold -blue">${data.topic[0] ? data.topic[0].label : ''}</a>
+              <h2 class="text -title-x-small">${data.label}</h2>
+              <p class="text -meta">${data.author[0] ? data.author[0].label : ''}</p>
             </div>
           `;
         }
@@ -138,7 +136,14 @@ function pushDefaultModal(id, query, countryData, dataLabel, buttonText, buttonL
     `;
     setDataToModal(id, html);
     if (modalType === 'slider') {
-      sliderStoryModal();
+      $('.stories-slider').slick({
+        dots: true,
+        arrows: false,
+        speed: 500,
+        fade: true,
+        cssEase: 'linear',
+        dotsClass: 'dots-slider-modal',
+      });
     }
   });
 }

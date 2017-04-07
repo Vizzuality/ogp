@@ -108,9 +108,5 @@ function showCountriesPage() {
     cacheData();
     buildMapModal();
 
-    $('.select-legend-dropdown').change(function () {
-      changeCurrentCommitments($(this).val());
-    });
-
   })(jQuery);
 }

@@ -346,15 +346,21 @@ function pushDefaultModal(id, query, countryData, dataLabel, buttonText, buttonL
         } else if (modalType === 'grid') {
           dataInfo += '\n            <a class="text -small-bold -blue" href="' + data.alias + '">' + data.label + '</a>\n            <p class="text -body-content">' + addDots(data.body.value, 100) + '</p>\n          ';
         } else if (modalType === 'slider') {
-          console.log(data);
-          dataInfo += '\n            <div class="slide -stories-modal">\n              <a href="' + (data.topic[0] ? data.topic[0].alias : '') + '" class="text -small-bold -blue theme-text">' + (data.topic[0] ? data.topic[0].label : '') + '</a>\n              <a class="text -tile-detail -dark title-text" href="' + data.alias + '">' + data.label + '</a>\n              <span class="text -meta -blank date-text"> (' + moment.unix(parseInt(data.created)).format('D MMMM YYYY') + ')</span>\n              <p class="text authors"><a class="text -small-bold -blank" href="' + (data.author[0] ? data.author[0].alias : '') + '">' + (data.author[0] ? data.author[0].label : '') + '</a></p>\n            </div>\n          ';
+          dataInfo += '\n            <div class="slide">\n              <a href="' + (data.topic[0] ? data.topic[0].alias : '') + '" class="text -small-bold -blue">' + (data.topic[0] ? data.topic[0].label : '') + '</a>\n              <h2 class="text -title-x-small">' + data.label + '</h2>\n              <p class="text -meta">' + (data.author[0] ? data.author[0].label : '') + '</p>\n            </div>\n          ';
         }
       });
     }
     var html = '\n      <div class="modal-header">\n        <div class="header-info">\n          <h3 class="text -module-title">' + countryData[0].label + '</h3>\n          <p class="text -meta">Member since ' + moment.unix(countryData[0].memberSince).format('YYYY') + ', Action plan ' + countryData[0].action_plan_count + '</p>\n        </div>\n        <div class="c-data-number">\n          <h3 class="text -number">' + data.count + '</h3>\n          <p class="text -small-bold">' + dataLabel + '</p>\n        </div>\n      </div>\n      <div class="content-wrapper -scroll ' + (modalType === 'slider' ? 'stories-slider' : '') + '">\n        ' + dataInfo + '\n      </div>\n      <div class="button-container -fixed">\n        <a href="/' + buttonLink + '" class="c-button -tall -green-back -box">' + buttonText + '</a>\n        <a href="' + countryData[0].alias + '" class="c-button -tall -green-back -box">VIEW COUNTRY</a>\n      </div>\n    ';
     setDataToModal(id, html);
     if (modalType === 'slider') {
-      sliderStoryModal();
+      $('.stories-slider').slick({
+        dots: true,
+        arrows: false,
+        speed: 500,
+        fade: true,
+        cssEase: 'linear',
+        dotsClass: 'dots-slider-modal'
+      });
     }
   });
 }
@@ -547,18 +553,6 @@ function getSelectOptionsFromData(data, optionName, type) {
 function buildSelector(selector, options) {
   //build selector
   appendSelectOptions(selector, options);
-}
-"use strict";
-
-function sliderStoryModal() {
-  // $('.stories-slider').slick({
-  //   dots: true,
-  //   arrows: false,
-  //   speed: 500,
-  //   fade: true,
-  //   cssEase: 'linear',
-  //   dotsClass: 'dots-slider-modal',
-  // });
 }
 'use strict';
 
@@ -877,28 +871,6 @@ function showStarredCommitmentDetail(id) {
 }
 'use strict';
 
-function showDocumentResourcePage() {
-  (function ($) {
-    // cache dom
-    var tileContainer = $('#resourceDocsTiles');
-    var searchEl = $('.c-tile');
-    var searchText = $('.c-tile .tile');
-    var searchContainer = $('#resourceTilesSearch input');
-
-    // fetch content and append
-    $.getJSON('/apiJSON/resource', function (data) {
-      setSearchPlaceholder(searchContainer, data.data[0].label);
-      setSearchListeners(searchEl, searchText);
-      if (data.data.length) {
-        appendTiles(data.data, tileContainer, 4);
-      } else {
-        showNoResults();
-      }
-    });
-  })(jQuery);
-}
-'use strict';
-
 function showCountriesDetail(id) {
   (function ($) {
 
@@ -1138,7 +1110,6 @@ function showCountriesDetail(id) {
 }
 'use strict';
 
-var layerMain = '';
 function initCountriesMap() {
   var map = L.map('countriesMap', {
     zoomControl: false,
@@ -1169,7 +1140,6 @@ function initMapLayer(map, countriesData, layers, cartoQueryLink) {
     type: 'cartodb',
     sublayers: []
   }).addTo(map).done(function (layer) {
-    layerMain = layer;
     layer.setInteraction(true);
     layer.createSubLayer(layers['action']);
     var hovers = [];
@@ -1331,17 +1301,17 @@ function setMapLegendListeners(layer, layers) {
       layer.createSubLayer(layers[namelayer]);
     }
   });
-}
 
-function changeCurrentCommitments(val) {
-  var theme = val;
-  removeLayers(layerMain);
-  layerMain.setInteraction(true);
-  layerMain.createSubLayer({
-    sql: 'SELECT country, Min(cartodb_id) cartodb_id, Min(theme) theme, count(country), st_centroid(the_geom_webmercator) the_geom_webmercator FROM currentcommitments_countries WHERE country IS NOT NULL AND theme LIKE \'%' + theme + '%\' AND the_geom_webmercator IS NOT NULL AND LENGTH(country) > 0 GROUP BY the_geom_webmercator, country ORDER BY country',
-    cartocss: '#layer::z1 {marker-width: ramp([count], range(25, 45), quantiles(7));marker-fill: #ffa200;marker-fill-opacity: 1;marker-line-width: 1;marker-line-color: #4b392f;marker-line-opacity: 0.1;marker-allow-overlap:true;marker-comp-op: src;[zoom = 2] {marker-width: ramp([count], range(25, 30), quantiles(3));}[zoom = 3] {marker-width: ramp([count], range(30, 35), quantiles(4));}[zoom = 4] {marker-width: ramp([count], range(30, 40), quantiles(5));}[zoom = 5] {marker-width: ramp([count], range(30, 45), quantiles(6));} [zoom = 6] {marker-width: ramp([count], range(35, 45), quantiles(7));}} #layer::z1 {text-name: [count];text-face-name: "DejaVu Sans Book";text-size: 10;text-fill: #FFFFFF;text-label-position-tolerance: 0;text-halo-radius: 0;text-halo-fill: #6F808D;text-dy: 0;text-allow-overlap: true;}',
-    interactivity: 'cartodb_id, the_geom_webmercator, country',
-    name: 'commitment'
+  $('.select-legend-dropdown').change(function () {
+    var theme = $(this).val();
+    removeLayers(layer);
+    layer.setInteraction(true);
+    layer.createSubLayer({
+      sql: 'SELECT country, Min(cartodb_id) cartodb_id, Min(theme) theme, count(country), st_centroid(the_geom_webmercator) the_geom_webmercator FROM currentcommitments_countries WHERE country IS NOT NULL AND theme LIKE \'%' + theme + '%\' AND the_geom_webmercator IS NOT NULL AND LENGTH(country) > 0 GROUP BY the_geom_webmercator, country ORDER BY country',
+      cartocss: '#layer::z1 {marker-width: ramp([count], range(25, 45), quantiles(7));marker-fill: #ffa200;marker-fill-opacity: 1;marker-line-width: 1;marker-line-color: #4b392f;marker-line-opacity: 0.1;marker-allow-overlap:true;marker-comp-op: src;[zoom = 2] {marker-width: ramp([count], range(25, 30), quantiles(3));}[zoom = 3] {marker-width: ramp([count], range(30, 35), quantiles(4));}[zoom = 4] {marker-width: ramp([count], range(30, 40), quantiles(5));}[zoom = 5] {marker-width: ramp([count], range(30, 45), quantiles(6));} [zoom = 6] {marker-width: ramp([count], range(35, 45), quantiles(7));}} #layer::z1 {text-name: [count];text-face-name: "DejaVu Sans Book";text-size: 10;text-fill: #FFFFFF;text-label-position-tolerance: 0;text-halo-radius: 0;text-halo-fill: #6F808D;text-dy: 0;text-allow-overlap: true;}',
+      interactivity: 'cartodb_id, the_geom_webmercator, country',
+      name: 'commitment'
+    });
   });
 }
 'use strict';
@@ -1455,10 +1425,6 @@ function showCountriesPage() {
     initViews();
     cacheData();
     buildMapModal();
-
-    $('.select-legend-dropdown').change(function () {
-      changeCurrentCommitments($(this).val());
-    });
   })(jQuery);
 }
 'use strict';
@@ -1573,6 +1539,28 @@ function showCountriesData(countriesData, activeTab, container, countryId) {
 function initCountryTabs(onChangeCountryTab) {
   initTabs();
   setTabListeners(onChangeCountryTab);
+}
+'use strict';
+
+function showDocumentResourcePage() {
+  (function ($) {
+    // cache dom
+    var tileContainer = $('#resourceDocsTiles');
+    var searchEl = $('.c-tile');
+    var searchText = $('.c-tile .tile');
+    var searchContainer = $('#resourceTilesSearch input');
+
+    // fetch content and append
+    $.getJSON('/apiJSON/resource', function (data) {
+      setSearchPlaceholder(searchContainer, data.data[0].label);
+      setSearchListeners(searchEl, searchText);
+      if (data.data.length) {
+        appendTiles(data.data, tileContainer, 4);
+      } else {
+        showNoResults();
+      }
+    });
+  })(jQuery);
 }
 'use strict';
 
@@ -2058,6 +2046,228 @@ function showResourcesDetail(id) {
 }
 'use strict';
 
+function showStoryDetail(id) {
+  (function ($) {
+
+    // data for post
+    $.getJSON('/apiJSON/stories/' + id, function (data) {
+      // cache
+      var story = data.data[0];
+      var creationDate = moment.unix(parseInt(story.created)).format('D MMMM YYYY');
+      var metaHtml = '';
+      var authorsHtml = '<strong class="text">Authors: </strong>';
+      // set country tags
+      if (story.country.length) {
+        var countries = story.country;
+        countries.forEach(function (country, index) {
+          var pathCountry = '' + country.alias;
+          if (index === countries.length - 1) {
+            metaHtml += '<a href="/' + pathCountry + '">' + country.label + '</a><span class="text -post-meta"> | </span>';
+          } else {
+            metaHtml += '<a href="/' + pathCountry + '">' + country.label + ', </a>';
+          }
+        });
+      }
+      metaHtml += '<span class="text -post-meta">' + creationDate + '</span>';
+      $('.countries').html(metaHtml);
+
+      // set body content
+      if (story.content) {
+        $('.-body-content').html(story.content.value);
+      }
+
+      // set author and topics
+      if (story.author[0]) {
+        story.author.forEach(function (author, index) {
+          if (index === story.author.length - 1) {
+            authorsHtml += '<a class="text" href="' + author.alias + '">' + author.label + '</a>';
+          } else {
+            authorsHtml += '<a class="text" href="' + author.alias + '">' + author.label + ', </a>';
+          }
+        });
+        $('.author').append(authorsHtml);
+      }
+
+      if (story.topic[0]) {
+        $('.topic').append('<strong class="text">Topics: </strong>');
+        story.topic.forEach(function (topic) {
+          var pathTheme = '' + topic.alias;
+          $('.topic').append('<a class="text" href="' + pathTheme + '">' + topic.label + '</a> ');
+        });
+      }
+
+      $('p').each(function () {
+        var $this = $(this);
+        if ($this.html().replace(/\s|&nbsp;/g, '').length == 0) $this.remove();
+      });
+
+      removeLoader('#storiesDetail');
+    });
+  })(jQuery);
+}
+'use strict';
+
+function showStoriesPage() {
+  (function ($) {
+
+    // cache
+    var countryFilter = 0;
+    var typeFilter = 0;
+    var page = 1;
+    var totalPages = 0;
+    var authorsHtml = '';
+
+    //selectors
+    var countrySelector = $('.country-filter');
+    var typeSelector = $('.type-filter');
+    var coverEvents = $('.c-content-banner');
+    var storiesContainer = $('#storiesTiles');
+
+    // public functions
+    function buildHighlightedEvent(story) {
+      if (story.image) {
+        $('.c-content-banner').css('background-image', 'url(' + story.image + ')');
+      }
+      if (story.author[0]) {
+        story.author.forEach(function (author, index) {
+          if (index === story.author.length - 1) {
+            authorsHtml += '<a class="text -white" href="/' + author.alias + '">' + author.label + '</a>';
+          } else {
+            authorsHtml += '<a class="text -white" href="/' + author.alias + '">' + author.label + ', </a>';
+          }
+        });
+      }
+      $('.banner-link', coverEvents).attr('href', story.alias);
+      $('.banner-title', coverEvents).html(story.label);
+      $('.banner-date', coverEvents).html(moment(parseInt(story.created)).format('D MMMM YYYY'));
+      if (story.author[0]) {
+        $('.banner-author', coverEvents).html(authorsHtml);
+      }
+      $('.c-content-banner').removeClass('-hidden');
+    }
+
+    function buildSelector(selector, placeholder, endpoint, query) {
+      selector.select2({
+        minimumResultsForSearch: Infinity,
+        containerCssClass: '-green -tall',
+        dropdownCssClass: '-green',
+        placeholder: '' + placeholder
+      });
+      selector.append('<option value="0">' + placeholder + '</option>');
+
+      $.getJSON('/apiJSON/' + endpoint + '?' + query, function (data) {
+        data.data.forEach(function (data) {
+          var option = '<option value="' + data.id + '">' + data.label + '</option>';
+          selector.append(option);
+        });
+
+        selector.on('change', function () {
+          showLoader('#storiesContainer');
+          countryFilter = countrySelector.val();
+          typeFilter = typeSelector.val();
+          page = 1;
+          showStories(countryFilter, typeFilter, page);
+        });
+      });
+    }
+
+    function setPaginationListerners() {
+      countryFilter = countrySelector.val();
+      typeFilter = typeSelector.val();
+      $('.onClickPagination').on('click', function (e) {
+        showLoader('#storiesContainer');
+        var pageNum = $(this).data('value');
+        showStories(countryFilter, typeFilter, pageNum);
+      });
+    }
+
+    function showStories(country, type, page) {
+      var activeCountry = parseInt(country) > 0 ? 'filter[country]=' + country + '&' : '';
+      var activeType = parseInt(type) > 0 ? 'filter[category]=' + type + '&' : '';
+      var activeFilters = '' + activeCountry + activeType + '&page=' + page;
+      $.getJSON('/apiJSON/stories?' + activeFilters + '&sort=-created', function (stories) {
+        if (stories.data.length > 0) {
+          totalPages = getPageCount(stories.count, 6);
+          if (page === 1) {
+            $.getJSON('/apiJSON/stories?sort=-created', function (highlightedStory) {
+              if (highlightedStory.data[0]) {
+                buildHighlightedEvent(highlightedStory.data[0]);
+              }
+              appendTilesDetailed(stories.data, storiesContainer, 2);
+              initPagination(page, totalPages, 'storiesPage');
+              setPaginationListerners();
+              removeLoader('#storiesContainer', null, true);
+            });
+          } else {
+            appendTilesDetailed(stories.data, storiesContainer, 2);
+            removeLoader('#storiesContainer', null, true);
+            initPagination(page, totalPages, 'storiesPage');
+            setPaginationListerners();
+          }
+        } else {
+          showNoResults('#storiesTiles', 'No stories with these filters', 'tall', 'grey', 'xxlarge', 'blue');
+          $('.c-pagination').html('');
+          removeLoader('#storiesContainer', null, true);
+        }
+      });
+    }
+
+    // build page
+    buildSelector(countrySelector, 'All countries', 'countries', 'fields=id,label&sort=label');
+    buildSelector(typeSelector, 'All story types', 'stories_categories', 'fields=id,label&sort=label');
+    showStories(countryFilter, typeFilter, page);
+  })(jQuery);
+}
+'use strict';
+
+function showStoriesSubmitPage(id) {
+  (function ($) {
+
+    // cache
+    var themeSelector = '.type-select';
+    var countrySelector = '.country-select';
+
+    $('#stories-menu').addClass('active');
+
+    $(themeSelector).select2({
+      minimumResultsForSearch: Infinity,
+      containerCssClass: '-tall',
+      placeholder: 'All story types'
+    });
+    $(countrySelector).select2({
+      minimumResultsForSearch: Infinity,
+      containerCssClass: '-tall',
+      placeholder: 'All countries'
+    });
+
+    $.getJSON('/apiJSON/countries?fields=id,name,label&sort=label', function (data) {
+      appendSelectOptionsFromData(countrySelector, data.data);
+      $.getJSON('/apiJSON/themes?sort=label&fields=id,label', function (data) {
+        appendSelectOptionsFromData(themeSelector, data.data);
+        removeLoader('.c-form', null, true);
+      });
+    });
+
+    $('.js-submit-story').click(function () {
+      var title = $('.-title').val();
+      var countryId = $('.country-select').val();
+      var topicId = $('.type-select').val();
+      var date = $('.-date').val();
+      var image = $('.-image').val();
+      var content = $('.-content').val();
+      var email = $('.-email').val();
+      var author = $('.-author').val();
+      $.ajax({
+        url: '/sites/all/themes/custom/ogp_theme/phpFunctions/createNode.php',
+        type: 'POST',
+        dataType: 'json',
+        data: {}
+      }).done(function (data) {});
+    });
+  })(jQuery);
+}
+'use strict';
+
 function showThemesDetail(id) {
   (function showAPIThemes($) {
 
@@ -2296,228 +2506,6 @@ function showWorkingGroupDetail(id) {
         containerInfo.append('\n          <div class="tab-content -hidden ' + data.data[i].id + '">\n            <h3 class="text -section-title">' + data.data[i].label + '</h3>\n            <div class="text -body-content">\n              <p class="text -body-content">\n                ' + data.data[i].body.value + '\n              </p>\n            </div>\n          </div>\n        ');
       }
       removeLoader('.working-group-content', null, true);
-    });
-  })(jQuery);
-}
-'use strict';
-
-function showStoryDetail(id) {
-  (function ($) {
-
-    // data for post
-    $.getJSON('/apiJSON/stories/' + id, function (data) {
-      // cache
-      var story = data.data[0];
-      var creationDate = moment.unix(parseInt(story.created)).format('D MMMM YYYY');
-      var metaHtml = '';
-      var authorsHtml = '<strong class="text">Authors: </strong>';
-      // set country tags
-      if (story.country.length) {
-        var countries = story.country;
-        countries.forEach(function (country, index) {
-          var pathCountry = '' + country.alias;
-          if (index === countries.length - 1) {
-            metaHtml += '<a href="/' + pathCountry + '">' + country.label + '</a><span class="text -post-meta"> | </span>';
-          } else {
-            metaHtml += '<a href="/' + pathCountry + '">' + country.label + ', </a>';
-          }
-        });
-      }
-      metaHtml += '<span class="text -post-meta">' + creationDate + '</span>';
-      $('.countries').html(metaHtml);
-
-      // set body content
-      if (story.content) {
-        $('.-body-content').html(story.content.value);
-      }
-
-      // set author and topics
-      if (story.author[0]) {
-        story.author.forEach(function (author, index) {
-          if (index === story.author.length - 1) {
-            authorsHtml += '<a class="text" href="' + author.alias + '">' + author.label + '</a>';
-          } else {
-            authorsHtml += '<a class="text" href="' + author.alias + '">' + author.label + ', </a>';
-          }
-        });
-        $('.author').append(authorsHtml);
-      }
-
-      if (story.topic[0]) {
-        $('.topic').append('<strong class="text">Topics: </strong>');
-        story.topic.forEach(function (topic) {
-          var pathTheme = '' + topic.alias;
-          $('.topic').append('<a class="text" href="' + pathTheme + '">' + topic.label + '</a> ');
-        });
-      }
-
-      $('p').each(function () {
-        var $this = $(this);
-        if ($this.html().replace(/\s|&nbsp;/g, '').length == 0) $this.remove();
-      });
-
-      removeLoader('#storiesDetail');
-    });
-  })(jQuery);
-}
-'use strict';
-
-function showStoriesPage() {
-  (function ($) {
-
-    // cache
-    var countryFilter = 0;
-    var typeFilter = 0;
-    var page = 1;
-    var totalPages = 0;
-    var authorsHtml = '';
-
-    //selectors
-    var countrySelector = $('.country-filter');
-    var typeSelector = $('.type-filter');
-    var coverEvents = $('.c-content-banner');
-    var storiesContainer = $('#storiesTiles');
-
-    // public functions
-    function buildHighlightedEvent(story) {
-      if (story.image) {
-        $('.c-content-banner').css('background-image', 'url(' + story.image + ')');
-      }
-      if (story.author[0]) {
-        story.author.forEach(function (author, index) {
-          if (index === story.author.length - 1) {
-            authorsHtml += '<a class="text -white" href="/' + author.alias + '">' + author.label + '</a>';
-          } else {
-            authorsHtml += '<a class="text -white" href="/' + author.alias + '">' + author.label + ', </a>';
-          }
-        });
-      }
-      $('.banner-link', coverEvents).attr('href', story.alias);
-      $('.banner-title', coverEvents).html(story.label);
-      $('.banner-date', coverEvents).html(moment.unix(parseInt(story.created)).format('D MMMM YYYY'));
-      if (story.author[0]) {
-        $('.banner-author', coverEvents).html(authorsHtml);
-      }
-      $('.c-content-banner').removeClass('-hidden');
-    }
-
-    function buildSelector(selector, placeholder, endpoint, query) {
-      selector.select2({
-        minimumResultsForSearch: Infinity,
-        containerCssClass: '-green -tall',
-        dropdownCssClass: '-green',
-        placeholder: '' + placeholder
-      });
-      selector.append('<option value="0">' + placeholder + '</option>');
-
-      $.getJSON('/apiJSON/' + endpoint + '?' + query, function (data) {
-        data.data.forEach(function (data) {
-          var option = '<option value="' + data.id + '">' + data.label + '</option>';
-          selector.append(option);
-        });
-
-        selector.on('change', function () {
-          showLoader('#storiesContainer');
-          countryFilter = countrySelector.val();
-          typeFilter = typeSelector.val();
-          page = 1;
-          showStories(countryFilter, typeFilter, page);
-        });
-      });
-    }
-
-    function setPaginationListerners() {
-      countryFilter = countrySelector.val();
-      typeFilter = typeSelector.val();
-      $('.onClickPagination').on('click', function (e) {
-        showLoader('#storiesContainer');
-        var pageNum = $(this).data('value');
-        showStories(countryFilter, typeFilter, pageNum);
-      });
-    }
-
-    function showStories(country, type, page) {
-      var activeCountry = parseInt(country) > 0 ? 'filter[country]=' + country + '&' : '';
-      var activeType = parseInt(type) > 0 ? 'filter[category]=' + type + '&' : '';
-      var activeFilters = '' + activeCountry + activeType + '&page=' + page;
-      $.getJSON('/apiJSON/stories?' + activeFilters + '&sort=-created', function (stories) {
-        if (stories.data.length > 0) {
-          totalPages = getPageCount(stories.count, 6);
-          if (page === 1) {
-            $.getJSON('/apiJSON/stories?sort=-created', function (highlightedStory) {
-              if (highlightedStory.data[0]) {
-                buildHighlightedEvent(highlightedStory.data[0]);
-              }
-              appendTilesDetailed(stories.data, storiesContainer, 2);
-              initPagination(page, totalPages, 'storiesPage');
-              setPaginationListerners();
-              removeLoader('#storiesContainer', null, true);
-            });
-          } else {
-            appendTilesDetailed(stories.data, storiesContainer, 2);
-            removeLoader('#storiesContainer', null, true);
-            initPagination(page, totalPages, 'storiesPage');
-            setPaginationListerners();
-          }
-        } else {
-          showNoResults('#storiesTiles', 'No stories with these filters', 'tall', 'grey', 'xxlarge', 'blue');
-          $('.c-pagination').html('');
-          removeLoader('#storiesContainer', null, true);
-        }
-      });
-    }
-
-    // build page
-    buildSelector(countrySelector, 'All countries', 'countries', 'fields=id,label&sort=label');
-    buildSelector(typeSelector, 'All story types', 'stories_categories', 'fields=id,label&sort=label');
-    showStories(countryFilter, typeFilter, page);
-  })(jQuery);
-}
-'use strict';
-
-function showStoriesSubmitPage(id) {
-  (function ($) {
-
-    // cache
-    var themeSelector = '.type-select';
-    var countrySelector = '.country-select';
-
-    $('#stories-menu').addClass('active');
-
-    $(themeSelector).select2({
-      minimumResultsForSearch: Infinity,
-      containerCssClass: '-tall',
-      placeholder: 'All story types'
-    });
-    $(countrySelector).select2({
-      minimumResultsForSearch: Infinity,
-      containerCssClass: '-tall',
-      placeholder: 'All countries'
-    });
-
-    $.getJSON('/apiJSON/countries?fields=id,name,label&sort=label', function (data) {
-      appendSelectOptionsFromData(countrySelector, data.data);
-      $.getJSON('/apiJSON/themes?sort=label&fields=id,label', function (data) {
-        appendSelectOptionsFromData(themeSelector, data.data);
-        removeLoader('.c-form', null, true);
-      });
-    });
-
-    $('.js-submit-story').click(function () {
-      var title = $('.-title').val();
-      var countryId = $('.country-select').val();
-      var topicId = $('.type-select').val();
-      var date = $('.-date').val();
-      var image = $('.-image').val();
-      var content = $('.-content').val();
-      var email = $('.-email').val();
-      var author = $('.-author').val();
-      $.ajax({
-        url: '/sites/all/themes/custom/ogp_theme/phpFunctions/createNode.php',
-        type: 'POST',
-        dataType: 'json',
-        data: {}
-      }).done(function (data) {});
     });
   })(jQuery);
 }
