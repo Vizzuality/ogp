@@ -3,6 +3,7 @@
 /**
  * @file
  */
+ $attachments = field_get_items('node', $node, 'field_attachment');
 ?>
 <div id="storiesDetail" class="l-page"<?php print $attributes; ?>>
 
@@ -23,6 +24,20 @@
       </div>
     </div>
   </div>
+
+  <?php if ($attachments) { ?>
+    <div class="c-documents">
+      <h1 class="text -section-title">Documents</h1>
+      <div class="text -body-content">
+        <?php foreach ($attachments as $attachment) { ?>
+          <div class="c-link">
+            <svg class="icon -blue -small"><use xlink:href="#icon-external-link"></use></svg>
+            <a class="text -link -blue" href="<?php echo file_create_url($attachment['uri']) ?>" target="_blank" rel="nofollow"><?php echo $attachment['filename'] ?></a>
+          </div>
+        <?php } ?>
+      </div>
+    </div>
+  <?php } ?>
 
 </div>
 
