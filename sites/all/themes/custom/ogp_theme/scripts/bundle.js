@@ -827,6 +827,70 @@ function addDots(string, limit) {
 }
 'use strict';
 
+function showCurrentCommitmentDetail(id) {
+  (function ($) {
+
+    function buildCurrentCommitment() {
+      $.getJSON('/apiJSON/current_commitment/' + id, function (data) {
+        if (data.data[0].lead_institution[0]) {
+          $('#currentCommitmentContent .lead').html(data.data[0].lead_institution[0]);
+        }
+        if (data.data[0].support_institution[0]) {
+          $('#currentCommitmentContent .support').html(data.data[0].support_institution[0]);
+        }
+      });
+    }
+
+    $('#theme-menu').addClass('active');
+    buildCurrentCommitment();
+    buildExploreMoreTiles('current_commitment');
+  })(jQuery);
+}
+'use strict';
+
+function showIrmCommitmentDetail(id) {
+  (function ($) {
+    $('#theme-menu').addClass('active');
+    buildExploreMoreTiles('irm_commitments');
+  })(jQuery);
+}
+'use strict';
+
+function showModelCommitmentDetail(id) {
+  (function ($) {
+
+    var onChangeTab = function onChangeTab(id, label) {
+      $('.tab-container').addClass('-hidden');
+      $('#' + id + ' .tab-container').removeClass('-hidden');
+    };
+
+    function fetchModelCommitmentDetail() {
+      $.getJSON('/apiJSON/modelcommitments/' + id, function (data) {
+        $('.strength-info').html('<strong>Strength: </strong>' + data.data[0].strength.label);
+        $('.contributor-info').html('<strong>Contributors: </strong>' + data.data[0].contributors);
+        $('#justification .container').html(data.data[0].justification);
+        appendTilesStandards(data.data[0].standardsguidance, $('#standards .container'), 2);
+        removeLoader('.l-section', null, true);
+      });
+    }
+
+    // init view
+    initTabs();
+    setTabListeners(onChangeTab);
+    fetchModelCommitmentDetail();
+    buildExploreMoreTiles('modelcommitments');
+  })(jQuery);
+}
+'use strict';
+
+function showStarredCommitmentDetail(id) {
+  (function ($) {
+    $('#theme-menu').addClass('active');
+    buildExploreMoreTiles('starredcommitments');
+  })(jQuery);
+}
+'use strict';
+
 function showCountriesDetail(id) {
   (function ($) {
 
@@ -1498,70 +1562,6 @@ function initCountryTabs(onChangeCountryTab) {
 }
 'use strict';
 
-function showCurrentCommitmentDetail(id) {
-  (function ($) {
-
-    function buildCurrentCommitment() {
-      $.getJSON('/apiJSON/current_commitment/' + id, function (data) {
-        if (data.data[0].lead_institution[0]) {
-          $('#currentCommitmentContent .lead').html(data.data[0].lead_institution[0]);
-        }
-        if (data.data[0].support_institution[0]) {
-          $('#currentCommitmentContent .support').html(data.data[0].support_institution[0]);
-        }
-      });
-    }
-
-    $('#theme-menu').addClass('active');
-    buildCurrentCommitment();
-    buildExploreMoreTiles('current_commitment');
-  })(jQuery);
-}
-'use strict';
-
-function showIrmCommitmentDetail(id) {
-  (function ($) {
-    $('#theme-menu').addClass('active');
-    buildExploreMoreTiles('irm_commitments');
-  })(jQuery);
-}
-'use strict';
-
-function showModelCommitmentDetail(id) {
-  (function ($) {
-
-    var onChangeTab = function onChangeTab(id, label) {
-      $('.tab-container').addClass('-hidden');
-      $('#' + id + ' .tab-container').removeClass('-hidden');
-    };
-
-    function fetchModelCommitmentDetail() {
-      $.getJSON('/apiJSON/modelcommitments/' + id, function (data) {
-        $('.strength-info').html('<strong>Strength: </strong>' + data.data[0].strength.label);
-        $('.contributor-info').html('<strong>Contributors: </strong>' + data.data[0].contributors);
-        $('#justification .container').html(data.data[0].justification);
-        appendTilesStandards(data.data[0].standardsguidance, $('#standards .container'), 2);
-        removeLoader('.l-section', null, true);
-      });
-    }
-
-    // init view
-    initTabs();
-    setTabListeners(onChangeTab);
-    fetchModelCommitmentDetail();
-    buildExploreMoreTiles('modelcommitments');
-  })(jQuery);
-}
-'use strict';
-
-function showStarredCommitmentDetail(id) {
-  (function ($) {
-    $('#theme-menu').addClass('active');
-    buildExploreMoreTiles('starredcommitments');
-  })(jQuery);
-}
-'use strict';
-
 function showDocumentResourcePage() {
   (function ($) {
     // cache dom
@@ -1696,10 +1696,12 @@ function showIrmReports() {
     var totalPages = 0;
 
     //selectors
-    var countrySelector = $('.country-filter');
+    var countrySelectorDownload = $('.country-filter-download');
+    var countrySelectorComments = $('.country-filter-comments');
     var tabsContainer = $('.tabs-container');
     var containerInfo = $('#container-info');
     var irmContainer = $('#downloadContainer');
+    var commentsContainer = $('#commentsContainer');
 
     // custom callback for tabs component
     var onChangeIRMTabs = function onChangeIRMTabs(id, label) {
@@ -1713,42 +1715,58 @@ function showIrmReports() {
     }
 
     function setPageCount(val) {
-      $('.reload-thematic').data('value', val);
+      $('.reload-thematic-download').data('value', val);
+    }
+
+    function setPageCountComments(val) {
+      $('.reload-thematic-comments').data('value', val);
     }
 
     function getCurrentPage() {
-      var pageCount = $('.reload-thematic').data('value');
+      var pageCount = $('.reload-thematic-download').data('value');
+      return pageCount;
+    }
+
+    function getCurrentPageComments() {
+      var pageCount = $('.reload-thematic-comments').data('value');
       return pageCount;
     }
 
     function onClickPagination() {
-      $('.c-pagination-click').on('click', function () {
+      $('.c-pagination-click-download').on('click', function () {
         setPageCount(getCurrentPage() + 1);
         showLoader('#tab-loader');
         showTilesIrmoReports(countryFilter, getCurrentPage());
       });
     }
 
+    function onClickPaginationComments() {
+      $('.c-pagination-click-comments').on('click', function () {
+        setPageCountComments(getCurrentPageComments() + 1);
+        showLoader('#tab-loader-comments');
+        showTilesComments(countryFilter, getCurrentPageComments());
+      });
+    }
+
     function showTilesIrmoReports(country, pageNext) {
       var activeCountry = parseInt(country) > 0 ? 'filter[id]=' + country + '&' : '';
-      $.getJSON('/apiJSON/countries?' + activeCountry + 'fields=id,label&sort=label&range=4&page=' + pageNext, function (countries) {
+      $.getJSON('/apiJSON/countries?' + activeCountry + 'fields=id,label,alias&sort=label&range=4&page=' + pageNext, function (countries) {
         for (var i = 0; i < countries.data.length; i += 1) {
-          $.getJSON('/apiJSON/documents?filter[type]=2704&filter[country]=' + countries.data[i].id + '&sort=-date&range=2', function (reports) {
-            if (reports.data.length > 0) {
-              appendTilesIRM(reports.data, irmContainer, reports.count);
-              removeLoader('#tab-loader', null, true);
-            } else {
-              if (activeCountry !== '') {
-                showNoResults('#downloadContainer', 'No IRM Reports with these filters', 'tall', 'grey', 'xxlarge', 'blue');
-              }
-              removeLoader('#tab-loader', null, true);
-            }
-          });
+          appendTilesIRM(countries.data[i], irmContainer);
         }
       });
     }
 
-    function buildSelector(selector, placeholder, endpoint, query) {
+    function showTilesComments(country, pageNext) {
+      var activeCountry = parseInt(country) > 0 ? 'filter[id]=' + country + '&' : '';
+      $.getJSON('/apiJSON/countries?' + activeCountry + 'fields=id,label,alias&sort=label&range=4&page=' + pageNext, function (countries) {
+        for (var i = 0; i < countries.data.length; i += 1) {
+          appendTilesComments(countries.data[i], commentsContainer);
+        }
+      });
+    }
+
+    function buildSelectorDownload(selector, placeholder, endpoint, query) {
       selector.select2({
         minimumResultsForSearch: Infinity,
         containerCssClass: '-green -tall',
@@ -1762,20 +1780,47 @@ function showIrmReports() {
           selector.append(option);
         });
 
-        selector.on('change', function () {
+        $(countrySelectorDownload).on('change', function () {
           $(irmContainer).html('');
           showLoader('#tab-loader');
-          countryFilter = countrySelector.val();
+          countryFilter = countrySelectorDownload.val();
           page = 1;
           showTilesIrmoReports(countryFilter, page);
         });
       });
     }
 
-    buildSelector(countrySelector, 'All countries', 'countries', 'fields=id,label&sort=label');
+    function buildSelectorComments(selector, placeholder, endpoint, query) {
+      selector.select2({
+        minimumResultsForSearch: Infinity,
+        containerCssClass: '-green -tall',
+        dropdownCssClass: '-green',
+        placeholder: '' + placeholder
+      });
+      selector.append('<option value="0">' + placeholder + '</option>');
+      $.getJSON('/apiJSON/' + endpoint + '?' + query, function (data) {
+        data.data.forEach(function (data) {
+          var option = '<option value="' + data.id + '">' + data.label + '</option>';
+          selector.append(option);
+        });
+
+        $(countrySelectorComments).on('change', function () {
+          $(irmContainer).html('');
+          showLoader('#tab-loader-comments');
+          countryFilter = countrySelectorComments.val();
+          page = 1;
+          showTilesComments(countryFilter, page);
+        });
+      });
+    }
+
+    buildSelectorDownload(countrySelectorDownload, 'All countries', 'countries', 'fields=id,label&sort=label');
+    buildSelectorComments(countrySelectorComments, 'All countries', 'countries', 'fields=id,label&sort=label');
     onClickPagination();
+    onClickPaginationComments();
     initIRMTabs(onChangeIRMTabs);
     showTilesIrmoReports(countryFilter, page);
+    showTilesComments(countryFilter, page);
   })(jQuery);
 }
 'use strict';
