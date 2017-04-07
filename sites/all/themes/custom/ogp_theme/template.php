@@ -4,6 +4,29 @@
  * Process theme data.
  */
 
+ function ogp_theme_theme() {
+  $items = array();
+  // create custom user-login.tpl.php
+  $items['user_login'] = array(
+    'render element' => 'form',
+    'path' => drupal_get_path('theme', 'ogp_theme') . '/templates',
+    'template' => 'user-login',
+    'preprocess functions' => array(
+    'ogp_theme_preprocess_user_login'
+    ),
+   );
+
+  // $items['user_pass'] = array(
+  //  'render element' => 'form',
+  //  'path' => drupal_get_path('theme', 'ogp_theme') . '/templates',
+  //  'template' => 'user-pass',
+  //  'preprocess functions' => array(
+  //  'ogp_theme_preprocess_user_pass'
+  //  ),
+  // );
+return $items;
+}
+
 /**
  * Theme function for file type icons.
  */

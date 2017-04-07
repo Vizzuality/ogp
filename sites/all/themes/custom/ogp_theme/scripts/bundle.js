@@ -154,9 +154,12 @@ function getAbsolutePath() {
         addBanner('newsletter');
       }
 
-      // IRM Reports
       if ($(context).find('#irmReportsPage').length !== 0) {
         showIrmReports();
+      }
+
+      // Pages
+      if ($(context).find('#loginPage').length !== 0) {
         addBanner('newsletter');
       }
 
@@ -662,15 +665,28 @@ function appendSmallTiles(data, topContainer, gridNum, customClass) {
   }
 }
 
-function appendTilesIRM(data, topContainer, count) {
-  if (data.length > 0) {
-    var html = '\n    <div class="column small-12 medium-6">\n      <div class="column c-country-tile">\n        <a class="text -title-x-small" href="' + data[0].country.alias + '">' + data[0].country.label + '<svg class="icon -blue -medium arrow"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-arrow"></use></svg></a>\n        <div class="first-info text">\n          <span class="text">Total reports ' + count + '</span>\n        </div>\n        <div class="row data-tiles">';
-    for (var i = 0; i < data.length; i += 1) {
-      html += '\n      <div class="column small-12 large-6 c-tile -short -hiden">\n        <a href="/' + data[i].alias + '" class="tile">\n          <div class=""></div>\n          <span class="text -tile -white">' + data[i].label + '</span>\n        </a>\n      </div>';
+function appendTilesIRM(data, topContainer) {
+  $.getJSON('/apiJSON/documents?filter[type]=2704&filter[country]=' + data.id + '&sort=-date&range=2', function (reports) {
+    var html = '\n      <div class="column small-12 medium-6">\n        <div class="column c-country-tile">\n          <a class="text -title-x-small" href="' + data.alias + '">' + data.label + '<svg class="icon -blue -medium arrow"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-arrow"></use></svg></a>\n          <div class="first-info text">\n            <span class="text">Total reports ' + reports.count + '</span>\n          </div>\n          <div class="row data-tiles">';
+    for (var i = 0; i < reports.data.length; i += 1) {
+      html += '\n        <div class="column small-12 large-6 c-tile -short -hiden">\n          <a href="" class="tile">\n            <div class=""></div>\n            <span class="text -tile -white">' + reports.data[i].label + '</span>\n          </a>\n        </div>';
     }
     html += '</div></div></div>';
+    removeLoader('#tab-loader', null, true);
     $('' + topContainer.selector).append(html);
-  }
+  });
+}
+
+function appendTilesComments(data, topContainer) {
+  $.getJSON('/apiJSON/documents?filter[type]=2924&filter[country]=' + data.id + '&sort=-date&range=2', function (comments) {
+    var html = '\n      <div class="column small-12 medium-6">\n        <div class="column c-country-tile">\n          <a class="text -title-x-small" href="' + data.alias + '">' + data.label + '<svg class="icon -blue -medium arrow"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-arrow"></use></svg></a>\n          <div class="first-info text">\n            <span class="text">Total reports ' + comments.count + '</span>\n          </div>\n          <div class="row data-tiles">';
+    for (var i = 0; i < comments.data.length; i += 1) {
+      html += '\n        <div class="column small-12 large-6 c-tile -short -hiden">\n          <a href="" class="tile">\n            <div class=""></div>\n            <span class="text -tile -white">' + comments.data[i].label + '</span>\n          </a>\n        </div>';
+    }
+    html += '</div></div></div>';
+    removeLoader('#tab-loader-comments', null, true);
+    $('' + topContainer.selector).append(html);
+  });
 }
 
 function appendTilesEvent(data, container) {
@@ -2249,11 +2265,11 @@ function showStoriesPage() {
       var activeCountry = parseInt(country) > 0 ? 'filter[country]=' + country + '&' : '';
       var activeType = parseInt(type) > 0 ? 'filter[category]=' + type + '&' : '';
       var activeFilters = '' + activeCountry + activeType + '&page=' + page;
-      $.getJSON('/apiJSON/stories?' + activeFilters + '&sort=-created,-highlighted', function (stories) {
+      $.getJSON('/apiJSON/stories?' + activeFilters + '&sort=-created', function (stories) {
         if (stories.data.length > 0) {
           totalPages = getPageCount(stories.count, 6);
           if (page === 1) {
-            $.getJSON('/apiJSON/stories?sort=-created&filter[highlighted]=1', function (highlightedStory) {
+            $.getJSON('/apiJSON/stories?sort=-created', function (highlightedStory) {
               if (highlightedStory.data[0]) {
                 buildHighlightedEvent(highlightedStory.data[0]);
               }
