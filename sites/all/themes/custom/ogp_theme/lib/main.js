@@ -153,9 +153,12 @@ function getAbsolutePath() {
         addBanner('newsletter');
       }
 
-      // IRM Reports
       if ($(context).find('#irmReportsPage').length !== 0) {
         showIrmReports();
+      }
+
+      // Pages
+      if ($(context).find('#loginPage').length !== 0) {
         addBanner('newsletter');
       }
 
