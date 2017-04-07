@@ -165,78 +165,6 @@ function getAbsolutePath() {
 })(jQuery);
 'use strict';
 
-function convertPostDate(date, format) {
-  var dateString = new Date(date * 1e3);
-  var dd = dateString.getDate();
-  var mm = dateString.getMonth() + 1; //January is 0!
-  var yyyy = dateString.getFullYear();
-
-  if (format === 'dd/mm/yyyy') {
-    if (dd < 10) {
-      dd = '0' + dd;
-    }
-
-    if (mm < 10) {
-      mm = '0' + mm;
-    }
-  }
-
-  dateString = dd + '/' + mm + '/' + yyyy;
-
-  return dateString;
-}
-
-function convertEventDate(date) {
-  var myDate = moment(date, 'YYYY-M-DD HH:mm:ss');
-  return myDate.format('MMMM D, YYYY - hh:mm');
-}
-
-function dateDiff(date) {
-  return moment().diff(date, 'days');
-}
-'use strict';
-
-function smoothScroll() {
-  $('a[href*="#"]:not([href="#"])').click(function () {
-    if (location.pathname.replace(/^\//, '') == this.pathname.replace(/^\//, '') && location.hostname == this.hostname) {
-      var target = $(this.hash);
-      target = target.length ? target : $('[name=' + this.hash.slice(1) + ']');
-      if (target.length) {
-        $('html, body').animate({
-          scrollTop: target.offset().top
-        }, 500);
-        return false;
-      }
-    }
-  });
-}
-'use strict';
-
-function getAuthors(data) {
-  var authorString = '';
-  if (data[0]) {
-    data.forEach(function (author, index) {
-      if (index === data.length - 1) {
-        authorString += '' + author.label;
-      } else {
-        authorString += author.label + ', ';
-      }
-    });
-  }
-  return authorString;
-}
-'use strict';
-
-function addDots(string, limit) {
-  var dots = '...';
-  if (string.length > limit) {
-    string = string.substring(0, limit) + dots;
-  }
-
-  return string;
-}
-'use strict';
-
 function closeAccordionSection() {
   $('.c-accordion .accordion-section-title').removeClass('active');
   $('.c-accordion .accordion-section-content').slideUp(200).removeClass('open');
@@ -813,6 +741,78 @@ function appendCountriesThematicBars(item, topContainer) {
 }
 'use strict';
 
+function convertPostDate(date, format) {
+  var dateString = new Date(date * 1e3);
+  var dd = dateString.getDate();
+  var mm = dateString.getMonth() + 1; //January is 0!
+  var yyyy = dateString.getFullYear();
+
+  if (format === 'dd/mm/yyyy') {
+    if (dd < 10) {
+      dd = '0' + dd;
+    }
+
+    if (mm < 10) {
+      mm = '0' + mm;
+    }
+  }
+
+  dateString = dd + '/' + mm + '/' + yyyy;
+
+  return dateString;
+}
+
+function convertEventDate(date) {
+  var myDate = moment(date, 'YYYY-M-DD HH:mm:ss');
+  return myDate.format('MMMM D, YYYY - hh:mm');
+}
+
+function dateDiff(date) {
+  return moment().diff(date, 'days');
+}
+'use strict';
+
+function smoothScroll() {
+  $('a[href*="#"]:not([href="#"])').click(function () {
+    if (location.pathname.replace(/^\//, '') == this.pathname.replace(/^\//, '') && location.hostname == this.hostname) {
+      var target = $(this.hash);
+      target = target.length ? target : $('[name=' + this.hash.slice(1) + ']');
+      if (target.length) {
+        $('html, body').animate({
+          scrollTop: target.offset().top
+        }, 500);
+        return false;
+      }
+    }
+  });
+}
+'use strict';
+
+function getAuthors(data) {
+  var authorString = '';
+  if (data[0]) {
+    data.forEach(function (author, index) {
+      if (index === data.length - 1) {
+        authorString += '' + author.label;
+      } else {
+        authorString += author.label + ', ';
+      }
+    });
+  }
+  return authorString;
+}
+'use strict';
+
+function addDots(string, limit) {
+  var dots = '...';
+  if (string.length > limit) {
+    string = string.substring(0, limit) + dots;
+  }
+
+  return string;
+}
+'use strict';
+
 function showCurrentCommitmentDetail(id) {
   (function ($) {
 
@@ -873,6 +873,28 @@ function showStarredCommitmentDetail(id) {
   (function ($) {
     $('#theme-menu').addClass('active');
     buildExploreMoreTiles('starredcommitments');
+  })(jQuery);
+}
+'use strict';
+
+function showDocumentResourcePage() {
+  (function ($) {
+    // cache dom
+    var tileContainer = $('#resourceDocsTiles');
+    var searchEl = $('.c-tile');
+    var searchText = $('.c-tile .tile');
+    var searchContainer = $('#resourceTilesSearch input');
+
+    // fetch content and append
+    $.getJSON('/apiJSON/resource', function (data) {
+      setSearchPlaceholder(searchContainer, data.data[0].label);
+      setSearchListeners(searchEl, searchText);
+      if (data.data.length) {
+        appendTiles(data.data, tileContainer, 4);
+      } else {
+        showNoResults();
+      }
+    });
   })(jQuery);
 }
 'use strict';
@@ -1554,28 +1576,6 @@ function initCountryTabs(onChangeCountryTab) {
 }
 'use strict';
 
-function showDocumentResourcePage() {
-  (function ($) {
-    // cache dom
-    var tileContainer = $('#resourceDocsTiles');
-    var searchEl = $('.c-tile');
-    var searchText = $('.c-tile .tile');
-    var searchContainer = $('#resourceTilesSearch input');
-
-    // fetch content and append
-    $.getJSON('/apiJSON/resource', function (data) {
-      setSearchPlaceholder(searchContainer, data.data[0].label);
-      setSearchListeners(searchEl, searchText);
-      if (data.data.length) {
-        appendTiles(data.data, tileContainer, 4);
-      } else {
-        showNoResults();
-      }
-    });
-  })(jQuery);
-}
-'use strict';
-
 function showHomePage() {
   (function ($) {
     // Slider that appear on Home page
@@ -2058,228 +2058,6 @@ function showResourcesDetail(id) {
 }
 'use strict';
 
-function showStoryDetail(id) {
-  (function ($) {
-
-    // data for post
-    $.getJSON('/apiJSON/stories/' + id, function (data) {
-      // cache
-      var story = data.data[0];
-      var creationDate = moment.unix(parseInt(story.created)).format('D MMMM YYYY');
-      var metaHtml = '';
-      var authorsHtml = '<strong class="text">Authors: </strong>';
-      // set country tags
-      if (story.country.length) {
-        var countries = story.country;
-        countries.forEach(function (country, index) {
-          var pathCountry = '' + country.alias;
-          if (index === countries.length - 1) {
-            metaHtml += '<a href="/' + pathCountry + '">' + country.label + '</a><span class="text -post-meta"> | </span>';
-          } else {
-            metaHtml += '<a href="/' + pathCountry + '">' + country.label + ', </a>';
-          }
-        });
-      }
-      metaHtml += '<span class="text -post-meta">' + creationDate + '</span>';
-      $('.countries').html(metaHtml);
-
-      // set body content
-      if (story.content) {
-        $('.-body-content').html(story.content.value);
-      }
-
-      // set author and topics
-      if (story.author[0]) {
-        story.author.forEach(function (author, index) {
-          if (index === story.author.length - 1) {
-            authorsHtml += '<a class="text" href="' + author.alias + '">' + author.label + '</a>';
-          } else {
-            authorsHtml += '<a class="text" href="' + author.alias + '">' + author.label + ', </a>';
-          }
-        });
-        $('.author').append(authorsHtml);
-      }
-
-      if (story.topic[0]) {
-        $('.topic').append('<strong class="text">Topics: </strong>');
-        story.topic.forEach(function (topic) {
-          var pathTheme = '' + topic.alias;
-          $('.topic').append('<a class="text" href="' + pathTheme + '">' + topic.label + '</a> ');
-        });
-      }
-
-      $('p').each(function () {
-        var $this = $(this);
-        if ($this.html().replace(/\s|&nbsp;/g, '').length == 0) $this.remove();
-      });
-
-      removeLoader('#storiesDetail');
-    });
-  })(jQuery);
-}
-'use strict';
-
-function showStoriesPage() {
-  (function ($) {
-
-    // cache
-    var countryFilter = 0;
-    var typeFilter = 0;
-    var page = 1;
-    var totalPages = 0;
-    var authorsHtml = '';
-
-    //selectors
-    var countrySelector = $('.country-filter');
-    var typeSelector = $('.type-filter');
-    var coverEvents = $('.c-content-banner');
-    var storiesContainer = $('#storiesTiles');
-
-    // public functions
-    function buildHighlightedEvent(story) {
-      if (story.image) {
-        $('.c-content-banner').css('background-image', 'url(' + story.image + ')');
-      }
-      if (story.author[0]) {
-        story.author.forEach(function (author, index) {
-          if (index === story.author.length - 1) {
-            authorsHtml += '<a class="text -white" href="/' + author.alias + '">' + author.label + '</a>';
-          } else {
-            authorsHtml += '<a class="text -white" href="/' + author.alias + '">' + author.label + ', </a>';
-          }
-        });
-      }
-      $('.banner-link', coverEvents).attr('href', story.alias);
-      $('.banner-title', coverEvents).html(story.label);
-      $('.banner-date', coverEvents).html(moment(parseInt(story.created)).format('D MMMM YYYY'));
-      if (story.author[0]) {
-        $('.banner-author', coverEvents).html(authorsHtml);
-      }
-      $('.c-content-banner').removeClass('-hidden');
-    }
-
-    function buildSelector(selector, placeholder, endpoint, query) {
-      selector.select2({
-        minimumResultsForSearch: Infinity,
-        containerCssClass: '-green -tall',
-        dropdownCssClass: '-green',
-        placeholder: '' + placeholder
-      });
-      selector.append('<option value="0">' + placeholder + '</option>');
-
-      $.getJSON('/apiJSON/' + endpoint + '?' + query, function (data) {
-        data.data.forEach(function (data) {
-          var option = '<option value="' + data.id + '">' + data.label + '</option>';
-          selector.append(option);
-        });
-
-        selector.on('change', function () {
-          showLoader('#storiesContainer');
-          countryFilter = countrySelector.val();
-          typeFilter = typeSelector.val();
-          page = 1;
-          showStories(countryFilter, typeFilter, page);
-        });
-      });
-    }
-
-    function setPaginationListerners() {
-      countryFilter = countrySelector.val();
-      typeFilter = typeSelector.val();
-      $('.onClickPagination').on('click', function (e) {
-        showLoader('#storiesContainer');
-        var pageNum = $(this).data('value');
-        showStories(countryFilter, typeFilter, pageNum);
-      });
-    }
-
-    function showStories(country, type, page) {
-      var activeCountry = parseInt(country) > 0 ? 'filter[country]=' + country + '&' : '';
-      var activeType = parseInt(type) > 0 ? 'filter[category]=' + type + '&' : '';
-      var activeFilters = '' + activeCountry + activeType + '&page=' + page;
-      $.getJSON('/apiJSON/stories?' + activeFilters + '&sort=-created', function (stories) {
-        if (stories.data.length > 0) {
-          totalPages = getPageCount(stories.count, 6);
-          if (page === 1) {
-            $.getJSON('/apiJSON/stories?sort=-created', function (highlightedStory) {
-              if (highlightedStory.data[0]) {
-                buildHighlightedEvent(highlightedStory.data[0]);
-              }
-              appendTilesDetailed(stories.data, storiesContainer, 2);
-              initPagination(page, totalPages, 'storiesPage');
-              setPaginationListerners();
-              removeLoader('#storiesContainer', null, true);
-            });
-          } else {
-            appendTilesDetailed(stories.data, storiesContainer, 2);
-            removeLoader('#storiesContainer', null, true);
-            initPagination(page, totalPages, 'storiesPage');
-            setPaginationListerners();
-          }
-        } else {
-          showNoResults('#storiesTiles', 'No stories with these filters', 'tall', 'grey', 'xxlarge', 'blue');
-          $('.c-pagination').html('');
-          removeLoader('#storiesContainer', null, true);
-        }
-      });
-    }
-
-    // build page
-    buildSelector(countrySelector, 'All countries', 'countries', 'fields=id,label&sort=label');
-    buildSelector(typeSelector, 'All story types', 'stories_categories', 'fields=id,label&sort=label');
-    showStories(countryFilter, typeFilter, page);
-  })(jQuery);
-}
-'use strict';
-
-function showStoriesSubmitPage(id) {
-  (function ($) {
-
-    // cache
-    var themeSelector = '.type-select';
-    var countrySelector = '.country-select';
-
-    $('#stories-menu').addClass('active');
-
-    $(themeSelector).select2({
-      minimumResultsForSearch: Infinity,
-      containerCssClass: '-tall',
-      placeholder: 'All story types'
-    });
-    $(countrySelector).select2({
-      minimumResultsForSearch: Infinity,
-      containerCssClass: '-tall',
-      placeholder: 'All countries'
-    });
-
-    $.getJSON('/apiJSON/countries?fields=id,name,label&sort=label', function (data) {
-      appendSelectOptionsFromData(countrySelector, data.data);
-      $.getJSON('/apiJSON/themes?sort=label&fields=id,label', function (data) {
-        appendSelectOptionsFromData(themeSelector, data.data);
-        removeLoader('.c-form', null, true);
-      });
-    });
-
-    $('.js-submit-story').click(function () {
-      var title = $('.-title').val();
-      var countryId = $('.country-select').val();
-      var topicId = $('.type-select').val();
-      var date = $('.-date').val();
-      var image = $('.-image').val();
-      var content = $('.-content').val();
-      var email = $('.-email').val();
-      var author = $('.-author').val();
-      $.ajax({
-        url: '/sites/all/themes/custom/ogp_theme/phpFunctions/createNode.php',
-        type: 'POST',
-        dataType: 'json',
-        data: {}
-      }).done(function (data) {});
-    });
-  })(jQuery);
-}
-'use strict';
-
 function showThemesDetail(id) {
   (function showAPIThemes($) {
 
@@ -2518,6 +2296,228 @@ function showWorkingGroupDetail(id) {
         containerInfo.append('\n          <div class="tab-content -hidden ' + data.data[i].id + '">\n            <h3 class="text -section-title">' + data.data[i].label + '</h3>\n            <div class="text -body-content">\n              <p class="text -body-content">\n                ' + data.data[i].body.value + '\n              </p>\n            </div>\n          </div>\n        ');
       }
       removeLoader('.working-group-content', null, true);
+    });
+  })(jQuery);
+}
+'use strict';
+
+function showStoryDetail(id) {
+  (function ($) {
+
+    // data for post
+    $.getJSON('/apiJSON/stories/' + id, function (data) {
+      // cache
+      var story = data.data[0];
+      var creationDate = moment.unix(parseInt(story.created)).format('D MMMM YYYY');
+      var metaHtml = '';
+      var authorsHtml = '<strong class="text">Authors: </strong>';
+      // set country tags
+      if (story.country.length) {
+        var countries = story.country;
+        countries.forEach(function (country, index) {
+          var pathCountry = '' + country.alias;
+          if (index === countries.length - 1) {
+            metaHtml += '<a href="/' + pathCountry + '">' + country.label + '</a><span class="text -post-meta"> | </span>';
+          } else {
+            metaHtml += '<a href="/' + pathCountry + '">' + country.label + ', </a>';
+          }
+        });
+      }
+      metaHtml += '<span class="text -post-meta">' + creationDate + '</span>';
+      $('.countries').html(metaHtml);
+
+      // set body content
+      if (story.content) {
+        $('.-body-content').html(story.content.value);
+      }
+
+      // set author and topics
+      if (story.author[0]) {
+        story.author.forEach(function (author, index) {
+          if (index === story.author.length - 1) {
+            authorsHtml += '<a class="text" href="' + author.alias + '">' + author.label + '</a>';
+          } else {
+            authorsHtml += '<a class="text" href="' + author.alias + '">' + author.label + ', </a>';
+          }
+        });
+        $('.author').append(authorsHtml);
+      }
+
+      if (story.topic[0]) {
+        $('.topic').append('<strong class="text">Topics: </strong>');
+        story.topic.forEach(function (topic) {
+          var pathTheme = '' + topic.alias;
+          $('.topic').append('<a class="text" href="' + pathTheme + '">' + topic.label + '</a> ');
+        });
+      }
+
+      $('p').each(function () {
+        var $this = $(this);
+        if ($this.html().replace(/\s|&nbsp;/g, '').length == 0) $this.remove();
+      });
+
+      removeLoader('#storiesDetail');
+    });
+  })(jQuery);
+}
+'use strict';
+
+function showStoriesPage() {
+  (function ($) {
+
+    // cache
+    var countryFilter = 0;
+    var typeFilter = 0;
+    var page = 1;
+    var totalPages = 0;
+    var authorsHtml = '';
+
+    //selectors
+    var countrySelector = $('.country-filter');
+    var typeSelector = $('.type-filter');
+    var coverEvents = $('.c-content-banner');
+    var storiesContainer = $('#storiesTiles');
+
+    // public functions
+    function buildHighlightedEvent(story) {
+      if (story.image) {
+        $('.c-content-banner').css('background-image', 'url(' + story.image + ')');
+      }
+      if (story.author[0]) {
+        story.author.forEach(function (author, index) {
+          if (index === story.author.length - 1) {
+            authorsHtml += '<a class="text -white" href="/' + author.alias + '">' + author.label + '</a>';
+          } else {
+            authorsHtml += '<a class="text -white" href="/' + author.alias + '">' + author.label + ', </a>';
+          }
+        });
+      }
+      $('.banner-link', coverEvents).attr('href', story.alias);
+      $('.banner-title', coverEvents).html(story.label);
+      $('.banner-date', coverEvents).html(moment.unix(parseInt(story.created)).format('D MMMM YYYY'));
+      if (story.author[0]) {
+        $('.banner-author', coverEvents).html(authorsHtml);
+      }
+      $('.c-content-banner').removeClass('-hidden');
+    }
+
+    function buildSelector(selector, placeholder, endpoint, query) {
+      selector.select2({
+        minimumResultsForSearch: Infinity,
+        containerCssClass: '-green -tall',
+        dropdownCssClass: '-green',
+        placeholder: '' + placeholder
+      });
+      selector.append('<option value="0">' + placeholder + '</option>');
+
+      $.getJSON('/apiJSON/' + endpoint + '?' + query, function (data) {
+        data.data.forEach(function (data) {
+          var option = '<option value="' + data.id + '">' + data.label + '</option>';
+          selector.append(option);
+        });
+
+        selector.on('change', function () {
+          showLoader('#storiesContainer');
+          countryFilter = countrySelector.val();
+          typeFilter = typeSelector.val();
+          page = 1;
+          showStories(countryFilter, typeFilter, page);
+        });
+      });
+    }
+
+    function setPaginationListerners() {
+      countryFilter = countrySelector.val();
+      typeFilter = typeSelector.val();
+      $('.onClickPagination').on('click', function (e) {
+        showLoader('#storiesContainer');
+        var pageNum = $(this).data('value');
+        showStories(countryFilter, typeFilter, pageNum);
+      });
+    }
+
+    function showStories(country, type, page) {
+      var activeCountry = parseInt(country) > 0 ? 'filter[country]=' + country + '&' : '';
+      var activeType = parseInt(type) > 0 ? 'filter[category]=' + type + '&' : '';
+      var activeFilters = '' + activeCountry + activeType + '&page=' + page;
+      $.getJSON('/apiJSON/stories?' + activeFilters + '&sort=-created', function (stories) {
+        if (stories.data.length > 0) {
+          totalPages = getPageCount(stories.count, 6);
+          if (page === 1) {
+            $.getJSON('/apiJSON/stories?sort=-created', function (highlightedStory) {
+              if (highlightedStory.data[0]) {
+                buildHighlightedEvent(highlightedStory.data[0]);
+              }
+              appendTilesDetailed(stories.data, storiesContainer, 2);
+              initPagination(page, totalPages, 'storiesPage');
+              setPaginationListerners();
+              removeLoader('#storiesContainer', null, true);
+            });
+          } else {
+            appendTilesDetailed(stories.data, storiesContainer, 2);
+            removeLoader('#storiesContainer', null, true);
+            initPagination(page, totalPages, 'storiesPage');
+            setPaginationListerners();
+          }
+        } else {
+          showNoResults('#storiesTiles', 'No stories with these filters', 'tall', 'grey', 'xxlarge', 'blue');
+          $('.c-pagination').html('');
+          removeLoader('#storiesContainer', null, true);
+        }
+      });
+    }
+
+    // build page
+    buildSelector(countrySelector, 'All countries', 'countries', 'fields=id,label&sort=label');
+    buildSelector(typeSelector, 'All story types', 'stories_categories', 'fields=id,label&sort=label');
+    showStories(countryFilter, typeFilter, page);
+  })(jQuery);
+}
+'use strict';
+
+function showStoriesSubmitPage(id) {
+  (function ($) {
+
+    // cache
+    var themeSelector = '.type-select';
+    var countrySelector = '.country-select';
+
+    $('#stories-menu').addClass('active');
+
+    $(themeSelector).select2({
+      minimumResultsForSearch: Infinity,
+      containerCssClass: '-tall',
+      placeholder: 'All story types'
+    });
+    $(countrySelector).select2({
+      minimumResultsForSearch: Infinity,
+      containerCssClass: '-tall',
+      placeholder: 'All countries'
+    });
+
+    $.getJSON('/apiJSON/countries?fields=id,name,label&sort=label', function (data) {
+      appendSelectOptionsFromData(countrySelector, data.data);
+      $.getJSON('/apiJSON/themes?sort=label&fields=id,label', function (data) {
+        appendSelectOptionsFromData(themeSelector, data.data);
+        removeLoader('.c-form', null, true);
+      });
+    });
+
+    $('.js-submit-story').click(function () {
+      var title = $('.-title').val();
+      var countryId = $('.country-select').val();
+      var topicId = $('.type-select').val();
+      var date = $('.-date').val();
+      var image = $('.-image').val();
+      var content = $('.-content').val();
+      var email = $('.-email').val();
+      var author = $('.-author').val();
+      $.ajax({
+        url: '/sites/all/themes/custom/ogp_theme/phpFunctions/createNode.php',
+        type: 'POST',
+        dataType: 'json',
+        data: {}
+      }).done(function (data) {});
     });
   })(jQuery);
 }
