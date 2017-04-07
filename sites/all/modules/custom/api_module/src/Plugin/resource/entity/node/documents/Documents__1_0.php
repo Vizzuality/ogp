@@ -45,6 +45,11 @@ class Documents__1_0 extends ResourceNode{
 
     $public_fields['country'] = array(
       'property' => 'field_country_resource',
+      'resource' => array(
+        'name' => 'countries',
+        'majorVersion' => '1',
+        'minorVersion' => '0',
+      )
     );
 
     $public_fields['type'] = array(

@@ -152,6 +152,12 @@ function getAbsolutePath() {
         addBanner('newsletter');
       }
 
+      // IRM Reports
+      if ($(context).find('#irmReportsPage').length !== 0) {
+        showIrmReports();
+        addBanner('newsletter');
+      }
+
       //build subscribe modal
       buildSubscribeModal();
     }
@@ -654,6 +660,17 @@ function appendSmallTiles(data, topContainer, gridNum, customClass) {
   }
 }
 
+function appendTilesIRM(data, topContainer, count) {
+  if (data.length > 0) {
+    var html = '\n    <div class="column small-12 medium-6">\n      <div class="column c-country-tile">\n        <a class="text -title-x-small" href="' + data[0].country.alias + '">' + data[0].country.label + '<svg class="icon -blue -medium arrow"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-arrow"></use></svg></a>\n        <div class="first-info text">\n          <span class="text">Total reports ' + count + '</span>\n        </div>\n        <div class="row data-tiles">';
+    for (var i = 0; i < data.length; i += 1) {
+      html += '\n      <div class="column small-12 large-6 c-tile -short -hiden">\n        <a href="/' + data[i].alias + '" class="tile">\n          <div class=""></div>\n          <span class="text -tile -white">' + data[i].label + '</span>\n        </a>\n      </div>';
+    }
+    html += '</div></div></div>';
+    $('' + topContainer.selector).append(html);
+  }
+}
+
 function appendTilesEvent(data, container) {
   if (data.length > 0) {
     var html = '';
@@ -798,70 +815,6 @@ function addDots(string, limit) {
   }
 
   return string;
-}
-'use strict';
-
-function showCurrentCommitmentDetail(id) {
-  (function ($) {
-
-    function buildCurrentCommitment() {
-      $.getJSON('/apiJSON/current_commitment/' + id, function (data) {
-        if (data.data[0].lead_institution[0]) {
-          $('#currentCommitmentContent .lead').html(data.data[0].lead_institution[0]);
-        }
-        if (data.data[0].support_institution[0]) {
-          $('#currentCommitmentContent .support').html(data.data[0].support_institution[0]);
-        }
-      });
-    }
-
-    $('#theme-menu').addClass('active');
-    buildCurrentCommitment();
-    buildExploreMoreTiles('current_commitment');
-  })(jQuery);
-}
-'use strict';
-
-function showIrmCommitmentDetail(id) {
-  (function ($) {
-    $('#theme-menu').addClass('active');
-    buildExploreMoreTiles('irm_commitments');
-  })(jQuery);
-}
-'use strict';
-
-function showModelCommitmentDetail(id) {
-  (function ($) {
-
-    var onChangeTab = function onChangeTab(id, label) {
-      $('.tab-container').addClass('-hidden');
-      $('#' + id + ' .tab-container').removeClass('-hidden');
-    };
-
-    function fetchModelCommitmentDetail() {
-      $.getJSON('/apiJSON/modelcommitments/' + id, function (data) {
-        $('.strength-info').html('<strong>Strength: </strong>' + data.data[0].strength.label);
-        $('.contributor-info').html('<strong>Contributors: </strong>' + data.data[0].contributors);
-        $('#justification .container').html(data.data[0].justification);
-        appendTilesStandards(data.data[0].standardsguidance, $('#standards .container'), 2);
-        removeLoader('.l-section', null, true);
-      });
-    }
-
-    // init view
-    initTabs();
-    setTabListeners(onChangeTab);
-    fetchModelCommitmentDetail();
-    buildExploreMoreTiles('modelcommitments');
-  })(jQuery);
-}
-'use strict';
-
-function showStarredCommitmentDetail(id) {
-  (function ($) {
-    $('#theme-menu').addClass('active');
-    buildExploreMoreTiles('starredcommitments');
-  })(jQuery);
 }
 'use strict';
 
@@ -1353,7 +1306,7 @@ function showCountriesPage() {
         name: 'event'
       },
       commitment: {
-        sql: 'SELECT country, Min(cartodb_id) cartodb_id, count(country), st_centroid(the_geom_webmercator) the_geom_webmercator FROM currentcommitments_countries WHERE country IS NOT NULL AND the_geom_webmercator IS NOT NULL AND LENGTH(country) > 0 GROUP BY the_geom_webmercator, country ORDER BY country DESC',
+        sql: 'SELECT country,Min(countryid) countryid, Min(cartodb_id) cartodb_id, count(country), st_centroid(the_geom_webmercator) the_geom_webmercator FROM currentcommitments_countries WHERE country IS NOT NULL AND the_geom_webmercator IS NOT NULL AND LENGTH(country) > 0 GROUP BY the_geom_webmercator, country ORDER BY country DESC',
         cartocss: '#layer::z1 {marker-width: 30;marker-fill: #ffa200;marker-fill-opacity: 1;marker-line-width: 1;marker-line-color: #4b392f;marker-line-opacity: 0.1;marker-allow-overlap:true;marker-comp-op: src;[zoom = 2] {marker-width: 30;}[zoom = 3] {marker-width: 35;}[zoom = 4] {marker-width: 40;}[zoom = 5] {marker-width:45;} [zoom = 6] {marker-width: 45;}} #layer::z1 {text-name: [count];text-face-name: "DejaVu Sans Book";text-size: 10;text-fill: #FFFFFF;text-label-position-tolerance: 0;text-halo-radius: 0;text-halo-fill: #6F808D;text-dy: 0;text-allow-overlap: true;}',
         interactivity: 'cartodb_id, the_geom_webmercator, country',
         name: 'commitment'
@@ -1536,6 +1489,70 @@ function initCountryTabs(onChangeCountryTab) {
 }
 'use strict';
 
+function showCurrentCommitmentDetail(id) {
+  (function ($) {
+
+    function buildCurrentCommitment() {
+      $.getJSON('/apiJSON/current_commitment/' + id, function (data) {
+        if (data.data[0].lead_institution[0]) {
+          $('#currentCommitmentContent .lead').html(data.data[0].lead_institution[0]);
+        }
+        if (data.data[0].support_institution[0]) {
+          $('#currentCommitmentContent .support').html(data.data[0].support_institution[0]);
+        }
+      });
+    }
+
+    $('#theme-menu').addClass('active');
+    buildCurrentCommitment();
+    buildExploreMoreTiles('current_commitment');
+  })(jQuery);
+}
+'use strict';
+
+function showIrmCommitmentDetail(id) {
+  (function ($) {
+    $('#theme-menu').addClass('active');
+    buildExploreMoreTiles('irm_commitments');
+  })(jQuery);
+}
+'use strict';
+
+function showModelCommitmentDetail(id) {
+  (function ($) {
+
+    var onChangeTab = function onChangeTab(id, label) {
+      $('.tab-container').addClass('-hidden');
+      $('#' + id + ' .tab-container').removeClass('-hidden');
+    };
+
+    function fetchModelCommitmentDetail() {
+      $.getJSON('/apiJSON/modelcommitments/' + id, function (data) {
+        $('.strength-info').html('<strong>Strength: </strong>' + data.data[0].strength.label);
+        $('.contributor-info').html('<strong>Contributors: </strong>' + data.data[0].contributors);
+        $('#justification .container').html(data.data[0].justification);
+        appendTilesStandards(data.data[0].standardsguidance, $('#standards .container'), 2);
+        removeLoader('.l-section', null, true);
+      });
+    }
+
+    // init view
+    initTabs();
+    setTabListeners(onChangeTab);
+    fetchModelCommitmentDetail();
+    buildExploreMoreTiles('modelcommitments');
+  })(jQuery);
+}
+'use strict';
+
+function showStarredCommitmentDetail(id) {
+  (function ($) {
+    $('#theme-menu').addClass('active');
+    buildExploreMoreTiles('starredcommitments');
+  })(jQuery);
+}
+'use strict';
+
 function showDocumentResourcePage() {
   (function ($) {
     // cache dom
@@ -1656,6 +1673,100 @@ function showSliderHomePage() {
         $('.slider-' + i).html('\n          <div>\n            <h1 class="title-text -white">\n              <a href="' + stories.data[i].alias + '">' + stories.data[i].label + '</a>\n            </h1>\n            <div class="small-12 medium-5 large-4">\n              <a class="c-button -box" href="' + stories.data[i].alias + '">Explore the story</a>\n            <div>\n          </div>\n        ');
       }
     });
+  })(jQuery);
+}
+'use strict';
+
+function showIrmReports() {
+  (function ($) {
+
+    // cache
+    var countryFilter = 0;
+    var typeFilter = 0;
+    var page = 1;
+    var totalPages = 0;
+
+    //selectors
+    var countrySelector = $('.country-filter');
+    var tabsContainer = $('.tabs-container');
+    var containerInfo = $('#container-info');
+    var irmContainer = $('#downloadContainer');
+
+    // custom callback for tabs component
+    var onChangeIRMTabs = function onChangeIRMTabs(id, label) {
+      $('.tab-content').addClass('-hidden');
+      $('.' + id).removeClass('-hidden');
+    };
+
+    function initIRMTabs(onChange) {
+      initTabs();
+      setTabListeners(onChange);
+    }
+
+    function setPageCount(val) {
+      $('.reload-thematic').data('value', val);
+    }
+
+    function getCurrentPage() {
+      var pageCount = $('.reload-thematic').data('value');
+      return pageCount;
+    }
+
+    function onClickPagination() {
+      $('.c-pagination-click').on('click', function () {
+        setPageCount(getCurrentPage() + 1);
+        showLoader('#tab-loader');
+        showTilesIrmoReports(countryFilter, getCurrentPage());
+      });
+    }
+
+    function showTilesIrmoReports(country, pageNext) {
+      var activeCountry = parseInt(country) > 0 ? 'filter[id]=' + country + '&' : '';
+      $.getJSON('/apiJSON/countries?' + activeCountry + 'fields=id,label&sort=label&range=4&page=' + pageNext, function (countries) {
+        for (var i = 0; i < countries.data.length; i += 1) {
+          $.getJSON('/apiJSON/documents?filter[type]=2704&filter[country]=' + countries.data[i].id + '&sort=-date&range=2', function (reports) {
+            if (reports.data.length > 0) {
+              appendTilesIRM(reports.data, irmContainer, reports.count);
+              removeLoader('#tab-loader', null, true);
+            } else {
+              if (activeCountry !== '') {
+                showNoResults('#downloadContainer', 'No IRM Reports with these filters', 'tall', 'grey', 'xxlarge', 'blue');
+              }
+              removeLoader('#tab-loader', null, true);
+            }
+          });
+        }
+      });
+    }
+
+    function buildSelector(selector, placeholder, endpoint, query) {
+      selector.select2({
+        minimumResultsForSearch: Infinity,
+        containerCssClass: '-green -tall',
+        dropdownCssClass: '-green',
+        placeholder: '' + placeholder
+      });
+      selector.append('<option value="0">' + placeholder + '</option>');
+      $.getJSON('/apiJSON/' + endpoint + '?' + query, function (data) {
+        data.data.forEach(function (data) {
+          var option = '<option value="' + data.id + '">' + data.label + '</option>';
+          selector.append(option);
+        });
+
+        selector.on('change', function () {
+          $(irmContainer).html('');
+          showLoader('#tab-loader');
+          countryFilter = countrySelector.val();
+          page = 1;
+          showTilesIrmoReports(countryFilter, page);
+        });
+      });
+    }
+
+    buildSelector(countrySelector, 'All countries', 'countries', 'fields=id,label&sort=label');
+    onClickPagination();
+    initIRMTabs(onChangeIRMTabs);
+    showTilesIrmoReports(countryFilter, page);
   })(jQuery);
 }
 'use strict';
