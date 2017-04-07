@@ -16,7 +16,7 @@ function showGroupResourcesDetail(id) {
       tilesContainer.html('');
       searchContainer.val('');
       const filterGroup = currentNode === 2920 ? '' : `filter[group_resource]=${currentNode}&`;
-      $.getJSON(`/apiJSON/resources?${filterGroup}filter[sub_group]=${sub_group_id}`, (data) => {
+      $.getJSON(`/apiJSON/resources?${filterGroup}filter[sub_group]=${sub_group_id}&sort=-post_highlighted`, (data) => {
         if (data.data.length) {
           appendTiles(data.data, tilesContainer, 4);
         } else {

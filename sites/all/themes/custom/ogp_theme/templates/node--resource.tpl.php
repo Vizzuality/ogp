@@ -6,7 +6,8 @@
  */
  $date = format_date($node->changed, 'custom', 'd/m/Y');
  $body = field_get_items('node', $node, 'body')[0]['value'];
- $documents = field_get_items('node', $node, 'field_link_api');
+ $attachments = field_get_items('node', $node, 'field_attachment');
+ $links = field_get_items('node', $node, 'field_link');
  $type = field_get_items('node', $node, 'field_ogp_document_type');
  $publication_date = field_get_items('node', $node, 'field_date_published')[0]['value'];
  $start_date = field_get_items('node', $node, 'field_cycle_start_date')[0]['value'];
@@ -35,13 +36,19 @@
       <div class="text -body-content">
         <?php echo $body ?>
       </div>
-      <?php if ($documents) { ?>
+      <?php if ($attachments || $links) { ?>
         <h1 class="text -section-title">Documents</h1>
         <div class="text -body-content">
-          <?php foreach ($documents as $document) { ?>
+          <?php foreach ($attachments as $attachment) { ?>
             <div class="c-link">
               <svg class="icon -blue -small"><use xlink:href="#icon-external-link"></use></svg>
-              <a class="text -link -blue" href="<?php echo $document['url'] ?>" target="_blank" rel="nofollow"><?php echo $node->title ?></a>
+              <a class="text -link -blue" href="<?php echo file_create_url($attachment['uri']) ?>" target="_blank" rel="nofollow"><?php echo $attachment['filename'] ?></a>
+            </div>
+          <?php } ?>
+          <?php foreach ($links as $link) { ?>
+            <div class="c-link">
+              <svg class="icon -blue -small"><use xlink:href="#icon-external-link"></use></svg>
+              <a class="text -link -blue" href="<?php echo $link['url'] ?>" target="_blank" rel="nofollow"><?php echo $link['title'] ?></a>
             </div>
           <?php } ?>
         </div>

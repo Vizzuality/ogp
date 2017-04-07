@@ -854,6 +854,28 @@ function showStarredCommitmentDetail(id) {
 }
 'use strict';
 
+function showDocumentResourcePage() {
+  (function ($) {
+    // cache dom
+    var tileContainer = $('#resourceDocsTiles');
+    var searchEl = $('.c-tile');
+    var searchText = $('.c-tile .tile');
+    var searchContainer = $('#resourceTilesSearch input');
+
+    // fetch content and append
+    $.getJSON('/apiJSON/resource', function (data) {
+      setSearchPlaceholder(searchContainer, data.data[0].label);
+      setSearchListeners(searchEl, searchText);
+      if (data.data.length) {
+        appendTiles(data.data, tileContainer, 4);
+      } else {
+        showNoResults();
+      }
+    });
+  })(jQuery);
+}
+'use strict';
+
 function showCountriesDetail(id) {
   (function ($) {
 
@@ -1525,28 +1547,6 @@ function initCountryTabs(onChangeCountryTab) {
 }
 'use strict';
 
-function showDocumentResourcePage() {
-  (function ($) {
-    // cache dom
-    var tileContainer = $('#resourceDocsTiles');
-    var searchEl = $('.c-tile');
-    var searchText = $('.c-tile .tile');
-    var searchContainer = $('#resourceTilesSearch input');
-
-    // fetch content and append
-    $.getJSON('/apiJSON/resource', function (data) {
-      setSearchPlaceholder(searchContainer, data.data[0].label);
-      setSearchListeners(searchEl, searchText);
-      if (data.data.length) {
-        appendTiles(data.data, tileContainer, 4);
-      } else {
-        showNoResults();
-      }
-    });
-  })(jQuery);
-}
-'use strict';
-
 function showHomePage() {
   (function ($) {
     // Slider that appear on Home page
@@ -1879,7 +1879,7 @@ function showGroupResourcesDetail(id) {
       tilesContainer.html('');
       searchContainer.val('');
       var filterGroup = currentNode === 2920 ? '' : 'filter[group_resource]=' + currentNode + '&';
-      $.getJSON('/apiJSON/resources?' + filterGroup + 'filter[sub_group]=' + sub_group_id, function (data) {
+      $.getJSON('/apiJSON/resources?' + filterGroup + 'filter[sub_group]=' + sub_group_id + '&sort=-post_highlighted', function (data) {
         if (data.data.length) {
           appendTiles(data.data, tilesContainer, 4);
         } else {
@@ -1989,11 +1989,6 @@ function showStoryDetail(id) {
         });
       }
 
-      $('p').each(function () {
-        var $this = $(this);
-        if ($this.html().replace(/\s|&nbsp;/g, '').length == 0) $this.remove();
-      });
-
       removeLoader('#storiesDetail');
     });
   })(jQuery);
@@ -2078,7 +2073,7 @@ function showStoriesPage() {
       var activeCountry = parseInt(country) > 0 ? 'filter[country]=' + country + '&' : '';
       var activeType = parseInt(type) > 0 ? 'filter[category]=' + type + '&' : '';
       var activeFilters = '' + activeCountry + activeType + '&page=' + page;
-      $.getJSON('/apiJSON/stories?' + activeFilters + '&sort=-created', function (stories) {
+      $.getJSON('/apiJSON/stories?' + activeFilters + '&sort=-created,-highlighted', function (stories) {
         if (stories.data.length > 0) {
           totalPages = getPageCount(stories.count, 6);
           if (page === 1) {
@@ -2231,7 +2226,8 @@ function showThemesDetail(id) {
     function showContent(container, endpoint, countryFilter) {
       container.html('');
       var countryQuery = countryFilter && endpoint !== 'modelcommitments' ? '&filter[country]=' + countryFilter : '';
-      $.getJSON('/apiJSON/' + endpoint + '?filter[theme]=' + id + countryQuery, function (data) {
+      var sorting = endpoint === 'stories' ? '-created' : 'label';
+      $.getJSON('/apiJSON/' + endpoint + '?filter[theme]=' + id + countryQuery + '&sort=' + sorting, function (data) {
         hideNoResults();
         if (data.data.length) {
           appendTilesWithoutBackground(data.data, container, 2, '-themes');
@@ -2263,7 +2259,7 @@ function showThemesPage() {
 
     // local functions
     function showThemesTiles() {
-      $.getJSON('/apiJSON/themes', function (data) {
+      $.getJSON('/apiJSON/themes?sort=label', function (data) {
         if (data.data.length) {
           appendTiles(data.data, themesContainer, 3);
         } else {

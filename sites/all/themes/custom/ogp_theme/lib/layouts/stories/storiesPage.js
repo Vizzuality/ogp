@@ -76,7 +76,7 @@ function showStoriesPage() {
       const activeCountry = parseInt(country) > 0 ? `filter[country]=${country}&` : '';
       const activeType = parseInt(type) > 0 ? `filter[category]=${type}&` : '';
       const activeFilters = `${activeCountry}${activeType}&page=${page}`;
-      $.getJSON(`/apiJSON/stories?${activeFilters}&sort=-created`, function (stories) {
+      $.getJSON(`/apiJSON/stories?${activeFilters}&sort=-created,-highlighted`, function (stories) {
         if (stories.data.length > 0) {
           totalPages = getPageCount(stories.count, 6);
           if (page === 1) {

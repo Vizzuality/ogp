@@ -99,7 +99,7 @@ class Stories__1_0 extends ResourceNode{
     );
 
     $public_fields['highlighted'] = array(
-      'property' => 'field_highlighted_content'
+      'property' => 'field_highlighted'
     );
 
     $public_fields['alias'] = array(
