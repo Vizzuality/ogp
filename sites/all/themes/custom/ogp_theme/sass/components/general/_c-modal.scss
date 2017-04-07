@@ -32,7 +32,7 @@
     align-items: center;
     justify-content: space-between;
     padding: 50px 40px 20px;
-    border-bottom: 1px solid $color-3;
+    border-bottom: 1px solid rgba($color-5, .2);
 
     .header-info {
       padding-right: 30px;
@@ -103,5 +103,38 @@
      align-items: center;
      justify-content: space-around;
      flex-direction: row;
+   }
+
+   .stories-slider {
+    .-stories-modal {
+      padding: 18px 0;
+      border-bottom: 1px solid $color-9;
+
+      .theme-text,
+      .title-text,
+      .authors,
+      .date-text {
+        display: block;
+      }
+
+      .date-text {
+        margin-bottom: 10px;
+      }
+
+      .title-text {
+        margin-top: 10px;
+        margin-bottom: -5px;
+        margin-right: 10px;
+      }
+
+      &:first-of-type {
+        padding-top: 0;
+      }
+
+      &:last-of-type {
+        padding-bottom: 0;
+        border-bottom: 0;
+      }
+    }
    }
 }
