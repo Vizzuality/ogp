@@ -41,7 +41,7 @@ function showCountriesPage() {
         name: 'event'
       },
       commitment: {
-        sql: 'SELECT country, Min(cartodb_id) cartodb_id, count(country), st_centroid(the_geom_webmercator) the_geom_webmercator FROM currentcommitments_countries WHERE country IS NOT NULL AND the_geom_webmercator IS NOT NULL AND LENGTH(country) > 0 GROUP BY the_geom_webmercator, country ORDER BY country DESC',
+        sql: 'SELECT country,Min(countryid) countryid, Min(cartodb_id) cartodb_id, count(country), st_centroid(the_geom_webmercator) the_geom_webmercator FROM currentcommitments_countries WHERE country IS NOT NULL AND the_geom_webmercator IS NOT NULL AND LENGTH(country) > 0 GROUP BY the_geom_webmercator, country ORDER BY country DESC',
         cartocss: '#layer::z1 {marker-width: 30;marker-fill: #ffa200;marker-fill-opacity: 1;marker-line-width: 1;marker-line-color: #4b392f;marker-line-opacity: 0.1;marker-allow-overlap:true;marker-comp-op: src;[zoom = 2] {marker-width: 30;}[zoom = 3] {marker-width: 35;}[zoom = 4] {marker-width: 40;}[zoom = 5] {marker-width:45;} [zoom = 6] {marker-width: 45;}} #layer::z1 {text-name: [count];text-face-name: "DejaVu Sans Book";text-size: 10;text-fill: #FFFFFF;text-label-position-tolerance: 0;text-halo-radius: 0;text-halo-fill: #6F808D;text-dy: 0;text-allow-overlap: true;}',
         interactivity: 'cartodb_id, the_geom_webmercator, country',
         name: 'commitment'
