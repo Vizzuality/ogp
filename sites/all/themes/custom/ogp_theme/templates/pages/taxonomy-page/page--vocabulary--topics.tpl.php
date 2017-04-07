@@ -39,51 +39,56 @@ $research_body = field_get_items('node', $research, 'body')[0]['value'];
       </div>
     </div>
 
-    <div class="c-tabs -horizontal">
-      <div class="tabs">
-        <div class="row">
-          <div class="column small-12">
-            <ul class="tabs-container">
-              <li class="tab text -tab" data-node="starredcommitments">starred commitments</li>
-              <li class="tab text -tab" data-node="modelcommitments">illustrative commitments</li>
-              <li class="tab text -tab" data-node="expert">expert organizations</li>
-              <li class="tab text -tab" data-node="stories">stories</li>
-              <li class="tab text -tab" data-node="research">research</li>
-            </ul>
+    <div class="l-section">
+
+      <div class="c-tabs -horizontal">
+        <div class="tabs">
+          <div class="row">
+            <div class="column small-12">
+              <ul class="tabs-container">
+                <li class="tab text -tab" data-node="starredcommitments">starred commitments</li>
+                <li class="tab text -tab" data-node="modelcommitments">illustrative commitments</li>
+                <li class="tab text -tab" data-node="expert">expert organizations</li>
+                <li class="tab text -tab" data-node="stories">stories</li>
+                <li class="tab text -tab" data-node="research">research</li>
+              </ul>
+            </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <div class="row">
-      <div class="column small-12">
+      <div class="row">
+        <div class="column small-12">
 
-        <div id="themesDetail" class="l-gallery">
-          <div class="row">
-            <div class="column small-12 medium-8">
-              <p id="contributorsText" class="text -body-content -hidden"></p>
-              <div class="text -body-content starredcommitments"><?php echo $starred_body ?></div>
-              <div class="text -body-content -hidden modelcommitments"><?php echo $model_body ?></div>
-              <div class="text -body-content -hidden expert"><?php echo $expert_body ?></div>
-              <div class="text -body-content -hidden stories"><?php echo $stories_body ?></div>
-              <div class="text -body-content -hidden research"><?php echo $research_body ?></div>
+          <div id="themesDetail" class="l-gallery">
+            <div class="row">
+              <div class="column small-12 medium-8">
+                <p id="contributorsText" class="text -body-content -hidden"></p>
+                <div class="text -body-content starredcommitments"><?php echo $starred_body ?></div>
+                <div class="text -body-content -hidden modelcommitments"><?php echo $model_body ?></div>
+                <div class="text -body-content -hidden expert"><?php echo $expert_body ?></div>
+                <div class="text -body-content -hidden stories"><?php echo $stories_body ?></div>
+                <div class="text -body-content -hidden research"><?php echo $research_body ?></div>
+              </div>
+            </div>
+            <div class="row">
+              <div class="column small-12 medium-3">
+                <select class="country-selector">
+                  <option value="0">All countries</option>
+                </select>
+              </div>
+            </div>
+            <div id="contentContainer">
+              <div class="row content-tiles"></div>
+              <div id="noResultsContainer"></div>
             </div>
           </div>
-          <div class="row">
-            <div class="column small-12 medium-3">
-              <select class="country-selector">
-                <option value="0">All countries</option>
-              </select>
-            </div>
-          </div>
-          <div id="contentContainer">
-            <div class="row content-tiles"></div>
-            <div class="c-loader"><div class="loader"></div></div>
-            <div id="noResultsContainer"></div>
-          </div>
+
         </div>
-
       </div>
+
+      <div class="c-loader"><div class="loader"></div></div>
+
     </div>
 
     <div class="row">

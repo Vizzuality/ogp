@@ -42,7 +42,7 @@ $path = explode('/', drupal_get_path_alias());
             <svg class="icon -medium"><use xlink:href="#icon-world-black"></use></svg>
           <?php } ?>
         </li>
-        <li class="text -menu dropdown -language-dropdown" id="transifexSelector"></li>
+        <li class="language-selector text -menu dropdown -language-dropdown" id="transifexSelector"></li>
         <li class="text -menu">
             <svg class="icon -medium">
                 <use xlink:href="#icon-search"></use>

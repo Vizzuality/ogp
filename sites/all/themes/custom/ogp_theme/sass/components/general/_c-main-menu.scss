@@ -91,6 +91,10 @@
       }
     }
 
+    .menu-list {
+      padding: 10px 0;
+    }
+
     .menu-list, .txlive-langselector-list {
       right: -20px !important;
       width: 260px !important;
@@ -210,5 +214,9 @@
         content: '';
       }
     }
+  }
+
+  .language-selector {
+    width: 100px;
   }
 }

@@ -70,7 +70,8 @@ function showThemesDetail(id) {
     function showContent(container, endpoint, countryFilter) {
       container.html('');
       const countryQuery = countryFilter && (endpoint !== 'modelcommitments') ? `&filter[country]=${countryFilter}` : '';
-      $.getJSON(`/apiJSON/${endpoint}?filter[theme]=${id}${countryQuery}`, function(data) {
+      const sorting = endpoint === 'stories' ? '-created' : 'label';
+      $.getJSON(`/apiJSON/${endpoint}?filter[theme]=${id}${countryQuery}&sort=${sorting}`, function(data) {
         hideNoResults();
         if (data.data.length) {
           appendTilesWithoutBackground(data.data, container, 2, '-themes');

@@ -51,6 +51,7 @@ function getAbsolutePath() {
         addBanner('writestory');
         addBanner('newsletter');
         showStoryDetail(settings.block_refresh.args[1]);
+        stripEmptyStrings();
       }
 
       // countries
@@ -92,6 +93,7 @@ function getAbsolutePath() {
       if ($(context).find('#documentResourcesPage').length !== 0) {
         addBanner('newsletter');
         showDocumentResourcePage();
+        stripEmptyStrings();
       }
 
       // commitments

@@ -10,7 +10,7 @@ function showThemesPage() {
 
     // local functions
     function showThemesTiles() {
-      $.getJSON(`/apiJSON/themes`, function(data) {
+      $.getJSON(`/apiJSON/themes?sort=label`, function(data) {
         if (data.data.length) {
           appendTiles(data.data, themesContainer, 3);
         } else {

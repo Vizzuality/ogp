@@ -51,6 +51,7 @@ function getAbsolutePath() {
         addBanner('writestory');
         addBanner('newsletter');
         showStoryDetail(settings.block_refresh.args[1]);
+        stripEmptyStrings();
       }
 
       // countries
@@ -92,6 +93,7 @@ function getAbsolutePath() {
       if ($(context).find('#documentResourcesPage').length !== 0) {
         addBanner('newsletter');
         showDocumentResourcePage();
+        stripEmptyStrings();
       }
 
       // commitments
@@ -694,9 +696,9 @@ function appendTilesDetailed(data, container, gridNum) {
     if (item.topic[0]) {
       item.topic.forEach(function (topic, index) {
         if (index === item.topic.length - 1) {
-          topicsHtml += '<a href="' + topic.alias + '">' + topic.label + '</a>';
+          topicsHtml += '<a href="/' + topic.alias + '">' + topic.label + '</a>';
         } else {
-          topicsHtml += '<a href="' + topic.alias + '">' + topic.label + ', </a>';
+          topicsHtml += '<a href="/' + topic.alias + '">' + topic.label + ', </a>';
         }
       });
     }
@@ -704,14 +706,14 @@ function appendTilesDetailed(data, container, gridNum) {
     if (item.author[0]) {
       item.author.forEach(function (author, index) {
         if (index === item.author.length - 1) {
-          authorsHtml += '<a class="text -blue" href="' + author.alias + '">' + author.label + '</a>';
+          authorsHtml += '<a class="text -blue" href="/' + author.alias + '">' + author.label + '</a>';
         } else {
-          authorsHtml += '<a class="text -blue" href="' + author.alias + '">' + author.label + ', </a>';
+          authorsHtml += '<a class="text -blue" href="/' + author.alias + '">' + author.label + ', </a>';
         }
       });
     }
 
-    html += '\n      <div class="column small-12 medium-' + gridWidth + ' c-tile">\n        <div class="tile-detailed" style="background-image: url(\'' + (item.image ? item.image : '') + '\')">\n          <div class="' + (item.image ? 'overlay' : '') + '"></div>\n          <div class="tile-content">\n            <div class="topics text -dynamic-link ' + (item.image ? '-white' : '') + '">' + topicsHtml + '</div>\n            <a href="' + item.alias + '"><h3 class="text -tile-detail ' + (item.image ? '-white' : '') + '">' + (item.title ? item.title : '') + '</h3></a>\n            <div class="meta">\n              <span class="text -meta-large ' + (item.image ? '-white' : '') + '">' + moment.unix(parseInt(item.created)).format('D MMMM YYYY') + '</span>\n              <a class="text -meta-large ' + (item.image ? '-white' : '') + '">' + authorsHtml + '</a>\n            </div>\n          </div>\n        </div>\n      </div>\n    ';
+    html += '\n      <div class="column small-12 medium-' + gridWidth + ' c-tile">\n        <div class="tile-detailed" style="background-image: url(\'' + (item.image ? item.image : '') + '\')">\n          <div class="' + (item.image ? 'overlay' : '') + '"></div>\n          <div class="tile-content">\n            <div class="topics text -dynamic-link ' + (item.image ? '-white' : '') + '">' + topicsHtml + '</div>\n            <a href="/' + item.alias + '"><h3 class="text -tile-detail ' + (item.image ? '-white' : '') + '">' + (item.title ? item.title : '') + '</h3></a>\n            <div class="meta">\n              <span class="text -meta-large ' + (item.image ? '-white' : '') + '">' + moment.unix(parseInt(item.created)).format('D MMMM YYYY') + '</span>\n              <a class="text -meta-large ' + (item.image ? '-white' : '') + '">' + authorsHtml + '</a>\n            </div>\n          </div>\n        </div>\n      </div>\n    ';
   });
   container.html(html);
 }
@@ -720,7 +722,7 @@ function appendTilesDetailedNews(data, container, gridNum) {
   var gridWidth = 12 / gridNum;
   var html = '';
   data.forEach(function (item) {
-    html += '\n      <div class="column small-12 medium-6 c-tile">\n        <div class="tile-detailed" style="background-image: url(\'' + (item.image.length === '0' ? item.image : '') + '\')">\n          <div class="' + (item.image === '0' ? 'overlay' : '') + '"></div>\n          <span class="text -uppercase -blue -small-bold">News</span>\n          <div class="tile-content">\n            <a href="' + item.alias + '"><h3 class="text -tile-detail ' + (item.image.length === '0' ? '-white' : '') + '">' + (item.label ? item.label : '') + '</h3></a>\n            <div class="meta">\n              <span class="text -meta-large ' + (item.image.length === '0' ? '-white' : '') + '">' + moment.unix(parseInt(item.date)).format('DD MMMM YYYY ') + '</span>\n              <span class="text -meta-large ' + (item.image.length === '0' ? '-white' : '') + '">' + item.name.name + '</span>\n            </div>\n          </div>\n        </div>\n      </div>\n    ';
+    html += '\n      <div class="column small-12 medium-6 c-tile">\n        <div class="tile-detailed" style="background-image: url(\'' + (item.image.length === '0' ? item.image : '') + '\')">\n          <div class="' + (item.image === '0' ? 'overlay' : '') + '"></div>\n          <span class="text -uppercase -blue -small-bold">News</span>\n          <div class="tile-content">\n            <a href="/' + item.alias + '"><h3 class="text -tile-detail ' + (item.image.length === '0' ? '-white' : '') + '">' + (item.label ? item.label : '') + '</h3></a>\n            <div class="meta">\n              <span class="text -meta-large ' + (item.image.length === '0' ? '-white' : '') + '">' + moment.unix(parseInt(item.date)).format('DD MMMM YYYY ') + '</span>\n              <span class="text -meta-large ' + (item.image.length === '0' ? '-white' : '') + '">' + item.name.name + '</span>\n            </div>\n          </div>\n        </div>\n      </div>\n    ';
   });
   container.html(html);
 }
@@ -805,6 +807,13 @@ function getAuthors(data) {
     });
   }
   return authorString;
+}
+
+function stripEmptyStrings() {
+  $('p').each(function () {
+    var $this = $(this);
+    if ($this.html().replace(/\s|&nbsp;/g, '').length == 0) $this.remove();
+  });
 }
 'use strict';
 
@@ -1023,7 +1032,7 @@ function showCountriesDetail(id) {
     });
 
     // fetch stories
-    $.getJSON('/apiJSON/stories?filter[country]=' + id + '&page[size]=9', function (data) {
+    $.getJSON('/apiJSON/stories?filter[country]=' + id + '&page[size]=9&sort=-created', function (data) {
       if (data.data.length) {
         _appendStories('.c-activity-stream ul', data.data);
         $('.item-bridge').removeClass('-hidden');
@@ -2000,8 +2009,8 @@ function showGroupResourcesDetail(id) {
       showLoader('.l-section');
       tilesContainer.html('');
       searchContainer.val('');
-      var filterGroup = currentNode === 'All Resources' ? '' : 'filter[group_resource]=' + currentNode + '&';
-      $.getJSON('/apiJSON/resources?' + filterGroup + 'filter[sub_group]=' + sub_group_id, function (data) {
+      var filterGroup = currentNode === 2920 ? '' : 'filter[group_resource]=' + currentNode + '&';
+      $.getJSON('/apiJSON/resources?' + filterGroup + 'filter[sub_group]=' + sub_group_id + '&sort=-post_highlighted', function (data) {
         if (data.data.length) {
           appendTiles(data.data, tilesContainer, 4);
         } else {
@@ -2017,7 +2026,7 @@ function showGroupResourcesDetail(id) {
       buildTabs(data.data, tabsContainer, onChangeTab);
       setSearchPlaceholder(searchContainer, data.data[0].label);
       setSearchListeners(searchEl, searchText);
-      var filterGroup = currentNode === 'All Resources' ? '' : 'filter[group_resource]=' + currentNode + '&';
+      var filterGroup = currentNode === 2920 ? '' : 'filter[group_resource]=' + currentNode + '&';
       $.getJSON('/apiJSON/resources?' + filterGroup + 'filter[sub_group]=' + data.data[0].id + '&sort=-post_highlighted', function (resources) {
         if (resources.data.length) {
           appendTiles(resources.data, tilesContainer, 4);
@@ -2091,9 +2100,9 @@ function showStoryDetail(id) {
       if (story.author[0]) {
         story.author.forEach(function (author, index) {
           if (index === story.author.length - 1) {
-            authorsHtml += '<a class="text" href="' + author.alias + '">' + author.label + '</a>';
+            authorsHtml += '<a class="text" href="/' + author.alias + '">' + author.label + '</a>';
           } else {
-            authorsHtml += '<a class="text" href="' + author.alias + '">' + author.label + ', </a>';
+            authorsHtml += '<a class="text" href="/' + author.alias + '">' + author.label + ', </a>';
           }
         });
         $('.author').append(authorsHtml);
@@ -2101,16 +2110,15 @@ function showStoryDetail(id) {
 
       if (story.topic[0]) {
         $('.topic').append('<strong class="text">Topics: </strong>');
-        story.topic.forEach(function (topic) {
+        story.topic.forEach(function (topic, index) {
           var pathTheme = '' + topic.alias;
-          $('.topic').append('<a class="text" href="' + pathTheme + '">' + topic.label + '</a> ');
+          if (index === story.topic.length - 1) {
+            $('.topic').append('<a class="text" href="/' + pathTheme + '">' + topic.label + '</a>');
+          } else {
+            $('.topic').append('<a class="text" href="/' + pathTheme + '">' + topic.label + '</a>, ');
+          }
         });
       }
-
-      $('p').each(function () {
-        var $this = $(this);
-        if ($this.html().replace(/\s|&nbsp;/g, '').length == 0) $this.remove();
-      });
 
       removeLoader('#storiesDetail');
     });
@@ -2150,7 +2158,7 @@ function showStoriesPage() {
       }
       $('.banner-link', coverEvents).attr('href', story.alias);
       $('.banner-title', coverEvents).html(story.label);
-      $('.banner-date', coverEvents).html(moment(parseInt(story.created)).format('D MMMM YYYY'));
+      $('.banner-date', coverEvents).html(moment.unix(story.created).format('D MMMM YYYY'));
       if (story.author[0]) {
         $('.banner-author', coverEvents).html(authorsHtml);
       }
@@ -2196,11 +2204,11 @@ function showStoriesPage() {
       var activeCountry = parseInt(country) > 0 ? 'filter[country]=' + country + '&' : '';
       var activeType = parseInt(type) > 0 ? 'filter[category]=' + type + '&' : '';
       var activeFilters = '' + activeCountry + activeType + '&page=' + page;
-      $.getJSON('/apiJSON/stories?' + activeFilters + '&sort=-created', function (stories) {
+      $.getJSON('/apiJSON/stories?' + activeFilters + '&sort=-created,-highlighted', function (stories) {
         if (stories.data.length > 0) {
           totalPages = getPageCount(stories.count, 6);
           if (page === 1) {
-            $.getJSON('/apiJSON/stories?sort=-created', function (highlightedStory) {
+            $.getJSON('/apiJSON/stories?sort=-created&filter[highlighted]=1', function (highlightedStory) {
               if (highlightedStory.data[0]) {
                 buildHighlightedEvent(highlightedStory.data[0]);
               }
@@ -2349,7 +2357,8 @@ function showThemesDetail(id) {
     function showContent(container, endpoint, countryFilter) {
       container.html('');
       var countryQuery = countryFilter && endpoint !== 'modelcommitments' ? '&filter[country]=' + countryFilter : '';
-      $.getJSON('/apiJSON/' + endpoint + '?filter[theme]=' + id + countryQuery, function (data) {
+      var sorting = endpoint === 'stories' ? '-created' : 'label';
+      $.getJSON('/apiJSON/' + endpoint + '?filter[theme]=' + id + countryQuery + '&sort=' + sorting, function (data) {
         hideNoResults();
         if (data.data.length) {
           appendTilesWithoutBackground(data.data, container, 2, '-themes');
@@ -2381,7 +2390,7 @@ function showThemesPage() {
 
     // local functions
     function showThemesTiles() {
-      $.getJSON('/apiJSON/themes', function (data) {
+      $.getJSON('/apiJSON/themes?sort=label', function (data) {
         if (data.data.length) {
           appendTiles(data.data, themesContainer, 3);
         } else {

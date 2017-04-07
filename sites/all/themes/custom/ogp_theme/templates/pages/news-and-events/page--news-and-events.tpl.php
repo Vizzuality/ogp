@@ -4,7 +4,7 @@
  * Page
  */
 ?>
-<div id="newsEventsPage" class="<?php print $classes; ?>">
+<div id="newsEventsPage">
 
   <?php include(drupal_get_path('theme', 'ogp_theme').'/templates/components/header.tpl.php'); ?>
 

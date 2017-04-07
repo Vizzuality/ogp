@@ -48,7 +48,9 @@ $field_comm_no = field_get_items('node', $node, 'field_comm_no');
       <div class="column small-12 medium-9">
         <p class="text -white -heavy tag">Starred Commitments</p>
         <h1 class="text -title -white title"><?php echo $node->title ?></h1>
-        <span class="text -social-title"><?php echo $field_country[0][entity]->title; ?></span>
+        <?php if ($field_country) { ?>
+          <span class="text -social-title"><?php echo $field_country[0]['entity']->title; ?></span>
+        <?php } ?>
         <div class="commitment-meta">
           <span class="text -body-content"><?php echo $fields['field_start_date_current']['label'] ?>: <?php echo $field_start_date[0]['value']; ?></span>
           <span class="text -body-content">&nbsp;| &nbsp;<?php echo $fields['field_end_date_current']['label'] ?>: <?php echo $field_end_date[0]['value']; ?></span>
@@ -66,9 +68,9 @@ $field_comm_no = field_get_items('node', $node, 'field_comm_no');
           <?php
             for ($i = 0; $i < $iMax = count($field_theme); $i++) {
               if($i === (count($field_theme) - 1)) {
-                echo '<a class="text -blue -small-bold" href="/' . drupal_get_path_alias('taxonomy/term/' . $field_theme[$i][target_id]) . '">' . $field_theme[$i][entity]->name . '</a>';
+                echo '<a class="text -blue -small-bold" href="/' . drupal_get_path_alias('taxonomy/term/' . $field_theme[$i]['target_id']) . '">' . $field_theme[$i]['entity']->name . '</a>';
               } else {
-                echo '<a class="text -blue -small-bold" href="/' . drupal_get_path_alias('taxonomy/term/' . $field_theme[$i][target_id]) . '">' . $field_theme[$i][entity]->name . ', </a>';
+                echo '<a class="text -blue -small-bold" href="/' . drupal_get_path_alias('taxonomy/term/' . $field_theme[$i]['target_id']) . '">' . $field_theme[$i]['entity']->name . ', </a>';
               }
             }
           ?>

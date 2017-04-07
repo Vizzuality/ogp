@@ -11,7 +11,6 @@
       <div class="column small-12 medium-9">
         <h1 class="text -title -white"><?php echo $node->title ?></h1>
         <p class="text strength-info"></p>
-        <p class="text contributor-info"></p>
       </div>
     </div>
   </section>
@@ -26,7 +25,7 @@
           <div class="c-tabs -vertical">
             <ul class="tabs-container">
               <li class="tab text -tab -grey" data-node="justification">Justification</li>
-              <li class="tab text -tab -grey" data-node="recomendation">Recomendation</li>
+              <!-- <li class="tab text -tab -grey" data-node="recomendation">Recomendation</li> -->
               <li class="tab text -tab -grey" data-node="standards">Standards and guidance</li>
             </ul>
           </div>

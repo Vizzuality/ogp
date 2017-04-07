@@ -223,7 +223,7 @@ function showCountriesDetail(id) {
     });
 
     // fetch stories
-    $.getJSON(`/apiJSON/stories?filter[country]=${id}&page[size]=9`, (data) => {
+    $.getJSON(`/apiJSON/stories?filter[country]=${id}&page[size]=9&sort=-created`, (data) => {
       if (data.data.length) {
         _appendStories('.c-activity-stream ul', data.data);
         $('.item-bridge').removeClass('-hidden');

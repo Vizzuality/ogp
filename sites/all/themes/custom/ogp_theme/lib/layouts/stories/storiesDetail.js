@@ -32,9 +32,9 @@ function showStoryDetail(id) {
       if (story.author[0]) {
         story.author.forEach(function(author ,index) {
           if (index === story.author.length - 1) {
-            authorsHtml += `<a class="text" href="${author.alias}">${author.label}</a>`;
+            authorsHtml += `<a class="text" href="/${author.alias}">${author.label}</a>`;
           } else {
-            authorsHtml += `<a class="text" href="${author.alias}">${author.label}, </a>`;
+            authorsHtml += `<a class="text" href="/${author.alias}">${author.label}, </a>`;
           }
         });
         $('.author').append(authorsHtml);
@@ -42,17 +42,15 @@ function showStoryDetail(id) {
 
       if (story.topic[0]) {
         $('.topic').append('<strong class="text">Topics: </strong>');
-        story.topic.forEach(function(topic) {
+        story.topic.forEach(function(topic, index) {
           const pathTheme = `${topic.alias}`;
-          $('.topic').append(`<a class="text" href="${pathTheme}">${topic.label}</a> `);
+          if (index === story.topic.length - 1) {
+            $('.topic').append(`<a class="text" href="/${pathTheme}">${topic.label}</a>`);
+          } else {
+            $('.topic').append(`<a class="text" href="/${pathTheme}">${topic.label}</a>, `);
+          }
         });
       }
-
-      $('p').each(function() {
-        var $this = $(this);
-        if($this.html().replace(/\s|&nbsp;/g, '').length == 0)
-        $this.remove();
-      });
 
       removeLoader('#storiesDetail');
     });

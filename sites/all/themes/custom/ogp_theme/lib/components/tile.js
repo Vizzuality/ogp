@@ -132,9 +132,9 @@ function appendTilesDetailed(data, container, gridNum) {
     if (item.topic[0]) {
       item.topic.forEach(function(topic ,index) {
         if (index === item.topic.length - 1) {
-          topicsHtml += `<a href="${topic.alias}">${topic.label}</a>`;
+          topicsHtml += `<a href="/${topic.alias}">${topic.label}</a>`;
         } else {
-          topicsHtml += `<a href="${topic.alias}">${topic.label}, </a>`;
+          topicsHtml += `<a href="/${topic.alias}">${topic.label}, </a>`;
         }
       });
     }
@@ -142,9 +142,9 @@ function appendTilesDetailed(data, container, gridNum) {
     if (item.author[0]) {
       item.author.forEach(function(author ,index) {
         if (index === item.author.length - 1) {
-          authorsHtml += `<a class="text -blue" href="${author.alias}">${author.label}</a>`;
+          authorsHtml += `<a class="text -blue" href="/${author.alias}">${author.label}</a>`;
         } else {
-          authorsHtml += `<a class="text -blue" href="${author.alias}">${author.label}, </a>`;
+          authorsHtml += `<a class="text -blue" href="/${author.alias}">${author.label}, </a>`;
         }
       });
     }
@@ -155,7 +155,7 @@ function appendTilesDetailed(data, container, gridNum) {
           <div class="${item.image ? 'overlay' : ''}"></div>
           <div class="tile-content">
             <div class="topics text -dynamic-link ${item.image ? '-white' : ''}">${topicsHtml}</div>
-            <a href="${item.alias}"><h3 class="text -tile-detail ${item.image ? '-white' : ''}">${item.title ? item.title : ''}</h3></a>
+            <a href="/${item.alias}"><h3 class="text -tile-detail ${item.image ? '-white' : ''}">${item.title ? item.title : ''}</h3></a>
             <div class="meta">
               <span class="text -meta-large ${item.image ? '-white' : ''}">${moment.unix(parseInt(item.created)).format('D MMMM YYYY')}</span>
               <a class="text -meta-large ${item.image ? '-white' : ''}">${authorsHtml}</a>
@@ -178,7 +178,7 @@ function appendTilesDetailedNews(data, container, gridNum) {
           <div class="${item.image === '0' ? 'overlay' : ''}"></div>
           <span class="text -uppercase -blue -small-bold">News</span>
           <div class="tile-content">
-            <a href="${item.alias}"><h3 class="text -tile-detail ${item.image.length === '0' ? '-white' : ''}">${item.label ? item.label : ''}</h3></a>
+            <a href="/${item.alias}"><h3 class="text -tile-detail ${item.image.length === '0' ? '-white' : ''}">${item.label ? item.label : ''}</h3></a>
             <div class="meta">
               <span class="text -meta-large ${item.image.length === '0' ? '-white' : ''}">${moment.unix(parseInt(item.date)).format('DD MMMM YYYY ')}</span>
               <span class="text -meta-large ${item.image.length === '0' ? '-white' : ''}">${item.name.name}</span>

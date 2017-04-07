@@ -49,7 +49,7 @@ $field_starred_end_term = field_get_items('node', $node, 'field_starred_end_term
       <div class="column small-12 medium-9">
         <p class="text -white -heavy tag">IRM Commitments</p>
         <h1 class="text -title -white title"><?php echo $node->title ?></h1>
-        <span class="text -social-title"><?php echo $field_country[0][entity]->title; ?></span>
+        <span class="text -social-title"><?php echo $field_country[0]['entity']->title; ?></span>
         <div class="commitment-meta">
           <span class="text -body-content"><?php echo $fields['field_start_date_irm']['label'] ?>: <?php echo $field_start_date[0]['value']; ?></span>
           <span class="text -body-content">&nbsp;| &nbsp;<?php echo $fields['field_end_date_irm']['label'] ?>: <?php echo $field_end_date[0]['value']; ?></span>
@@ -67,9 +67,9 @@ $field_starred_end_term = field_get_items('node', $node, 'field_starred_end_term
           <?php
             for ($i = 0; $i < $iMax = count($field_theme); $i++) {
               if($i === (count($field_theme) - 1)) {
-                echo '<a class="text -blue -small-bold" href="/' . drupal_get_path_alias('taxonomy/term/' . $field_theme[$i][target_id]) . '">' . $field_theme[$i][entity]->name . '</a>';
+                echo '<a class="text -blue -small-bold" href="/' . drupal_get_path_alias('taxonomy/term/' . $field_theme[$i]['target_id']) . '">' . $field_theme[$i]['entity']->name . '</a>';
               } else {
-                echo '<a class="text -blue -small-bold" href="/' . drupal_get_path_alias('taxonomy/term/' . $field_theme[$i][target_id]) . '">' . $field_theme[$i][entity]->name . ', </a>';
+                echo '<a class="text -blue -small-bold" href="/' . drupal_get_path_alias('taxonomy/term/' . $field_theme[$i]['target_id']) . '">' . $field_theme[$i]['entity']->name . ', </a>';
               }
             }
           ?>

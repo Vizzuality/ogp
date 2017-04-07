@@ -4,14 +4,14 @@
  * Page
  */
 $map_legend = node_load(24956);
-$map_legend_heading = field_get_items('node', $map_legend, 'field_headline')[0]['value'];
-$map_legend_body = field_get_items('node', $map_legend, 'body')[0]['value'];
+$map_legend_heading = field_get_items('node', $map_legend, 'field_headline');
+$map_legend_body = field_get_items('node', $map_legend, 'body');
 
 $ogp_process = node_load(24958);
-$ogp_process_heading = field_get_items('node', $ogp_process, 'field_headline')[0]['value'];
-$ogp_process_body = field_get_items('node', $ogp_process, 'body')[0]['value'];
-$ogp_process_button_text = field_get_items('node', $ogp_process, 'field_button_text')[0]['value'];
-$ogp_process_link = field_get_items('node', $ogp_process, 'field_link')[0]['value'];
+$ogp_process_heading = field_get_items('node', $ogp_process, 'field_headline');
+$ogp_process_body = field_get_items('node', $ogp_process, 'body');
+$ogp_process_button_text = field_get_items('node', $ogp_process, 'field_button_text');
+$ogp_process_link = field_get_items('node', $ogp_process, 'field_link');
 ?>
 <script type="text/javascript" src="//cdn.transifex.com/live.js"></script>
 <div id="homePage" class="<?php print $classes; ?>">
@@ -55,8 +55,8 @@ $ogp_process_link = field_get_items('node', $ogp_process, 'field_link')[0]['valu
       <div class="column small-12">
 
         <div class="c-map-legend -with-footer">
-          <h2 class="text -section-title-small"><?php echo $map_legend_heading ?></h2>
-          <div class="text"><?php echo $map_legend_body ?></div>
+          <h2 class="text -section-title-small"><?php echo $map_legend_heading[0]['value'] ?></h2>
+          <div class="text"><?php echo $map_legend_body[0]['value'] ?></div>
           <div class="c-color-legend">
             <ul>
               <li class="-gray -small">
@@ -98,11 +98,11 @@ $ogp_process_link = field_get_items('node', $ogp_process, 'field_link')[0]['valu
         <div class="c-ogp-process">
           <div class="row">
             <div class="column small-12 medium-7 large-9">
-              <h3 class="text -title-small -white"><?php echo $ogp_process_heading ?></h3>
-              <div class="text -white"><?php echo $ogp_process_body ?></div>
+              <h3 class="text -title-small -white"><?php echo $ogp_process_heading[0]['value'] ?></h3>
+              <div class="text -white"><?php echo $ogp_process_body[0]['value'] ?></div>
             </div>
             <div class="column small-12 medium-5 large-3 vertical">
-              <a class="c-button -box -large" href="<?php echo $ogp_process_link ?>"><?php echo $ogp_process_button_text ?></a>
+              <a class="c-button -box -large" href="<?php if(array_key_exists('value', $ogp_process_link[0])) { echo $ogp_process_link[0]['value']; } ?>"><?php echo $ogp_process_button_text[0]['value'] ?></a>
             </div>
           </div>
           <div class="diagram">

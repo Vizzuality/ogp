@@ -11,3 +11,11 @@ function getAuthors(data) {
   }
   return authorString;
 }
+
+function stripEmptyStrings() {
+  $('p').each(function() {
+    var $this = $(this);
+    if($this.html().replace(/\s|&nbsp;/g, '').length == 0)
+    $this.remove();
+  });
+}
