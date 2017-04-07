@@ -58,7 +58,7 @@
               </div>
             </div>
           </div>
-          <div class="row content-tiles" id="downloadContainer">
+          <div class="row content-tiles row content-tiles small-12 medium-12" id="downloadContainer">
           </div>
           <div class="c-loader"><div class="loader"></div></div>
         </div>
