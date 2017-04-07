@@ -165,6 +165,78 @@ function getAbsolutePath() {
 })(jQuery);
 'use strict';
 
+function convertPostDate(date, format) {
+  var dateString = new Date(date * 1e3);
+  var dd = dateString.getDate();
+  var mm = dateString.getMonth() + 1; //January is 0!
+  var yyyy = dateString.getFullYear();
+
+  if (format === 'dd/mm/yyyy') {
+    if (dd < 10) {
+      dd = '0' + dd;
+    }
+
+    if (mm < 10) {
+      mm = '0' + mm;
+    }
+  }
+
+  dateString = dd + '/' + mm + '/' + yyyy;
+
+  return dateString;
+}
+
+function convertEventDate(date) {
+  var myDate = moment(date, 'YYYY-M-DD HH:mm:ss');
+  return myDate.format('MMMM D, YYYY - hh:mm');
+}
+
+function dateDiff(date) {
+  return moment().diff(date, 'days');
+}
+'use strict';
+
+function smoothScroll() {
+  $('a[href*="#"]:not([href="#"])').click(function () {
+    if (location.pathname.replace(/^\//, '') == this.pathname.replace(/^\//, '') && location.hostname == this.hostname) {
+      var target = $(this.hash);
+      target = target.length ? target : $('[name=' + this.hash.slice(1) + ']');
+      if (target.length) {
+        $('html, body').animate({
+          scrollTop: target.offset().top
+        }, 500);
+        return false;
+      }
+    }
+  });
+}
+'use strict';
+
+function getAuthors(data) {
+  var authorString = '';
+  if (data[0]) {
+    data.forEach(function (author, index) {
+      if (index === data.length - 1) {
+        authorString += '' + author.label;
+      } else {
+        authorString += author.label + ', ';
+      }
+    });
+  }
+  return authorString;
+}
+'use strict';
+
+function addDots(string, limit) {
+  var dots = '...';
+  if (string.length > limit) {
+    string = string.substring(0, limit) + dots;
+  }
+
+  return string;
+}
+'use strict';
+
 function closeAccordionSection() {
   $('.c-accordion .accordion-section-title').removeClass('active');
   $('.c-accordion .accordion-section-content').slideUp(200).removeClass('open');
@@ -346,7 +418,8 @@ function pushDefaultModal(id, query, countryData, dataLabel, buttonText, buttonL
         } else if (modalType === 'grid') {
           dataInfo += '\n            <a class="text -small-bold -blue" href="' + data.alias + '">' + data.label + '</a>\n            <p class="text -body-content">' + addDots(data.body.value, 100) + '</p>\n          ';
         } else if (modalType === 'slider') {
-          dataInfo += '\n            <div class="slide -stories-modal">\n              <a href="' + (data.topic[0] ? data.topic[0].alias : '') + '" class="text -small-bold -blue theme-text">' + (data.topic[0] ? data.topic[0].label : '') + '</a>\n              <a class="text -tile-detail -dark title-text" href="' + data.alias + '">' + data.label + '</a>\n              <p class="text -meta authors">' + (data.author[0] ? data.author[0].label : '') + '</p>\n            </div>\n          ';
+          console.log(data);
+          dataInfo += '\n            <div class="slide -stories-modal">\n              <a href="' + (data.topic[0] ? data.topic[0].alias : '') + '" class="text -small-bold -blue theme-text">' + (data.topic[0] ? data.topic[0].label : '') + '</a>\n              <a class="text -tile-detail -dark title-text" href="' + data.alias + '">' + data.label + '</a>\n              <span class="text -meta -blank date-text"> (' + moment.unix(parseInt(data.created)).format('D MMMM YYYY') + ')</span>\n              <p class="text authors"><a class="text -small-bold -blank" href="' + (data.author[0] ? data.author[0].alias : '') + '">' + (data.author[0] ? data.author[0].label : '') + '</a></p>\n            </div>\n          ';
         }
       });
     }
@@ -737,78 +810,6 @@ function appendCountriesThematicBars(item, topContainer) {
   var container = $(topContainer + ' .data-tiles');
   var html = '\n    <div class="column small-12">\n      <div class="c-country-thematic-bar">\n        <div class="thematic-bar">\n        <div class="thematic-bar">\n          <h4>' + item.current_themes[0] + ' ' + (item.current_percentage.length > 0 ? '(' + item.current_percentage[0] + '%)' : '') + '</h4>\n          <div class="' + (item.current_percentage[0] ? 'bar-border' : 'bar-border -hiden') + '">\n            <div class="' + (item.current_percentage[0] ? 'bar -green' : 'bar -hiden') + '" style="' + (item.current_percentage[0] ? 'width:' + item.current_percentage[0] + '%' : '') + '" >\n              <span class="' + (item.current_percentage[0] ? 'bar-error -hiden' : 'bar-error') + '">Sorry, nothing to see.</span>\n            </div>\n          </div>\n          <h4>' + item.current_themes[1] + ' ' + (item.current_percentage[1] ? '(' + item.current_percentage[1] + '%)' : '') + '</h4>\n          <div class="' + (item.current_percentage[1] ? 'bar-border' : 'bar-border -hiden') + '">\n            <div class="' + (item.current_percentage[1] ? 'bar -green' : 'bar -hiden') + '" style="' + (item.current_percentage[1] ? 'width:' + item.current_percentage[1] + '%' : '') + '" >\n              <span class="' + (item.current_percentage[1] ? 'bar-error -hiden' : 'bar-error') + '">Sorry, nothing to see.</span>\n            </div>\n          </div>\n          <h4>' + item.current_themes[2] + ' ' + (item.current_percentage[2] ? '(' + item.current_percentage[2] + '%)' : '') + '</h4>\n          <div class="' + (item.current_percentage[2] ? 'bar-border' : 'bar-border -hiden') + '">\n            <div class="' + (item.current_percentage[2] ? 'bar -green' : 'bar -hiden') + '" style="' + (item.current_percentage[2] ? 'width:' + item.current_percentage[2] + '%' : '') + '" >\n              <span class="' + (item.current_percentage[2] ? 'bar-error -hiden' : 'bar-error') + '">Sorry, nothing to see.</span>\n            </div>\n          </div>\n        </div>\n        </div>\n        <a href="http://www.opengovpartnership.org/explorer/all-data.html" target="_blank" class="text -blue">For data definitions and more data, see the OGP Explorer</a>\n      </div>\n    </div>\n  ';
   container.html(html);
-}
-'use strict';
-
-function convertPostDate(date, format) {
-  var dateString = new Date(date * 1e3);
-  var dd = dateString.getDate();
-  var mm = dateString.getMonth() + 1; //January is 0!
-  var yyyy = dateString.getFullYear();
-
-  if (format === 'dd/mm/yyyy') {
-    if (dd < 10) {
-      dd = '0' + dd;
-    }
-
-    if (mm < 10) {
-      mm = '0' + mm;
-    }
-  }
-
-  dateString = dd + '/' + mm + '/' + yyyy;
-
-  return dateString;
-}
-
-function convertEventDate(date) {
-  var myDate = moment(date, 'YYYY-M-DD HH:mm:ss');
-  return myDate.format('MMMM D, YYYY - hh:mm');
-}
-
-function dateDiff(date) {
-  return moment().diff(date, 'days');
-}
-'use strict';
-
-function smoothScroll() {
-  $('a[href*="#"]:not([href="#"])').click(function () {
-    if (location.pathname.replace(/^\//, '') == this.pathname.replace(/^\//, '') && location.hostname == this.hostname) {
-      var target = $(this.hash);
-      target = target.length ? target : $('[name=' + this.hash.slice(1) + ']');
-      if (target.length) {
-        $('html, body').animate({
-          scrollTop: target.offset().top
-        }, 500);
-        return false;
-      }
-    }
-  });
-}
-'use strict';
-
-function getAuthors(data) {
-  var authorString = '';
-  if (data[0]) {
-    data.forEach(function (author, index) {
-      if (index === data.length - 1) {
-        authorString += '' + author.label;
-      } else {
-        authorString += author.label + ', ';
-      }
-    });
-  }
-  return authorString;
-}
-'use strict';
-
-function addDots(string, limit) {
-  var dots = '...';
-  if (string.length > limit) {
-    string = string.substring(0, limit) + dots;
-  }
-
-  return string;
 }
 'use strict';
 

@@ -105,11 +105,13 @@ function pushDefaultModal(id, query, countryData, dataLabel, buttonText, buttonL
             <p class="text -body-content">${addDots(data.body.value, 100)}</p>
           `;
         } else if (modalType === 'slider') {
+          console.log(data);
           dataInfo += `
             <div class="slide -stories-modal">
               <a href="${data.topic[0] ? data.topic[0].alias : ''}" class="text -small-bold -blue theme-text">${data.topic[0] ? data.topic[0].label : ''}</a>
               <a class="text -tile-detail -dark title-text" href="${data.alias}">${data.label}</a>
-              <p class="text -meta authors">${data.author[0] ? data.author[0].label : ''}</p>
+              <span class="text -meta -blank date-text"> (${moment.unix(parseInt(data.created)).format('D MMMM YYYY')})</span>
+              <p class="text authors"><a class="text -small-bold -blank" href="${data.author[0] ? data.author[0].alias : ''}">${data.author[0] ? data.author[0].label : ''}</a></p>
             </div>
           `;
         }
