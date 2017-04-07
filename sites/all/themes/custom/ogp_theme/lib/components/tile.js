@@ -75,6 +75,30 @@ function appendSmallTiles(data, topContainer, gridNum, customClass) {
   }
 }
 
+function appendTilesIRM(data, topContainer, count) {
+  if (data.length > 0) {
+    let html = `
+    <div class="column small-12 medium-6">
+      <div class="column c-country-tile">
+        <a class="text -title-x-small" href="${data[0].country.alias}">${data[0].country.label}<svg class="icon -blue -medium arrow"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-arrow"></use></svg></a>
+        <div class="first-info text">
+          <span class="text">Total reports ${count}</span>
+        </div>
+        <div class="row data-tiles">`;
+    for (let i = 0; i < data.length; i += 1) {
+      html += `
+      <div class="column small-12 large-6 c-tile -short -hiden">
+        <a href="/${data[i].alias}" class="tile">
+          <div class=""></div>
+          <span class="text -tile -white">${data[i].label}</span>
+        </a>
+      </div>`;
+    }
+    html += `</div></div></div>`;
+    $(`${topContainer.selector}`).append(html);
+  }
+}
+
 function appendTilesEvent(data, container) {
   if (data.length > 0) {
     let html = '';
