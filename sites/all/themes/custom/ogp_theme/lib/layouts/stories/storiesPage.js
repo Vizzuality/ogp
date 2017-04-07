@@ -76,11 +76,11 @@ function showStoriesPage() {
       const activeCountry = parseInt(country) > 0 ? `filter[country]=${country}&` : '';
       const activeType = parseInt(type) > 0 ? `filter[category]=${type}&` : '';
       const activeFilters = `${activeCountry}${activeType}&page=${page}`;
-      $.getJSON(`/apiJSON/stories?${activeFilters}&sort=-created,-highlighted`, function (stories) {
+      $.getJSON(`/apiJSON/stories?${activeFilters}&sort=-created`, function (stories) {
         if (stories.data.length > 0) {
           totalPages = getPageCount(stories.count, 6);
           if (page === 1) {
-            $.getJSON(`/apiJSON/stories?sort=-created&filter[highlighted]=1`, function (highlightedStory) {
+            $.getJSON(`/apiJSON/stories?sort=-created`, function (highlightedStory) {
               if (highlightedStory.data[0]) {
                 buildHighlightedEvent(highlightedStory.data[0]);
               }
