@@ -80,7 +80,7 @@ function showStoriesPage() {
         if (stories.data.length > 0) {
           totalPages = getPageCount(stories.count, 6);
           if (page === 1) {
-            $.getJSON(`/apiJSON/stories?sort=-created`, function (highlightedStory) {
+            $.getJSON(`/apiJSON/stories?sort=-created&filter[highlighted]=1`, function (highlightedStory) {
               if (highlightedStory.data[0]) {
                 buildHighlightedEvent(highlightedStory.data[0]);
               }

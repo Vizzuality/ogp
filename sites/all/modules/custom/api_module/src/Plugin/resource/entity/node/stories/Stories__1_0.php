@@ -98,6 +98,10 @@ class Stories__1_0 extends ResourceNode{
       'property' => 'created'
     );
 
+    $public_fields['highlighted'] = array(
+      'property' => 'field_highlighted_content'
+    );
+
     $public_fields['alias'] = array(
       'property' => 'nid',
       'process_callbacks' => array(
