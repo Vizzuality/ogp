@@ -10,7 +10,7 @@
  $documents = field_get_items('node', $node, 'field_link_file_resource_info');
  $file_types = ['.xlsx', '.pdf'];
 ?>
-<div id="resourcesDetail" data-node="<?php echo $node_name ?>" class="l-resources -single"<?php print $attributes; ?>>
+<div id="resourcesDetail" class="l-resources -single"<?php print $attributes; ?>>
 
   <!-- Full width header -->
   <div class="l-full-width -blue">
@@ -38,13 +38,12 @@
       </div>
       <?php if ($documents) { ?>
         <h1 class="text -section-title">Documents</h1>
-      <?php } ?>
       <?php foreach ($documents as $document) { ?>
         <div class="c-link">
           <svg class="icon -blue -small"><use xlink:href="#icon-external-link"></use></svg>
           <a class="text -link -blue" href="<?php echo $document['value'] ?>" target="_blank" rel="nofollow">View document</a>
         </div>
-      <?php } ?>
+      <?php }} ?>
     </div>
   </div>
 

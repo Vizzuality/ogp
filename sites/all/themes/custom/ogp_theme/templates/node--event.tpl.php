@@ -7,6 +7,7 @@ $fields = field_info_instances('node', 'event');
 $today = date("Y-m-d H:i:s");
 
 $field_publication_date = field_get_items('node', $node, 'field_publication_date');
+$field_language = field_get_items('node', $node, 'field_language_event');
 $field_date = field_get_items('node', $node, 'field_date');
 $field_country_event = field_get_items('node', $node, 'field_country_event');
 $field_location = field_get_items('node', $node, 'field_location');
@@ -14,6 +15,7 @@ $field_event_type = field_get_items('node', $node, 'field_event_type');
 $field_tags = field_get_items('node', $node, 'field_tags');
 $body = field_get_items('node', $node, 'body');
 ?>
+
 <div id="eventsTemplate" class="l-news-events events-template">
 
   <section class="l-full-width -blue -short -with-padding-big image-back">
@@ -54,9 +56,9 @@ $body = field_get_items('node', $node, 'body');
               <?php echo field_location[0]['locality'] ?>
             </strong>
           <?php } ?>
-          <?php if ($field_country_event[0][entity]->title) { ?>
+          <?php if ($field_country_event[0]['entity']->title) { ?>
             <strong class="text">
-              <?php echo $field_country_event[0][entity]->title ?>
+              <?php echo $field_country_event[0]['entity']->title ?>
             </strong>
           <?php } ?>
         </p>
@@ -65,21 +67,28 @@ $body = field_get_items('node', $node, 'body');
       <div class="column small-12 medium-3">
         <strong class="text -uppercase -small-bold">Language</strong>
         <p>
-          <strong class="text -small-bold -capitalize"><?php echo $node->language ?> </strong>
+          <strong class="text -small-bold -capitalize"><?php echo $field_language[0]['value'] ?> </strong>
         </p>
       </div>
 
       <div class="column small-12 medium-6">
           <strong class="text -uppercase -small-bold"><?php echo $fields['field_tags']['label'] ?></strong>
-          <?php if ($field_country_event[0][entity]->title) { ?>
+          <?php if ($field_country_event[0]['entity']->title) { ?>
             <p>
               <strong class="text -white -small-bold -capitalize">
                 <?php
-                  echo ($field_tags)[0];
-                  if ($field_tags[0]['taxonomy_term']->name || $field_tags[0]) {
-                    echo ($field_tags[0]['taxonomy_term']->name);
+                  if (sizeof($field_tags) > 0) {
+                    $count = 1;
+                    foreach($field_tags as $tag) {
+                      if ($count == sizeof($field_tags)) {
+                        echo ($tag['taxonomy_term']->name);
+                      } else {
+                        echo ($tag['taxonomy_term']->name) . ', ';
+                      }
+                      $count++;
+                    }
                   } else {
-                    echo 'There are not tags.';
+                    echo 'No tags';
                   }
                 ?>
               </strong>

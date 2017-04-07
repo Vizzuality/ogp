@@ -15,7 +15,7 @@ $field_countries_poc = field_get_items('node', $node, 'field_countries_poc');
         <div class="column small-12 medium-8 content-header">
             <h1 class="text -title"><?php echo $node->title ?></h1>
             <h2 class="text"><?php echo $field_job_title ?></h2>
-            <a href="/<?php echo (drupal_get_path_alias('node/' . $field_countries_involved[0][target_id])) ?>" class="text -small-bold -uppercase -blue tag"><?php echo $field_countries_involved[0][entity]->title; ?></a>
+            <a href="/<?php echo (drupal_get_path_alias('node/' . $field_countries_involved[0]['target_id'])) ?>" class="text -small-bold -uppercase -blue tag"><?php echo $field_countries_involved[0]['entity']->title; ?></a>
         </div>
 
     </div>
@@ -33,9 +33,9 @@ $field_countries_poc = field_get_items('node', $node, 'field_countries_poc');
                       <?php
                         for ($i = 0; $i < $iMax = count($field_countries_poc); $i++) {
                           if($i === (count($field_countries_poc) - 1)) {
-                            echo '<a class="text -blue -small-bold" href="/'. drupal_get_path_alias('node/' . $field_countries_poc[$i][target_id]) .'">' . $field_countries_poc[$i][entity]->title .'</a>';
+                            echo '<a class="text -blue -small-bold" href="/'. drupal_get_path_alias('node/' . $field_countries_poc[$i]['target_id']) .'">' . $field_countries_poc[$i]['entity']->title .'</a>';
                           } else {
-                            echo '<a class="text -blue -small-bold" href="/'. drupal_get_path_alias('node/' . $field_countries_poc[$i][target_id]) .'">' . $field_countries_poc[$i][entity]->title  . ', </a>';
+                            echo '<a class="text -blue -small-bold" href="/'. drupal_get_path_alias('node/' . $field_countries_poc[$i]['target_id']) .'">' . $field_countries_poc[$i]['entity']->title  . ', </a>';
                           }
                         }
                       ?>
