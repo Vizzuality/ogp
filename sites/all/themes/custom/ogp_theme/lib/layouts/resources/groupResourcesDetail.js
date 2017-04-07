@@ -15,7 +15,7 @@ function showGroupResourcesDetail(id) {
       showLoader('.l-section');
       tilesContainer.html('');
       searchContainer.val('');
-      const filterGroup = currentNode === 'All Resources' ? '' : `filter[group_resource]=${currentNode}&`;
+      const filterGroup = currentNode === 2920 ? '' : `filter[group_resource]=${currentNode}&`;
       $.getJSON(`/apiJSON/resources?${filterGroup}filter[sub_group]=${sub_group_id}`, (data) => {
         if (data.data.length) {
           appendTiles(data.data, tilesContainer, 4);
@@ -32,7 +32,7 @@ function showGroupResourcesDetail(id) {
       buildTabs(data.data, tabsContainer, onChangeTab);
       setSearchPlaceholder(searchContainer, data.data[0].label);
       setSearchListeners(searchEl, searchText);
-      const filterGroup = currentNode === 'All Resources' ? '' : `filter[group_resource]=${currentNode}&`;
+      const filterGroup = currentNode === 2920 ? '' : `filter[group_resource]=${currentNode}&`;
       $.getJSON(`/apiJSON/resources?${filterGroup}filter[sub_group]=${data.data[0].id}&sort=-post_highlighted`, (resources) => {
         if (resources.data.length) {
           appendTiles(resources.data, tilesContainer, 4);
