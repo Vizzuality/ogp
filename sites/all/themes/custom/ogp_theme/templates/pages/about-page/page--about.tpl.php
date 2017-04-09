@@ -19,12 +19,6 @@
       </div>
     </div>
 
-    <div class="column small-12 medium-3">
-                <div class="c-tabs -vertical">
-
-                </div>
-              </div>
-
     <section class="row l-about-page">
       <div class="column small-12 medium-3">
         <div class="c-tabs -vertical">
