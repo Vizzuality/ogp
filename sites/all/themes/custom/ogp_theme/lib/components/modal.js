@@ -91,13 +91,15 @@ function pushDefaultModal(id, query, countryData, dataLabel, buttonText, buttonL
   $.getJSON(`apiJSON/${query}`, function (data) {
     let dataInfo = '';
     let id_people= [];
-    if (secondData.data.length > 0) {
-      for (let i = 0; i < secondData.data.length; i += 1) {
-        id_people[i] = secondData.data[i].id;
-        dataInfo += `
-          <a class="text -small-bold -blue" href="${secondData.data[i].alias}">${secondData.data[i].label} (point of contact)</a>
-          <p class="text -body-content">${addDots(secondData.data[i].body.value, 100)}</p>
-        `;
+    if (dataLabel === 'people involved') {
+      if (secondData.data.length > 0) {
+        for (let i = 0; i < secondData.data.length; i += 1) {
+          id_people[i] = secondData.data[i].id;
+          dataInfo += `
+            <a class="text -small-bold -blue" href="${secondData.data[i].alias}">${secondData.data[i].label} (point of contact)</a>
+            <p class="text -body-content">${addDots(secondData.data[i].body.value, 100)}</p>
+          `;
+        }
       }
     }
     if (data.data.length > 0) {
