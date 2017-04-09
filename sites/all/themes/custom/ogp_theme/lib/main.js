@@ -164,6 +164,7 @@ function getAbsolutePath() {
 
       if ($(context).find('#aboutPage').length !== 0) {
         showAboutPages('newsletter');
+        addBanner('newsletter');
       }
 
       //build subscribe modal
