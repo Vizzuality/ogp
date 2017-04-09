@@ -54,24 +54,40 @@
           <div class="column small-12 medium-12">
             <div class="small-12 medium-3">
               <div class="c-selector -tall">
-                <select class="country-filter"></select>
+                <select class="country-filter-download"></select>
               </div>
             </div>
           </div>
           <div class="row content-tiles row content-tiles small-12 medium-12" id="downloadContainer">
           </div>
           <div class="c-loader"><div class="loader"></div></div>
+          <div class="column small-12">
+            <div class="c-pagination-click c-pagination-click-download">
+              <div class="reload-thematic reload-thematic-download" data-value="1">
+                <svg class="icon icon-reload"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-loading"></use></svg>
+                <span class="text -blue -small-bold">LOAD MORE IRM REPORTS</span>
+              </div>
+            </div>
+          </div>
         </div>
-        <div class="tab-content comment -hidden">
-
-        </div>
-      </div>
-
-      <div class="column small-12">
-        <div class="c-pagination-click">
-          <div class="reload-thematic" data-value="1">
-            <svg class="icon icon-reload"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-loading"></use></svg>
-            <span class="text -blue -small-bold">LOAD MORE IRM REPORTS</span>
+        <div class="row content-tiles tab-content comment -hidden" id="tab-loader-comments">
+          <div class="column small-12 medium-12">
+            <div class="small-12 medium-3">
+              <div class="c-selector -tall">
+                <select class="country-filter-comments"></select>
+              </div>
+            </div>
+          </div>
+          <div class="row content-tiles row content-tiles small-12 medium-12" id="commentsContainer">
+          </div>
+          <div class="c-loader"><div class="loader"></div></div>
+          <div class="column small-12">
+            <div class="c-pagination-click c-pagination-click-comments">
+              <div class="reload-thematic reload-thematic-comments" data-value="1">
+                <svg class="icon icon-reload"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-loading"></use></svg>
+                <span class="text -blue -small-bold">LOAD MORE COMMENT REPORTS</span>
+              </div>
+            </div>
           </div>
         </div>
       </div>
