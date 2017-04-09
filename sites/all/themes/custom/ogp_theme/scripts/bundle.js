@@ -344,10 +344,12 @@ function pushDefaultModal(id, query, countryData, dataLabel, buttonText, buttonL
   $.getJSON('apiJSON/' + query, function (data) {
     var dataInfo = '';
     var id_people = [];
-    if (secondData.data.length > 0) {
-      for (var i = 0; i < secondData.data.length; i += 1) {
-        id_people[i] = secondData.data[i].id;
-        dataInfo += '\n          <a class="text -small-bold -blue" href="' + secondData.data[i].alias + '">' + secondData.data[i].label + ' (point of contact)</a>\n          <p class="text -body-content">' + addDots(secondData.data[i].body.value, 100) + '</p>\n        ';
+    if (dataLabel === 'people involved') {
+      if (secondData.data.length > 0) {
+        for (var i = 0; i < secondData.data.length; i += 1) {
+          id_people[i] = secondData.data[i].id;
+          dataInfo += '\n            <a class="text -small-bold -blue" href="' + secondData.data[i].alias + '">' + secondData.data[i].label + ' (point of contact)</a>\n            <p class="text -body-content">' + addDots(secondData.data[i].body.value, 100) + '</p>\n          ';
+        }
       }
     }
     if (data.data.length > 0) {
