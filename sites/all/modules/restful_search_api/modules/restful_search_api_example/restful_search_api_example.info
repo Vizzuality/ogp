@@ -1,0 +1,13 @@
+name = RESTful Search API Example
+description = Shows how to create a resource backed by Search API.
+dependencies[] = restful_search_api
+core = 7.x
+
+registry_autoload[] = PSR-4
+
+; Information added by Drupal.org packaging script on 2016-04-28
+version = "7.x-2.0-beta1"
+core = "7.x"
+project = "restful_search_api"
+datestamp = "1461815344"
+
