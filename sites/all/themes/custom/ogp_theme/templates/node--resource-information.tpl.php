@@ -8,7 +8,7 @@
  $attachments_spanish = field_get_items('node', $node, 'field_spanish_versions');
  $date = format_date($node->changed, 'custom', 'd/m/Y');
  $post_date = field_get_items('node', $node, 'field_post_date_resource');
- $body = field_get_items('node', $node, 'body')[0]['value'];
+ $body = field_get_items('node', $node, 'body');
  $file_types = ['.xlsx', '.pdf'];
 ?>
 <div id="resourcesDetail" class="l-resources -single"<?php print $attributes; ?>>
@@ -35,7 +35,7 @@
     <div class="column small-12 medium-8 medium-offset-2">
       <h1 class="text -section-title">Description</h1>
       <div class="text -body-content">
-        <?php echo $body ?>
+        <?php echo $body[0]['value'] ?>
       </div>
       <?php if ($attachments || $attachments_spanish) { ?>
         <div class="c-documents">
