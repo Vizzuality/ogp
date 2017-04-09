@@ -1,0 +1,10 @@
+.l-about-page {
+  display: flex;
+  justify-content: space-between;
+
+  .tab-content {
+    &.-hidden {
+      display: none;
+    }
+  }
+}
