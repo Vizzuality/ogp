@@ -126,7 +126,6 @@ $ogp_process_link = field_get_items('node', $ogp_process, 'field_link');
       </div>
     </div>
   </div>
-
   <div class="l-social-region">
     <?php
     $social = block_get_blocks_by_region('contentSocialFeed');
