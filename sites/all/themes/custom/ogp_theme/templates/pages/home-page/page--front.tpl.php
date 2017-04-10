@@ -71,7 +71,7 @@ $ogp_process_link = field_get_items('node', $ogp_process, 'field_link');
             </ul>
           </div>
           <div class="multi-button">
-            <a class="c-button -green-back -tall" href="countries">countries</a>
+            <a class="c-button -green-back -tall" href="participants">participants</a>
             <a class="c-button -green-back -tall" href="theme">themes</a>
           </div>
         </div>
