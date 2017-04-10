@@ -119,10 +119,12 @@ function pushDefaultModal(id, query, countryData, dataLabel, buttonText, buttonL
             `;
           }
         } else if (modalType === 'slider') {
+          console.log(data);
           dataInfo += `
-            <div class="slide">
+            <div class="slide -stories">
               <a href="${data.topic[0] ? data.topic[0].alias : ''}" class="text -small-bold -blue">${data.topic[0] ? data.topic[0].label : ''}</a>
-              <h2 class="text -title-x-small">${data.label}</h2>
+              <a href="${data.alias}" class="text -section-title-small">${data.label}</a>
+              <span class="text date-text -small-bold">${moment.unix(data.created).format('D MMMM YYYY')}</span>
               <p class="text -meta">${data.author[0] ? data.author[0].label : ''}</p>
             </div>
           `;
@@ -149,16 +151,6 @@ function pushDefaultModal(id, query, countryData, dataLabel, buttonText, buttonL
       </div>
     `;
     setDataToModal(id, html);
-    if (modalType === 'slider') {
-      $('.stories-slider').slick({
-        dots: true,
-        arrows: false,
-        speed: 500,
-        fade: true,
-        cssEase: 'linear',
-        dotsClass: 'dots-slider-modal',
-      });
-    }
   });
 }
 
