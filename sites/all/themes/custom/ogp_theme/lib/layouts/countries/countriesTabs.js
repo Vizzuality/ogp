@@ -91,7 +91,13 @@ function initCountryBox(container, country, activeTab) {
       <div class="c-country-tile">
         <a class="text -title-x-small" href="/${country.alias}">${country.label}&nbsp;<svg class="icon -blue -medium arrow"><use xlink:href="#icon-arrow"></use></svg></a>
         <div class="first-info text">
-          <span>Total Commitments ${parseInt(country.current_commitments_count) + parseInt(country.starred_commitments_count) + parseInt(country.irm_commitments_count)}</span>
+          <span>Current Commitments ${parseInt(country.current_commitments_count)}</span>
+          <span>Reviewed Commitments ${parseInt(country.irm_commitments_count)}</span>
+        </div>
+        <div class="text border-line">
+          <span>Starred Commitments ${parseInt(country.starred_commitments_count)}</span>
+        </div>
+        <div class="first-info text">
           <span>Action Plans ${country.action_plan_count}</span>
           <span>Member since ${moment.unix(country.memberSince).format('YYYY')}</span>
         </div>
