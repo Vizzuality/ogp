@@ -367,7 +367,6 @@ function pushDefaultModal(id, query, countryData, dataLabel, buttonText, buttonL
             dataInfo += '\n              <a class="text -small-bold -blue" href="' + data.alias + '">' + data.label + '</a>\n              <p class="text -body-content">' + addDots(data.body.value, 100) + '</p>\n            ';
           }
         } else if (modalType === 'slider') {
-          console.log(data);
           dataInfo += '\n            <div class="slide -stories">\n              <a href="' + (data.topic[0] ? data.topic[0].alias : '') + '" class="text -small-bold -blue">' + (data.topic[0] ? data.topic[0].label : '') + '</a>\n              <a href="' + data.alias + '" class="text -section-title-small">' + data.label + '</a>\n              <span class="text date-text -small-bold">' + moment.unix(data.created).format('D MMMM YYYY') + '</span>\n              <p class="text -meta">' + (data.author[0] ? data.author[0].label : '') + '</p>\n            </div>\n          ';
         }
       });

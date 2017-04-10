@@ -119,7 +119,6 @@ function pushDefaultModal(id, query, countryData, dataLabel, buttonText, buttonL
             `;
           }
         } else if (modalType === 'slider') {
-          console.log(data);
           dataInfo += `
             <div class="slide -stories">
               <a href="${data.topic[0] ? data.topic[0].alias : ''}" class="text -small-bold -blue">${data.topic[0] ? data.topic[0].label : ''}</a>
