@@ -346,6 +346,7 @@ function setDataToModal(id, html) {
 }
 
 function pushDefaultModal(id, query, countryData, dataLabel, buttonText, buttonLink, modalType, secondData) {
+
   $.getJSON('apiJSON/' + query, function (data) {
     var dataInfo = '';
     var id_people = [];
@@ -357,6 +358,7 @@ function pushDefaultModal(id, query, countryData, dataLabel, buttonText, buttonL
         }
       }
     }
+
     if (data.data.length > 0) {
       var trimmedData = modalType === 'slider' ? data.data.slice(0, 3) : data.data;
       trimmedData.forEach(function (data) {
@@ -367,14 +369,23 @@ function pushDefaultModal(id, query, countryData, dataLabel, buttonText, buttonL
             dataInfo += '\n              <a class="text -small-bold -blue" href="' + data.alias + '">' + data.label + '</a>\n              <p class="text -body-content">' + addDots(data.body.value, 100) + '</p>\n            ';
           }
         } else if (modalType === 'slider') {
-          dataInfo += '\n            <div class="slide -stories">\n              <a href="' + (data.topic[0] ? data.topic[0].alias : '') + '" class="text -small-bold -blue">' + (data.topic[0] ? data.topic[0].label : '') + '</a>\n              <a href="' + data.alias + '" class="text -section-title-small">' + data.label + '</a>\n              <span class="text date-text -small-bold">' + moment.unix(data.created).format('D MMMM YYYY') + '</span>\n              <p class="text -meta">' + (data.author[0] ? data.author[0].label : '') + '</p>\n            </div>\n          ';
+          dataInfo += '\n            <div class="slide -stories">\n              <a href="' + (data.topic[0] ? data.topic[0].alias : '') + '" class="text -small-bold -blue">' + (data.topic[0] ? data.topic[0].label : '') + '</a>\n              <a href="/' + data.alias + '" class="text -section-title-small">' + data.label + '</a>\n              <span class="text date-text -small-bold">' + moment.unix(data.created).format('D MMMM YYYY') + '</span>\n              <p class="text -meta">' + (data.author[0] ? data.author[0].label : '') + '</p>\n            </div>\n          ';
         }
       });
     }
-    var html = '\n      <div class="modal-header">\n        <div class="header-info">\n          <h3 class="text -module-title">' + countryData[0].label + '</h3>\n          <p class="text -meta">Member since ' + moment.unix(countryData[0].memberSince).format('YYYY') + ', Action plan ' + countryData[0].action_plan_count + '</p>\n        </div>\n        <div class="c-data-number">\n          <h3 class="text -number">' + data.count + '</h3>\n          <p class="text -small-bold">' + dataLabel + '</p>\n        </div>\n      </div>\n      <div class="content-wrapper -scroll ' + (modalType === 'slider' ? 'stories-slider' : '') + '">\n        ' + dataInfo + '\n      </div>\n      <div class="button-container -fixed">\n        <a href="/' + buttonLink + '" class="c-button -tall -green-back -box">' + buttonText + '</a>\n        <a href="' + countryData[0].alias + '" class="c-button -tall -green-back -box">VIEW COUNTRY</a>\n      </div>\n    ';
-    setDataToModal(id, html);
+
+    if (dataLabel === 'starred-tab') {
+      var html = '\n        <div class="modal-header">\n          <div class="header-info">\n            <h3 class="text -module-title">' + countryData.data[0].label + '</h3>\n            <p class="text -meta">Member since ' + moment.unix(countryData.data[0].memberSince).format('YYYY') + ', Action plan ' + countryData.data[0].action_plan_count + '</p>\n          </div>\n          <div class="c-data-number">\n            <h3 class="text -number">' + data.count + '</h3>\n            <p class="text -small-bold">' + dataLabel + '</p>\n          </div>\n        </div>\n        <div class="content-wrapper -scroll ' + (modalType === 'slider' ? 'stories-slider' : '') + '">\n          ' + dataInfo + '\n        </div>\n        <div class="button-container -fixed">\n          <a href="/' + buttonLink + '" class="c-button -tall -green-back -box">' + buttonText + '</a>\n          <a href="' + countryData.data[0].alias + '" class="c-button -tall -green-back -box">VIEW COUNTRY</a>\n        </div>\n      ';
+      setDataToModal(id, html);
+      removeLoader('body', null, true);
+    } else {
+      var _html = '\n        <div class="modal-header">\n          <div class="header-info">\n            <h3 class="text -module-title">' + countryData[0].label + '</h3>\n            <p class="text -meta">Member since ' + moment.unix(countryData[0].memberSince).format('YYYY') + ', Action plan ' + countryData[0].action_plan_count + '</p>\n          </div>\n          <div class="c-data-number">\n            <h3 class="text -number">' + data.count + '</h3>\n            <p class="text -small-bold">' + dataLabel + '</p>\n          </div>\n        </div>\n        <div class="content-wrapper -scroll ' + (modalType === 'slider' ? 'stories-slider' : '') + '">\n          ' + dataInfo + '\n        </div>\n        <div class="button-container -fixed">\n          <a href="/' + buttonLink + '" class="c-button -tall -green-back -box">' + buttonText + '</a>\n          <a href="' + countryData[0].alias + '" class="c-button -tall -green-back -box">VIEW COUNTRY</a>\n        </div>\n      ';
+      setDataToModal(id, _html);
+    }
   });
 }
+
+function pushTabStarredModal(id, dataStarred) {}
 
 function pushSmallModal(id, query, countryData, firstDataLabel, secondDataLabel, buttonText, buttonLink) {
 
@@ -385,33 +396,38 @@ function pushSmallModal(id, query, countryData, firstDataLabel, secondDataLabel,
 }
 
 function setMapModalContent(id, type, countryId, countriesData) {
-  var countryData = countriesData.filter(function (country) {
-    return country.id == countryId;
-  });
-  switch (type) {
-    case 'actionPlan':
-      pushSmallModal(id, 'irm_commitments?filter[country]=' + countryId, countryData, 'commitments', 'themes covered', 'latest stories', '/stories', '');
-      break;
-    case 'starred':
-      pushDefaultModal(id, 'starredcommitments?filter[country]=' + countryId, countryData, 'starred commitments', 'latest stories', '/stories', 'list', '');
-      break;
-    case 'event':
-      pushDefaultModal(id, 'events?filter[country]=' + countryId, countryData, 'events', 'go to events', '/events', 'list', '');
-      break;
-    case 'commitment':
-      var currentFilter = $('.select-legend-dropdown').val() ? '&filter[theme_id]=' + $('.select-legend-dropdown').val() : '';
-      pushDefaultModal(id, 'current_commitment?filter[country]=' + countryId + currentFilter, countryData, 'current commitments', 'explore this theme', '/theme', 'list', '');
-      break;
-    case 'people':
-      $.getJSON('apiJSON/people?filter[country_poc]=' + countryId, function (poc) {
-        pushDefaultModal(id, 'people?filter[country]=' + countryId, countryData, 'people involved', 'latest stories', '/stories', 'grid', poc);
-      });
-      break;
-    case 'stories':
-      pushDefaultModal(id, 'stories?filter[country]=' + countryId, countryData, 'stories', 'latest stories', '/stories', 'slider', '');
-      break;
-    default:
-      break;
+  if (type === 'starred-tab') {
+    pushTabStarredModal(id, countryId);
+    pushDefaultModal(id, 'starredcommitments?filter[country]=' + countryId, countriesData, 'starred-tab', 'latest stories', '/stories', 'list', '');
+  } else {
+    var countryData = countriesData.filter(function (country) {
+      return country.id == countryId;
+    });
+    switch (type) {
+      case 'actionPlan':
+        pushSmallModal(id, 'irm_commitments?filter[country]=' + countryId, countryData, 'commitments', 'themes covered', 'latest stories', '/stories', '');
+        break;
+      case 'starred':
+        pushDefaultModal(id, 'starredcommitments?filter[country]=' + countryId, countryData, 'starred commitments', 'latest stories', '/stories', 'list', '');
+        break;
+      case 'event':
+        pushDefaultModal(id, 'events?filter[country]=' + countryId, countryData, 'events', 'go to events', '/events', 'list', '');
+        break;
+      case 'commitment':
+        var currentFilter = $('.select-legend-dropdown').val() ? '&filter[theme_id]=' + $('.select-legend-dropdown').val() : '';
+        pushDefaultModal(id, 'current_commitment?filter[country]=' + countryId + currentFilter, countryData, 'current commitments', 'explore this theme', '/theme', 'list', '');
+        break;
+      case 'people':
+        $.getJSON('apiJSON/people?filter[country_poc]=' + countryId, function (poc) {
+          pushDefaultModal(id, 'people?filter[country]=' + countryId, countryData, 'people involved', 'latest stories', '/stories', 'grid', poc);
+        });
+        break;
+      case 'stories':
+        pushDefaultModal(id, 'stories?filter[country]=' + countryId, countryData, 'stories', 'latest stories', '/stories', 'slider', '');
+        break;
+      default:
+        break;
+    }
   }
 }
 'use strict';
@@ -1532,6 +1548,16 @@ function hideOnClickPagination() {
   $('.c-pagination-click').addClass('-hidden');
 }
 
+function initModalStarred() {
+  $('.show-modal-starred').click(function () {
+    var country = $(this).data('value');
+    $.getJSON('/apiJSON/countries?filter[id]=' + country, function (countriesData) {
+      showLoader('body');
+      setMapModalContent('mapModal', 'starred-tab', country, countriesData);
+    });
+  });
+}
+
 function setCountryDataTiles(container, country) {
   var activeTab = $('.tabs-container').find('.-selected').data('node');
   $('#country-' + country.id + ' .data-tiles').html('');
@@ -1539,6 +1565,7 @@ function setCountryDataTiles(container, country) {
     if (country.starred_commitments.length > 0) {
       var trimCommitments = country.starred_commitments.slice(0, 2);
       appendSmallTiles(trimCommitments, '#country-' + country.id, 2, '-short -country');
+      $('#country-' + country.id + ' > .c-country-tile').append('\n        <span data-value="' + country.id + '" class="show-modal-starred text -interactive -blue">Show all starred commitments</span>\n      ');
     } else {
       showNoResults('#country-' + country.id + ' .data-tiles', 'No starred commitments', 'medium', 'grey', 'xlarge', 'grey');
     }
@@ -1597,6 +1624,7 @@ function showCountriesData(countriesData, activeTab, container, countryId) {
     showOnClickPagination();
   }
   removeLoader(container, null, true);
+  initModalStarred();
 }
 
 function initCountryTabs(onChangeCountryTab) {

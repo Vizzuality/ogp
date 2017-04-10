@@ -88,6 +88,7 @@ function setDataToModal(id, html) {
 }
 
 function pushDefaultModal(id, query, countryData, dataLabel, buttonText, buttonLink, modalType, secondData) {
+
   $.getJSON(`apiJSON/${query}`, function (data) {
     let dataInfo = '';
     let id_people= [];
@@ -102,6 +103,7 @@ function pushDefaultModal(id, query, countryData, dataLabel, buttonText, buttonL
         }
       }
     }
+
     if (data.data.length > 0) {
       const trimmedData = modalType === 'slider' ? data.data.slice(0,3): data.data;
       trimmedData.forEach(function(data) {
@@ -122,7 +124,7 @@ function pushDefaultModal(id, query, countryData, dataLabel, buttonText, buttonL
           dataInfo += `
             <div class="slide -stories">
               <a href="${data.topic[0] ? data.topic[0].alias : ''}" class="text -small-bold -blue">${data.topic[0] ? data.topic[0].label : ''}</a>
-              <a href="${data.alias}" class="text -section-title-small">${data.label}</a>
+              <a href="/${data.alias}" class="text -section-title-small">${data.label}</a>
               <span class="text date-text -small-bold">${moment.unix(data.created).format('D MMMM YYYY')}</span>
               <p class="text -meta">${data.author[0] ? data.author[0].label : ''}</p>
             </div>
@@ -130,27 +132,56 @@ function pushDefaultModal(id, query, countryData, dataLabel, buttonText, buttonL
         }
       });
     }
-    const html = `
-      <div class="modal-header">
-        <div class="header-info">
-          <h3 class="text -module-title">${countryData[0].label}</h3>
-          <p class="text -meta">Member since ${moment.unix(countryData[0].memberSince).format('YYYY')}, Action plan ${countryData[0].action_plan_count}</p>
+
+    if (dataLabel === 'starred-tab') {
+      const html = `
+        <div class="modal-header">
+          <div class="header-info">
+            <h3 class="text -module-title">${countryData.data[0].label}</h3>
+            <p class="text -meta">Member since ${moment.unix(countryData.data[0].memberSince).format('YYYY')}, Action plan ${countryData.data[0].action_plan_count}</p>
+          </div>
+          <div class="c-data-number">
+            <h3 class="text -number">${data.count}</h3>
+            <p class="text -small-bold">${dataLabel}</p>
+          </div>
         </div>
-        <div class="c-data-number">
-          <h3 class="text -number">${data.count}</h3>
-          <p class="text -small-bold">${dataLabel}</p>
+        <div class="content-wrapper -scroll ${modalType === 'slider' ? 'stories-slider': ''}">
+          ${dataInfo}
         </div>
-      </div>
-      <div class="content-wrapper -scroll ${modalType === 'slider' ? 'stories-slider': ''}">
-        ${dataInfo}
-      </div>
-      <div class="button-container -fixed">
-        <a href="/${buttonLink}" class="c-button -tall -green-back -box">${buttonText}</a>
-        <a href="${countryData[0].alias}" class="c-button -tall -green-back -box">VIEW COUNTRY</a>
-      </div>
-    `;
-    setDataToModal(id, html);
+        <div class="button-container -fixed">
+          <a href="/${buttonLink}" class="c-button -tall -green-back -box">${buttonText}</a>
+          <a href="${countryData.data[0].alias}" class="c-button -tall -green-back -box">VIEW COUNTRY</a>
+        </div>
+      `;
+      setDataToModal(id, html);
+      removeLoader('body', null, true);
+    } else {
+      const html = `
+        <div class="modal-header">
+          <div class="header-info">
+            <h3 class="text -module-title">${countryData[0].label}</h3>
+            <p class="text -meta">Member since ${moment.unix(countryData[0].memberSince).format('YYYY')}, Action plan ${countryData[0].action_plan_count}</p>
+          </div>
+          <div class="c-data-number">
+            <h3 class="text -number">${data.count}</h3>
+            <p class="text -small-bold">${dataLabel}</p>
+          </div>
+        </div>
+        <div class="content-wrapper -scroll ${modalType === 'slider' ? 'stories-slider': ''}">
+          ${dataInfo}
+        </div>
+        <div class="button-container -fixed">
+          <a href="/${buttonLink}" class="c-button -tall -green-back -box">${buttonText}</a>
+          <a href="${countryData[0].alias}" class="c-button -tall -green-back -box">VIEW COUNTRY</a>
+        </div>
+      `;
+      setDataToModal(id, html);
+    }
   });
+}
+
+function pushTabStarredModal(id, dataStarred) {
+
 }
 
 function pushSmallModal(id, query, countryData, firstDataLabel, secondDataLabel, buttonText, buttonLink) {
@@ -181,32 +212,37 @@ function pushSmallModal(id, query, countryData, firstDataLabel, secondDataLabel,
 }
 
 function setMapModalContent(id, type, countryId, countriesData) {
-  const countryData = countriesData.filter(function(country) {
-    return country.id == countryId;
-  });
-  switch (type) {
-    case 'actionPlan':
-      pushSmallModal(id, `irm_commitments?filter[country]=${countryId}`, countryData, 'commitments', 'themes covered', 'latest stories', '/stories', '');
-      break;
-    case 'starred':
-      pushDefaultModal(id, `starredcommitments?filter[country]=${countryId}`, countryData, 'starred commitments', 'latest stories', '/stories', 'list', '');
-      break;
-    case 'event':
-      pushDefaultModal(id, `events?filter[country]=${countryId}`, countryData, 'events', 'go to events', '/events', 'list', '');
-      break;
-    case 'commitment':
-      const currentFilter = $('.select-legend-dropdown').val() ? `&filter[theme_id]=${$('.select-legend-dropdown').val()}` : '';
-      pushDefaultModal(id, `current_commitment?filter[country]=${countryId}${currentFilter}`, countryData, 'current commitments', 'explore this theme', '/theme', 'list', '');
-      break;
-    case 'people':
-      $.getJSON(`apiJSON/people?filter[country_poc]=${countryId}`, function (poc) {
-        pushDefaultModal(id, `people?filter[country]=${countryId}`, countryData, 'people involved', 'latest stories', '/stories', 'grid', poc);
-      });
-      break;
-    case 'stories':
-      pushDefaultModal(id, `stories?filter[country]=${countryId}`, countryData, 'stories', 'latest stories', '/stories', 'slider', '');
-      break;
-    default:
-      break;
+  if (type === 'starred-tab') {
+    pushTabStarredModal(id, countryId);
+    pushDefaultModal(id, `starredcommitments?filter[country]=${countryId}`, countriesData, 'starred-tab', 'latest stories', '/stories', 'list', '');
+  } else {
+    const countryData = countriesData.filter(function(country) {
+      return country.id == countryId;
+    });
+    switch (type) {
+      case 'actionPlan':
+        pushSmallModal(id, `irm_commitments?filter[country]=${countryId}`, countryData, 'commitments', 'themes covered', 'latest stories', '/stories', '');
+        break;
+      case 'starred':
+        pushDefaultModal(id, `starredcommitments?filter[country]=${countryId}`, countryData, 'starred commitments', 'latest stories', '/stories', 'list', '');
+        break;
+      case 'event':
+        pushDefaultModal(id, `events?filter[country]=${countryId}`, countryData, 'events', 'go to events', '/events', 'list', '');
+        break;
+      case 'commitment':
+        const currentFilter = $('.select-legend-dropdown').val() ? `&filter[theme_id]=${$('.select-legend-dropdown').val()}` : '';
+        pushDefaultModal(id, `current_commitment?filter[country]=${countryId}${currentFilter}`, countryData, 'current commitments', 'explore this theme', '/theme', 'list', '');
+        break;
+      case 'people':
+        $.getJSON(`apiJSON/people?filter[country_poc]=${countryId}`, function (poc) {
+          pushDefaultModal(id, `people?filter[country]=${countryId}`, countryData, 'people involved', 'latest stories', '/stories', 'grid', poc);
+        });
+        break;
+      case 'stories':
+        pushDefaultModal(id, `stories?filter[country]=${countryId}`, countryData, 'stories', 'latest stories', '/stories', 'slider', '');
+        break;
+      default:
+        break;
+    }
   }
 }

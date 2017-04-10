@@ -38,6 +38,16 @@ function hideOnClickPagination() {
   $('.c-pagination-click').addClass('-hidden');
 }
 
+function initModalStarred() {
+  $('.show-modal-starred').click(function() {
+    const country = $(this).data('value');
+    $.getJSON(`/apiJSON/countries?filter[id]=${country}`, function (countriesData) {
+      showLoader('body');
+      setMapModalContent('mapModal', 'starred-tab', country, countriesData);
+    });
+  });
+}
+
 function setCountryDataTiles(container, country) {
   const activeTab = $('.tabs-container').find('.-selected').data('node');
   $(`#country-${country.id} .data-tiles`).html('');
@@ -45,6 +55,9 @@ function setCountryDataTiles(container, country) {
     if (country.starred_commitments.length > 0) {
       const trimCommitments = country.starred_commitments.slice(0, 2);
       appendSmallTiles(trimCommitments, `#country-${country.id}`, 2, '-short -country');
+      $(`#country-${country.id} > .c-country-tile`).append(`
+        <span data-value="${country.id}" class="show-modal-starred text -interactive -blue">Show all starred commitments</span>
+      `);
     } else {
       showNoResults(`#country-${country.id} .data-tiles`, 'No starred commitments', 'medium', 'grey', 'xlarge', 'grey');
     }
@@ -115,6 +128,7 @@ function showCountriesData(countriesData, activeTab, container, countryId) {
     showOnClickPagination();
   }
   removeLoader(container, null, true);
+  initModalStarred();
 }
 
 function initCountryTabs(onChangeCountryTab) {
