@@ -44,9 +44,11 @@ $path = explode('/', drupal_get_path_alias());
         </li>
         <li class="language-selector text -menu dropdown -language-dropdown" id="transifexSelector"></li>
         <li class="text -menu">
-            <svg class="icon -medium">
+            <a href="/search/node">
+              <svg class="icon -medium">
                 <use xlink:href="#icon-search"></use>
             </svg>
+            </a>
         </li>
     </ul>
 </nav>
