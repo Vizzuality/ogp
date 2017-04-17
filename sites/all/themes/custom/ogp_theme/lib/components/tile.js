@@ -149,20 +149,20 @@ function appendTilesEvent(data, container) {
 function appendTilesDetailed(data, container, gridNum) {
   const gridWidth = 12 / gridNum;
   let html = '';
+  const maxTopics = 5
   data.forEach((item) => {
     // get variables
     let topicsHtml = '';
     let authorsHtml = '';
-
     // build topics
     if (item.topic[0]) {
-      item.topic.forEach(function(topic ,index) {
-        if (index === item.topic.length - 1) {
-          topicsHtml += `<a href="/${topic.alias}">${topic.label}</a>`;
+      for (let i = 0; i <= maxTopics; i += 1) {
+        if (i === (maxTopics - 1)) {
+          topicsHtml += '<a href="#" class="-disabled">...</a>';
         } else {
-          topicsHtml += `<a href="/${topic.alias}">${topic.label}, </a>`;
+          topicsHtml += `<a href="/${item.topic[i].alias}">${item.topic[i].label}, </a>`;
         }
-      });
+      }
     }
 
     if (item.author[0]) {
@@ -172,6 +172,7 @@ function appendTilesDetailed(data, container, gridNum) {
         } else {
           authorsHtml += `<a class="text -blue" href="/${author.alias}">${author.label}, </a>`;
         }
+
       });
     }
 

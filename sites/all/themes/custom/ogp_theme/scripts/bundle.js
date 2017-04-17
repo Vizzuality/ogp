@@ -716,20 +716,20 @@ function appendTilesEvent(data, container) {
 function appendTilesDetailed(data, container, gridNum) {
   var gridWidth = 12 / gridNum;
   var html = '';
+  var maxTopics = 5;
   data.forEach(function (item) {
     // get variables
     var topicsHtml = '';
     var authorsHtml = '';
-
     // build topics
     if (item.topic[0]) {
-      item.topic.forEach(function (topic, index) {
-        if (index === item.topic.length - 1) {
-          topicsHtml += '<a href="/' + topic.alias + '">' + topic.label + '</a>';
+      for (var i = 0; i <= maxTopics; i += 1) {
+        if (i === maxTopics - 1) {
+          topicsHtml += '<a href="#" class="-disabled">...</a>';
         } else {
-          topicsHtml += '<a href="/' + topic.alias + '">' + topic.label + ', </a>';
+          topicsHtml += '<a href="/' + item.topic[i].alias + '">' + item.topic[i].label + ', </a>';
         }
-      });
+      }
     }
 
     if (item.author[0]) {
@@ -946,6 +946,28 @@ function showStarredCommitmentDetail(id) {
   (function ($) {
     $('#theme-menu').addClass('active');
     buildExploreMoreTiles('starredcommitments');
+  })(jQuery);
+}
+'use strict';
+
+function showDocumentResourcePage() {
+  (function ($) {
+    // cache dom
+    var tileContainer = $('#resourceDocsTiles');
+    var searchEl = $('.c-tile');
+    var searchText = $('.c-tile .tile');
+    var searchContainer = $('#resourceTilesSearch input');
+
+    // fetch content and append
+    $.getJSON('/apiJSON/resource', function (data) {
+      setSearchPlaceholder(searchContainer, data.data[0].label);
+      setSearchListeners(searchEl, searchText);
+      if (data.data.length) {
+        appendTiles(data.data, tileContainer, 4);
+      } else {
+        showNoResults();
+      }
+    });
   })(jQuery);
 }
 'use strict';
@@ -1630,28 +1652,6 @@ function showCountriesData(countriesData, activeTab, container, countryId) {
 function initCountryTabs(onChangeCountryTab) {
   initTabs();
   setTabListeners(onChangeCountryTab);
-}
-'use strict';
-
-function showDocumentResourcePage() {
-  (function ($) {
-    // cache dom
-    var tileContainer = $('#resourceDocsTiles');
-    var searchEl = $('.c-tile');
-    var searchText = $('.c-tile .tile');
-    var searchContainer = $('#resourceTilesSearch input');
-
-    // fetch content and append
-    $.getJSON('/apiJSON/resource', function (data) {
-      setSearchPlaceholder(searchContainer, data.data[0].label);
-      setSearchListeners(searchEl, searchText);
-      if (data.data.length) {
-        appendTiles(data.data, tileContainer, 4);
-      } else {
-        showNoResults();
-      }
-    });
-  })(jQuery);
 }
 'use strict';
 
