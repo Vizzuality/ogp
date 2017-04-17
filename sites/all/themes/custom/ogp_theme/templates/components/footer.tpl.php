@@ -14,7 +14,7 @@
       <div class="column small-12 medium-3">
         <ul class="site-links">
           <li class="text -dynamic-link"><a href="/about">about</a></li>
-          <li class="text -dynamic-link"><a href="#">news & events</a></li>
+          <li class="text -dynamic-link"><a href="/events-and-news">Events & News</a></li>
         </ul>
       </div>
       <div class="column small-12 medium-3">
