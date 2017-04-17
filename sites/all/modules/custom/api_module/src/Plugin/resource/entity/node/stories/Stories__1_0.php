@@ -72,6 +72,11 @@ class Stories__1_0 extends ResourceNode{
 
     $public_fields['tags'] = array(
       'property' => 'field_tags',
+      'resource' => array(
+        'name' => 'tags',
+        'majorVersion' => '1',
+        'minorVersion' => '0'
+      )
     );
 
     $public_fields['country'] = array(
