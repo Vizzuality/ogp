@@ -1897,7 +1897,6 @@ function showIrmReports() {
 
 function showNewsEventsPage() {
   (function ($) {
-
     // cache
     var countryFilter = 0;
     var typeFilter = 0;

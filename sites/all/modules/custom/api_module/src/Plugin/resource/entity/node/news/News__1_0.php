@@ -44,10 +44,6 @@ class News__1_0 extends ResourceNode{
       'property' => 'field_publication_date'
     );
 
-    $public_fields['image'] = array(
-      'property' => 'field_media'
-    );
-
     $public_fields['alias'] = array(
       'property' => 'nid',
       'process_callbacks' => array(
