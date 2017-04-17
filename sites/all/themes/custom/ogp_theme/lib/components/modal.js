@@ -227,7 +227,7 @@ function setMapModalContent(id, type, countryId, countriesData) {
         pushDefaultModal(id, `starredcommitments?filter[country]=${countryId}`, countryData, 'starred commitments', 'latest stories', 'stories', 'list', '');
         break;
       case 'event':
-        pushDefaultModal(id, `events?filter[country]=${countryId}`, countryData, 'events', 'go to events', 'events-and-news', 'list', '');
+        pushDefaultModal(id, `events?filter[country]=${countryId}`, countryData, 'events', 'go to events', 'news-and-events', 'list', '');
         break;
       case 'commitment':
         const currentFilter = $('.select-legend-dropdown').val() ? `&filter[theme_id]=${$('.select-legend-dropdown').val()}` : '';
