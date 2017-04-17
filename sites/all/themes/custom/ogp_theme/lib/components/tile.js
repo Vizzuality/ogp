@@ -200,14 +200,14 @@ function appendTilesDetailedNews(data, container, gridNum) {
   data.forEach((item) => {
     html +=`
       <div class="column small-12 medium-6 c-tile">
-        <div class="tile-detailed" style="background-image: url('${item.image.length === '0' ? item.image : ''}')">
-          <div class="${item.image === '0' ? 'overlay' : ''}"></div>
+        <div class="tile-detailed">
+          <div></div>
           <span class="text -uppercase -blue -small-bold">News</span>
           <div class="tile-content">
-            <a href="/${item.alias}"><h3 class="text -tile-detail ${item.image.length === '0' ? '-white' : ''}">${item.label ? item.label : ''}</h3></a>
+            <a href="/${item.alias}"><h3 class="text -tile-detail ">${item.label ? item.label : ''}</h3></a>
             <div class="meta">
-              <span class="text -meta-large ${item.image.length === '0' ? '-white' : ''}">${moment.unix(parseInt(item.date)).format('DD MMMM YYYY ')}</span>
-              <span class="text -meta-large ${item.image.length === '0' ? '-white' : ''}">${item.name.name}</span>
+              <span class="text -meta-large">${moment.unix(parseInt(item.date)).format('DD MMMM YYYY ')}</span>
+              <span class="text -meta-large">${item.name.name}</span>
             </div>
           </div>
         </div>
