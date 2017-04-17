@@ -12,7 +12,7 @@
   <div class="l-page l-news-events">
     <div class="row">
       <div class="column small-12 medium-6 content-header">
-        <h1 class="text -title">Events and News</h1>
+        <h1 class="text -title">News and Events</h1>
       </div>
       <div class="column small-12 medium-6">
         <div class="row">
