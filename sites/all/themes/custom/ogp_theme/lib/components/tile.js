@@ -149,6 +149,7 @@ function appendTilesEvent(data, container) {
 function appendTilesDetailed(data, container, gridNum) {
   const gridWidth = 12 / gridNum;
   let html = '';
+  const limitTopics = 5;
   data.forEach((item) => {
     // get variables
     let topicsHtml = '';
@@ -156,13 +157,25 @@ function appendTilesDetailed(data, container, gridNum) {
 
     // build topics
     if (item.topic[0]) {
-      item.topic.forEach(function(topic ,index) {
-        if (index === item.topic.length - 1) {
-          topicsHtml += `<a href="/${topic.alias}">${topic.label}</a>`;
+      // item.topic.forEach(function(topic ,index) {
+      //   if (index === limitTopics && item.topic.length > limitTopics) {
+      //     topicsHtml += `<a href="#" class="disabled">...</a>`;
+      //     return false;
+      //   } else {
+      //     topicsHtml += `<a href="/${topic.alias}">${topic.label}, </a>`;
+      //   }
+      // });
+      for (let i = 0; i < item.topic.length && i <= limitTopics; i += 1) {
+        if (i === limitTopics) {
+          topicsHtml += `<a href="#" class="disabled">...</a>`;
         } else {
-          topicsHtml += `<a href="/${topic.alias}">${topic.label}, </a>`;
+          if (i === item.topic.length - 1) {
+            topicsHtml += `<a href="/${item.topic[i].alias}">${item.topic[i].label}</a>`;
+          } else {
+            topicsHtml += `<a href="/${item.topic[i].alias}">${item.topic[i].label}, </a>`;
+          }
         }
-      });
+      }
     }
 
     if (item.author[0]) {
