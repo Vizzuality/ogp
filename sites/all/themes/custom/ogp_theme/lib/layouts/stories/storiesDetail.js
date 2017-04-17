@@ -52,6 +52,22 @@ function showStoryDetail(id) {
         });
       }
 
+      if (story.tags) {
+        $('.tags').append('<strong class="text -bold">Tags: </strong>');
+        story.tags.forEach(function(tag, index) {
+          if (index === story.tags.length - 1) {
+            $('.tags').append(`<span class="text">${tag.label}</span>`);
+          } else {
+            $('.tags').append(`<span class="text">${tag.label}</span>, `);
+          }
+        });
+      }
+
+      if (story.type) {
+        $('.filed-under').append('<strong class="text -bold">Filed Under: </strong>');
+        $('.filed-under').append(`<span class="text">${story.type.label}</a>`);
+      }
+
       removeLoader('#storiesDetail');
     });
   })(jQuery);

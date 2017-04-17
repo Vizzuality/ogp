@@ -18,6 +18,10 @@ h6 {
   line-height: 1.6;
   position: relative;
 
+  &.-bold {
+    font-weight: $font-weight-semi-bold;
+  }
+
   &.-menu {
     font-size: $font-size-xxsmall;
     font-weight: $font-weight-semi-bold;

@@ -61,6 +61,24 @@ class Stories__1_0 extends ResourceNode{
       'property' => 'field_category',
     );
 
+    $public_fields['type'] = array(
+      'property' => 'field_category',
+      'resource' => array(
+        'name' => 'stories_categories',
+        'majorVersion' => '1',
+        'minorVersion' => '0'
+      )
+    );
+
+    $public_fields['tags'] = array(
+      'property' => 'field_tags',
+      'resource' => array(
+        'name' => 'tags',
+        'majorVersion' => '1',
+        'minorVersion' => '0'
+      )
+    );
+
     $public_fields['country'] = array(
       'property' => 'field_country_ref',
       'resource' => array(
@@ -68,10 +86,6 @@ class Stories__1_0 extends ResourceNode{
         'majorVersion' => '1',
         'minorVersion' => '0'
       )
-    );
-
-    $public_fields['type'] = array(
-      'property' => 'field_category',
     );
 
     $public_fields['content'] = array(
