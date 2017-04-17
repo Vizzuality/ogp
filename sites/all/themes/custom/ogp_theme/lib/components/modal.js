@@ -221,25 +221,25 @@ function setMapModalContent(id, type, countryId, countriesData) {
     });
     switch (type) {
       case 'actionPlan':
-        pushSmallModal(id, `irm_commitments?filter[country]=${countryId}`, countryData, 'commitments', 'themes covered', 'latest stories', '/stories', '');
+        pushSmallModal(id, `irm_commitments?filter[country]=${countryId}`, countryData, 'commitments', 'themes covered', 'latest stories', 'stories', '');
         break;
       case 'starred':
-        pushDefaultModal(id, `starredcommitments?filter[country]=${countryId}`, countryData, 'starred commitments', 'latest stories', '/stories', 'list', '');
+        pushDefaultModal(id, `starredcommitments?filter[country]=${countryId}`, countryData, 'starred commitments', 'latest stories', 'stories', 'list', '');
         break;
       case 'event':
-        pushDefaultModal(id, `events?filter[country]=${countryId}`, countryData, 'events', 'go to events', '/events', 'list', '');
+        pushDefaultModal(id, `events?filter[country]=${countryId}`, countryData, 'events', 'go to events', 'news-and-events', 'list', '');
         break;
       case 'commitment':
         const currentFilter = $('.select-legend-dropdown').val() ? `&filter[theme_id]=${$('.select-legend-dropdown').val()}` : '';
-        pushDefaultModal(id, `current_commitment?filter[country]=${countryId}${currentFilter}`, countryData, 'current commitments', 'explore this theme', '/theme', 'list', '');
+        pushDefaultModal(id, `current_commitment?filter[country]=${countryId}${currentFilter}`, countryData, 'current commitments', 'explore this theme', 'theme', 'list', '');
         break;
       case 'people':
         $.getJSON(`apiJSON/people?filter[country_poc]=${countryId}`, function (poc) {
-          pushDefaultModal(id, `people?filter[country]=${countryId}`, countryData, 'people involved', 'latest stories', '/stories', 'grid', poc);
+          pushDefaultModal(id, `people?filter[country]=${countryId}`, countryData, 'people involved', 'latest stories', 'stories', 'grid', poc);
         });
         break;
       case 'stories':
-        pushDefaultModal(id, `stories?filter[country]=${countryId}`, countryData, 'stories', 'latest stories', '/stories', 'slider', '');
+        pushDefaultModal(id, `stories?filter[country]=${countryId}`, countryData, 'stories', 'latest stories', 'stories', 'slider', '');
         break;
       default:
         break;
