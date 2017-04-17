@@ -1,6 +1,5 @@
 function showNewsEventsPage() {
   (function ($) {
-    console.log('hello');
     // cache
     let countryFilter = 0;
     let typeFilter = 0;
@@ -117,7 +116,6 @@ function showNewsEventsPage() {
       const activeCountry = parseInt(country) > 0 ? `filter[country]=${country}&` : '';
       const activeType = parseInt(type) > 0 ? `filter[category]=${type}&` : '';
       const activeFilters = `${activeCountry}${activeType}&page=${page}`;
-      console.log(`/apiJSON/news?${activeFilters}&sort=-date`);
       $.getJSON(`/apiJSON/news?${activeFilters}&sort=-date`, function (news) {
         if (news.data.length > 0) {
           totalPages = getPageCount(news.count, 4);

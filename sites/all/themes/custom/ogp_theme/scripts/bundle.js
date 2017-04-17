@@ -1657,7 +1657,6 @@ function showDocumentResourcePage() {
 
 function showNewsEventsPage() {
   (function ($) {
-    console.log('hello');
     // cache
     var countryFilter = 0;
     var typeFilter = 0;
@@ -1774,7 +1773,6 @@ function showNewsEventsPage() {
       var activeCountry = parseInt(country) > 0 ? 'filter[country]=' + country + '&' : '';
       var activeType = parseInt(type) > 0 ? 'filter[category]=' + type + '&' : '';
       var activeFilters = '' + activeCountry + activeType + '&page=' + page;
-      console.log('/apiJSON/news?' + activeFilters + '&sort=-date');
       $.getJSON('/apiJSON/news?' + activeFilters + '&sort=-date', function (news) {
         if (news.data.length > 0) {
           totalPages = getPageCount(news.count, 4);
