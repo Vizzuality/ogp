@@ -20,6 +20,8 @@
         <div class="story-detail">
           <div class="author text -grey -meta"></div>
           <div class="topic text -grey -meta"></div>
+          <div class="filed-under text -grey -meta"></div>
+          <div class="tags text -grey -meta"></div>
         </div>
       </div>
     </div>

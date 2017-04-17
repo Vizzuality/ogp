@@ -52,6 +52,11 @@ function showStoryDetail(id) {
         });
       }
 
+      if (story.type) {
+        $('.filed-under').append('<strong class="text">Filed Under: </strong>');
+        $('.filed-under').append(`<span class="text">${story.type.label}</a>`);
+      }
+
       removeLoader('#storiesDetail');
     });
   })(jQuery);
