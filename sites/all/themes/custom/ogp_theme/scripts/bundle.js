@@ -405,25 +405,25 @@ function setMapModalContent(id, type, countryId, countriesData) {
     });
     switch (type) {
       case 'actionPlan':
-        pushSmallModal(id, 'irm_commitments?filter[country]=' + countryId, countryData, 'commitments', 'themes covered', 'latest stories', '/stories', '');
+        pushSmallModal(id, 'irm_commitments?filter[country]=' + countryId, countryData, 'commitments', 'themes covered', 'latest stories', 'stories', '');
         break;
       case 'starred':
-        pushDefaultModal(id, 'starredcommitments?filter[country]=' + countryId, countryData, 'starred commitments', 'latest stories', '/stories', 'list', '');
+        pushDefaultModal(id, 'starredcommitments?filter[country]=' + countryId, countryData, 'starred commitments', 'latest stories', 'stories', 'list', '');
         break;
       case 'event':
-        pushDefaultModal(id, 'events?filter[country]=' + countryId, countryData, 'events', 'go to events', '/events', 'list', '');
+        pushDefaultModal(id, 'events?filter[country]=' + countryId, countryData, 'events', 'go to events', 'events-and-news', 'list', '');
         break;
       case 'commitment':
         var currentFilter = $('.select-legend-dropdown').val() ? '&filter[theme_id]=' + $('.select-legend-dropdown').val() : '';
-        pushDefaultModal(id, 'current_commitment?filter[country]=' + countryId + currentFilter, countryData, 'current commitments', 'explore this theme', '/theme', 'list', '');
+        pushDefaultModal(id, 'current_commitment?filter[country]=' + countryId + currentFilter, countryData, 'current commitments', 'explore this theme', 'theme', 'list', '');
         break;
       case 'people':
         $.getJSON('apiJSON/people?filter[country_poc]=' + countryId, function (poc) {
-          pushDefaultModal(id, 'people?filter[country]=' + countryId, countryData, 'people involved', 'latest stories', '/stories', 'grid', poc);
+          pushDefaultModal(id, 'people?filter[country]=' + countryId, countryData, 'people involved', 'latest stories', 'stories', 'grid', poc);
         });
         break;
       case 'stories':
-        pushDefaultModal(id, 'stories?filter[country]=' + countryId, countryData, 'stories', 'latest stories', '/stories', 'slider', '');
+        pushDefaultModal(id, 'stories?filter[country]=' + countryId, countryData, 'stories', 'latest stories', 'stories', 'slider', '');
         break;
       default:
         break;
@@ -1655,107 +1655,6 @@ function showDocumentResourcePage() {
 }
 'use strict';
 
-function showHomePage() {
-  (function ($) {
-    // Slider that appear on Home page
-    $('.slider-cover-home').slick({
-      dots: true,
-      arrows: false,
-      speed: 500,
-      fade: true,
-      cssEase: 'linear',
-      dotsClass: 'dots-slider',
-      adaptiveHeight: true
-    });
-
-    var map = L.map('maphome', {
-      zoomControl: false,
-      center: [35, -60],
-      zoom: 2,
-      maxZoom: 6,
-      minZoom: 2,
-      scrollWheelZoom: false
-    });
-    var over = false;
-
-    $('#in').click(function () {
-      map.setZoom(map.getZoom() + 1);
-    });
-
-    $('#out').click(function () {
-      map.setZoom(map.getZoom() - 1);
-    });
-
-    var basemap = L.tileLayer('http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png', {
-      attribution: ''
-    }).addTo(map);
-
-    cartodb.createLayer(map, {
-      user_name: 'jmonaco',
-      type: 'cartodb',
-      sublayers: [{
-        sql: 'SELECT * FROM countries_homepage',
-        cartocss: '#layer{polygon-fill:ramp([actionplan],(#2d4f00,#66bc29,#2d4f00,#2d4f00,#2d4f00,#66bc29,#2d4f00),("Implementing 1st action plan and Developing 2nd action plan","Developing action plan","Implementing 2nd action plan","Implementing 1st action plan","Developing 1st Action Plan","Implementing action plan"),"=");line-width:1;line-color:#FFF;line-opacity:.5}',
-        interactivity: 'the_geom, nid, country, cartodb_id'
-      }]
-    }).addTo(map).done(function (layer) {
-      layer.setInteraction(true);
-      var hovers = [];
-      layer.on('featureClick', function (e, latlng, pos, data) {
-        $.getJSON('https://jmonaco.carto.com/api/v2/sql?q= SELECT * FROM countries_homepage WHERE cartodb_id =  ' + data.cartodb_id, function (datapath) {
-          document.location.href = '' + window.location.origin + datapath.rows[0].path;
-        });
-      });
-
-      layer.bind('featureOver', function (e, latlon, pxPos, data, layers) {
-        hovers[layers] = 1;
-        if (_.any(hovers)) {
-          $('#maphome').css('cursor', 'pointer');
-        }
-      });
-
-      layer.bind('featureOut', function (m, layers) {
-        hovers[layers] = 0;
-        if (!_.any(hovers)) {
-          $('#maphome').css('cursor', 'auto');
-        }
-      });
-
-      layer.on('featureOver', function (e, latlng, pos, data) {
-        if (over === false) {
-          $('body').append('<div class="tooltip" style="padding: 5px; position: absolute; z-index: 10; background-color: rgba(255, 255, 255, 1); top:' + (e.pageY - 25) + 'px; left:' + (e.pageX + 25) + 'px">' + data.country + '</div>');
-          over = true;
-        } else {
-          $('.tooltip').html(data.country);
-          $('.tooltip').css('top', e.pageY - 25 + 'px');
-          $('.tooltip').css('left', e.pageX + 25 + 'px');
-        }
-      });
-
-      layer.on('featureOut', function (e, latlng, pos, data) {
-        over = false;
-        $('.tooltip').remove();
-      });
-      map.invalidateSize();
-    });
-  })(jQuery);
-}
-'use strict';
-
-function showSliderHomePage() {
-  (function ($) {
-    $.getJSON('/apiJSON/stories?fields=label,alias,image&sort=-created', function (stories) {
-      for (var i = 0; i < 3; i += 1) {
-        if (stories.data[i].image) {
-          $('.slider-image-' + i).css('background-image', 'url(' + stories.data[i].image + ')');
-        }
-        $('.slider-' + i).html('\n          <div>\n            <h1 class="title-text -white">\n              <a href="' + stories.data[i].alias + '">' + stories.data[i].label + '</a>\n            </h1>\n            <div class="small-12 medium-5 large-4">\n              <a class="c-button -box" href="' + stories.data[i].alias + '">Explore the story</a>\n            <div>\n          </div>\n        ');
-      }
-    });
-  })(jQuery);
-}
-'use strict';
-
 function showNewsEventsPage() {
   (function ($) {
     // cache
@@ -1905,6 +1804,107 @@ function showNewsEventsPage() {
     showEvents(countryFilter, typeFilter, page);
     showNews(countryFilter, typeFilter, page);
     onClickPagination();
+  })(jQuery);
+}
+'use strict';
+
+function showHomePage() {
+  (function ($) {
+    // Slider that appear on Home page
+    $('.slider-cover-home').slick({
+      dots: true,
+      arrows: false,
+      speed: 500,
+      fade: true,
+      cssEase: 'linear',
+      dotsClass: 'dots-slider',
+      adaptiveHeight: true
+    });
+
+    var map = L.map('maphome', {
+      zoomControl: false,
+      center: [35, -60],
+      zoom: 2,
+      maxZoom: 6,
+      minZoom: 2,
+      scrollWheelZoom: false
+    });
+    var over = false;
+
+    $('#in').click(function () {
+      map.setZoom(map.getZoom() + 1);
+    });
+
+    $('#out').click(function () {
+      map.setZoom(map.getZoom() - 1);
+    });
+
+    var basemap = L.tileLayer('http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png', {
+      attribution: ''
+    }).addTo(map);
+
+    cartodb.createLayer(map, {
+      user_name: 'jmonaco',
+      type: 'cartodb',
+      sublayers: [{
+        sql: 'SELECT * FROM countries_homepage',
+        cartocss: '#layer{polygon-fill:ramp([actionplan],(#2d4f00,#66bc29,#2d4f00,#2d4f00,#2d4f00,#66bc29,#2d4f00),("Implementing 1st action plan and Developing 2nd action plan","Developing action plan","Implementing 2nd action plan","Implementing 1st action plan","Developing 1st Action Plan","Implementing action plan"),"=");line-width:1;line-color:#FFF;line-opacity:.5}',
+        interactivity: 'the_geom, nid, country, cartodb_id'
+      }]
+    }).addTo(map).done(function (layer) {
+      layer.setInteraction(true);
+      var hovers = [];
+      layer.on('featureClick', function (e, latlng, pos, data) {
+        $.getJSON('https://jmonaco.carto.com/api/v2/sql?q= SELECT * FROM countries_homepage WHERE cartodb_id =  ' + data.cartodb_id, function (datapath) {
+          document.location.href = '' + window.location.origin + datapath.rows[0].path;
+        });
+      });
+
+      layer.bind('featureOver', function (e, latlon, pxPos, data, layers) {
+        hovers[layers] = 1;
+        if (_.any(hovers)) {
+          $('#maphome').css('cursor', 'pointer');
+        }
+      });
+
+      layer.bind('featureOut', function (m, layers) {
+        hovers[layers] = 0;
+        if (!_.any(hovers)) {
+          $('#maphome').css('cursor', 'auto');
+        }
+      });
+
+      layer.on('featureOver', function (e, latlng, pos, data) {
+        if (over === false) {
+          $('body').append('<div class="tooltip" style="padding: 5px; position: absolute; z-index: 10; background-color: rgba(255, 255, 255, 1); top:' + (e.pageY - 25) + 'px; left:' + (e.pageX + 25) + 'px">' + data.country + '</div>');
+          over = true;
+        } else {
+          $('.tooltip').html(data.country);
+          $('.tooltip').css('top', e.pageY - 25 + 'px');
+          $('.tooltip').css('left', e.pageX + 25 + 'px');
+        }
+      });
+
+      layer.on('featureOut', function (e, latlng, pos, data) {
+        over = false;
+        $('.tooltip').remove();
+      });
+      map.invalidateSize();
+    });
+  })(jQuery);
+}
+'use strict';
+
+function showSliderHomePage() {
+  (function ($) {
+    $.getJSON('/apiJSON/stories?fields=label,alias,image&sort=-created', function (stories) {
+      for (var i = 0; i < 3; i += 1) {
+        if (stories.data[i].image) {
+          $('.slider-image-' + i).css('background-image', 'url(' + stories.data[i].image + ')');
+        }
+        $('.slider-' + i).html('\n          <div>\n            <h1 class="title-text -white">\n              <a href="' + stories.data[i].alias + '">' + stories.data[i].label + '</a>\n            </h1>\n            <div class="small-12 medium-5 large-4">\n              <a class="c-button -box" href="' + stories.data[i].alias + '">Explore the story</a>\n            <div>\n          </div>\n        ');
+      }
+    });
   })(jQuery);
 }
 'use strict';
