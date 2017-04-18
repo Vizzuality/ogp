@@ -101,6 +101,9 @@ function showCountriesPage() {
         containerCssClass: '-tall',
         placeholder: 'Search country...'
       });
+      $('.select-legend-dropdown').change(function () {
+        changeCommitmentLayer();
+      });
     }
 
     // let's begin

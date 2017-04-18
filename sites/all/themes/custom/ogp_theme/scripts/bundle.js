@@ -1202,6 +1202,7 @@ function showCountriesDetail(id) {
 }
 'use strict';
 
+var layerMap = '';
 function initCountriesMap() {
   var map = L.map('countriesMap', {
     zoomControl: false,
@@ -1327,7 +1328,7 @@ function initMapLayer(map, countriesData, layers, cartoQueryLink) {
       over = false;
       $('.tooltip').remove();
     });
-
+    layerMap = layer;
     initEventFunctions(layer, layers);
     setMapLegendListeners(layer, layers);
   });
@@ -1393,17 +1394,17 @@ function setMapLegendListeners(layer, layers) {
       layer.createSubLayer(layers[namelayer]);
     }
   });
+}
 
-  $('.select-legend-dropdown').change(function () {
-    var theme = $(this).val();
-    removeLayers(layer);
-    layer.setInteraction(true);
-    layer.createSubLayer({
-      sql: 'SELECT country, Min(cartodb_id) cartodb_id, Min(theme) theme, count(country), st_centroid(the_geom_webmercator) the_geom_webmercator FROM currentcommitments_countries WHERE country IS NOT NULL AND theme LIKE \'%' + theme + '%\' AND the_geom_webmercator IS NOT NULL AND LENGTH(country) > 0 GROUP BY the_geom_webmercator, country ORDER BY country',
-      cartocss: '#layer::z1 {marker-width: ramp([count], range(25, 45), quantiles(7));marker-fill: #ffa200;marker-fill-opacity: 1;marker-line-width: 1;marker-line-color: #4b392f;marker-line-opacity: 0.1;marker-allow-overlap:true;marker-comp-op: src;[zoom = 2] {marker-width: ramp([count], range(25, 30), quantiles(3));}[zoom = 3] {marker-width: ramp([count], range(30, 35), quantiles(4));}[zoom = 4] {marker-width: ramp([count], range(30, 40), quantiles(5));}[zoom = 5] {marker-width: ramp([count], range(30, 45), quantiles(6));} [zoom = 6] {marker-width: ramp([count], range(35, 45), quantiles(7));}} #layer::z1 {text-name: [count];text-face-name: "DejaVu Sans Book";text-size: 10;text-fill: #FFFFFF;text-label-position-tolerance: 0;text-halo-radius: 0;text-halo-fill: #6F808D;text-dy: 0;text-allow-overlap: true;}',
-      interactivity: 'cartodb_id, the_geom_webmercator, country',
-      name: 'commitment'
-    });
+function changeCommitmentLayer() {
+  var theme = $('.select-legend-dropdown').val();
+  removeLayers(layerMap);
+  layerMap.setInteraction(true);
+  layerMap.createSubLayer({
+    sql: 'SELECT country, Min(cartodb_id) cartodb_id, Min(theme) theme, count(country), st_centroid(the_geom_webmercator) the_geom_webmercator FROM currentcommitments_countries WHERE country IS NOT NULL AND theme LIKE \'%' + theme + '%\' AND the_geom_webmercator IS NOT NULL AND LENGTH(country) > 0 GROUP BY the_geom_webmercator, country ORDER BY country',
+    cartocss: '#layer::z1 {marker-width: ramp([count], range(25, 45), quantiles(7));marker-fill: #ffa200;marker-fill-opacity: 1;marker-line-width: 1;marker-line-color: #4b392f;marker-line-opacity: 0.1;marker-allow-overlap:true;marker-comp-op: src;[zoom = 2] {marker-width: ramp([count], range(25, 30), quantiles(3));}[zoom = 3] {marker-width: ramp([count], range(30, 35), quantiles(4));}[zoom = 4] {marker-width: ramp([count], range(30, 40), quantiles(5));}[zoom = 5] {marker-width: ramp([count], range(30, 45), quantiles(6));} [zoom = 6] {marker-width: ramp([count], range(35, 45), quantiles(7));}} #layer::z1 {text-name: [count];text-face-name: "DejaVu Sans Book";text-size: 10;text-fill: #FFFFFF;text-label-position-tolerance: 0;text-halo-radius: 0;text-halo-fill: #6F808D;text-dy: 0;text-allow-overlap: true;}',
+    interactivity: 'cartodb_id, the_geom_webmercator, country',
+    name: 'commitment'
   });
 }
 'use strict';
@@ -1510,6 +1511,9 @@ function showCountriesPage() {
       $('#countriesSearch select').select2({
         containerCssClass: '-tall',
         placeholder: 'Search country...'
+      });
+      $('.select-legend-dropdown').change(function () {
+        changeCommitmentLayer();
       });
     }
 
