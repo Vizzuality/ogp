@@ -106,7 +106,7 @@
               </div>
               <div class="contain-info theme-legend">
                 <div class="contain-select-theme">
-                  <select class="select-legend-dropdown">
+                  <select class="select-legend-dropdown commitments-select-layer">
                     <option></option>
                   </select>
                 </div>

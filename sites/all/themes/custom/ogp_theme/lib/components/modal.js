@@ -212,6 +212,7 @@ function pushSmallModal(id, query, countryData, firstDataLabel, secondDataLabel,
 }
 
 function setMapModalContent(id, type, countryId, countriesData) {
+  let themeCommitmentAlias = 'theme';
   if (type === 'starred-tab') {
     pushTabStarredModal(id, countryId);
     pushDefaultModal(id, `starredcommitments?filter[country]=${countryId}`, countriesData, 'starred-tab', 'latest stories', '/stories', 'list', '');
@@ -230,8 +231,11 @@ function setMapModalContent(id, type, countryId, countriesData) {
         pushDefaultModal(id, `events?filter[country]=${countryId}`, countryData, 'events', 'go to events', 'news-and-events', 'list', '');
         break;
       case 'commitment':
+        if ($('.select-legend-dropdown').find(':selected').data('value')) {
+          themeCommitmentAlias = $('.select-legend-dropdown').find(':selected').data('value');
+        }
         const currentFilter = $('.select-legend-dropdown').val() ? `&filter[theme_id]=${$('.select-legend-dropdown').val()}` : '';
-        pushDefaultModal(id, `current_commitment?filter[country]=${countryId}${currentFilter}`, countryData, 'current commitments', 'explore this theme', 'theme', 'list', '');
+        pushDefaultModal(id, `current_commitment?filter[country]=${countryId}${currentFilter}`, countryData, 'current commitments', 'explore this theme', `${themeCommitmentAlias}`, 'list', '');
         break;
       case 'people':
         $.getJSON(`apiJSON/people?filter[country_poc]=${countryId}`, function (poc) {
