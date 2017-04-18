@@ -396,6 +396,7 @@ function pushSmallModal(id, query, countryData, firstDataLabel, secondDataLabel,
 }
 
 function setMapModalContent(id, type, countryId, countriesData) {
+  var themeCommitmentAlias = 'theme';
   if (type === 'starred-tab') {
     pushTabStarredModal(id, countryId);
     pushDefaultModal(id, 'starredcommitments?filter[country]=' + countryId, countriesData, 'starred-tab', 'latest stories', '/stories', 'list', '');
@@ -414,8 +415,11 @@ function setMapModalContent(id, type, countryId, countriesData) {
         pushDefaultModal(id, 'events?filter[country]=' + countryId, countryData, 'events', 'go to events', 'news-and-events', 'list', '');
         break;
       case 'commitment':
+        if ($('.select-legend-dropdown').find(':selected').data('value')) {
+          themeCommitmentAlias = $('.select-legend-dropdown').find(':selected').data('value');
+        }
         var currentFilter = $('.select-legend-dropdown').val() ? '&filter[theme_id]=' + $('.select-legend-dropdown').val() : '';
-        pushDefaultModal(id, 'current_commitment?filter[country]=' + countryId + currentFilter, countryData, 'current commitments', 'explore this theme', 'theme', 'list', '');
+        pushDefaultModal(id, 'current_commitment?filter[country]=' + countryId + currentFilter, countryData, 'current commitments', 'explore this theme', '' + themeCommitmentAlias, 'list', '');
         break;
       case 'people':
         $.getJSON('apiJSON/people?filter[country_poc]=' + countryId, function (poc) {
@@ -548,7 +552,7 @@ function appendSelectOptions(selector, options) {
 
 function appendSelectOptionsFromData(selector, options) {
   options.forEach(function (option) {
-    var html = "\n      <option value=\"" + option.id + "\">" + option.label + "</option>\n    ";
+    var html = "\n      <option value=\"" + option.id + "\" data-value=\"" + option.alias + "\">" + option.label + "</option>\n    ";
     $(selector).append(html);
   });
 }
@@ -1494,7 +1498,7 @@ function showCountriesPage() {
         buildCountrySelector($('#countriesSearch select'), countriesContent, countriesData, activeTab);
         onClickPagination(activeTab, countriesContent, countriesData);
         initCountryTabs(onChangeCountryTab);
-        $.getJSON('/apiJSON/themes?sort=name&fields=id,label', function (themes) {
+        $.getJSON('/apiJSON/themes?sort=name&fields=id,label,alias', function (themes) {
           themesData = themes.data;
           appendSelectOptionsFromData('.select-legend-dropdown', themesData);
           removeLoader('.l-map', null, true);

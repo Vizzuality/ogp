@@ -83,7 +83,7 @@ function showCountriesPage() {
         buildCountrySelector($('#countriesSearch select'), countriesContent, countriesData, activeTab);
         onClickPagination(activeTab, countriesContent, countriesData);
         initCountryTabs(onChangeCountryTab);
-        $.getJSON(`/apiJSON/themes?sort=name&fields=id,label`, function (themes) {
+        $.getJSON(`/apiJSON/themes?sort=name&fields=id,label,alias`, function (themes) {
           themesData = themes.data;
           appendSelectOptionsFromData('.select-legend-dropdown', themesData);
           removeLoader('.l-map', null, true);
