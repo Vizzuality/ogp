@@ -24,14 +24,15 @@
  */
 ?>
 <div class="c-search row" id="resultSearchPage">
-<?php if ($search_results): ?>
-  <h2 class="text -title title-search-result"><?php print t('Search results:');?> <span class="value-search" id="value-search">hello</span></h2>
-  <ol class="search-results <?php print $module; ?>-results">
-    <?php print $search_results; ?>
-  </ol>
-  <?php print $pager; ?>
-<?php else : ?>
-  <h2><?php print t('Your search yielded no results');?></h2>
-  <?php print search_help('search#noresults', drupal_help_arg()); ?>
-<?php endif; ?>
+  <div class="column small-12 border">
+    <?php if ($search_results): ?>
+      <ol class="search-results <?php print $module; ?>-results">
+        <?php print $search_results; ?>
+      </ol>
+      <?php print $pager; ?>
+    <?php else : ?>
+      <h2><?php print t('Your search yielded no results');?></h2>
+      <?php print search_help('search#noresults', drupal_help_arg()); ?>
+    <?php endif; ?>
+  </div>
 </div>

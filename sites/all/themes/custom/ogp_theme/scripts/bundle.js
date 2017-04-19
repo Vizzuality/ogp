@@ -168,8 +168,14 @@ function getAbsolutePath() {
         addBanner('newsletter');
       }
 
+      if ($(context).find('#searchPage').length !== 0) {
+        searchPage();
+        addBanner('newsletter');
+      }
+
       if ($(context).find('#resultSearchPage').length !== 0) {
         featuresResultPage();
+        addBanner('newsletter');
       }
 
       //build subscribe modal
@@ -2361,7 +2367,15 @@ function showResourcesDetail(id) {
 function featuresResultPage() {
   (function ($) {
 
-    $('#value-search').html($('#edit-keys').val());
+    $('#value-search').html('Search for: ' + $('#edit-keys').val());
+  })(jQuery);
+}
+'use strict';
+
+function searchPage() {
+  (function ($) {
+
+    $('.search-form input').attr('placeholder', 'Type what you are searching for...');
   })(jQuery);
 }
 'use strict';

@@ -74,8 +74,10 @@
   </div>
   <?php print render($title_suffix); ?>
   <div class="search-snippet-info">
-    <?php if ($snippet): ?>
-      <p class="search-snippet text"><?php print $snippet; ?></p>
+    <?php if ($result['node']->body['und'][0]['value']):?>
+      <div class="text -body-content"><?php echo substr($result['node']->body['und'][0]['value'], 0, 100) . '...' ?></div>
+      <br>
+      <p class="text -blue -bold"><?php echo $result['type'] ?></p>
     <?php endif; ?>
   </div>
 </li>

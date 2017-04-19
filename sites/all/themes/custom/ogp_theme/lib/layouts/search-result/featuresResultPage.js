@@ -1,7 +1,7 @@
 function featuresResultPage() {
   (function($) {
 
-    $('#value-search').html($('#edit-keys').val());
+    $('#value-search').html('Search for: ' + $('#edit-keys').val());
 
   })(jQuery);
 }
