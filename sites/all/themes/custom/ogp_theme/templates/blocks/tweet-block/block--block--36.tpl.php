@@ -67,7 +67,10 @@ $response = $twitter->setGetfield($getfield)
 ?>
 <div class="c-social-block -tweet" id="tweet-block">
   <div>
-    <span class="text -social-title">Open Gov Partnership</span>
+    <div class="contain-title-icon">
+      <a href="https://twitter.com/opengovpart" class="text -black -social-title">Open Gov Partnership</a>
+      <svg class="icon -medium"><use xlink:href="#icon-twitter"></use></svg>
+    </div>
     <span class="tweet-text">
       <?php print $text ?>
     </span>

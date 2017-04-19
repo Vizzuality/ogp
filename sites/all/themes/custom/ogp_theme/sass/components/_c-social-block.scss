@@ -3,6 +3,19 @@
 
   &.-tweet {
 
+    .contain-title-icon {
+      display: flex;
+      align-items: center;
+      align-content: center;
+      justify-content: space-between;
+
+      .icon {
+        fill: $color-2;
+        width: 20px;
+        height: 20px;
+      }
+    }
+
     .tweet-text {
       display: block;
       margin-top: 25px;
@@ -42,6 +55,19 @@
     flex: 1;
     width: 50%;
     padding-left: 50px;
+
+    .contain-title-icon {
+      display: flex;
+      align-items: center;
+      align-content: center;
+      justify-content: space-between;
+
+      .icon {
+        fill: $color-2;
+        width: 20px;
+        height: 20px;
+      }
+    }
 
     .facebook-feed {
       margin-top: 25px;
