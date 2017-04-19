@@ -96,6 +96,11 @@ function getAbsolutePath() {
         stripEmptyStrings();
       }
 
+      if ($(context).find('#documentResourcesDetail').length !== 0) {
+        addBanner('newsletter');
+        stripEmptyStrings();
+      }
+
       // commitments
       if ($(context).find('#modelCommitmentsDetail').length !== 0) {
         addBanner('newsletter');
@@ -156,6 +161,7 @@ function getAbsolutePath() {
 
       if ($(context).find('#irmReportsPage').length !== 0) {
         showIrmReports();
+        addBanner('newsletter');
       }
 
       // Pages
@@ -179,6 +185,11 @@ function getAbsolutePath() {
 
       //build subscribe modal
       buildSubscribeModal();
+
+      //add comments
+      if ($(context).find('#disqus_thread').length !== 0) {
+        showComments(settings.block_refresh.args[1]);
+      }
     }
   };
 })(jQuery);
@@ -241,6 +252,28 @@ function addBanner(type, id) {
     default:
       break;
   }
+}
+'use strict';
+
+function showComments(id) {
+    /**
+     *  RECOMMENDED CONFIGURATION VARIABLES: EDIT AND UNCOMMENT THE SECTION BELOW TO INSERT DYNAMIC VALUES FROM YOUR PLATFORM OR CMS.
+     *  LEARN WHY DEFINING THESE VARIABLES IS IMPORTANT: https://disqus.com/admin/universalcode/#configuration-variables
+     */
+    var disqus_config = function disqus_config() {
+        this.page.url = window.location.href; // Replace PAGE_URL with your page's canonical URL variable
+        this.page.identifier = id; // Replace PAGE_IDENTIFIER with your page's unique identifier variable
+    };
+    (function () {
+        // REQUIRED CONFIGURATION VARIABLE: EDIT THE SHORTNAME BELOW
+        var d = document,
+            s = d.createElement('script');
+
+        s.src = '//opengovpartnership.disqus.com/embed.js'; // IMPORTANT: Replace EXAMPLE with your forum shortname!
+
+        s.setAttribute('data-timestamp', +new Date());
+        (d.head || d.body).appendChild(s);
+    })();
 }
 'use strict';
 
@@ -691,28 +724,35 @@ function appendSmallTiles(data, topContainer, gridNum, customClass) {
   }
 }
 
-function appendTilesIRM(data, topContainer) {
-  $.getJSON('/apiJSON/documents?filter[type]=2704&filter[country]=' + data.id + '&sort=-date&range=2', function (reports) {
-    var html = '\n      <div class="column small-12 medium-6">\n        <div class="column c-country-tile">\n          <a class="text -title-x-small" href="' + data.alias + '">' + data.label + '<svg class="icon -blue -medium arrow"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-arrow"></use></svg></a>\n          <div class="first-info text">\n            <span class="text">Total reports ' + reports.count + '</span>\n          </div>\n          <div class="row data-tiles">';
-    for (var i = 0; i < reports.data.length; i += 1) {
-      html += '\n        <div class="column small-12 large-6 c-tile -short -hiden">\n          <a href="" class="tile">\n            <div class=""></div>\n            <span class="text -tile -white">' + reports.data[i].label + '</span>\n          </a>\n        </div>';
-    }
+function appendTilesIRM(countries, topContainer) {
+  var html = '';
+  countries.forEach(function (country) {
+    html += '\n      <div class="column small-12 medium-6">\n        <div class="c-country-tile" id="country-report-' + country.id + '">\n          <a class="text -title-x-small" href="' + country.alias + '">' + country.label + '<svg class="icon -blue -medium arrow"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-arrow"></use></svg></a>\n          <div class="row data-tiles">\n    ';
+    var reportsTrimmed = country.irm_reports.splice(0, 2);
+    reportsTrimmed.forEach(function (report) {
+      if (report.type) {
+        html += '\n        <div class="column small-12 large-6 c-tile -short">\n          <a href="' + report.alias + '" class="tile">\n            <span class="text -tile -white">' + report.label + '</span>\n          </a>\n        </div>\n        ';
+      }
+    });
     html += '</div></div></div>';
-    removeLoader('#tab-loader', null, true);
-    $('' + topContainer.selector).append(html);
   });
+  removeLoader('#tab-loader', null, true);
+  $('' + topContainer.selector).append(html);
 }
 
-function appendTilesComments(data, topContainer) {
-  $.getJSON('/apiJSON/documents?filter[type]=2924&filter[country]=' + data.id + '&sort=-date&range=2', function (comments) {
-    var html = '\n      <div class="column small-12 medium-6">\n        <div class="column c-country-tile">\n          <a class="text -title-x-small" href="' + data.alias + '">' + data.label + '<svg class="icon -blue -medium arrow"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-arrow"></use></svg></a>\n          <div class="first-info text">\n            <span class="text">Total reports ' + comments.count + '</span>\n          </div>\n          <div class="row data-tiles">';
-    for (var i = 0; i < comments.data.length; i += 1) {
-      html += '\n        <div class="column small-12 large-6 c-tile -short -hiden">\n          <a href="" class="tile">\n            <div class=""></div>\n            <span class="text -tile -white">' + comments.data[i].label + '</span>\n          </a>\n        </div>';
-    }
+function appendTilesComments(countries, topContainer) {
+  var html = '';
+  countries.forEach(function (country) {
+    html += '\n      <div class="column small-12 medium-6">\n        <div class="c-country-tile" id="country-comment-' + country.id + '">\n          <a class="text -title-x-small" href="' + country.alias + '">' + country.label + '<svg class="icon -blue -medium arrow"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-arrow"></use></svg></a>\n          <div class="row data-tiles">\n    ';
+    var reportCommentsTrimmed = country.irm_report_comments.splice(0, 2);
+    reportCommentsTrimmed.forEach(function (report) {
+      if (report.type) {
+        html += '\n          <div class="column small-12 large-6 c-tile -short">\n            <a href="' + report.alias + '" class="tile">\n              <span class="text -tile -white">' + report.label + '</span>\n            </a>\n          </div>\n        ';
+      }
+    });
     html += '</div></div></div>';
-    removeLoader('#tab-loader-comments', null, true);
-    $('' + topContainer.selector).append(html);
   });
+  $('' + topContainer.selector).append(html);
 }
 
 function appendTilesEvent(data, container) {
@@ -1988,36 +2028,36 @@ function showIrmReports() {
     function onClickPagination() {
       $('.c-pagination-click-download').on('click', function () {
         setPageCount(getCurrentPage() + 1);
-        showLoader('#tab-loader');
-        showTilesIrmoReports(countryFilter, getCurrentPage());
+        showLoader('#container-info');
+        showTilesIrmReports(countryFilter, getCurrentPage());
       });
     }
 
     function onClickPaginationComments() {
       $('.c-pagination-click-comments').on('click', function () {
         setPageCountComments(getCurrentPageComments() + 1);
-        showLoader('#tab-loader-comments');
+        showLoader('#container-info');
         showTilesComments(countryFilter, getCurrentPageComments());
       });
     }
 
-    function showTilesIrmoReports(country, pageNext) {
+    function showTilesIrmReports(country, pageNext) {
       var activeCountry = parseInt(country) > 0 ? 'filter[id]=' + country + '&' : '';
-      $.getJSON('/apiJSON/countries?' + activeCountry + 'fields=id,label,alias&sort=label&range=4&page=' + pageNext, function (countries) {
-        for (var i = 0; i < countries.data.length; i += 1) {
-          appendTilesIRM(countries.data[i], irmContainer);
-        }
+      $.getJSON('/apiJSON/countries?' + activeCountry + 'sort=label', function (countries) {
+        appendTilesIRM(countries.data, irmContainer);
+        appendTilesComments(countries.data, commentsContainer);
+        removeLoader('#container-info', null, true);
       });
     }
 
-    function showTilesComments(country, pageNext) {
-      var activeCountry = parseInt(country) > 0 ? 'filter[id]=' + country + '&' : '';
-      $.getJSON('/apiJSON/countries?' + activeCountry + 'fields=id,label,alias&sort=label&range=4&page=' + pageNext, function (countries) {
-        for (var i = 0; i < countries.data.length; i += 1) {
-          appendTilesComments(countries.data[i], commentsContainer);
-        }
-      });
-    }
+    // function showTilesComments(country, pageNext) {
+    //   const activeCountry = parseInt(country) > 0 ? `filter[id]=${country}&` : '';
+    //   $.getJSON(`/apiJSON/countries?${activeCountry}sort=label`, function (countries) {
+    //     for (let i = 0; i < countries.data.length; i += 1) {
+    //
+    //     }
+    //   });
+    // }
 
     function buildSelectorDownload(selector, placeholder, endpoint, query) {
       selector.select2({
@@ -2038,7 +2078,7 @@ function showIrmReports() {
           showLoader('#tab-loader');
           countryFilter = countrySelectorDownload.val();
           page = 1;
-          showTilesIrmoReports(countryFilter, page);
+          showTilesIrmReports(countryFilter, page);
         });
       });
     }
@@ -2072,8 +2112,9 @@ function showIrmReports() {
     onClickPagination();
     onClickPaginationComments();
     initIRMTabs(onChangeIRMTabs);
-    showTilesIrmoReports(countryFilter, page);
-    showTilesComments(countryFilter, page);
+    showTilesIrmReports(countryFilter, page);
+    // showTilesComments(countryFilter, page);
+
   })(jQuery);
 }
 'use strict';

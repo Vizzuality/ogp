@@ -96,6 +96,11 @@ function getAbsolutePath() {
         stripEmptyStrings();
       }
 
+      if ($(context).find('#documentResourcesDetail').length !== 0) {
+        addBanner('newsletter');
+        stripEmptyStrings();
+      }
+
       // commitments
       if ($(context).find('#modelCommitmentsDetail').length !== 0) {
         addBanner('newsletter');
@@ -155,6 +160,7 @@ function getAbsolutePath() {
 
       if ($(context).find('#irmReportsPage').length !== 0) {
         showIrmReports();
+        addBanner('newsletter');
       }
 
       // Pages
@@ -178,6 +184,11 @@ function getAbsolutePath() {
 
       //build subscribe modal
       buildSubscribeModal();
+
+      //add comments
+      if ($(context).find('#disqus_thread').length !== 0) {
+        showComments(settings.block_refresh.args[1]);
+      }
 
     }
   };

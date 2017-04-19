@@ -157,6 +157,20 @@ class Countries__1_0 extends ResourceNode{
       )
     );
 
+    $public_fields['irm_reports'] = array(
+      'property' => 'nid',
+      'process_callbacks' => array(
+        array($this, 'getIrmReports')
+      )
+    );
+
+    $public_fields['irm_report_comments'] = array(
+      'property' => 'nid',
+      'process_callbacks' => array(
+        array($this, 'getIrmReportComments')
+      )
+    );
+
     return $public_fields;
   }
 
@@ -225,6 +239,58 @@ class Countries__1_0 extends ResourceNode{
       $new_item = array('label' => $row->title, 'alias' => $alias);
       array_push($items, $new_item);
     }
+    return $items;
+  }
+
+  public function getIrmReports($country) {
+    $sql = "SELECT *
+            FROM {node} as irm
+            INNER JOIN {field_data_field_country_resource} as country
+            ON irm.nid = country.entity_id
+            INNER JOIN {field_data_field_ogp_document_type} as doc
+            ON irm.nid = doc.entity_id
+            WHERE irm.type = 'resource' AND doc.field_ogp_document_type_tid = '2704' AND country.field_country_resource_target_id = '" . $country . "'";
+    $result = db_query($sql);
+    $items = [];
+    foreach ($result as $row) {
+      $alias = drupal_get_path_alias('node/' . $row->nid);
+      $node = node_load($row->nid);
+      $type = field_get_items('node', $node, 'field_ogp_document_type');
+      $new_item = array('label' => $row->title, 'type' => $type, 'alias' => $alias, 'created' => $row->created);
+      array_push($items, $new_item);
+    }
+    $items_sorted = array();
+    foreach ($items as $key => $row)
+    {
+      $items_sorted[$key] = $row['created'];
+    }
+    array_multisort($items_sorted, SORT_DESC, $items);
+    return $items;
+  }
+
+  public function getIrmReportComments($country) {
+    $sql = "SELECT *
+            FROM {node} as irm
+            INNER JOIN {field_data_field_country_resource} as country
+            ON irm.nid = country.entity_id
+            INNER JOIN {field_data_field_ogp_document_type} as doc
+            ON irm.nid = doc.entity_id
+            WHERE irm.type = 'resource' AND doc.field_ogp_document_type_tid = '2924' AND country.field_country_resource_target_id = '" . $country . "'";
+    $result = db_query($sql);
+    $items = [];
+    foreach ($result as $row) {
+      $alias = drupal_get_path_alias('node/' . $row->nid);
+      $node = node_load($row->nid);
+      $type = field_get_items('node', $node, 'field_ogp_document_type');
+      $new_item = array('label' => $row->title, 'type' => $type, 'alias' => $alias, 'created' => $row->created);
+      array_push($items, $new_item);
+    }
+    $items_sorted = array();
+    foreach ($items as $key => $row)
+    {
+      $items_sorted[$key] = $row['created'];
+    }
+    array_multisort($items_sorted, SORT_DESC, $items);
     return $items;
   }
 }

@@ -66,11 +66,13 @@
       <div class="l-comments">
         <div class="row">
           <div class="column small-12 medium-8 medium-offset-2">
-            <?php print render($content['disqus']); ?>
+            <div id="disqus_thread"></div>
           </div>
         </div>
       </div>
     <?php }
   } ?>
+
+  <div class="banners-container"></div>
 
 </div>
