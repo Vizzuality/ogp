@@ -3,8 +3,18 @@
 
   &.-tweet {
 
-    .views-field-field-twitter-text {
+    .tweet-text {
+      display: block;
       margin-top: 25px;
+      color: $color-5;
+      font-family: $font-family-1;
+      font-size: $font-size-medium;
+      font-weight: $font-weight-semi-bold;
+      line-height: 1.33;
+
+      a {
+        color: $color-2;
+      }
     }
 
     .views-field-field-twitter-account {
@@ -22,17 +32,6 @@
       .icon-twitter {
         width: 15px;
         margin-left: 15px;
-        color: $color-2;
-      }
-    }
-
-    .subtitles {
-      font-family: $font-family-1;
-      font-size: $font-size-medium;
-      font-weight: $font-weight-semi-bold;
-      line-height: 1.33;
-
-      a {
         color: $color-2;
       }
     }
