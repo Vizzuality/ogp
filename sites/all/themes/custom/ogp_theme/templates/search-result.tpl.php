@@ -63,19 +63,21 @@
  *
  * @ingroup themeable
  */
-?> 
+?>
 <li class="<?php print $classes; ?>"<?php print $attributes; ?>>
   <?php print render($title_prefix); ?>
-  <h3 class="title"<?php print $title_attributes; ?>>
-    <a href="<?php print $url; ?>"><?php print $title; ?></a>
-  </h3>
+  <div class="link-detail">
+    <h3 class="title text -bold"<?php print $title_attributes; ?>>
+      <a href="<?php print $url; ?>"><?php print $title; ?></a>
+    </h3>
+    <a href="<?php print $url; ?>"><svg class="icon -blue -medium icon-arrow"><use xlink:href="#icon-arrow"></use></svg></a>
+  </div>
   <?php print render($title_suffix); ?>
   <div class="search-snippet-info">
-    <?php if ($snippet): ?>
-      <p class="search-snippet"<?php print $content_attributes; ?>><?php print $snippet; ?></p>
-    <?php endif; ?>
-    <?php if ($info): ?>
-      <p class="search-info"><?php print $info; ?></p>
+    <?php if ($result['node']->body['und'][0]['value']):?>
+      <div class="text -body-content"><?php echo substr($result['node']->body['und'][0]['value'], 0, 100) . '...' ?></div>
+      <br>
+      <p class="text -blue -bold"><?php echo $result['type'] ?></p>
     <?php endif; ?>
   </div>
 </li>
