@@ -22,7 +22,6 @@ use Drupal\restful\Plugin\resource\ResourceNode;
  *   authenticationOptional = TRUE,
  *   dataProvider = {
  *     "entityType": "node",
- *     "range" = 6,
  *     "bundles": {
  *       "blog_post"
  *     },

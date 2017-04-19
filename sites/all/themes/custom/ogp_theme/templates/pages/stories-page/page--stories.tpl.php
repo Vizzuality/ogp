@@ -33,7 +33,7 @@
     <section id="storiesContainer" class="l-section">
 
       <div class="c-loader"><div class="loader"></div></div>
-      <div class="row">
+      <!-- <div class="row">
         <div class="columns small-12">
           <div class="c-content-banner -hidden">
             <span class="text -small-bold -white">Highlighted story</span>
@@ -44,7 +44,7 @@
             <span class="text -white banner-author"></span>
           </div>
         </div>
-      </div>
+      </div> -->
 
       <div class="tiles-container">
         <div id="storiesTiles" class="row"></div>

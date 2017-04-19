@@ -75,31 +75,36 @@ function showStoriesPage() {
     function showStories(country, type, page) {
       const activeCountry = parseInt(country) > 0 ? `filter[country]=${country}&` : '';
       const activeType = parseInt(type) > 0 ? `filter[category]=${type}&` : '';
-      const activeFilters = `${activeCountry}${activeType}&page=${page}`;
+      const activeFilters = `${activeCountry}${activeType}&page[number]=${page}&page[size]=8`;
       $.getJSON(`/apiJSON/stories?${activeFilters}&sort=-created`, function (stories) {
         if (stories.data.length > 0) {
-          totalPages = getPageCount(stories.count, 6);
-          if (page === 1) {
-            $.getJSON(`/apiJSON/stories?sort=-created`, function (highlightedStory) {
-              if (highlightedStory.data[0]) {
-                buildHighlightedEvent(highlightedStory.data[0]);
-              }
-              appendTilesDetailed(stories.data, storiesContainer, 2);
-              initPagination(page, totalPages, 'storiesPage');
-              setPaginationListerners();
-              removeLoader('#storiesContainer', null, true);
-            });
-          } else {
+          totalPages = getPageCount(stories.count, 8);
+          // if (page === 1) {
+          //   $.getJSON(`/apiJSON/stories?sort=-created`, function (highlightedStory) {
+          //     if (highlightedStory.data[0]) {
+          //       buildHighlightedEvent(highlightedStory.data[0]);
+          //     }
+          //     appendTilesDetailed(stories.data, storiesContainer, 2);
+          //     initPagination(page, totalPages, 'storiesPage');
+          //     setPaginationListerners();
+          //     removeLoader('#storiesContainer', null, true);
+          //   });
+          // } else {
             appendTilesDetailed(stories.data, storiesContainer, 2);
             removeLoader('#storiesContainer', null, true);
             initPagination(page, totalPages, 'storiesPage');
             setPaginationListerners();
-          }
+          // }
         } else {
           showNoResults('#storiesTiles', 'No stories with these filters', 'tall', 'grey', 'xxlarge', 'blue');
           $('.c-pagination').html('');
           removeLoader('#storiesContainer', null, true);
         }
+      })
+      .error(function () {
+        showNoResults('#storiesTiles', 'Sorry, stories counld not be found', 'tall', 'grey', 'xxlarge', 'blue');
+        $('.c-pagination').html('');
+        removeLoader('#storiesContainer', null, true);
       });
 
     }
