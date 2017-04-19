@@ -28,7 +28,9 @@
         );
         break;
     }
-    array_push($breadcrumbs, (object)$link_array);
+    if ($crumb != 'node') {
+      array_push($breadcrumbs, (object)$link_array);
+    }
   }
 
   if ( arg(0) == 'node' && is_numeric(arg(1)) && !arg(2) ) {
