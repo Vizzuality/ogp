@@ -1,0 +1,6 @@
+<div class="c-social-block -facebook" id="facebook-block">
+  <span class="text -social-title">Open Gov Partnership</span>
+  <?php
+    echo facebook_pull_render('OpenGovernmentPartnership', 'posts', '335336700164126', 'dbebaa73e32b91a3d4814b5c846dbaae', array($limit => 1));
+  ?>
+</div>
