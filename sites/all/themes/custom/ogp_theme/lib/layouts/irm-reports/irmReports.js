@@ -47,36 +47,36 @@ function showIrmReports() {
     function onClickPagination() {
       $('.c-pagination-click-download').on('click', function() {
         setPageCount(getCurrentPage() + 1);
-        showLoader('#tab-loader');
-        showTilesIrmoReports(countryFilter, getCurrentPage());
+        showLoader('#container-info');
+        showTilesIrmReports(countryFilter, getCurrentPage());
       });
     }
 
     function onClickPaginationComments() {
       $('.c-pagination-click-comments').on('click', function() {
         setPageCountComments(getCurrentPageComments() + 1);
-        showLoader('#tab-loader-comments');
+        showLoader('#container-info');
         showTilesComments(countryFilter, getCurrentPageComments());
       });
     }
 
-    function showTilesIrmoReports(country, pageNext) {
+    function showTilesIrmReports(country, pageNext) {
       const activeCountry = parseInt(country) > 0 ? `filter[id]=${country}&` : '';
-      $.getJSON(`/apiJSON/countries?${activeCountry}fields=id,label,alias&sort=label&range=4&page=${pageNext}`, function (countries) {
-        for (let i = 0; i < countries.data.length; i += 1) {
-          appendTilesIRM(countries.data[i], irmContainer);
-        }
+      $.getJSON(`/apiJSON/countries?${activeCountry}sort=label`, function (countries) {
+        appendTilesIRM(countries.data, irmContainer);
+        appendTilesComments(countries.data, commentsContainer);
+        removeLoader('#container-info', null, true);
       });
     }
 
-    function showTilesComments(country, pageNext) {
-      const activeCountry = parseInt(country) > 0 ? `filter[id]=${country}&` : '';
-      $.getJSON(`/apiJSON/countries?${activeCountry}fields=id,label,alias&sort=label&range=4&page=${pageNext}`, function (countries) {
-        for (let i = 0; i < countries.data.length; i += 1) {
-          appendTilesComments(countries.data[i], commentsContainer);
-        }
-      });
-    }
+    // function showTilesComments(country, pageNext) {
+    //   const activeCountry = parseInt(country) > 0 ? `filter[id]=${country}&` : '';
+    //   $.getJSON(`/apiJSON/countries?${activeCountry}sort=label`, function (countries) {
+    //     for (let i = 0; i < countries.data.length; i += 1) {
+    //
+    //     }
+    //   });
+    // }
 
     function buildSelectorDownload(selector, placeholder, endpoint, query) {
       selector.select2({
@@ -97,7 +97,7 @@ function showIrmReports() {
           showLoader('#tab-loader');
           countryFilter = countrySelectorDownload.val();
           page = 1;
-          showTilesIrmoReports(countryFilter, page);
+          showTilesIrmReports(countryFilter, page);
         });
       });
     }
@@ -132,8 +132,8 @@ function showIrmReports() {
     onClickPagination();
     onClickPaginationComments();
     initIRMTabs(onChangeIRMTabs);
-    showTilesIrmoReports(countryFilter, page);
-    showTilesComments(countryFilter, page);
+    showTilesIrmReports(countryFilter, page);
+    // showTilesComments(countryFilter, page);
 
 
   })(jQuery);

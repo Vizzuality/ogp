@@ -48,9 +48,9 @@ $research_body = field_get_items('node', $research, 'body')[0]['value'];
               <ul class="tabs-container">
                 <li class="tab text -tab" data-node="starredcommitments">starred commitments</li>
                 <li class="tab text -tab" data-node="modelcommitments">illustrative commitments</li>
-                <li class="tab text -tab" data-node="expert">expert organizations</li>
+                <!-- <li class="tab text -tab" data-node="expert">expert organizations</li> -->
                 <li class="tab text -tab" data-node="stories">stories</li>
-                <li class="tab text -tab" data-node="research">research</li>
+                <!-- <li class="tab text -tab" data-node="research">research</li> -->
               </ul>
             </div>
           </div>
@@ -72,8 +72,8 @@ $research_body = field_get_items('node', $research, 'body')[0]['value'];
               </div>
             </div>
             <div class="row">
-              <div class="column small-12 medium-3">
-                <select class="country-selector">
+              <div class="column small-12 medium-3 with-padding">
+                <select class="c-selector country-selector">
                   <option value="0">All countries</option>
                 </select>
               </div>
