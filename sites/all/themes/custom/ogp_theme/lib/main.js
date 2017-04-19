@@ -167,6 +167,16 @@ function getAbsolutePath() {
         addBanner('newsletter');
       }
 
+      if ($(context).find('#searchPage').length !== 0) {
+        searchPage();
+        addBanner('newsletter');
+      }
+
+      if ($(context).find('#resultSearchPage').length !== 0) {
+        featuresResultPage();
+        addBanner('newsletter');
+      }
+
       //build subscribe modal
       buildSubscribeModal();
 

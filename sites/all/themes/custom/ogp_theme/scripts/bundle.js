@@ -168,6 +168,16 @@ function getAbsolutePath() {
         addBanner('newsletter');
       }
 
+      if ($(context).find('#searchPage').length !== 0) {
+        searchPage();
+        addBanner('newsletter');
+      }
+
+      if ($(context).find('#resultSearchPage').length !== 0) {
+        featuresResultPage();
+        addBanner('newsletter');
+      }
+
       //build subscribe modal
       buildSubscribeModal();
     }
@@ -2350,6 +2360,22 @@ function showResourcesDetail(id) {
     $.getJSON('/apiJSON/resources?filter[id]=' + id, function (data) {
       buildExploreMoreTiles('resources', 'group_resource', data.data[0].group_resource[0]);
     });
+  })(jQuery);
+}
+'use strict';
+
+function featuresResultPage() {
+  (function ($) {
+
+    $('#value-search').html('Search for: ' + $('#edit-keys').val());
+  })(jQuery);
+}
+'use strict';
+
+function searchPage() {
+  (function ($) {
+
+    $('.search-form input').attr('placeholder', 'Type what you are searching for...');
   })(jQuery);
 }
 'use strict';
