@@ -168,6 +168,10 @@ function getAbsolutePath() {
         addBanner('newsletter');
       }
 
+      if ($(context).find('#resultSearchPage').length !== 0) {
+        featuresResultPage();
+      }
+
       //build subscribe modal
       buildSubscribeModal();
     }
@@ -2350,6 +2354,14 @@ function showResourcesDetail(id) {
     $.getJSON('/apiJSON/resources?filter[id]=' + id, function (data) {
       buildExploreMoreTiles('resources', 'group_resource', data.data[0].group_resource[0]);
     });
+  })(jQuery);
+}
+'use strict';
+
+function featuresResultPage() {
+  (function ($) {
+
+    $('#value-search').html($('#edit-keys').val());
   })(jQuery);
 }
 'use strict';

@@ -53,6 +53,10 @@
     display: flex;
     flex-direction: column;
   }
+
+  .value-search {
+    text-transform: capitalize;
+  }
 }
 
 .search-form {

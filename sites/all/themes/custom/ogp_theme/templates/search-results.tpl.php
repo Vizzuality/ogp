@@ -23,13 +23,10 @@
  * @ingroup themeable
  */
 ?>
-<div class="c-search row">
+<div class="c-search row" id="resultSearchPage">
 <?php if ($search_results): ?>
-  <h2 class="text -title title-search-result"><?php print t('Search results:');?></h2>
+  <h2 class="text -title title-search-result"><?php print t('Search results:');?> <span class="value-search" id="value-search">hello</span></h2>
   <ol class="search-results <?php print $module; ?>-results">
-    <script>
-      console.log(<?= json_encode($search_results); ?>);
-    </script>
     <?php print $search_results; ?>
   </ol>
   <?php print $pager; ?>
