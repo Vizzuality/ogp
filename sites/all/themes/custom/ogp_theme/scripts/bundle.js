@@ -956,6 +956,70 @@ function showAboutPages() {
 }
 'use strict';
 
+function showCurrentCommitmentDetail(id) {
+  (function ($) {
+
+    function buildCurrentCommitment() {
+      $.getJSON('/apiJSON/current_commitment/' + id, function (data) {
+        if (data.data[0].lead_institution[0]) {
+          $('#currentCommitmentContent .lead').html(data.data[0].lead_institution[0]);
+        }
+        if (data.data[0].support_institution[0]) {
+          $('#currentCommitmentContent .support').html(data.data[0].support_institution[0]);
+        }
+      });
+    }
+
+    $('#theme-menu').addClass('active');
+    buildCurrentCommitment();
+    buildExploreMoreTiles('current_commitment');
+  })(jQuery);
+}
+'use strict';
+
+function showIrmCommitmentDetail(id) {
+  (function ($) {
+    $('#theme-menu').addClass('active');
+    buildExploreMoreTiles('irm_commitments');
+  })(jQuery);
+}
+'use strict';
+
+function showModelCommitmentDetail(id) {
+  (function ($) {
+
+    var onChangeTab = function onChangeTab(id, label) {
+      $('.tab-container').addClass('-hidden');
+      $('#' + id + ' .tab-container').removeClass('-hidden');
+    };
+
+    function fetchModelCommitmentDetail() {
+      $.getJSON('/apiJSON/modelcommitments/' + id, function (data) {
+        $('.strength-info').html('<strong>Strength: </strong>' + data.data[0].strength.label);
+        $('.contributor-info').html('<strong>Contributors: </strong>' + data.data[0].contributors);
+        $('#justification .container').html(data.data[0].justification);
+        appendTilesStandards(data.data[0].standardsguidance, $('#standards .container'), 2);
+        removeLoader('.l-section', null, true);
+      });
+    }
+
+    // init view
+    initTabs();
+    setTabListeners(onChangeTab);
+    fetchModelCommitmentDetail();
+    buildExploreMoreTiles('modelcommitments');
+  })(jQuery);
+}
+'use strict';
+
+function showStarredCommitmentDetail(id) {
+  (function ($) {
+    $('#theme-menu').addClass('active');
+    buildExploreMoreTiles('starredcommitments');
+  })(jQuery);
+}
+'use strict';
+
 function showCountriesDetail(id) {
   (function ($) {
 
@@ -2353,6 +2417,22 @@ function showResourcesDetail(id) {
 }
 'use strict';
 
+function featuresResultPage() {
+  (function ($) {
+
+    $('#value-search').html('Search for: ' + $('#edit-keys').val());
+  })(jQuery);
+}
+'use strict';
+
+function searchPage() {
+  (function ($) {
+
+    $('.search-form input').attr('placeholder', 'Type what you are searching for...');
+  })(jQuery);
+}
+'use strict';
+
 function showStoryDetail(id) {
   (function ($) {
 
@@ -2590,22 +2670,6 @@ function showStoriesSubmitPage(id) {
         data: {}
       }).done(function (data) {});
     });
-  })(jQuery);
-}
-'use strict';
-
-function featuresResultPage() {
-  (function ($) {
-
-    $('#value-search').html('Search for: ' + $('#edit-keys').val());
-  })(jQuery);
-}
-'use strict';
-
-function searchPage() {
-  (function ($) {
-
-    $('.search-form input').attr('placeholder', 'Type what you are searching for...');
   })(jQuery);
 }
 'use strict';
@@ -2850,70 +2914,6 @@ function showWorkingGroupDetail(id) {
       }
       removeLoader('.working-group-content', null, true);
     });
-  })(jQuery);
-}
-'use strict';
-
-function showCurrentCommitmentDetail(id) {
-  (function ($) {
-
-    function buildCurrentCommitment() {
-      $.getJSON('/apiJSON/current_commitment/' + id, function (data) {
-        if (data.data[0].lead_institution[0]) {
-          $('#currentCommitmentContent .lead').html(data.data[0].lead_institution[0]);
-        }
-        if (data.data[0].support_institution[0]) {
-          $('#currentCommitmentContent .support').html(data.data[0].support_institution[0]);
-        }
-      });
-    }
-
-    $('#theme-menu').addClass('active');
-    buildCurrentCommitment();
-    buildExploreMoreTiles('current_commitment');
-  })(jQuery);
-}
-'use strict';
-
-function showIrmCommitmentDetail(id) {
-  (function ($) {
-    $('#theme-menu').addClass('active');
-    buildExploreMoreTiles('irm_commitments');
-  })(jQuery);
-}
-'use strict';
-
-function showModelCommitmentDetail(id) {
-  (function ($) {
-
-    var onChangeTab = function onChangeTab(id, label) {
-      $('.tab-container').addClass('-hidden');
-      $('#' + id + ' .tab-container').removeClass('-hidden');
-    };
-
-    function fetchModelCommitmentDetail() {
-      $.getJSON('/apiJSON/modelcommitments/' + id, function (data) {
-        $('.strength-info').html('<strong>Strength: </strong>' + data.data[0].strength.label);
-        $('.contributor-info').html('<strong>Contributors: </strong>' + data.data[0].contributors);
-        $('#justification .container').html(data.data[0].justification);
-        appendTilesStandards(data.data[0].standardsguidance, $('#standards .container'), 2);
-        removeLoader('.l-section', null, true);
-      });
-    }
-
-    // init view
-    initTabs();
-    setTabListeners(onChangeTab);
-    fetchModelCommitmentDetail();
-    buildExploreMoreTiles('modelcommitments');
-  })(jQuery);
-}
-'use strict';
-
-function showStarredCommitmentDetail(id) {
-  (function ($) {
-    $('#theme-menu').addClass('active');
-    buildExploreMoreTiles('starredcommitments');
   })(jQuery);
 }
 //# sourceMappingURL=bundle.js.map

@@ -66,6 +66,23 @@
           color: $color-22;
           box-shadow: inset 5px 0 0 0 $color-2;
         }
+
+        &.level-2, .level-3 {
+          min-height: 30px;
+          padding-left: 60px;
+          border-bottom: 0;
+        }
+
+        &.level-3 {
+          min-height: 30px;
+          padding-left: 90px;
+        }
+
+        &.page-link {
+          min-height: 30px;
+          padding-left: 90px;
+          border-bottom: 0;
+        }
       }
     }
   }
