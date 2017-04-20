@@ -190,6 +190,10 @@ function getAbsolutePath() {
         showComments(settings.block_refresh.args[1]);
       }
 
+      if ($(context).find('#loginPage').length !== 0) {
+        loginPage();
+      }
+
     }
   };
 })(jQuery);
