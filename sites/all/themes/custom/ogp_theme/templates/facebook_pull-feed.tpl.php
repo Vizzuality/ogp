@@ -1,4 +1,8 @@
-<ul class="facebook-feed hello-class">
+<ul class="facebook-feed c-social-block -facebook">
+  <div class="contain-title-icon">
+    <span class="text -title-x-small">Open Gov Partnership</span>
+    <svg class="icon -medium"><use xlink:href="#icon-facebook"></use></svg>
+  </div>
 <?php foreach ($items as $item): ?>
   <li class="item">
   <?php if (isset($item->from)): ?>
