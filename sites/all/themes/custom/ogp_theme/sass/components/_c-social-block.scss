@@ -2,31 +2,7 @@
   padding: 80px 0;
 
   &.-tweet {
-
-    .views-field-field-twitter-text {
-      margin-top: 25px;
-    }
-
-    .views-field-field-twitter-account {
-      display: inline-block;
-      float: right;
-
-      .field-content {
-
-        &::before {
-          display: inline-block;
-          content: '@';
-        }
-      }
-
-      .icon-twitter {
-        width: 15px;
-        margin-left: 15px;
-        color: $color-2;
-      }
-    }
-
-    .subtitles {
+    .field-content {
       font-family: $font-family-1;
       font-size: $font-size-medium;
       font-weight: $font-weight-semi-bold;
@@ -34,6 +10,20 @@
 
       a {
         color: $color-2;
+      }
+    }
+
+    .contain-title-icon {
+      display: flex;
+      align-items: center;
+      align-content: center;
+      justify-content: space-between;
+      margin-bottom: 20px;
+
+      .icon {
+        width: 20px;
+        height: 20px;
+        fill: $color-2;
       }
     }
   }
