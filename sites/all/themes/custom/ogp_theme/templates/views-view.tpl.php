@@ -31,7 +31,9 @@
   <div class="row">
     <div class="column small-12">
 
-      <h1 class="text -title"><?php print $view->get_title(); ?></h1>
+      <?php if ($view->get_title()) { ?>
+        <h1 class="text -title"><?php print $view->get_title(); ?></h1>
+      <?php } ?>
 
       <div class="<?php print $classes; ?>">
         <?php print render($title_prefix); ?>

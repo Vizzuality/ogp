@@ -1,5 +1,4 @@
 .l-page {
-  padding: 40px 0 80px;
 
   &.-tall {
     padding: 60px 0;
@@ -26,8 +25,16 @@
 
   .text {
 
+    &.-title {
+      padding-top: 40px;
+    }
+
     &.-section-title {
       margin-bottom: 40px;
+    }
+
+    &.-body-content {
+      margin-bottom: 80px;
     }
   }
 
