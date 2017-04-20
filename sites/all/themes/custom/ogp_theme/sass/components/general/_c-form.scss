@@ -89,7 +89,7 @@
     font-weight: $font-weight-semi-bold;
     font-size: 12px;
     font-style: normal;
-    margin-top: 2.4em !important;
+    // margin-top: 2.4em !important;
   }
 
   .c-button, button{
@@ -108,6 +108,10 @@
   margin-bottom: -100px;
   position: relative;
   z-index: 4;
+
+  label {
+    margin-bottom: 1px;
+  }
 }
 
 .view-content {
