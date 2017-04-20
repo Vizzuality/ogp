@@ -63,6 +63,7 @@
  *
  * @ingroup themeable
  */
+ $snippet = substr($result['node']->body['und'][0]['value'], 0, 100);
 ?>
 <li class="<?php print $classes; ?>"<?php print $attributes; ?>>
   <?php print render($title_prefix); ?>
@@ -75,7 +76,7 @@
   <?php print render($title_suffix); ?>
   <div class="search-snippet-info">
     <?php if ($result['node']->body['und'][0]['value']):?>
-      <div class="text -body-content"><?php echo substr($result['node']->body['und'][0]['value'], 0, 100) . '...' ?></div>
+      <div class="text -body-content"><?php echo $snippet . '...' ?></div>
       <br>
       <p class="text -blue -bold"><?php echo $result['type'] ?></p>
     <?php endif; ?>
