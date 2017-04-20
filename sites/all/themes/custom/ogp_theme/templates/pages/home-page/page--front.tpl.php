@@ -20,7 +20,7 @@ $ogp_process_link = field_get_items('node', $ogp_process, 'field_link');
 
     <div class="l-home-page" id="content">
       <div class="slider-cover-home">
-        <div class="c-loader"><div class="loader"></div></div>
+        <div class="c-loader -white"><div class="loader"></div></div>
       </div>
     </div>
 

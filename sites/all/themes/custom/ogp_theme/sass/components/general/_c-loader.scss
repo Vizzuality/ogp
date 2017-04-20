@@ -11,6 +11,14 @@
   background-color: rgba($color-4, 0.8);
   z-index: 1000;
 
+  &.-white {
+    background-color: transparent;
+
+    .loader {
+      border-left: 1.1em solid $color-4;
+    }
+  }
+
   &.-hidden {
     visibility: hidden;
   }
