@@ -1,15 +1,5 @@
 function showHomePage() {
   (function ($) {
-    // Slider that appear on Home page
-    $('.slider-cover-home').slick({
-      dots: true,
-      arrows: false,
-      speed: 500,
-      fade: true,
-      cssEase: 'linear',
-      dotsClass: 'dots-slider',
-      adaptiveHeight: true
-    });
 
     const map = L.map('maphome', {
       zoomControl: false,
