@@ -183,6 +183,14 @@ function getAbsolutePath() {
         featuresResultPage();
       }
 
+      if ($(context).find('#page404').length !== 0) {
+        addBanner('newsletter');
+      }
+
+      if ($(context).find('#node').length !== 0) {
+        addBanner('newsletter');
+      }
+
       //build subscribe modal
       buildSubscribeModal();
 
@@ -190,6 +198,12 @@ function getAbsolutePath() {
       if ($(context).find('#disqus_thread').length !== 0) {
         showComments(settings.block_refresh.args[1]);
       }
+
+      // convert all custom views_templates
+      $('.form-select').select2({
+        minimumResultsForSearch: Infinity,
+        containerCssClass: '-tall'
+      });
 
       if ($(context).find('#loginPage').length !== 0) {
         loginPage();
@@ -952,6 +966,70 @@ function showAboutPages() {
       }
       removeLoader('#containerInfo', null, true);
     });
+  })(jQuery);
+}
+'use strict';
+
+function showCurrentCommitmentDetail(id) {
+  (function ($) {
+
+    function buildCurrentCommitment() {
+      $.getJSON('/apiJSON/current_commitment/' + id, function (data) {
+        if (data.data[0].lead_institution[0]) {
+          $('#currentCommitmentContent .lead').html(data.data[0].lead_institution[0]);
+        }
+        if (data.data[0].support_institution[0]) {
+          $('#currentCommitmentContent .support').html(data.data[0].support_institution[0]);
+        }
+      });
+    }
+
+    $('#theme-menu').addClass('active');
+    buildCurrentCommitment();
+    buildExploreMoreTiles('current_commitment');
+  })(jQuery);
+}
+'use strict';
+
+function showIrmCommitmentDetail(id) {
+  (function ($) {
+    $('#theme-menu').addClass('active');
+    buildExploreMoreTiles('irm_commitments');
+  })(jQuery);
+}
+'use strict';
+
+function showModelCommitmentDetail(id) {
+  (function ($) {
+
+    var onChangeTab = function onChangeTab(id, label) {
+      $('.tab-container').addClass('-hidden');
+      $('#' + id + ' .tab-container').removeClass('-hidden');
+    };
+
+    function fetchModelCommitmentDetail() {
+      $.getJSON('/apiJSON/modelcommitments/' + id, function (data) {
+        $('.strength-info').html('<strong>Strength: </strong>' + data.data[0].strength.label);
+        $('.contributor-info').html('<strong>Contributors: </strong>' + data.data[0].contributors);
+        $('#justification .container').html(data.data[0].justification);
+        appendTilesStandards(data.data[0].standardsguidance, $('#standards .container'), 2);
+        removeLoader('.l-section', null, true);
+      });
+    }
+
+    // init view
+    initTabs();
+    setTabListeners(onChangeTab);
+    fetchModelCommitmentDetail();
+    buildExploreMoreTiles('modelcommitments');
+  })(jQuery);
+}
+'use strict';
+
+function showStarredCommitmentDetail(id) {
+  (function ($) {
+    $('#theme-menu').addClass('active');
+    buildExploreMoreTiles('starredcommitments');
   })(jQuery);
 }
 'use strict';
@@ -2353,6 +2431,179 @@ function showResourcesDetail(id) {
 }
 'use strict';
 
+function featuresResultPage() {
+  (function ($) {
+
+    $('#value-search').html('Search for: ' + $('#edit-keys').val());
+  })(jQuery);
+}
+'use strict';
+
+function searchPage() {
+  (function ($) {
+
+    $('.search-form input').attr('placeholder', 'Type what you are searching for...');
+  })(jQuery);
+}
+'use strict';
+
+function showThemesDetail(id) {
+  (function showAPIThemes($) {
+
+    //cache
+    var countrySelector = $('.country-selector');
+    var contentContainer = $('#contentContainer .content-tiles');
+    var contributorText = $('#contributorsText');
+    var countryFilter = void 0;
+
+    // local functions
+    function setContributorsText(log, author, email) {
+      var html = '\n        <b>Contributors:</b> This topic has been developed for the Open Gov Guide by the National Democratic Institute. The lead author was Patrick Merloe with contributions from Michelle Brown and Tova Wang. Please send comments to pat@ndi.org.\n      ';
+      contributorText.html(html);
+    }
+
+    function setSelectCountryListerners() {
+      countrySelector.on('change', function () {
+        hideNoResults();
+        showLoader('#themesDetail');
+        var activeTab = $('.c-tabs .-selected').data('node');
+        var countryModel = $(this).val();
+        if (parseInt(countryModel) === 0) {
+          showContent(contentContainer, activeTab);
+        } else {
+          showContent(contentContainer, activeTab, countryModel);
+        }
+      });
+    }
+
+    // init selector
+    function initSelectors() {
+      countrySelector.select2({
+        minimumResultsForSearch: Infinity,
+        containerCssClass: '-green -tall',
+        dropdownCssClass: '-green',
+        placeholder: 'All countries'
+      });
+      $('.select2').addClass('-green-select');
+      $.getJSON('/apiJSON/countries?fields=id,label&sort=label', function (data) {
+        data.data.forEach(function (country) {
+          var option = '<option value="' + country.id + '">' + country.label + '</option>';
+          countrySelector.append(option);
+        });
+      });
+      setSelectCountryListerners();
+    }
+
+    // custom callback for tabs component
+    var onChangeTab = function onChangeTab(id, label) {
+      hideNoResults();
+      showLoader('#themesDetail');
+      $('#themesDetail .-body-content').addClass('-hidden');
+      $('#themesDetail .' + id).removeClass('-hidden');
+      var activeCountry = countrySelector.val();
+      if (parseInt(activeCountry) === 0) {
+        showContent(contentContainer, id);
+      } else {
+        showContent(contentContainer, id, activeCountry);
+      }
+      setContributorsText();
+      if (id === 'modelcommitments') {
+        contributorText.removeClass('-hidden');
+      } else {
+        contributorText.addClass('-hidden');
+      }
+    };
+
+    function showContent(container, endpoint, countryFilter) {
+      container.html('');
+      var countryQuery = countryFilter && endpoint !== 'modelcommitments' ? '&filter[country]=' + countryFilter : '';
+      var sorting = endpoint === 'stories' ? '-created' : 'label';
+      $.getJSON('/apiJSON/' + endpoint + '?filter[theme]=' + id + countryQuery + '&sort=' + sorting, function (data) {
+        hideNoResults();
+        if (data.data.length) {
+          appendTilesWithoutBackground(data.data, container, 2, '-themes');
+        } else {
+          showNoResults(container, 'No content available', 'tall', 'grey', 'xxlarge', 'blue');
+        }
+        removeLoader('#themesDetail', null, true);
+      });
+    }
+    // init page
+    initTabs();
+    setTabListeners(onChangeTab);
+    initSelectors();
+    showContent(contentContainer, 'starredcommitments');
+    buildExploreMoreTiles('themes');
+  })(jQuery);
+}
+'use strict';
+
+function showThemesPage() {
+  (function showAPIThemes($) {
+
+    //consts
+    var themesContainer = $('#tilesContainer');
+    var searchContainer = $('#themesTilesSearch input');
+    var searchEl = $('.c-tile');
+    var searchText = $('.c-tile .tile');
+    var themesTitle = $('.tiles-heading');
+
+    // local functions
+    function showThemesTiles() {
+      $.getJSON('/apiJSON/themes?sort=label', function (data) {
+        if (data.data.length) {
+          appendTiles(data.data, themesContainer, 3);
+        } else {
+          showNoResults('#tilesNoResults', 'No themes available', 'tall', 'grey', 'xxlarge', 'blue');
+        }
+        removeLoader('.l-section', null, true);
+      });
+    }
+
+    // custom callback for tabs component
+    var onChangeTab = function onChangeTab(id, label) {
+      themesTitle.html(label);
+      var currentSearch = searchContainer.val();
+      currentSearch = currentSearch.toLowerCase();
+      var parseId = parseInt(id);
+      $('.c-tile').each(function () {
+        if (currentSearch) {
+          if ($(this).data('group') === parseId && $(this).html().toLowerCase().indexOf(currentSearch) > -1 || id === '0' && $('.tile', this).html().toLowerCase().indexOf(currentSearch) > -1) {
+            $(this).css('display', 'block');
+          } else {
+            $(this).css('display', 'none');
+          }
+        } else {
+          if ($(this).data('group') === parseId || parseId === 0) {
+            $(this).css('display', 'block');
+          } else {
+            $(this).css('display', 'none');
+          }
+        }
+      });
+
+      // check for zero results
+      var results = $('.c-tile').filter(function () {
+        return $(this).css('display') === 'block';
+      }).length;
+
+      // show empty results
+      if (results === 0) {
+        showNoResults('#noResultsContainer', 'No themes available', 'tall', 'grey', 'xxlarge', 'blue');
+      } else {
+        hideNoResults('#noResultsContainer');
+      }
+    };
+
+    // init page
+    showThemesTiles();
+    initTabs();
+    setTabListeners(onChangeTab);
+    setSearchListeners(searchEl, searchText);
+  })(jQuery);
+}
+'use strict';
+
 function showStoryDetail(id) {
   (function ($) {
 
@@ -2594,179 +2845,6 @@ function showStoriesSubmitPage(id) {
 }
 'use strict';
 
-function featuresResultPage() {
-  (function ($) {
-
-    $('#value-search').html('Search for: ' + $('#edit-keys').val());
-  })(jQuery);
-}
-'use strict';
-
-function searchPage() {
-  (function ($) {
-
-    $('.search-form input').attr('placeholder', 'Type what you are searching for...');
-  })(jQuery);
-}
-'use strict';
-
-function showThemesDetail(id) {
-  (function showAPIThemes($) {
-
-    //cache
-    var countrySelector = $('.country-selector');
-    var contentContainer = $('#contentContainer .content-tiles');
-    var contributorText = $('#contributorsText');
-    var countryFilter = void 0;
-
-    // local functions
-    function setContributorsText(log, author, email) {
-      var html = '\n        <b>Contributors:</b> This topic has been developed for the Open Gov Guide by the National Democratic Institute. The lead author was Patrick Merloe with contributions from Michelle Brown and Tova Wang. Please send comments to pat@ndi.org.\n      ';
-      contributorText.html(html);
-    }
-
-    function setSelectCountryListerners() {
-      countrySelector.on('change', function () {
-        hideNoResults();
-        showLoader('#themesDetail');
-        var activeTab = $('.c-tabs .-selected').data('node');
-        var countryModel = $(this).val();
-        if (parseInt(countryModel) === 0) {
-          showContent(contentContainer, activeTab);
-        } else {
-          showContent(contentContainer, activeTab, countryModel);
-        }
-      });
-    }
-
-    // init selector
-    function initSelectors() {
-      countrySelector.select2({
-        minimumResultsForSearch: Infinity,
-        containerCssClass: '-green -tall',
-        dropdownCssClass: '-green',
-        placeholder: 'All countries'
-      });
-      $('.select2').addClass('-green-select');
-      $.getJSON('/apiJSON/countries?fields=id,label&sort=label', function (data) {
-        data.data.forEach(function (country) {
-          var option = '<option value="' + country.id + '">' + country.label + '</option>';
-          countrySelector.append(option);
-        });
-      });
-      setSelectCountryListerners();
-    }
-
-    // custom callback for tabs component
-    var onChangeTab = function onChangeTab(id, label) {
-      hideNoResults();
-      showLoader('#themesDetail');
-      $('#themesDetail .-body-content').addClass('-hidden');
-      $('#themesDetail .' + id).removeClass('-hidden');
-      var activeCountry = countrySelector.val();
-      if (parseInt(activeCountry) === 0) {
-        showContent(contentContainer, id);
-      } else {
-        showContent(contentContainer, id, activeCountry);
-      }
-      setContributorsText();
-      if (id === 'modelcommitments') {
-        contributorText.removeClass('-hidden');
-      } else {
-        contributorText.addClass('-hidden');
-      }
-    };
-
-    function showContent(container, endpoint, countryFilter) {
-      container.html('');
-      var countryQuery = countryFilter && endpoint !== 'modelcommitments' ? '&filter[country]=' + countryFilter : '';
-      var sorting = endpoint === 'stories' ? '-created' : 'label';
-      $.getJSON('/apiJSON/' + endpoint + '?filter[theme]=' + id + countryQuery + '&sort=' + sorting, function (data) {
-        hideNoResults();
-        if (data.data.length) {
-          appendTilesWithoutBackground(data.data, container, 2, '-themes');
-        } else {
-          showNoResults(container, 'No content available', 'tall', 'grey', 'xxlarge', 'blue');
-        }
-        removeLoader('#themesDetail', null, true);
-      });
-    }
-    // init page
-    initTabs();
-    setTabListeners(onChangeTab);
-    initSelectors();
-    showContent(contentContainer, 'starredcommitments');
-    buildExploreMoreTiles('themes');
-  })(jQuery);
-}
-'use strict';
-
-function showThemesPage() {
-  (function showAPIThemes($) {
-
-    //consts
-    var themesContainer = $('#tilesContainer');
-    var searchContainer = $('#themesTilesSearch input');
-    var searchEl = $('.c-tile');
-    var searchText = $('.c-tile .tile');
-    var themesTitle = $('.tiles-heading');
-
-    // local functions
-    function showThemesTiles() {
-      $.getJSON('/apiJSON/themes?sort=label', function (data) {
-        if (data.data.length) {
-          appendTiles(data.data, themesContainer, 3);
-        } else {
-          showNoResults('#tilesNoResults', 'No themes available', 'tall', 'grey', 'xxlarge', 'blue');
-        }
-        removeLoader('.l-section', null, true);
-      });
-    }
-
-    // custom callback for tabs component
-    var onChangeTab = function onChangeTab(id, label) {
-      themesTitle.html(label);
-      var currentSearch = searchContainer.val();
-      currentSearch = currentSearch.toLowerCase();
-      var parseId = parseInt(id);
-      $('.c-tile').each(function () {
-        if (currentSearch) {
-          if ($(this).data('group') === parseId && $(this).html().toLowerCase().indexOf(currentSearch) > -1 || id === '0' && $('.tile', this).html().toLowerCase().indexOf(currentSearch) > -1) {
-            $(this).css('display', 'block');
-          } else {
-            $(this).css('display', 'none');
-          }
-        } else {
-          if ($(this).data('group') === parseId || parseId === 0) {
-            $(this).css('display', 'block');
-          } else {
-            $(this).css('display', 'none');
-          }
-        }
-      });
-
-      // check for zero results
-      var results = $('.c-tile').filter(function () {
-        return $(this).css('display') === 'block';
-      }).length;
-
-      // show empty results
-      if (results === 0) {
-        showNoResults('#noResultsContainer', 'No themes available', 'tall', 'grey', 'xxlarge', 'blue');
-      } else {
-        hideNoResults('#noResultsContainer');
-      }
-    };
-
-    // init page
-    showThemesTiles();
-    initTabs();
-    setTabListeners(onChangeTab);
-    setSearchListeners(searchEl, searchText);
-  })(jQuery);
-}
-'use strict';
-
 function showGroupList() {
   (function ($) {
     var page = 1;
@@ -2850,70 +2928,6 @@ function showWorkingGroupDetail(id) {
       }
       removeLoader('.working-group-content', null, true);
     });
-  })(jQuery);
-}
-'use strict';
-
-function showCurrentCommitmentDetail(id) {
-  (function ($) {
-
-    function buildCurrentCommitment() {
-      $.getJSON('/apiJSON/current_commitment/' + id, function (data) {
-        if (data.data[0].lead_institution[0]) {
-          $('#currentCommitmentContent .lead').html(data.data[0].lead_institution[0]);
-        }
-        if (data.data[0].support_institution[0]) {
-          $('#currentCommitmentContent .support').html(data.data[0].support_institution[0]);
-        }
-      });
-    }
-
-    $('#theme-menu').addClass('active');
-    buildCurrentCommitment();
-    buildExploreMoreTiles('current_commitment');
-  })(jQuery);
-}
-'use strict';
-
-function showIrmCommitmentDetail(id) {
-  (function ($) {
-    $('#theme-menu').addClass('active');
-    buildExploreMoreTiles('irm_commitments');
-  })(jQuery);
-}
-'use strict';
-
-function showModelCommitmentDetail(id) {
-  (function ($) {
-
-    var onChangeTab = function onChangeTab(id, label) {
-      $('.tab-container').addClass('-hidden');
-      $('#' + id + ' .tab-container').removeClass('-hidden');
-    };
-
-    function fetchModelCommitmentDetail() {
-      $.getJSON('/apiJSON/modelcommitments/' + id, function (data) {
-        $('.strength-info').html('<strong>Strength: </strong>' + data.data[0].strength.label);
-        $('.contributor-info').html('<strong>Contributors: </strong>' + data.data[0].contributors);
-        $('#justification .container').html(data.data[0].justification);
-        appendTilesStandards(data.data[0].standardsguidance, $('#standards .container'), 2);
-        removeLoader('.l-section', null, true);
-      });
-    }
-
-    // init view
-    initTabs();
-    setTabListeners(onChangeTab);
-    fetchModelCommitmentDetail();
-    buildExploreMoreTiles('modelcommitments');
-  })(jQuery);
-}
-'use strict';
-
-function showStarredCommitmentDetail(id) {
-  (function ($) {
-    $('#theme-menu').addClass('active');
-    buildExploreMoreTiles('starredcommitments');
   })(jQuery);
 }
 //# sourceMappingURL=bundle.js.map

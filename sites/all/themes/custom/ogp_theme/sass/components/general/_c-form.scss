@@ -101,3 +101,19 @@
     font-style: normal;
   }
 }
+
+.view-filters {
+  margin-top: 50px;
+  margin-bottom: -100px;
+  position: relative;
+  z-index: 4;
+
+  label {
+    margin-bottom: 1px;
+  }
+}
+
+.view-content {
+  z-index: 5;
+  position: relative;
+}
