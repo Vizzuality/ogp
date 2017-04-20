@@ -63,6 +63,13 @@
  *
  * @ingroup themeable
  */
+ $limit = 12;
+ $snippet = strip_tags($result['node']->body['und'][0]['value']);
+ if (str_word_count($snippet, 0) > $limit) {
+     $words = str_word_count($snippet, 2);
+     $pos = array_keys($words);
+     $snippet = substr($snippet, 0, $pos[$limit]) . '...';
+ }
 ?>
 <li class="<?php print $classes; ?>"<?php print $attributes; ?>>
   <?php print render($title_prefix); ?>
@@ -75,7 +82,7 @@
   <?php print render($title_suffix); ?>
   <div class="search-snippet-info">
     <?php if ($result['node']->body['und'][0]['value']):?>
-      <div class="text -body-content"><?php echo substr($result['node']->body['und'][0]['value'], 0, 100) . '...' ?></div>
+      <div class="text -body-content"><?php echo $snippet ?></div>
       <br>
       <p class="text -blue -bold"><?php echo $result['type'] ?></p>
     <?php endif; ?>
