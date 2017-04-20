@@ -27,5 +27,17 @@
       margin-right: calc((100vw - 1150px) / 2);
       width: 575px;
     }
+
+    .facebook-feed-message {
+      color: $color-5;
+      font-family: $font-family-1;
+      font-size: $font-size-medium;
+      font-weight: $font-weight-semi-bold;
+      line-height: 1.33;
+    }
+
+    .facebook-feed-time {
+      display: none;
+    }
   }
 }
