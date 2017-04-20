@@ -1,10 +1,4 @@
 .l-login {
-  .messages {
-    .error {
-      display: none;
-    }
-  }
-
   .row {
     flex-direction: column;
 
@@ -50,6 +44,61 @@
         .form-actions {
           flex-basis: 30%;
         }
+      }
+    }
+  }
+}
+
+.l-pass {
+  .row {
+    flex-direction: column;
+  }
+
+  #user-pass > div {
+    display: flex;
+    flex-flow: row wrap;
+    justify-content: space-between;
+    align-items: center;
+    align-content: center;
+    margin-top: 35px;
+
+    .captcha {
+      display: none;
+    }
+
+    .form-item-name {
+      flex-basis: 70%;
+      padding-right: 20px;
+
+      label {
+        font-family: $font-family-1;
+        font-size: $font-size-small;
+        font-weight: $font-weight-normal;
+        color: $color-22;
+        line-height: 1.6;
+        margin-bottom: 20px;
+      }
+    }
+
+    .form-item-pass {
+      flex-basis: 50%;
+      padding-left: 20px;
+
+      label {
+        font-family: $font-family-1;
+        font-size: $font-size-small;
+        font-weight: $font-weight-normal;
+        color: $color-22;
+        line-height: 1.6;
+        margin-bottom: 20px;
+      }
+    }
+
+    .form-actions {
+      flex-basis: 25%;
+
+      input {
+        margin-bottom: 0;
       }
     }
   }

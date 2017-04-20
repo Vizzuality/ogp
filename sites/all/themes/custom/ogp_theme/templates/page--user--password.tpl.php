@@ -1,18 +1,26 @@
 <?php include(drupal_get_path('theme', 'ogp_theme').'/templates/components/header.tpl.php'); ?>
-<div class="login l-login l-page" id="loginPage">
+<div class="password l-pass l-page" id="loginPage">
   <div class="row">
     <div id="top_part">
       <h1 class="text -dark -title">
-        Access
+        Request new password
       </h1>
     </div>
+
     <div class="container-form" id="middle_part">
       <?php print render($page['content']); ?>
     </div>
+
     <div id="bottom_part">
-      <div class="password_link text -blue">
-        <?php print l(t('Forgot your password?'), 'user/password'); ?>
+      <div class="login_link register_link text -blue">
+        <?php print l(t('Login'), 'user/login'); ?>
       </div>
+
+      <?php if (variable_get('user_register')): ?>
+        <div class="register_link text -blue">
+          <?php print l(t('Register a new account'), 'user/register'); ?>
+        </div>
+      <?php endif; ?>
     </div>
   </div>
 </div>
