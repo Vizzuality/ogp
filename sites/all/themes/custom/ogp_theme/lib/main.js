@@ -204,6 +204,10 @@ function getAbsolutePath() {
         containerCssClass: '-tall'
       });
 
+      if ($(context).find('#loginPage').length !== 0) {
+        loginPage();
+      }
+
     }
   };
 })(jQuery);

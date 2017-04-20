@@ -204,6 +204,10 @@ function getAbsolutePath() {
         minimumResultsForSearch: Infinity,
         containerCssClass: '-tall'
       });
+
+      if ($(context).find('#loginPage').length !== 0) {
+        loginPage();
+      }
     }
   };
 })(jQuery);
@@ -2133,60 +2137,11 @@ function showIrmReports() {
 }
 'use strict';
 
-function showPageList() {
+function loginPage() {
   (function ($) {
-    var page = 1;
-    var totalPages = 0;
-    var sortValue = 'asc';
 
-    $('.sort-field').click(function () {
-      if (sortValue === 'asc') {
-        $('.triangle-sort').css('transform', 'rotate(180deg)'); // use this functions, because jquery method addClass not work with svg.
-        sortValue = 'desc';
-      } else {
-        $('.triangle-sort').css('transform', 'rotate(0deg)');
-        sortValue = 'asc';
-      }
-      page = 1;
-      showLoader('#tableContainer');
-      showPages(page, sortValue);
-    });
-
-    function setPaginationListerners() {
-      $('.onClickPagination').on('click', function (e) {
-        showLoader('#tableContainer');
-        var pageNum = $(this).data('value');
-        showPages(pageNum, sortValue);
-      });
-    }
-
-    function showPages(pageNumber, sort) {
-      var sortApi = '';
-      if (sort === 'asc') {
-        sortApi = 'sort=label';
-      } else {
-        sortApi = 'sort-=label';
-      }
-
-      $.getJSON('/apiJSON/page?&page=' + pageNumber + '&' + sortApi, function (pageresult) {
-        totalPages = getPageCount(pageresult.count, 5);
-        if (page === 1) {
-          $.getJSON('/apiJSON/page?date&page=' + pageNumber + '&' + sortApi, function (pageTable) {
-            createTable(pageTable, 'pages');
-            initPagination(pageNumber, totalPages, 'pagesList');
-            setPaginationListerners();
-            removeLoader('#tableContainer', null, true);
-          });
-        } else {
-          createTable(pageresult, 'pages');
-          removeLoader('#tableContainer', null, true);
-          initPagination(pageNumber, totalPages, 'pagesList');
-          setPaginationListerners();
-        }
-      });
-    }
-
-    showPages(page, sortValue);
+    $('#edit-name').attr('placeholder', 'Enter your Open Government Partnership username');
+    $('#edit-pass').attr('placeholder', 'Enter the password that accompanies your username.');
   })(jQuery);
 }
 'use strict';
@@ -2344,6 +2299,64 @@ function showNewsEventsPage() {
 }
 'use strict';
 
+function showPageList() {
+  (function ($) {
+    var page = 1;
+    var totalPages = 0;
+    var sortValue = 'asc';
+
+    $('.sort-field').click(function () {
+      if (sortValue === 'asc') {
+        $('.triangle-sort').css('transform', 'rotate(180deg)'); // use this functions, because jquery method addClass not work with svg.
+        sortValue = 'desc';
+      } else {
+        $('.triangle-sort').css('transform', 'rotate(0deg)');
+        sortValue = 'asc';
+      }
+      page = 1;
+      showLoader('#tableContainer');
+      showPages(page, sortValue);
+    });
+
+    function setPaginationListerners() {
+      $('.onClickPagination').on('click', function (e) {
+        showLoader('#tableContainer');
+        var pageNum = $(this).data('value');
+        showPages(pageNum, sortValue);
+      });
+    }
+
+    function showPages(pageNumber, sort) {
+      var sortApi = '';
+      if (sort === 'asc') {
+        sortApi = 'sort=label';
+      } else {
+        sortApi = 'sort-=label';
+      }
+
+      $.getJSON('/apiJSON/page?&page=' + pageNumber + '&' + sortApi, function (pageresult) {
+        totalPages = getPageCount(pageresult.count, 5);
+        if (page === 1) {
+          $.getJSON('/apiJSON/page?date&page=' + pageNumber + '&' + sortApi, function (pageTable) {
+            createTable(pageTable, 'pages');
+            initPagination(pageNumber, totalPages, 'pagesList');
+            setPaginationListerners();
+            removeLoader('#tableContainer', null, true);
+          });
+        } else {
+          createTable(pageresult, 'pages');
+          removeLoader('#tableContainer', null, true);
+          initPagination(pageNumber, totalPages, 'pagesList');
+          setPaginationListerners();
+        }
+      });
+    }
+
+    showPages(page, sortValue);
+  })(jQuery);
+}
+'use strict';
+
 function showGroupResourcesDetail(id) {
   (function ($) {
 
@@ -2430,6 +2443,163 @@ function searchPage() {
   (function ($) {
 
     $('.search-form input').attr('placeholder', 'Type what you are searching for...');
+  })(jQuery);
+}
+'use strict';
+
+function showThemesDetail(id) {
+  (function showAPIThemes($) {
+
+    //cache
+    var countrySelector = $('.country-selector');
+    var contentContainer = $('#contentContainer .content-tiles');
+    var contributorText = $('#contributorsText');
+    var countryFilter = void 0;
+
+    // local functions
+    function setContributorsText(log, author, email) {
+      var html = '\n        <b>Contributors:</b> This topic has been developed for the Open Gov Guide by the National Democratic Institute. The lead author was Patrick Merloe with contributions from Michelle Brown and Tova Wang. Please send comments to pat@ndi.org.\n      ';
+      contributorText.html(html);
+    }
+
+    function setSelectCountryListerners() {
+      countrySelector.on('change', function () {
+        hideNoResults();
+        showLoader('#themesDetail');
+        var activeTab = $('.c-tabs .-selected').data('node');
+        var countryModel = $(this).val();
+        if (parseInt(countryModel) === 0) {
+          showContent(contentContainer, activeTab);
+        } else {
+          showContent(contentContainer, activeTab, countryModel);
+        }
+      });
+    }
+
+    // init selector
+    function initSelectors() {
+      countrySelector.select2({
+        minimumResultsForSearch: Infinity,
+        containerCssClass: '-green -tall',
+        dropdownCssClass: '-green',
+        placeholder: 'All countries'
+      });
+      $('.select2').addClass('-green-select');
+      $.getJSON('/apiJSON/countries?fields=id,label&sort=label', function (data) {
+        data.data.forEach(function (country) {
+          var option = '<option value="' + country.id + '">' + country.label + '</option>';
+          countrySelector.append(option);
+        });
+      });
+      setSelectCountryListerners();
+    }
+
+    // custom callback for tabs component
+    var onChangeTab = function onChangeTab(id, label) {
+      hideNoResults();
+      showLoader('#themesDetail');
+      $('#themesDetail .-body-content').addClass('-hidden');
+      $('#themesDetail .' + id).removeClass('-hidden');
+      var activeCountry = countrySelector.val();
+      if (parseInt(activeCountry) === 0) {
+        showContent(contentContainer, id);
+      } else {
+        showContent(contentContainer, id, activeCountry);
+      }
+      setContributorsText();
+      if (id === 'modelcommitments') {
+        contributorText.removeClass('-hidden');
+      } else {
+        contributorText.addClass('-hidden');
+      }
+    };
+
+    function showContent(container, endpoint, countryFilter) {
+      container.html('');
+      var countryQuery = countryFilter && endpoint !== 'modelcommitments' ? '&filter[country]=' + countryFilter : '';
+      var sorting = endpoint === 'stories' ? '-created' : 'label';
+      $.getJSON('/apiJSON/' + endpoint + '?filter[theme]=' + id + countryQuery + '&sort=' + sorting, function (data) {
+        hideNoResults();
+        if (data.data.length) {
+          appendTilesWithoutBackground(data.data, container, 2, '-themes');
+        } else {
+          showNoResults(container, 'No content available', 'tall', 'grey', 'xxlarge', 'blue');
+        }
+        removeLoader('#themesDetail', null, true);
+      });
+    }
+    // init page
+    initTabs();
+    setTabListeners(onChangeTab);
+    initSelectors();
+    showContent(contentContainer, 'starredcommitments');
+    buildExploreMoreTiles('themes');
+  })(jQuery);
+}
+'use strict';
+
+function showThemesPage() {
+  (function showAPIThemes($) {
+
+    //consts
+    var themesContainer = $('#tilesContainer');
+    var searchContainer = $('#themesTilesSearch input');
+    var searchEl = $('.c-tile');
+    var searchText = $('.c-tile .tile');
+    var themesTitle = $('.tiles-heading');
+
+    // local functions
+    function showThemesTiles() {
+      $.getJSON('/apiJSON/themes?sort=label', function (data) {
+        if (data.data.length) {
+          appendTiles(data.data, themesContainer, 3);
+        } else {
+          showNoResults('#tilesNoResults', 'No themes available', 'tall', 'grey', 'xxlarge', 'blue');
+        }
+        removeLoader('.l-section', null, true);
+      });
+    }
+
+    // custom callback for tabs component
+    var onChangeTab = function onChangeTab(id, label) {
+      themesTitle.html(label);
+      var currentSearch = searchContainer.val();
+      currentSearch = currentSearch.toLowerCase();
+      var parseId = parseInt(id);
+      $('.c-tile').each(function () {
+        if (currentSearch) {
+          if ($(this).data('group') === parseId && $(this).html().toLowerCase().indexOf(currentSearch) > -1 || id === '0' && $('.tile', this).html().toLowerCase().indexOf(currentSearch) > -1) {
+            $(this).css('display', 'block');
+          } else {
+            $(this).css('display', 'none');
+          }
+        } else {
+          if ($(this).data('group') === parseId || parseId === 0) {
+            $(this).css('display', 'block');
+          } else {
+            $(this).css('display', 'none');
+          }
+        }
+      });
+
+      // check for zero results
+      var results = $('.c-tile').filter(function () {
+        return $(this).css('display') === 'block';
+      }).length;
+
+      // show empty results
+      if (results === 0) {
+        showNoResults('#noResultsContainer', 'No themes available', 'tall', 'grey', 'xxlarge', 'blue');
+      } else {
+        hideNoResults('#noResultsContainer');
+      }
+    };
+
+    // init page
+    showThemesTiles();
+    initTabs();
+    setTabListeners(onChangeTab);
+    setSearchListeners(searchEl, searchText);
   })(jQuery);
 }
 'use strict';
@@ -2671,163 +2841,6 @@ function showStoriesSubmitPage(id) {
         data: {}
       }).done(function (data) {});
     });
-  })(jQuery);
-}
-'use strict';
-
-function showThemesDetail(id) {
-  (function showAPIThemes($) {
-
-    //cache
-    var countrySelector = $('.country-selector');
-    var contentContainer = $('#contentContainer .content-tiles');
-    var contributorText = $('#contributorsText');
-    var countryFilter = void 0;
-
-    // local functions
-    function setContributorsText(log, author, email) {
-      var html = '\n        <b>Contributors:</b> This topic has been developed for the Open Gov Guide by the National Democratic Institute. The lead author was Patrick Merloe with contributions from Michelle Brown and Tova Wang. Please send comments to pat@ndi.org.\n      ';
-      contributorText.html(html);
-    }
-
-    function setSelectCountryListerners() {
-      countrySelector.on('change', function () {
-        hideNoResults();
-        showLoader('#themesDetail');
-        var activeTab = $('.c-tabs .-selected').data('node');
-        var countryModel = $(this).val();
-        if (parseInt(countryModel) === 0) {
-          showContent(contentContainer, activeTab);
-        } else {
-          showContent(contentContainer, activeTab, countryModel);
-        }
-      });
-    }
-
-    // init selector
-    function initSelectors() {
-      countrySelector.select2({
-        minimumResultsForSearch: Infinity,
-        containerCssClass: '-green -tall',
-        dropdownCssClass: '-green',
-        placeholder: 'All countries'
-      });
-      $('.select2').addClass('-green-select');
-      $.getJSON('/apiJSON/countries?fields=id,label&sort=label', function (data) {
-        data.data.forEach(function (country) {
-          var option = '<option value="' + country.id + '">' + country.label + '</option>';
-          countrySelector.append(option);
-        });
-      });
-      setSelectCountryListerners();
-    }
-
-    // custom callback for tabs component
-    var onChangeTab = function onChangeTab(id, label) {
-      hideNoResults();
-      showLoader('#themesDetail');
-      $('#themesDetail .-body-content').addClass('-hidden');
-      $('#themesDetail .' + id).removeClass('-hidden');
-      var activeCountry = countrySelector.val();
-      if (parseInt(activeCountry) === 0) {
-        showContent(contentContainer, id);
-      } else {
-        showContent(contentContainer, id, activeCountry);
-      }
-      setContributorsText();
-      if (id === 'modelcommitments') {
-        contributorText.removeClass('-hidden');
-      } else {
-        contributorText.addClass('-hidden');
-      }
-    };
-
-    function showContent(container, endpoint, countryFilter) {
-      container.html('');
-      var countryQuery = countryFilter && endpoint !== 'modelcommitments' ? '&filter[country]=' + countryFilter : '';
-      var sorting = endpoint === 'stories' ? '-created' : 'label';
-      $.getJSON('/apiJSON/' + endpoint + '?filter[theme]=' + id + countryQuery + '&sort=' + sorting, function (data) {
-        hideNoResults();
-        if (data.data.length) {
-          appendTilesWithoutBackground(data.data, container, 2, '-themes');
-        } else {
-          showNoResults(container, 'No content available', 'tall', 'grey', 'xxlarge', 'blue');
-        }
-        removeLoader('#themesDetail', null, true);
-      });
-    }
-    // init page
-    initTabs();
-    setTabListeners(onChangeTab);
-    initSelectors();
-    showContent(contentContainer, 'starredcommitments');
-    buildExploreMoreTiles('themes');
-  })(jQuery);
-}
-'use strict';
-
-function showThemesPage() {
-  (function showAPIThemes($) {
-
-    //consts
-    var themesContainer = $('#tilesContainer');
-    var searchContainer = $('#themesTilesSearch input');
-    var searchEl = $('.c-tile');
-    var searchText = $('.c-tile .tile');
-    var themesTitle = $('.tiles-heading');
-
-    // local functions
-    function showThemesTiles() {
-      $.getJSON('/apiJSON/themes?sort=label', function (data) {
-        if (data.data.length) {
-          appendTiles(data.data, themesContainer, 3);
-        } else {
-          showNoResults('#tilesNoResults', 'No themes available', 'tall', 'grey', 'xxlarge', 'blue');
-        }
-        removeLoader('.l-section', null, true);
-      });
-    }
-
-    // custom callback for tabs component
-    var onChangeTab = function onChangeTab(id, label) {
-      themesTitle.html(label);
-      var currentSearch = searchContainer.val();
-      currentSearch = currentSearch.toLowerCase();
-      var parseId = parseInt(id);
-      $('.c-tile').each(function () {
-        if (currentSearch) {
-          if ($(this).data('group') === parseId && $(this).html().toLowerCase().indexOf(currentSearch) > -1 || id === '0' && $('.tile', this).html().toLowerCase().indexOf(currentSearch) > -1) {
-            $(this).css('display', 'block');
-          } else {
-            $(this).css('display', 'none');
-          }
-        } else {
-          if ($(this).data('group') === parseId || parseId === 0) {
-            $(this).css('display', 'block');
-          } else {
-            $(this).css('display', 'none');
-          }
-        }
-      });
-
-      // check for zero results
-      var results = $('.c-tile').filter(function () {
-        return $(this).css('display') === 'block';
-      }).length;
-
-      // show empty results
-      if (results === 0) {
-        showNoResults('#noResultsContainer', 'No themes available', 'tall', 'grey', 'xxlarge', 'blue');
-      } else {
-        hideNoResults('#noResultsContainer');
-      }
-    };
-
-    // init page
-    showThemesTiles();
-    initTabs();
-    setTabListeners(onChangeTab);
-    setSearchListeners(searchEl, searchText);
   })(jQuery);
 }
 'use strict';
