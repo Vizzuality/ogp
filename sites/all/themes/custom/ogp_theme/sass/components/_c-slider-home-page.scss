@@ -1,11 +1,26 @@
 //Cover slider Home Page
 .c-slider-home-page {
   min-height: 750px;
-  background-image: url('../images/cover/cover1.jpg');
-  background-repeat: no-repeat;
-  background-size: cover;
+  background-color: $color-2;
   position: relative;
   padding-top: 80px;
+  background-repeat: no-repeat;
+  background-position: center;
+  background-size: cover;
+
+  &.-image {
+    &::after {
+      content: '';
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba($color-2, .4);
+      z-index: -1;
+    }
+  }
 
   .container {
     height: 650px;

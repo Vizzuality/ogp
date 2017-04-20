@@ -55,6 +55,14 @@
               </div>
             </div>
           </div>
+          <div class="subnational-participants-filter">
+            <div class="contain-filter">
+              <div class="name-filter">
+                <input class="select-legend" data-layer="participants" data-value="theme-participants" type="checkbox">
+                <span class="text -legend">Subnational participants</span>
+              </div>
+            </div>
+          </div>
           <div class="starred-filter">
             <div class="contain-filter">
               <div class="name-filter">
@@ -116,14 +124,6 @@
                     Number of commitments of your selection
                   </li>
                 </ul>
-              </div>
-            </div>
-          </div>
-          <div class="subnational-participants-filter">
-            <div class="contain-filter">
-              <div class="name-filter">
-                <input class="select-legend" data-layer="participants" data-value="theme-participants" type="checkbox">
-                <span class="text -legend">Subnational participants</span>
               </div>
             </div>
           </div>

@@ -4,28 +4,9 @@
  * Process theme data.
  */
 
-//  function ogp_theme_theme() {
-//   $items = array();
-//   // create custom user-login.tpl.php
-//   $items['user_login'] = array(
-//     'render element' => 'form',
-//     'path' => drupal_get_path('theme', 'ogp_theme') . '/templates',
-//     'template' => 'user-login',
-//     'preprocess functions' => array(
-//     'ogp_theme_preprocess_user_login'
-//     ),
-//    );
-//
-//   $items['user_pass'] = array(
-//    'render element' => 'form',
-//    'path' => drupal_get_path('theme', 'ogp_theme') . '/templates',
-//    'template' => 'user-pass',
-//    'preprocess functions' => array(
-//    'ogp_theme_preprocess_user_pass'
-//    ),
-//   );
-// return $items;
-// }
+ function YOURTHEME_preprocess_page(&$vars) {
+
+ }
 
 /**
  * Theme function for file type icons.
@@ -77,6 +58,13 @@ function ogp_theme_file_entity_download_link($variables) {
 }
 
 function ogp_theme_preprocess_page(&$vars) {
+  // custom 404 template
+  $header = drupal_get_http_header('status');
+  if ($header == '404 Not Found') {
+    $vars['theme_hook_suggestions'][] = 'page__404';
+  }
+
+
   if (isset($vars['node']->type)) {
     $node = $vars['node'];
     if ($node->type == 'country_page') {

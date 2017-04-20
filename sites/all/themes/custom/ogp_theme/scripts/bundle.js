@@ -183,6 +183,14 @@ function getAbsolutePath() {
         featuresResultPage();
       }
 
+      if ($(context).find('#page404').length !== 0) {
+        addBanner('newsletter');
+      }
+
+      if ($(context).find('#node').length !== 0) {
+        addBanner('newsletter');
+      }
+
       //build subscribe modal
       buildSubscribeModal();
 
@@ -190,6 +198,12 @@ function getAbsolutePath() {
       if ($(context).find('#disqus_thread').length !== 0) {
         showComments(settings.block_refresh.args[1]);
       }
+
+      // convert all custom views_templates
+      $('.form-select').select2({
+        minimumResultsForSearch: Infinity,
+        containerCssClass: '-tall'
+      });
 
       if ($(context).find('#loginPage').length !== 0) {
         loginPage();
@@ -1884,16 +1898,6 @@ function showNewsEventsPage() {
 
 function showHomePage() {
   (function ($) {
-    // Slider that appear on Home page
-    $('.slider-cover-home').slick({
-      dots: true,
-      arrows: false,
-      speed: 500,
-      fade: true,
-      cssEase: 'linear',
-      dotsClass: 'dots-slider',
-      adaptiveHeight: true
-    });
 
     var map = L.map('maphome', {
       zoomControl: false,
@@ -1971,13 +1975,24 @@ function showHomePage() {
 
 function showSliderHomePage() {
   (function ($) {
-    $.getJSON('/apiJSON/stories?fields=label,alias,image&sort=-created', function (stories) {
+    $.getJSON('/apiJSON/stories?fields=label,alias,image&sort=-created&range=3', function (stories) {
+      showLoader('.slider-cover-home');
       for (var i = 0; i < 3; i += 1) {
+        $('.slider-cover-home').append('\n          <div class="c-slider-home-page slider-image-0 ' + (stories.data[i].image ? '-image' : '') + '">\n            <div class="row">\n              <div class="column small-12 medium-9">\n                <div class="container slider-0">\n                  <div>\n                    <h1 class="title-text -white">\n                      <a href="' + stories.data[i].alias + '">' + stories.data[i].label + '</a>\n                    </h1>\n                    <div class="small-12 medium-5 large-4">\n                      <a class="c-button -box" href="' + stories.data[i].alias + '">Explore the story</a>\n                    <div>\n                  </div>\n                  </div>\n                </div>\n              </div>\n            </div>\n        ');
         if (stories.data[i].image) {
           $('.slider-image-' + i).css('background-image', 'url(' + stories.data[i].image + ')');
         }
-        $('.slider-' + i).html('\n          <div>\n            <h1 class="title-text -white">\n              <a href="' + stories.data[i].alias + '">' + stories.data[i].label + '</a>\n            </h1>\n            <div class="small-12 medium-5 large-4">\n              <a class="c-button -box" href="' + stories.data[i].alias + '">Explore the story</a>\n            <div>\n          </div>\n        ');
       }
+      removeLoader('.slider-cover-home');
+      $('.slider-cover-home').slick({
+        dots: true,
+        arrows: false,
+        speed: 500,
+        fade: true,
+        cssEase: 'linear',
+        dotsClass: 'dots-slider',
+        adaptiveHeight: true
+      });
     });
   })(jQuery);
 }

@@ -182,6 +182,14 @@ function getAbsolutePath() {
         featuresResultPage();
       }
 
+      if ($(context).find('#page404').length !== 0) {
+        addBanner('newsletter');
+      }
+
+      if ($(context).find('#node').length !== 0) {
+        addBanner('newsletter');
+      }
+
       //build subscribe modal
       buildSubscribeModal();
 
@@ -189,6 +197,12 @@ function getAbsolutePath() {
       if ($(context).find('#disqus_thread').length !== 0) {
         showComments(settings.block_refresh.args[1]);
       }
+
+      // convert all custom views_templates
+      $('.form-select').select2({
+        minimumResultsForSearch: Infinity,
+        containerCssClass: '-tall'
+      });
 
       if ($(context).find('#loginPage').length !== 0) {
         loginPage();
