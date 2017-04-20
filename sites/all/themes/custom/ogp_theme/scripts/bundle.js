@@ -187,6 +187,10 @@ function getAbsolutePath() {
         addBanner('newsletter');
       }
 
+      if ($(context).find('#node').length !== 0) {
+        addBanner('newsletter');
+      }
+
       //build subscribe modal
       buildSubscribeModal();
 
@@ -932,6 +936,36 @@ function addDots(string, limit) {
 }
 'use strict';
 
+function showAboutPages() {
+  (function ($) {
+
+    var tabsContainer = $('.tabs-container');
+    var containerInfo = $('#containerInfo');
+
+    // custom callback for tabs component
+    var onChangeAboutPageTab = function onChangeAboutPageTab(id, label) {
+      $('.tab-content').addClass('-hidden');
+      $('.' + id).removeClass('-hidden');
+    };
+
+    function initAboutTabs(onChange) {
+      initTabs();
+      setTabListeners(onChange);
+    }
+
+    showLoader('#containerInfo');
+    $.getJSON('/apiJSON/page?filter[page_category]=2925', function (data) {
+      buildTabs(data.data, tabsContainer, onChangeAboutPageTab);
+      initAboutTabs(onChangeAboutPageTab);
+      for (var i = 0; i < data.data.length; i += 1) {
+        containerInfo.append('\n        <div class="tab-content -hidden ' + data.data[i].id + '">\n          <h3 class="text -section-title">' + data.data[i].label + '</h3>\n          <div class="text -body-content">\n            <p class="text -body-content">\n              ' + data.data[i].body.value + '\n            </p>\n          </div>\n        </div>\n      ');
+      }
+      removeLoader('#containerInfo', null, true);
+    });
+  })(jQuery);
+}
+'use strict';
+
 function showCurrentCommitmentDetail(id) {
   (function ($) {
 
@@ -992,58 +1026,6 @@ function showStarredCommitmentDetail(id) {
   (function ($) {
     $('#theme-menu').addClass('active');
     buildExploreMoreTiles('starredcommitments');
-  })(jQuery);
-}
-'use strict';
-
-function showAboutPages() {
-  (function ($) {
-
-    var tabsContainer = $('.tabs-container');
-    var containerInfo = $('#containerInfo');
-
-    // custom callback for tabs component
-    var onChangeAboutPageTab = function onChangeAboutPageTab(id, label) {
-      $('.tab-content').addClass('-hidden');
-      $('.' + id).removeClass('-hidden');
-    };
-
-    function initAboutTabs(onChange) {
-      initTabs();
-      setTabListeners(onChange);
-    }
-
-    showLoader('#containerInfo');
-    $.getJSON('/apiJSON/page?filter[page_category]=2925', function (data) {
-      buildTabs(data.data, tabsContainer, onChangeAboutPageTab);
-      initAboutTabs(onChangeAboutPageTab);
-      for (var i = 0; i < data.data.length; i += 1) {
-        containerInfo.append('\n        <div class="tab-content -hidden ' + data.data[i].id + '">\n          <h3 class="text -section-title">' + data.data[i].label + '</h3>\n          <div class="text -body-content">\n            <p class="text -body-content">\n              ' + data.data[i].body.value + '\n            </p>\n          </div>\n        </div>\n      ');
-      }
-      removeLoader('#containerInfo', null, true);
-    });
-  })(jQuery);
-}
-'use strict';
-
-function showDocumentResourcePage() {
-  (function ($) {
-    // cache dom
-    var tileContainer = $('#resourceDocsTiles');
-    var searchEl = $('.c-tile');
-    var searchText = $('.c-tile .tile');
-    var searchContainer = $('#resourceTilesSearch input');
-
-    // fetch content and append
-    $.getJSON('/apiJSON/resource', function (data) {
-      setSearchPlaceholder(searchContainer, data.data[0].label);
-      setSearchListeners(searchEl, searchText);
-      if (data.data.length) {
-        appendTiles(data.data, tileContainer, 4);
-      } else {
-        showNoResults();
-      }
-    });
   })(jQuery);
 }
 'use strict';
@@ -1735,6 +1717,28 @@ function initCountryTabs(onChangeCountryTab) {
 }
 'use strict';
 
+function showDocumentResourcePage() {
+  (function ($) {
+    // cache dom
+    var tileContainer = $('#resourceDocsTiles');
+    var searchEl = $('.c-tile');
+    var searchText = $('.c-tile .tile');
+    var searchContainer = $('#resourceTilesSearch input');
+
+    // fetch content and append
+    $.getJSON('/apiJSON/resource', function (data) {
+      setSearchPlaceholder(searchContainer, data.data[0].label);
+      setSearchListeners(searchEl, searchText);
+      if (data.data.length) {
+        appendTiles(data.data, tileContainer, 4);
+      } else {
+        showNoResults();
+      }
+    });
+  })(jQuery);
+}
+'use strict';
+
 function showNewsEventsPage() {
   (function ($) {
     // cache
@@ -2129,6 +2133,64 @@ function showIrmReports() {
 }
 'use strict';
 
+function showPageList() {
+  (function ($) {
+    var page = 1;
+    var totalPages = 0;
+    var sortValue = 'asc';
+
+    $('.sort-field').click(function () {
+      if (sortValue === 'asc') {
+        $('.triangle-sort').css('transform', 'rotate(180deg)'); // use this functions, because jquery method addClass not work with svg.
+        sortValue = 'desc';
+      } else {
+        $('.triangle-sort').css('transform', 'rotate(0deg)');
+        sortValue = 'asc';
+      }
+      page = 1;
+      showLoader('#tableContainer');
+      showPages(page, sortValue);
+    });
+
+    function setPaginationListerners() {
+      $('.onClickPagination').on('click', function (e) {
+        showLoader('#tableContainer');
+        var pageNum = $(this).data('value');
+        showPages(pageNum, sortValue);
+      });
+    }
+
+    function showPages(pageNumber, sort) {
+      var sortApi = '';
+      if (sort === 'asc') {
+        sortApi = 'sort=label';
+      } else {
+        sortApi = 'sort-=label';
+      }
+
+      $.getJSON('/apiJSON/page?&page=' + pageNumber + '&' + sortApi, function (pageresult) {
+        totalPages = getPageCount(pageresult.count, 5);
+        if (page === 1) {
+          $.getJSON('/apiJSON/page?date&page=' + pageNumber + '&' + sortApi, function (pageTable) {
+            createTable(pageTable, 'pages');
+            initPagination(pageNumber, totalPages, 'pagesList');
+            setPaginationListerners();
+            removeLoader('#tableContainer', null, true);
+          });
+        } else {
+          createTable(pageresult, 'pages');
+          removeLoader('#tableContainer', null, true);
+          initPagination(pageNumber, totalPages, 'pagesList');
+          setPaginationListerners();
+        }
+      });
+    }
+
+    showPages(page, sortValue);
+  })(jQuery);
+}
+'use strict';
+
 function showNewsEventsPage() {
   (function ($) {
     // cache
@@ -2278,64 +2340,6 @@ function showNewsEventsPage() {
     showEvents(countryFilter, typeFilter, page);
     showNews(countryFilter, typeFilter, page);
     onClickPagination();
-  })(jQuery);
-}
-'use strict';
-
-function showPageList() {
-  (function ($) {
-    var page = 1;
-    var totalPages = 0;
-    var sortValue = 'asc';
-
-    $('.sort-field').click(function () {
-      if (sortValue === 'asc') {
-        $('.triangle-sort').css('transform', 'rotate(180deg)'); // use this functions, because jquery method addClass not work with svg.
-        sortValue = 'desc';
-      } else {
-        $('.triangle-sort').css('transform', 'rotate(0deg)');
-        sortValue = 'asc';
-      }
-      page = 1;
-      showLoader('#tableContainer');
-      showPages(page, sortValue);
-    });
-
-    function setPaginationListerners() {
-      $('.onClickPagination').on('click', function (e) {
-        showLoader('#tableContainer');
-        var pageNum = $(this).data('value');
-        showPages(pageNum, sortValue);
-      });
-    }
-
-    function showPages(pageNumber, sort) {
-      var sortApi = '';
-      if (sort === 'asc') {
-        sortApi = 'sort=label';
-      } else {
-        sortApi = 'sort-=label';
-      }
-
-      $.getJSON('/apiJSON/page?&page=' + pageNumber + '&' + sortApi, function (pageresult) {
-        totalPages = getPageCount(pageresult.count, 5);
-        if (page === 1) {
-          $.getJSON('/apiJSON/page?date&page=' + pageNumber + '&' + sortApi, function (pageTable) {
-            createTable(pageTable, 'pages');
-            initPagination(pageNumber, totalPages, 'pagesList');
-            setPaginationListerners();
-            removeLoader('#tableContainer', null, true);
-          });
-        } else {
-          createTable(pageresult, 'pages');
-          removeLoader('#tableContainer', null, true);
-          initPagination(pageNumber, totalPages, 'pagesList');
-          setPaginationListerners();
-        }
-      });
-    }
-
-    showPages(page, sortValue);
   })(jQuery);
 }
 'use strict';
