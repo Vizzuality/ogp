@@ -50,6 +50,10 @@ h6 {
     font-size: $font-size-small-medium;
     font-weight: $font-weight-semi-bold;
     line-height: 1.3;
+
+    a {
+      color: $color-2;
+    }
   }
 
   &.-section-title {

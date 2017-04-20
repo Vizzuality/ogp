@@ -39,7 +39,7 @@
       'title' => $node->title
     );
     $breadcrumbs[sizeof($breadcrumbs) - 1] = (object)$current_node;
-  } else if ( array_key_exists('system_main', $page['content']) && array_key_exists('filed_group', $page['content']['system_main']['term_heading']['term'] )) {
+  } else if ( isset($page['content']['system_main']['term_heading']) && array_key_exists('system_main', $page['content']) && array_key_exists('filed_group', $page['content']['system_main']['term_heading']['term'] )) {
     $term = $page['content']['system_main']['term_heading']['term']['field_group']['#object'];
     $current_term = array(
       'title' => $term->name
