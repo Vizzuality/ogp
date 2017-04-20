@@ -5,15 +5,30 @@
   margin-bottom: 30px;
 
   thead {
+    font-size: 12px;
+    text-transform: uppercase;
+    font-weight: $font-weight-semi-bold;
+    letter-spacing: 1px;
+    color: $color-22;
+
+    a {
+      color: $color-2;
+    }
+
     tr {
       th {
         height: 60px;
         max-height: 60px;
         padding-left: 20px;
         background-color: $color-10;
+        border-bottom: 0px;
 
         &:first-of-type {
           border-right: 1px solid $color-4;
+        }
+
+        &:last-of-type {
+          padding-right: 20px;
         }
       }
     }
@@ -21,6 +36,15 @@
 
   tbody {
     border: 0;
+    font-size: 13px;
+    font-family: $font-family-2;
+    line-height: 1.6;
+    color: $color-22;
+
+    a {
+      color: $color-22;
+      font-weight: 600;
+    }
 
     tr {
       min-height: 60px;
@@ -33,15 +57,29 @@
 
       &:first-child {
 
-        td:first-child {
-          background-color: $color-2;
-          color: $color-4;
-        }
+        // td:first-child {
+        //   background-color: $color-2;
+        //   color: $color-4;
+        // }
       }
 
       td {
         border: 0;
         padding: 20px;
+
+        &.active {
+          background-color: transparent;
+        }
+      }
+
+      &.odd {
+        border: 0px;
+        background: $color-4;
+      }
+
+      &.even {
+        background-color: rgba($color-3, 0.5);
+        border: 0px;
       }
     }
   }

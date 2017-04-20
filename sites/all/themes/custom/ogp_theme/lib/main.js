@@ -190,6 +190,12 @@ function getAbsolutePath() {
         showComments(settings.block_refresh.args[1]);
       }
 
+      // convert all custom views_templates
+      $('.form-select').select2({
+        minimumResultsForSearch: Infinity,
+        containerCssClass: '-tall'
+      });
+
     }
   };
 })(jQuery);

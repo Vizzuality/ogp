@@ -190,6 +190,12 @@ function getAbsolutePath() {
       if ($(context).find('#disqus_thread').length !== 0) {
         showComments(settings.block_refresh.args[1]);
       }
+
+      // convert all custom views_templates
+      $('.form-select').select2({
+        minimumResultsForSearch: Infinity,
+        containerCssClass: '-tall'
+      });
     }
   };
 })(jQuery);
@@ -1016,6 +1022,181 @@ function showStarredCommitmentDetail(id) {
 }
 'use strict';
 
+function showDocumentResourcePage() {
+  (function ($) {
+    // cache dom
+    var tileContainer = $('#resourceDocsTiles');
+    var searchEl = $('.c-tile');
+    var searchText = $('.c-tile .tile');
+    var searchContainer = $('#resourceTilesSearch input');
+
+    // fetch content and append
+    $.getJSON('/apiJSON/resource', function (data) {
+      setSearchPlaceholder(searchContainer, data.data[0].label);
+      setSearchListeners(searchEl, searchText);
+      if (data.data.length) {
+        appendTiles(data.data, tileContainer, 4);
+      } else {
+        showNoResults();
+      }
+    });
+  })(jQuery);
+}
+'use strict';
+
+function showNewsEventsPage() {
+  (function ($) {
+    // cache
+    var countryFilter = 0;
+    var typeFilter = 0;
+    var page = 1;
+    var totalPages = 0;
+    var totalPagesEvents = 0;
+    var pageEvents = 1;
+
+    //selectors
+    var countrySelector = $('.country-filter');
+    var typeSelector = $('.type-filter');
+    var coverEvents = $('.c-content-banner');
+    var eventsContainer = $('#eventsTiles');
+    var newsContainer = $('#newsTiles');
+
+    // public functions
+    function buildHighlightedEvent(event) {
+      if (event.image) {
+        $('.c-content-banner').css('background-image', 'url(' + event.image + ')');
+      }
+      if (moment() > moment(event.date.value)) {
+        $('.banner-type-date-event').html('Past Event');
+      } else {
+        $('.banner-type-date-event').html('Upcoming Event');
+      }
+      $('.banner-link', coverEvents).attr('href', event.alias);
+      $('.banner-title', coverEvents).html(event.label);
+      $('.banner-date', coverEvents).html(moment(event.date.value).format('MMMM DD, hh:mm a'));
+      $('.c-content-banner').removeClass('-hidden');
+    }
+
+    function setPageCount(val) {
+      $('.page-count').data('value', val);
+    }
+
+    function getCurrentPage() {
+      var pageCount = $('.page-count').data('value');
+      return pageCount;
+    }
+
+    function onClickPagination() {
+      $('.page-count').on('click', function () {
+        setPageCount(getCurrentPage() + 1);
+        pageEvents = getCurrentPage();
+        if (totalPagesEvents > getCurrentPage()) {
+          showLoader('#eventsContainer');
+          showEvents(countryFilter, typeFilter, getCurrentPage());
+        }
+      });
+    }
+
+    function buildSelector(selector, placeholder, endpoint, query) {
+      selector.select2({
+        minimumResultsForSearch: Infinity,
+        containerCssClass: '-green -tall',
+        dropdownCssClass: '-green',
+        placeholder: '' + placeholder
+      });
+      selector.append('<option value="0">' + placeholder + '</option>');
+
+      $.getJSON('/apiJSON/' + endpoint + '?' + query, function (data) {
+        data.data.forEach(function (data) {
+          var option = '<option value="' + data.id + '">' + data.label + '</option>';
+          selector.append(option);
+        });
+
+        selector.on('change', function () {
+          // showLoader('#newsContainer');
+          showLoader('#eventsContainer');
+          countryFilter = countrySelector.val();
+          typeFilter = typeSelector.val();
+          page = 1;
+          // showNews(countryFilter, typeFilter, page);
+          showEvents(countryFilter, typeFilter, page);
+        });
+      });
+    }
+
+    function setPaginationListerners() {
+      countryFilter = countrySelector.val();
+      typeFilter = typeSelector.val();
+      $('.onClickPagination').on('click', function (e) {
+        showLoader('#newsContainer');
+        var pageNum = $(this).data('value');
+        showNews(countryFilter, typeFilter, pageNum);
+      });
+    }
+
+    function showEvents(country, type, page) {
+      var activeCountry = parseInt(country) > 0 ? 'filter[country]=' + country + '&' : '';
+      var activeType = parseInt(type) > 0 ? 'filter[category]=' + type + '&' : '';
+      var activeFilters = '' + activeCountry + activeType + '&page=' + page;
+      $.getJSON('/apiJSON/events?' + activeFilters + '&sort=-date', function (events) {
+        totalPagesEvents = getPageCount(events.count, 4);
+        if (events.data.length > 0) {
+          if (pageEvents === 1) {
+            $.getJSON('/apiJSON/events?sort=-date', function (highlightedEvent) {
+              buildHighlightedEvent(highlightedEvent.data[0]);
+              appendTilesEvent(events.data, eventsContainer);
+              removeLoader('#eventsContainer', null, true);
+            });
+          } else {
+            appendTilesEvent(events.data, eventsContainer);
+            removeLoader('#eventsContainer', null, true);
+          }
+        } else {
+          showNoResults('#eventsContainer', 'No events with these filters', 'tall', 'grey', 'xxlarge', 'blue');
+          removeLoader('#eventsContainer', null, true);
+        }
+      });
+    }
+
+    function showNews(country, type, page) {
+      var activeCountry = parseInt(country) > 0 ? 'filter[country]=' + country + '&' : '';
+      var activeType = parseInt(type) > 0 ? 'filter[category]=' + type + '&' : '';
+      var activeFilters = '' + activeCountry + activeType + '&page=' + page;
+      $.getJSON('/apiJSON/news?' + activeFilters + '&sort=-date', function (news) {
+        if (news.data.length > 0) {
+          totalPages = getPageCount(news.count, 4);
+          if (page === 1) {
+            $.getJSON('/apiJSON/news?sort=-date', function (highlightedNews) {
+              buildHighlightedEvent(highlightedNews.data[0]);
+              appendTilesDetailedNews(news.data, newsContainer, 2);
+              initPagination(page, totalPages, 'newsEventsPage');
+              setPaginationListerners();
+              removeLoader('#newsContainer', null, true);
+            });
+          } else {
+            appendTilesDetailedNews(news.data, newsContainer, 2);
+            removeLoader('#newsContainer', null, true);
+            initPagination(page, totalPages, 'newsEventsPage');
+            setPaginationListerners();
+          }
+        } else {
+          showNoResults('#newsTiles', 'No news with these filters', 'tall', 'grey', 'xxlarge', 'blue');
+          $('.c-pagination').html('');
+          removeLoader('#newsContainer', null, true);
+        }
+      });
+    }
+
+    // build page
+    buildSelector(countrySelector, 'All countries', 'countries', 'fields=id,label&sort=label');
+    buildSelector(typeSelector, 'All story types', 'stories_categories', 'fields=id,label&sort=label');
+    showEvents(countryFilter, typeFilter, page);
+    showNews(countryFilter, typeFilter, page);
+    onClickPagination();
+  })(jQuery);
+}
+'use strict';
+
 function showCountriesDetail(id) {
   (function ($) {
 
@@ -1703,282 +1884,6 @@ function initCountryTabs(onChangeCountryTab) {
 }
 'use strict';
 
-function showDocumentResourcePage() {
-  (function ($) {
-    // cache dom
-    var tileContainer = $('#resourceDocsTiles');
-    var searchEl = $('.c-tile');
-    var searchText = $('.c-tile .tile');
-    var searchContainer = $('#resourceTilesSearch input');
-
-    // fetch content and append
-    $.getJSON('/apiJSON/resource', function (data) {
-      setSearchPlaceholder(searchContainer, data.data[0].label);
-      setSearchListeners(searchEl, searchText);
-      if (data.data.length) {
-        appendTiles(data.data, tileContainer, 4);
-      } else {
-        showNoResults();
-      }
-    });
-  })(jQuery);
-}
-'use strict';
-
-function showNewsEventsPage() {
-  (function ($) {
-    // cache
-    var countryFilter = 0;
-    var typeFilter = 0;
-    var page = 1;
-    var totalPages = 0;
-    var totalPagesEvents = 0;
-    var pageEvents = 1;
-
-    //selectors
-    var countrySelector = $('.country-filter');
-    var typeSelector = $('.type-filter');
-    var coverEvents = $('.c-content-banner');
-    var eventsContainer = $('#eventsTiles');
-    var newsContainer = $('#newsTiles');
-
-    // public functions
-    function buildHighlightedEvent(event) {
-      if (event.image) {
-        $('.c-content-banner').css('background-image', 'url(' + event.image + ')');
-      }
-      if (moment() > moment(event.date.value)) {
-        $('.banner-type-date-event').html('Past Event');
-      } else {
-        $('.banner-type-date-event').html('Upcoming Event');
-      }
-      $('.banner-link', coverEvents).attr('href', event.alias);
-      $('.banner-title', coverEvents).html(event.label);
-      $('.banner-date', coverEvents).html(moment(event.date.value).format('MMMM DD, hh:mm a'));
-      $('.c-content-banner').removeClass('-hidden');
-    }
-
-    function setPageCount(val) {
-      $('.page-count').data('value', val);
-    }
-
-    function getCurrentPage() {
-      var pageCount = $('.page-count').data('value');
-      return pageCount;
-    }
-
-    function onClickPagination() {
-      $('.page-count').on('click', function () {
-        setPageCount(getCurrentPage() + 1);
-        pageEvents = getCurrentPage();
-        if (totalPagesEvents > getCurrentPage()) {
-          showLoader('#eventsContainer');
-          showEvents(countryFilter, typeFilter, getCurrentPage());
-        }
-      });
-    }
-
-    function buildSelector(selector, placeholder, endpoint, query) {
-      selector.select2({
-        minimumResultsForSearch: Infinity,
-        containerCssClass: '-green -tall',
-        dropdownCssClass: '-green',
-        placeholder: '' + placeholder
-      });
-      selector.append('<option value="0">' + placeholder + '</option>');
-
-      $.getJSON('/apiJSON/' + endpoint + '?' + query, function (data) {
-        data.data.forEach(function (data) {
-          var option = '<option value="' + data.id + '">' + data.label + '</option>';
-          selector.append(option);
-        });
-
-        selector.on('change', function () {
-          // showLoader('#newsContainer');
-          showLoader('#eventsContainer');
-          countryFilter = countrySelector.val();
-          typeFilter = typeSelector.val();
-          page = 1;
-          // showNews(countryFilter, typeFilter, page);
-          showEvents(countryFilter, typeFilter, page);
-        });
-      });
-    }
-
-    function setPaginationListerners() {
-      countryFilter = countrySelector.val();
-      typeFilter = typeSelector.val();
-      $('.onClickPagination').on('click', function (e) {
-        showLoader('#newsContainer');
-        var pageNum = $(this).data('value');
-        showNews(countryFilter, typeFilter, pageNum);
-      });
-    }
-
-    function showEvents(country, type, page) {
-      var activeCountry = parseInt(country) > 0 ? 'filter[country]=' + country + '&' : '';
-      var activeType = parseInt(type) > 0 ? 'filter[category]=' + type + '&' : '';
-      var activeFilters = '' + activeCountry + activeType + '&page=' + page;
-      $.getJSON('/apiJSON/events?' + activeFilters + '&sort=-date', function (events) {
-        totalPagesEvents = getPageCount(events.count, 4);
-        if (events.data.length > 0) {
-          if (pageEvents === 1) {
-            $.getJSON('/apiJSON/events?sort=-date', function (highlightedEvent) {
-              buildHighlightedEvent(highlightedEvent.data[0]);
-              appendTilesEvent(events.data, eventsContainer);
-              removeLoader('#eventsContainer', null, true);
-            });
-          } else {
-            appendTilesEvent(events.data, eventsContainer);
-            removeLoader('#eventsContainer', null, true);
-          }
-        } else {
-          showNoResults('#eventsContainer', 'No events with these filters', 'tall', 'grey', 'xxlarge', 'blue');
-          removeLoader('#eventsContainer', null, true);
-        }
-      });
-    }
-
-    function showNews(country, type, page) {
-      var activeCountry = parseInt(country) > 0 ? 'filter[country]=' + country + '&' : '';
-      var activeType = parseInt(type) > 0 ? 'filter[category]=' + type + '&' : '';
-      var activeFilters = '' + activeCountry + activeType + '&page=' + page;
-      $.getJSON('/apiJSON/news?' + activeFilters + '&sort=-date', function (news) {
-        if (news.data.length > 0) {
-          totalPages = getPageCount(news.count, 4);
-          if (page === 1) {
-            $.getJSON('/apiJSON/news?sort=-date', function (highlightedNews) {
-              buildHighlightedEvent(highlightedNews.data[0]);
-              appendTilesDetailedNews(news.data, newsContainer, 2);
-              initPagination(page, totalPages, 'newsEventsPage');
-              setPaginationListerners();
-              removeLoader('#newsContainer', null, true);
-            });
-          } else {
-            appendTilesDetailedNews(news.data, newsContainer, 2);
-            removeLoader('#newsContainer', null, true);
-            initPagination(page, totalPages, 'newsEventsPage');
-            setPaginationListerners();
-          }
-        } else {
-          showNoResults('#newsTiles', 'No news with these filters', 'tall', 'grey', 'xxlarge', 'blue');
-          $('.c-pagination').html('');
-          removeLoader('#newsContainer', null, true);
-        }
-      });
-    }
-
-    // build page
-    buildSelector(countrySelector, 'All countries', 'countries', 'fields=id,label&sort=label');
-    buildSelector(typeSelector, 'All story types', 'stories_categories', 'fields=id,label&sort=label');
-    showEvents(countryFilter, typeFilter, page);
-    showNews(countryFilter, typeFilter, page);
-    onClickPagination();
-  })(jQuery);
-}
-'use strict';
-
-function showHomePage() {
-  (function ($) {
-    // Slider that appear on Home page
-    $('.slider-cover-home').slick({
-      dots: true,
-      arrows: false,
-      speed: 500,
-      fade: true,
-      cssEase: 'linear',
-      dotsClass: 'dots-slider',
-      adaptiveHeight: true
-    });
-
-    var map = L.map('maphome', {
-      zoomControl: false,
-      center: [35, -60],
-      zoom: 2,
-      maxZoom: 6,
-      minZoom: 2,
-      scrollWheelZoom: false
-    });
-    var over = false;
-
-    $('#in').click(function () {
-      map.setZoom(map.getZoom() + 1);
-    });
-
-    $('#out').click(function () {
-      map.setZoom(map.getZoom() - 1);
-    });
-
-    var basemap = L.tileLayer('http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png', {
-      attribution: ''
-    }).addTo(map);
-
-    cartodb.createLayer(map, {
-      user_name: 'jmonaco',
-      type: 'cartodb',
-      sublayers: [{
-        sql: 'SELECT * FROM countries_homepage',
-        cartocss: '#layer{polygon-fill:ramp([actionplan],(#c30,#c30,#2d4f00,#66bc29,#2d4f00,#2d4f00,#2d4f00,#66bc29,#2d4f00),("","Inactive","Implementing 1st action plan and Developing 2nd action plan","Developing action plan","Implementing 2nd action plan","Implementing 1st action plan","Developing 1st Action Plan","Implementing action plan"),"=");line-width:1;line-color:#FFF;line-opacity:.5}',
-        interactivity: 'the_geom, nid, country, cartodb_id'
-      }]
-    }).addTo(map).done(function (layer) {
-      layer.setInteraction(true);
-      var hovers = [];
-      layer.on('featureClick', function (e, latlng, pos, data) {
-        $.getJSON('https://jmonaco.carto.com/api/v2/sql?q= SELECT * FROM countries_homepage WHERE cartodb_id =  ' + data.cartodb_id, function (datapath) {
-          document.location.href = '' + window.location.origin + datapath.rows[0].path;
-        });
-      });
-
-      layer.bind('featureOver', function (e, latlon, pxPos, data, layers) {
-        hovers[layers] = 1;
-        if (_.any(hovers)) {
-          $('#maphome').css('cursor', 'pointer');
-        }
-      });
-
-      layer.bind('featureOut', function (m, layers) {
-        hovers[layers] = 0;
-        if (!_.any(hovers)) {
-          $('#maphome').css('cursor', 'auto');
-        }
-      });
-
-      layer.on('featureOver', function (e, latlng, pos, data) {
-        if (over === false) {
-          $('body').append('<div class="tooltip" style="padding: 5px; position: absolute; z-index: 10; background-color: rgba(255, 255, 255, 1); top:' + (e.pageY - 25) + 'px; left:' + (e.pageX + 25) + 'px">' + data.country + '</div>');
-          over = true;
-        } else {
-          $('.tooltip').html(data.country);
-          $('.tooltip').css('top', e.pageY - 25 + 'px');
-          $('.tooltip').css('left', e.pageX + 25 + 'px');
-        }
-      });
-
-      layer.on('featureOut', function (e, latlng, pos, data) {
-        over = false;
-        $('.tooltip').remove();
-      });
-      map.invalidateSize();
-    });
-  })(jQuery);
-}
-'use strict';
-
-function showSliderHomePage() {
-  (function ($) {
-    $.getJSON('/apiJSON/stories?fields=label,alias,image&sort=-created', function (stories) {
-      for (var i = 0; i < 3; i += 1) {
-        if (stories.data[i].image) {
-          $('.slider-image-' + i).css('background-image', 'url(' + stories.data[i].image + ')');
-        }
-        $('.slider-' + i).html('\n          <div>\n            <h1 class="title-text -white">\n              <a href="' + stories.data[i].alias + '">' + stories.data[i].label + '</a>\n            </h1>\n            <div class="small-12 medium-5 large-4">\n              <a class="c-button -box" href="' + stories.data[i].alias + '">Explore the story</a>\n            <div>\n          </div>\n        ');
-      }
-    });
-  })(jQuery);
-}
-'use strict';
-
 function showIrmReports() {
   (function ($) {
 
@@ -2119,6 +2024,107 @@ function showIrmReports() {
 }
 'use strict';
 
+function showHomePage() {
+  (function ($) {
+    // Slider that appear on Home page
+    $('.slider-cover-home').slick({
+      dots: true,
+      arrows: false,
+      speed: 500,
+      fade: true,
+      cssEase: 'linear',
+      dotsClass: 'dots-slider',
+      adaptiveHeight: true
+    });
+
+    var map = L.map('maphome', {
+      zoomControl: false,
+      center: [35, -60],
+      zoom: 2,
+      maxZoom: 6,
+      minZoom: 2,
+      scrollWheelZoom: false
+    });
+    var over = false;
+
+    $('#in').click(function () {
+      map.setZoom(map.getZoom() + 1);
+    });
+
+    $('#out').click(function () {
+      map.setZoom(map.getZoom() - 1);
+    });
+
+    var basemap = L.tileLayer('http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png', {
+      attribution: ''
+    }).addTo(map);
+
+    cartodb.createLayer(map, {
+      user_name: 'jmonaco',
+      type: 'cartodb',
+      sublayers: [{
+        sql: 'SELECT * FROM countries_homepage',
+        cartocss: '#layer{polygon-fill:ramp([actionplan],(#c30,#c30,#2d4f00,#66bc29,#2d4f00,#2d4f00,#2d4f00,#66bc29,#2d4f00),("","Inactive","Implementing 1st action plan and Developing 2nd action plan","Developing action plan","Implementing 2nd action plan","Implementing 1st action plan","Developing 1st Action Plan","Implementing action plan"),"=");line-width:1;line-color:#FFF;line-opacity:.5}',
+        interactivity: 'the_geom, nid, country, cartodb_id'
+      }]
+    }).addTo(map).done(function (layer) {
+      layer.setInteraction(true);
+      var hovers = [];
+      layer.on('featureClick', function (e, latlng, pos, data) {
+        $.getJSON('https://jmonaco.carto.com/api/v2/sql?q= SELECT * FROM countries_homepage WHERE cartodb_id =  ' + data.cartodb_id, function (datapath) {
+          document.location.href = '' + window.location.origin + datapath.rows[0].path;
+        });
+      });
+
+      layer.bind('featureOver', function (e, latlon, pxPos, data, layers) {
+        hovers[layers] = 1;
+        if (_.any(hovers)) {
+          $('#maphome').css('cursor', 'pointer');
+        }
+      });
+
+      layer.bind('featureOut', function (m, layers) {
+        hovers[layers] = 0;
+        if (!_.any(hovers)) {
+          $('#maphome').css('cursor', 'auto');
+        }
+      });
+
+      layer.on('featureOver', function (e, latlng, pos, data) {
+        if (over === false) {
+          $('body').append('<div class="tooltip" style="padding: 5px; position: absolute; z-index: 10; background-color: rgba(255, 255, 255, 1); top:' + (e.pageY - 25) + 'px; left:' + (e.pageX + 25) + 'px">' + data.country + '</div>');
+          over = true;
+        } else {
+          $('.tooltip').html(data.country);
+          $('.tooltip').css('top', e.pageY - 25 + 'px');
+          $('.tooltip').css('left', e.pageX + 25 + 'px');
+        }
+      });
+
+      layer.on('featureOut', function (e, latlng, pos, data) {
+        over = false;
+        $('.tooltip').remove();
+      });
+      map.invalidateSize();
+    });
+  })(jQuery);
+}
+'use strict';
+
+function showSliderHomePage() {
+  (function ($) {
+    $.getJSON('/apiJSON/stories?fields=label,alias,image&sort=-created', function (stories) {
+      for (var i = 0; i < 3; i += 1) {
+        if (stories.data[i].image) {
+          $('.slider-image-' + i).css('background-image', 'url(' + stories.data[i].image + ')');
+        }
+        $('.slider-' + i).html('\n          <div>\n            <h1 class="title-text -white">\n              <a href="' + stories.data[i].alias + '">' + stories.data[i].label + '</a>\n            </h1>\n            <div class="small-12 medium-5 large-4">\n              <a class="c-button -box" href="' + stories.data[i].alias + '">Explore the story</a>\n            <div>\n          </div>\n        ');
+      }
+    });
+  })(jQuery);
+}
+'use strict';
+
 function showNewsEventsPage() {
   (function ($) {
     // cache
@@ -2272,64 +2278,6 @@ function showNewsEventsPage() {
 }
 'use strict';
 
-function showPageList() {
-  (function ($) {
-    var page = 1;
-    var totalPages = 0;
-    var sortValue = 'asc';
-
-    $('.sort-field').click(function () {
-      if (sortValue === 'asc') {
-        $('.triangle-sort').css('transform', 'rotate(180deg)'); // use this functions, because jquery method addClass not work with svg.
-        sortValue = 'desc';
-      } else {
-        $('.triangle-sort').css('transform', 'rotate(0deg)');
-        sortValue = 'asc';
-      }
-      page = 1;
-      showLoader('#tableContainer');
-      showPages(page, sortValue);
-    });
-
-    function setPaginationListerners() {
-      $('.onClickPagination').on('click', function (e) {
-        showLoader('#tableContainer');
-        var pageNum = $(this).data('value');
-        showPages(pageNum, sortValue);
-      });
-    }
-
-    function showPages(pageNumber, sort) {
-      var sortApi = '';
-      if (sort === 'asc') {
-        sortApi = 'sort=label';
-      } else {
-        sortApi = 'sort-=label';
-      }
-
-      $.getJSON('/apiJSON/page?&page=' + pageNumber + '&' + sortApi, function (pageresult) {
-        totalPages = getPageCount(pageresult.count, 5);
-        if (page === 1) {
-          $.getJSON('/apiJSON/page?date&page=' + pageNumber + '&' + sortApi, function (pageTable) {
-            createTable(pageTable, 'pages');
-            initPagination(pageNumber, totalPages, 'pagesList');
-            setPaginationListerners();
-            removeLoader('#tableContainer', null, true);
-          });
-        } else {
-          createTable(pageresult, 'pages');
-          removeLoader('#tableContainer', null, true);
-          initPagination(pageNumber, totalPages, 'pagesList');
-          setPaginationListerners();
-        }
-      });
-    }
-
-    showPages(page, sortValue);
-  })(jQuery);
-}
-'use strict';
-
 function showGroupResourcesDetail(id) {
   (function ($) {
 
@@ -2400,22 +2348,6 @@ function showResourcesDetail(id) {
     $.getJSON('/apiJSON/resources?filter[id]=' + id, function (data) {
       buildExploreMoreTiles('resources', 'group_resource', data.data[0].group_resource[0]);
     });
-  })(jQuery);
-}
-'use strict';
-
-function featuresResultPage() {
-  (function ($) {
-
-    $('#value-search').html('Search for: ' + $('#edit-keys').val());
-  })(jQuery);
-}
-'use strict';
-
-function searchPage() {
-  (function ($) {
-
-    $('.search-form input').attr('placeholder', 'Type what you are searching for...');
   })(jQuery);
 }
 'use strict';
@@ -2657,6 +2589,80 @@ function showStoriesSubmitPage(id) {
         data: {}
       }).done(function (data) {});
     });
+  })(jQuery);
+}
+'use strict';
+
+function featuresResultPage() {
+  (function ($) {
+
+    $('#value-search').html('Search for: ' + $('#edit-keys').val());
+  })(jQuery);
+}
+'use strict';
+
+function searchPage() {
+  (function ($) {
+
+    $('.search-form input').attr('placeholder', 'Type what you are searching for...');
+  })(jQuery);
+}
+'use strict';
+
+function showPageList() {
+  (function ($) {
+    var page = 1;
+    var totalPages = 0;
+    var sortValue = 'asc';
+
+    $('.sort-field').click(function () {
+      if (sortValue === 'asc') {
+        $('.triangle-sort').css('transform', 'rotate(180deg)'); // use this functions, because jquery method addClass not work with svg.
+        sortValue = 'desc';
+      } else {
+        $('.triangle-sort').css('transform', 'rotate(0deg)');
+        sortValue = 'asc';
+      }
+      page = 1;
+      showLoader('#tableContainer');
+      showPages(page, sortValue);
+    });
+
+    function setPaginationListerners() {
+      $('.onClickPagination').on('click', function (e) {
+        showLoader('#tableContainer');
+        var pageNum = $(this).data('value');
+        showPages(pageNum, sortValue);
+      });
+    }
+
+    function showPages(pageNumber, sort) {
+      var sortApi = '';
+      if (sort === 'asc') {
+        sortApi = 'sort=label';
+      } else {
+        sortApi = 'sort-=label';
+      }
+
+      $.getJSON('/apiJSON/page?&page=' + pageNumber + '&' + sortApi, function (pageresult) {
+        totalPages = getPageCount(pageresult.count, 5);
+        if (page === 1) {
+          $.getJSON('/apiJSON/page?date&page=' + pageNumber + '&' + sortApi, function (pageTable) {
+            createTable(pageTable, 'pages');
+            initPagination(pageNumber, totalPages, 'pagesList');
+            setPaginationListerners();
+            removeLoader('#tableContainer', null, true);
+          });
+        } else {
+          createTable(pageresult, 'pages');
+          removeLoader('#tableContainer', null, true);
+          initPagination(pageNumber, totalPages, 'pagesList');
+          setPaginationListerners();
+        }
+      });
+    }
+
+    showPages(page, sortValue);
   })(jQuery);
 }
 'use strict';
