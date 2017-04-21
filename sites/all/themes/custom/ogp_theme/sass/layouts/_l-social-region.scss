@@ -13,8 +13,8 @@
     border-right: solid 1px #ffffff;
 
     @media screen and (min-width: $screen-l) {
-      margin-left: calc((100vw - 1150px) / 2);
-      width: 575px;
+      margin-left: calc((100vw - 1200px) / 2);
+      width: 600px;
     }
   }
 
@@ -24,8 +24,8 @@
     padding-left: 50px;
 
     @media screen and (min-width: $screen-l) {
-      margin-right: calc((100vw - 1150px) / 2);
-      width: 575px;
+      margin-right: calc((100vw - 1200px) / 2);
+      width: 600px;
     }
 
     .facebook-feed-message {
