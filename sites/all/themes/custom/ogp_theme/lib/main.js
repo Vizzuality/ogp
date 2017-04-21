@@ -198,6 +198,10 @@ function getAbsolutePath() {
         showComments(settings.block_refresh.args[1]);
       }
 
+      if ($(context).find('#aboutMenu').length !== 0) {
+        aboutMenu();
+      }
+
       // convert all custom views_templates
       $('.form-select').select2({
         minimumResultsForSearch: Infinity,

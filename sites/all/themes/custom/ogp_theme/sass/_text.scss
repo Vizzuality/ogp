@@ -87,6 +87,10 @@ h6 {
     font-weight: $font-weight-semi-bold;
     line-height: 1.25;
     text-transform: uppercase;
+
+    a {
+      color: $color-22;
+    }
   }
 
   &.-date {

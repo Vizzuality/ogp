@@ -1,6 +1,10 @@
 <!-- Block with all the icons -->
 <svg style="position: absolute; width: 0; height: 0; overflow: hidden;" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink">
 <defs>
+<symbol id="icon-arrow-menu" viewBox="0 0 32 32">
+<title>arrow menu</title>
+<path d="M16 25.2l-15.4-15.4 2.8-3 12.6 12.6 12.6-12.6 2.8 3z"></path>
+</symbol>
 <symbol id="icon-compass-grey" viewBox="0 0 44 32">
 <title>Compass grey</title>
 <path fill="#cedadd" style="fill: var(--color1, #cedadd)" d="M22.154 7.795c-0.246 0-0.41-0.164-0.41-0.41v-0.821c0-0.246 0.164-0.41 0.41-0.41s0.41 0.164 0.41 0.41v0.821c0 0.246-0.164 0.41-0.41 0.41z"></path>

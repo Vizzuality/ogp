@@ -199,6 +199,10 @@ function getAbsolutePath() {
         showComments(settings.block_refresh.args[1]);
       }
 
+      if ($(context).find('#aboutMenu').length !== 0) {
+        aboutMenu();
+      }
+
       // convert all custom views_templates
       $('.form-select').select2({
         minimumResultsForSearch: Infinity,
@@ -211,6 +215,18 @@ function getAbsolutePath() {
     }
   };
 })(jQuery);
+'use strict';
+
+function aboutMenu() {
+  (function ($) {
+
+    $('.parent').click(function () {
+      var id = $(this).attr('id');
+      $('#' + id + '.sub-menu').toggleClass('-open');
+      $(this).toggleClass('-open');
+    });
+  })(jQuery);
+}
 'use strict';
 
 function closeAccordionSection() {
