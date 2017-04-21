@@ -21,6 +21,13 @@
           'link' => $link_cache
         );
         break;
+      case strpos($crumb, 'ogp') !== false:
+        $new_crumb = str_replace('ogp', 'OGP', $crumb);
+        $link_array = array(
+          'title' => str_replace('-', ' ', $new_crumb),
+          'link' => $link_cache
+        );
+        break;
       default:
         $link_array = array(
           'title' => str_replace('-', ' ', $crumb),

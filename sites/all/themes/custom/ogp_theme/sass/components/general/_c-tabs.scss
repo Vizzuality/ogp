@@ -58,13 +58,148 @@
         width: 100%;
         min-height: 70px;
         padding: 10px 40px;
-        border-bottom: 1px solid $color-4;
         background-color: $color-3;
+
+        &.parent {
+
+          .icon {
+            display: none;
+            position: absolute;
+            right: 30px;
+
+            &.-show {
+              display: block;
+            }
+          }
+        }
 
         &.-selected {
           background-color: $color-10;
-          color: $color-22;
-          box-shadow: inset 5px 0 0 0 $color-2;
+          color: rgba($color-22, 0.7);
+          box-shadow: inset 5px 0 0 0 #09f;
+
+          &::after {
+            transform: none;
+          }
+        }
+
+        &.level-3 {
+          min-height: 20px;
+          border-bottom: 0;
+          background-color: transparent;
+          text-transform: none;
+
+          &:hover {
+            a {
+              color: $color-2;
+            }
+          }
+
+          &.-active {
+
+            a {
+              color: $color-2;
+            }
+          }
+        }
+
+        &.level-4 {
+          min-height: 20px;
+          padding-left: 60px;
+          border-bottom: 0;
+          background-color: transparent;
+          padding-top: 10px;
+          text-transform: none;
+          font-weight: 400;
+
+          &:hover {
+            a {
+              color: $color-2;
+            }
+          }
+
+          &.-active {
+            a {
+              color: $color-2;
+            }
+          }
+        }
+
+        &.page-link {
+          min-height: 30px;
+          padding-left: 90px;
+          border-bottom: 0;
+        }
+      }
+
+      .sub-menu {
+        margin-top: -10px;
+        display: none;
+        width: 100%;
+        padding-bottom: 20px;
+
+        &.-open {
+          display: block;
+        }
+      }
+
+      .expand-menu {
+        height: 20px;
+        width: 100%;
+        display: block;
+        position: relative;
+        border-bottom: 1px solid $color-4;
+
+        &.-open {
+          background-color: $color-10;
+
+          &::after {
+            transform: rotate(180deg);
+          }
+        }
+      }
+    }
+
+    &.-menu {
+      margin-top: 20px;
+
+      .tab {
+        padding: 10px 40px;
+        min-height: 40px;
+        background-color: transparent;
+      }
+
+      .parent {
+        padding: 20px 40px;
+
+        &:hover {
+          color: $color-2;
+          a {
+            color: $color-2;
+          }
+        }
+
+        &.-open {
+          color: $color-2;
+
+          a {
+            color: $color-2;
+          }
+
+          .icon {
+            transform: rotate(-180deg);
+          }
+        }
+      }
+
+      .group {
+        display: block;
+        width: 100%;
+        border-bottom: 1px solid $color-4;
+
+        &.-selected {
+          box-shadow: inset 5px 0 0 0 #09f;
+          background-color: $color-10;
         }
       }
     }
