@@ -220,7 +220,7 @@ function getAbsolutePath() {
 function aboutMenu() {
   (function ($) {
 
-    $('.parent').click(function () {
+    $('.parent .icon').click(function () {
       var id = $(this).attr('id');
       $('#' + id + '.sub-menu').toggleClass('-open');
       $(this).toggleClass('-open');
