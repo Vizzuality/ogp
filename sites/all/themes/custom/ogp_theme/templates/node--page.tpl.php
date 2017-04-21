@@ -5,7 +5,7 @@
  */
   $body = field_get_items('node', $node, 'body')[0]['value'];
 ?>
-<article id="node-<?php print $node->nid; ?>" class="l-page">
+<article id="node" class="l-page">
 
   <!-- Narrow content -->
   <div class="row">
@@ -19,5 +19,7 @@
       </div>
     </div>
   </div>
+
+  <div class="banners-container"></div>
 
 </article>
