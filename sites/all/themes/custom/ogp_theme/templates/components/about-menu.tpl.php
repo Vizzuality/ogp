@@ -1,7 +1,6 @@
 <?php
-$menu = menu_build_tree('book-toc-1002');
+$menu = menu_build_tree('book-toc-1002')['50000 About OGP 8146']['below'];
 $path = explode('/', drupal_get_path_alias());
-var_dump($menu);
 ?>
 <?php if (sizeof($menu) > 0) { ?>
   <div class="column small-12 medium-4">
