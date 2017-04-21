@@ -2,9 +2,9 @@ function aboutMenu() {
   (function ($) {
 
     $('.parent .icon').click(function() {
-      const id = $(this).attr('id');
+      const id = $(this).data('value');
       $(`#${id}.sub-menu`).toggleClass('-open');
-      $(this).toggleClass('-open');
+      $(`#${id}`).toggleClass('-open');
     });
 
   })(jQuery);

@@ -71,18 +71,6 @@
               display: block;
             }
           }
-          //
-          // &:hover {
-          //   box-shadow: inset 5px 0 0 0 #09f;
-          //   background-color: $color-10;
-          // }
-
-          // &::after {
-          //   @include triangle(8px, $color-22, bottom);
-          //   position: absolute;
-          //   right: 30px;
-          //   content: '';
-          // }
         }
 
         &.-selected {
@@ -125,14 +113,12 @@
           font-weight: 400;
 
           &:hover {
-            // background: $color-2;
             a {
               color: $color-2;
             }
           }
 
           &.-active {
-            // background: rgba($color-2, 0.8);
             a {
               color: $color-2;
             }
@@ -195,14 +181,12 @@
 
         &.-open {
           color: $color-2;
+
           a {
             color: $color-2;
           }
-        }
 
-        .icon {
-
-          &.-open {
+          .icon {
             transform: rotate(-180deg);
           }
         }

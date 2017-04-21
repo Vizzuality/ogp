@@ -14,7 +14,7 @@ $path = explode('/', drupal_get_path_alias());
           if ($primary_link['link']['hidden'] == 0) { ?>
             <div class="group <?php echo (in_array($slug, $path)) ? '-selected' : '' ?>">
               <div id="tab-<?php echo $slug ?>" class="tab text -tab -grey <?php echo (in_array($slug, $path)) ? '-selected -open' : '' ?> <?php echo (count($sub_menu) > 0) ? 'parent' : '' ?>">
-                <svg id="tab-<?php echo $slug ?>" class="icon -medium <?php echo (count($sub_menu) > 0) ? '-show' : '' ?>"><use xlink:href="#icon-arrow-menu"></use></svg>
+                <svg data-value="tab-<?php echo $slug ?>" class="icon -medium <?php echo (count($sub_menu) > 0) ? '-show' : '' ?>"><use xlink:href="#icon-arrow-menu"></use></svg>
                 <a href="/<?php echo $alias ?>"><?php echo $link['link_title'] ?></a></div>
                 <?php if (count($sub_menu) > 0) { ?>
                   <div id="tab-<?php echo $slug ?>" class="sub-menu <?php echo (in_array($slug, $path)) ? '-open' : '' ?>">
@@ -42,7 +42,6 @@ $path = explode('/', drupal_get_path_alias());
                       <?php }
                     } ?>
                   </div>
-                <!-- <div class="expand-menu js-expand <?php echo (in_array($slug, $path)) ? '-open' : '' ?>"></div> -->
               <?php } ?>
             <?php } ?>
           </div>

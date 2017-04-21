@@ -221,9 +221,9 @@ function aboutMenu() {
   (function ($) {
 
     $('.parent .icon').click(function () {
-      var id = $(this).attr('id');
+      var id = $(this).data('value');
       $('#' + id + '.sub-menu').toggleClass('-open');
-      $(this).toggleClass('-open');
+      $('#' + id).toggleClass('-open');
     });
   })(jQuery);
 }
