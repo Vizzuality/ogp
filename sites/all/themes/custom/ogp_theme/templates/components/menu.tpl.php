@@ -11,13 +11,15 @@ $path = explode('/', drupal_get_path_alias());
         <?php foreach ($main_menu as $primary_link) {
             $link = $primary_link['link'];
             $sub_menu = $primary_link['below'];
+            $alias = drupal_get_path_alias($link['link_path']);
+            $slug = explode('/', $alias)[0];
             if ($primary_link['link']['hidden'] == 0) { ?>
                 <?php if (count($sub_menu) > 0) { ?>
-                    <li class="text -menu dropdown <?php echo ($path[0] == $link['link_path']) ? '-active' : '' ?>">
+                    <li class="text -menu dropdown <?php echo ($path[0] == $slug) ? '-active' : '' ?>">
                 <?php } else { ?>
                     <li class="text -menu <?php echo ($path[0] == $link['link_path']) ? '-active' : '' ?>">
                 <?php } ?>
-                <a href="/<?php echo $link['link_path'] ?>"><?php echo $link['link_title'] ?></a>
+                <a href="/<?php echo $alias ?>"><?php echo $link['link_title'] ?></a>
                 <?php if (count($sub_menu) > 0) { ?>
                     <div class="sub-menu">
                         <ul class="menu-list">
