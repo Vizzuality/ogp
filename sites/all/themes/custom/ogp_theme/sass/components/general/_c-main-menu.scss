@@ -93,12 +93,9 @@
 
     .menu-list {
       padding: 10px 0;
-    }
-
-    .txlive-langselector-list {
 
       li {
-        padding: 15px 20px;
+        padding: 0;
       }
     }
 
@@ -128,7 +125,6 @@
       }
 
       li {
-        padding: 0;
         margin-left: 0;
         text-indent: 0;
         color: $color-3;
@@ -175,6 +171,10 @@
 
     .txlive-langselector-list {
       margin-top: 33px;
+
+      li {
+        padding: 15px 20px;
+      }
 
       &::before {
         content: '';
