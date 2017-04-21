@@ -20,6 +20,6 @@
     </div>
   </div>
 
-  <div class="banners-container"></div>
-
 </article>
+
+<div class="banners-container"></div>
