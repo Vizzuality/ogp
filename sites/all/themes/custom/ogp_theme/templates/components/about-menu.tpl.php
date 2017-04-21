@@ -10,7 +10,8 @@ $path = explode('/', drupal_get_path_alias());
           $link = $primary_link['link'];
           $sub_menu = $primary_link['below'];
           $alias = drupal_get_path_alias($link['link_path']);
-          $slug = end(explode('/', $alias));
+          $slug_full = explode('/', $alias);
+          $slug = end($slug_full);
           if ($primary_link['link']['hidden'] == 0) { ?>
             <div class="group <?php echo (in_array($slug, $path)) ? '-selected' : '' ?>">
               <div id="tab-<?php echo $slug ?>" class="tab text -tab -grey <?php echo (in_array($slug, $path)) ? '-selected -open' : '' ?> <?php echo (count($sub_menu) > 0) ? 'parent' : '' ?>">
@@ -22,7 +23,8 @@ $path = explode('/', drupal_get_path_alias());
                       $sub_menu_bottom = $sub_menu_link['below'];
                       $sub_link = $sub_menu_link['link'];
                       $sub_alias = drupal_get_path_alias($sub_link['link_path']);
-                      $sub_slug = end(explode('/', $sub_alias));
+                      $sub_slug_full = explode('/', $sub_alias);
+                      $sub_slug = end($sub_slug_full);
                       if ($sub_link && $sub_link['hidden'] == 0) { ?>
                           <div class="tab text -tab -grey level-<?php echo $sub_link['depth'] ?> <?php echo (in_array($sub_slug, $path)) ? '-active' : '' ?>">
                               <a href="/<?php echo $sub_alias ?>"><?php echo $sub_link['link_title'] ?></a>
@@ -32,7 +34,8 @@ $path = explode('/', drupal_get_path_alias());
                         <?php foreach ($sub_menu_bottom as $child_menu_link) {
                             $child_link = $child_menu_link['link'];
                             $child_alias = drupal_get_path_alias($child_link['link_path']);
-                            $child_slug = end(explode('/', $child_alias));
+                            $child_slug_full = explode('/', $alias);
+                            $child_slug = end($child_slug_full);
                             if ($child_link && $child_link['hidden'] == 0) { ?>
                                 <div class="tab text -tab -grey level-<?php echo $child_link['depth'] ?> <?php echo (in_array($child_slug, $path)) ? '-active' : '' ?>">
                                     <a href="/<?php echo $child_alias ?>"><?php echo $child_link['link_title'] ?></a>
