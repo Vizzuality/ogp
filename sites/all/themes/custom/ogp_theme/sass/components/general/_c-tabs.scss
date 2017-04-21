@@ -60,17 +60,17 @@
         padding: 10px 40px;
         background-color: $color-3;
 
+        .icon {
+          display: none;
+        }
+
         &.parent {
 
           .icon {
             display: none;
             position: absolute;
             right: 30px;
-            display: none;
-
-            &.-show {
-              display: block;
-            }
+            display: block;
           }
         }
 
