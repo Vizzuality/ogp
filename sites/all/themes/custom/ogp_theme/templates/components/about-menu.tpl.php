@@ -34,7 +34,7 @@ $path = explode('/', drupal_get_path_alias());
                         <?php foreach ($sub_menu_bottom as $child_menu_link) {
                             $child_link = $child_menu_link['link'];
                             $child_alias = drupal_get_path_alias($child_link['link_path']);
-                            $child_slug_full = explode('/', $alias);
+                            $child_slug_full = explode('/', $child_alias);
                             $child_slug = end($child_slug_full);
                             if ($child_link && $child_link['hidden'] == 0) { ?>
                                 <div class="tab text -tab -grey level-<?php echo $child_link['depth'] ?> <?php echo (in_array($child_slug, $path)) ? '-active' : '' ?>">
