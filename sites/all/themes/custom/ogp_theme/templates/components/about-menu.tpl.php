@@ -1,6 +1,7 @@
 <?php
-$menu = menu_build_tree('book-toc-2642')['49950 About 8176']['below'];
+$menu = menu_build_tree('book-toc-1002');
 $path = explode('/', drupal_get_path_alias());
+var_dump($menu);
 ?>
 <?php if (sizeof($menu) > 0) { ?>
   <div class="column small-12 medium-4">
