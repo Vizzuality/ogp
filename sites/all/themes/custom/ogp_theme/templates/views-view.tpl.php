@@ -31,7 +31,7 @@
   <div class="row">
     <div class="column small-12">
 
-      <?php if ($view->get_title()) { ?>
+      <?php if ($view->get_title() && $view->get_title() != 'Search') { ?>
         <h1 class="text -title"><?php print $view->get_title(); ?></h1>
       <?php } ?>
 
