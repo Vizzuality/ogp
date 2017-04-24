@@ -19,14 +19,14 @@ $attachments = field_get_items('node', $node, 'field_attachment');
 
   <section class="row working-group-content">
     <div class="c-loader"><div class="loader"></div></div>
-    <div class="column small-12 medium-3">
+    <div class="column small-12 medium-4">
       <div class="c-tabs -vertical">
         <ul class="tabs-container">
           <li class="tab text -tab -selected" data-node="about">About</li>
         </ul>
       </div>
     </div>
-    <div class="small-8" id="container-info">
+    <div class="column small-12 medium-8" id="container-info">
       <div class="tab-content about">
         <h3 class="text -section-title">About</h3>
         <div class="text -body-content">

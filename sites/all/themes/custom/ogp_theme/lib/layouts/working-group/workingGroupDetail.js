@@ -14,7 +14,7 @@ function showWorkingGroupDetail(id) {
       setTabListeners(onChange);
     }
     showLoader('.working-group-content');
-    $.getJSON(`/apiJSON/working_group_page?filter[working_group]=${id}`, (data) => {
+    $.getJSON(`/apiJSON/working_group_page?filter[working_group]=${id}&filter[show]=1`, (data) => {
       buildTabs(data.data, tabsContainer, onChangeWorkinPageTab);
       initWorkingTabs(onChangeWorkinPageTab);
       for (let i = 0; i < data.data.length; i += 1) {
@@ -22,9 +22,7 @@ function showWorkingGroupDetail(id) {
           <div class="tab-content -hidden ${data.data[i].id}">
             <h3 class="text -section-title">${data.data[i].label}</h3>
             <div class="text -body-content">
-              <p class="text -body-content">
-                ${data.data[i].body.value}
-              </p>
+              ${data.data[i].body.value}
             </div>
           </div>
         `);

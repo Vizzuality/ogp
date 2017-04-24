@@ -47,8 +47,8 @@ class WorkingGroupPage__1_0 extends ResourceNode{
       'property' => 'field_page_documents',
     );
 
-    $public_fields['menu_name'] = array(
-      'property' => 'field_wgp_menu_title',
+    $public_fields['show'] = array(
+      'property' => 'field_wgp_in_menu',
     );
 
     $public_fields['working_group'] = array(

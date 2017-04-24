@@ -2937,11 +2937,11 @@ function showWorkingGroupDetail(id) {
       setTabListeners(onChange);
     }
     showLoader('.working-group-content');
-    $.getJSON('/apiJSON/working_group_page?filter[working_group]=' + id, function (data) {
+    $.getJSON('/apiJSON/working_group_page?filter[working_group]=' + id + '&filter[show]=1', function (data) {
       buildTabs(data.data, tabsContainer, onChangeWorkinPageTab);
       initWorkingTabs(onChangeWorkinPageTab);
       for (var i = 0; i < data.data.length; i += 1) {
-        containerInfo.append('\n          <div class="tab-content -hidden ' + data.data[i].id + '">\n            <h3 class="text -section-title">' + data.data[i].label + '</h3>\n            <div class="text -body-content">\n              <p class="text -body-content">\n                ' + data.data[i].body.value + '\n              </p>\n            </div>\n          </div>\n        ');
+        containerInfo.append('\n          <div class="tab-content -hidden ' + data.data[i].id + '">\n            <h3 class="text -section-title">' + data.data[i].label + '</h3>\n            <div class="text -body-content">\n              ' + data.data[i].body.value + '\n            </div>\n          </div>\n        ');
       }
       removeLoader('.working-group-content', null, true);
     });

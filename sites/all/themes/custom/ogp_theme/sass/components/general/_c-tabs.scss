@@ -59,6 +59,7 @@
         min-height: 70px;
         padding: 10px 40px;
         background-color: $color-3;
+        border-bottom: 1px solid $color-4;
 
         .icon {
           display: none;
@@ -168,6 +169,7 @@
         padding: 10px 40px;
         min-height: 40px;
         background-color: transparent;
+        border-bottom: 0;
       }
 
       .parent {
