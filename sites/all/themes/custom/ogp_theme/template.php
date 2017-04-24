@@ -4,8 +4,23 @@
  * Process theme data.
  */
 
- function YOURTHEME_preprocess_page(&$vars) {
+ function in_array_r($needle, $haystack, $strict = false) {
+     foreach ($haystack as $item) {
+         if (($strict ? $item === $needle : $item == $needle) || (is_array($item) && in_array_r($needle, $item, $strict))) {
+             return true;
+         }
+     }
 
+     return false;
+ }
+
+ function limit_text($text, $limit) {
+   if (str_word_count($text, 0) > $limit) {
+       $words = str_word_count($text, 2);
+       $pos = array_keys($words);
+       $text = substr($text, 0, $pos[$limit]) . '...';
+   }
+   return $text;
  }
 
 /**
