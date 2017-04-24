@@ -1,8 +1,8 @@
 <?php
-$menu = menu_build_tree('book-toc-1002')['50000 About OGP 8146']['below'];
+$menu = menu_build_tree('book-toc-1002')['49951 About OGP 8146']['below'];
 $path = explode('/', drupal_get_path_alias());
 ?>
-<?php if (sizeof($menu) > 0) { ?>
+<?php if (sizeof($menu) > 0 && in_array_r('node/'. $node->nid, $menu)) { ?>
   <div class="column small-12 medium-4">
     <div id="aboutMenu" class="c-tabs -vertical -menu">
       <div class="tabs-container">
