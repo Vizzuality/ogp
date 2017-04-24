@@ -1,5 +1,8 @@
 .l-people-involved {
-  padding-bottom: 0 !important;
+
+  &.-no-bottom {
+      padding-bottom: 0 !important;
+  }
 
   .people-header {
     display: flex;

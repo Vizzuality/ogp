@@ -218,6 +218,85 @@ function getAbsolutePath() {
 })(jQuery);
 'use strict';
 
+function convertPostDate(date, format) {
+  var dateString = new Date(date * 1e3);
+  var dd = dateString.getDate();
+  var mm = dateString.getMonth() + 1; //January is 0!
+  var yyyy = dateString.getFullYear();
+
+  if (format === 'dd/mm/yyyy') {
+    if (dd < 10) {
+      dd = '0' + dd;
+    }
+
+    if (mm < 10) {
+      mm = '0' + mm;
+    }
+  }
+
+  dateString = dd + '/' + mm + '/' + yyyy;
+
+  return dateString;
+}
+
+function convertEventDate(date) {
+  var myDate = moment(date, 'YYYY-M-DD HH:mm:ss');
+  return myDate.format('MMMM D, YYYY - hh:mm');
+}
+
+function dateDiff(date) {
+  return moment().diff(date, 'days');
+}
+'use strict';
+
+function smoothScroll() {
+  $('a[href*="#"]:not([href="#"])').click(function () {
+    if (location.pathname.replace(/^\//, '') == this.pathname.replace(/^\//, '') && location.hostname == this.hostname) {
+      var target = $(this.hash);
+      target = target.length ? target : $('[name=' + this.hash.slice(1) + ']');
+      if (target.length) {
+        $('html, body').animate({
+          scrollTop: target.offset().top
+        }, 500);
+        return false;
+      }
+    }
+  });
+}
+'use strict';
+
+function getAuthors(data) {
+  var authorString = '';
+  if (data[0]) {
+    data.forEach(function (author, index) {
+      if (index === data.length - 1) {
+        authorString += '' + author.label;
+      } else {
+        authorString += author.label + ', ';
+      }
+    });
+  }
+  return authorString;
+}
+
+function stripEmptyStrings() {
+  $('p').each(function () {
+    var $this = $(this);
+    if ($this.html().replace(/\s|&nbsp;/g, '').length == 0) $this.remove();
+  });
+}
+'use strict';
+
+function addDots(string, limit) {
+  var dots = '...';
+  if (string.length > limit) {
+    string = string.substring(0, limit) + dots;
+  }
+
+  return string;
+}
+'use strict';
+
 function aboutMenu() {
   (function ($) {
 
@@ -875,85 +954,6 @@ function appendCountriesThematicBars(item, topContainer) {
   var container = $(topContainer + ' .data-tiles');
   var html = '\n    <div class="column small-12">\n      <div class="c-country-thematic-bar">\n        <div class="thematic-bar">\n        <div class="thematic-bar">\n          <h4>' + item.current_themes[0] + ' ' + (item.current_percentage.length > 0 ? '(' + item.current_percentage[0] + '%)' : '') + '</h4>\n          <div class="' + (item.current_percentage[0] ? 'bar-border' : 'bar-border -hiden') + '">\n            <div class="' + (item.current_percentage[0] ? 'bar -green' : 'bar -hiden') + '" style="' + (item.current_percentage[0] ? 'width:' + item.current_percentage[0] + '%' : '') + '" >\n              <span class="' + (item.current_percentage[0] ? 'bar-error -hiden' : 'bar-error') + '">Sorry, nothing to see.</span>\n            </div>\n          </div>\n          <h4>' + item.current_themes[1] + ' ' + (item.current_percentage[1] ? '(' + item.current_percentage[1] + '%)' : '') + '</h4>\n          <div class="' + (item.current_percentage[1] ? 'bar-border' : 'bar-border -hiden') + '">\n            <div class="' + (item.current_percentage[1] ? 'bar -green' : 'bar -hiden') + '" style="' + (item.current_percentage[1] ? 'width:' + item.current_percentage[1] + '%' : '') + '" >\n              <span class="' + (item.current_percentage[1] ? 'bar-error -hiden' : 'bar-error') + '">Sorry, nothing to see.</span>\n            </div>\n          </div>\n          <h4>' + item.current_themes[2] + ' ' + (item.current_percentage[2] ? '(' + item.current_percentage[2] + '%)' : '') + '</h4>\n          <div class="' + (item.current_percentage[2] ? 'bar-border' : 'bar-border -hiden') + '">\n            <div class="' + (item.current_percentage[2] ? 'bar -green' : 'bar -hiden') + '" style="' + (item.current_percentage[2] ? 'width:' + item.current_percentage[2] + '%' : '') + '" >\n              <span class="' + (item.current_percentage[2] ? 'bar-error -hiden' : 'bar-error') + '">Sorry, nothing to see.</span>\n            </div>\n          </div>\n        </div>\n        </div>\n        <a href="http://www.opengovpartnership.org/explorer/all-data.html" target="_blank" class="text -blue">For data definitions and more data, see the OGP Explorer</a>\n      </div>\n    </div>\n  ';
   container.html(html);
-}
-'use strict';
-
-function convertPostDate(date, format) {
-  var dateString = new Date(date * 1e3);
-  var dd = dateString.getDate();
-  var mm = dateString.getMonth() + 1; //January is 0!
-  var yyyy = dateString.getFullYear();
-
-  if (format === 'dd/mm/yyyy') {
-    if (dd < 10) {
-      dd = '0' + dd;
-    }
-
-    if (mm < 10) {
-      mm = '0' + mm;
-    }
-  }
-
-  dateString = dd + '/' + mm + '/' + yyyy;
-
-  return dateString;
-}
-
-function convertEventDate(date) {
-  var myDate = moment(date, 'YYYY-M-DD HH:mm:ss');
-  return myDate.format('MMMM D, YYYY - hh:mm');
-}
-
-function dateDiff(date) {
-  return moment().diff(date, 'days');
-}
-'use strict';
-
-function smoothScroll() {
-  $('a[href*="#"]:not([href="#"])').click(function () {
-    if (location.pathname.replace(/^\//, '') == this.pathname.replace(/^\//, '') && location.hostname == this.hostname) {
-      var target = $(this.hash);
-      target = target.length ? target : $('[name=' + this.hash.slice(1) + ']');
-      if (target.length) {
-        $('html, body').animate({
-          scrollTop: target.offset().top
-        }, 500);
-        return false;
-      }
-    }
-  });
-}
-'use strict';
-
-function getAuthors(data) {
-  var authorString = '';
-  if (data[0]) {
-    data.forEach(function (author, index) {
-      if (index === data.length - 1) {
-        authorString += '' + author.label;
-      } else {
-        authorString += author.label + ', ';
-      }
-    });
-  }
-  return authorString;
-}
-
-function stripEmptyStrings() {
-  $('p').each(function () {
-    var $this = $(this);
-    if ($this.html().replace(/\s|&nbsp;/g, '').length == 0) $this.remove();
-  });
-}
-'use strict';
-
-function addDots(string, limit) {
-  var dots = '...';
-  if (string.length > limit) {
-    string = string.substring(0, limit) + dots;
-  }
-
-  return string;
 }
 'use strict';
 
@@ -2015,304 +2015,11 @@ function showSliderHomePage() {
 }
 'use strict';
 
-function showIrmReports() {
-  (function ($) {
-
-    // cache
-    var countryFilter = 0;
-    var typeFilter = 0;
-    var page = 1;
-    var totalPages = 0;
-
-    //selectors
-    var countrySelectorDownload = $('.country-filter-download');
-    var countrySelectorComments = $('.country-filter-comments');
-    var tabsContainer = $('.tabs-container');
-    var containerInfo = $('#container-info');
-    var irmContainer = $('#downloadContainer');
-    var commentsContainer = $('#commentsContainer');
-
-    // custom callback for tabs component
-    var onChangeIRMTabs = function onChangeIRMTabs(id, label) {
-      $('.tab-content').addClass('-hidden');
-      $('.' + id).removeClass('-hidden');
-    };
-
-    function initIRMTabs(onChange) {
-      initTabs();
-      setTabListeners(onChange);
-    }
-
-    function setPageCount(val) {
-      $('.reload-thematic-download').data('value', val);
-    }
-
-    function setPageCountComments(val) {
-      $('.reload-thematic-comments').data('value', val);
-    }
-
-    function getCurrentPage() {
-      var pageCount = $('.reload-thematic-download').data('value');
-      return pageCount;
-    }
-
-    function getCurrentPageComments() {
-      var pageCount = $('.reload-thematic-comments').data('value');
-      return pageCount;
-    }
-
-    function onClickPagination() {
-      $('.c-pagination-click-download').on('click', function () {
-        setPageCount(getCurrentPage() + 1);
-        showLoader('#container-info');
-        showTilesIrmReports(countryFilter, getCurrentPage());
-      });
-    }
-
-    function onClickPaginationComments() {
-      $('.c-pagination-click-comments').on('click', function () {
-        setPageCountComments(getCurrentPageComments() + 1);
-        showLoader('#container-info');
-        showTilesComments(countryFilter, getCurrentPageComments());
-      });
-    }
-
-    function showTilesIrmReports(country, pageNext) {
-      var activeCountry = parseInt(country) > 0 ? 'filter[id]=' + country + '&' : '';
-      $.getJSON('/apiJSON/countries?' + activeCountry + 'sort=label', function (countries) {
-        appendTilesIRM(countries.data, irmContainer);
-        appendTilesComments(countries.data, commentsContainer);
-        removeLoader('#container-info', null, true);
-      });
-    }
-
-    // function showTilesComments(country, pageNext) {
-    //   const activeCountry = parseInt(country) > 0 ? `filter[id]=${country}&` : '';
-    //   $.getJSON(`/apiJSON/countries?${activeCountry}sort=label`, function (countries) {
-    //     for (let i = 0; i < countries.data.length; i += 1) {
-    //
-    //     }
-    //   });
-    // }
-
-    function buildSelectorDownload(selector, placeholder, endpoint, query) {
-      selector.select2({
-        minimumResultsForSearch: Infinity,
-        containerCssClass: '-green -tall',
-        dropdownCssClass: '-green',
-        placeholder: '' + placeholder
-      });
-      selector.append('<option value="0">' + placeholder + '</option>');
-      $.getJSON('/apiJSON/' + endpoint + '?' + query, function (data) {
-        data.data.forEach(function (data) {
-          var option = '<option value="' + data.id + '">' + data.label + '</option>';
-          selector.append(option);
-        });
-
-        $(countrySelectorDownload).on('change', function () {
-          $(irmContainer).html('');
-          showLoader('#tab-loader');
-          countryFilter = countrySelectorDownload.val();
-          page = 1;
-          showTilesIrmReports(countryFilter, page);
-        });
-      });
-    }
-
-    function buildSelectorComments(selector, placeholder, endpoint, query) {
-      selector.select2({
-        minimumResultsForSearch: Infinity,
-        containerCssClass: '-green -tall',
-        dropdownCssClass: '-green',
-        placeholder: '' + placeholder
-      });
-      selector.append('<option value="0">' + placeholder + '</option>');
-      $.getJSON('/apiJSON/' + endpoint + '?' + query, function (data) {
-        data.data.forEach(function (data) {
-          var option = '<option value="' + data.id + '">' + data.label + '</option>';
-          selector.append(option);
-        });
-
-        $(countrySelectorComments).on('change', function () {
-          $(irmContainer).html('');
-          showLoader('#tab-loader-comments');
-          countryFilter = countrySelectorComments.val();
-          page = 1;
-          showTilesComments(countryFilter, page);
-        });
-      });
-    }
-
-    buildSelectorDownload(countrySelectorDownload, 'All countries', 'countries', 'fields=id,label&sort=label');
-    buildSelectorComments(countrySelectorComments, 'All countries', 'countries', 'fields=id,label&sort=label');
-    onClickPagination();
-    onClickPaginationComments();
-    initIRMTabs(onChangeIRMTabs);
-    showTilesIrmReports(countryFilter, page);
-    // showTilesComments(countryFilter, page);
-
-  })(jQuery);
-}
-'use strict';
-
 function loginPage() {
   (function ($) {
 
     $('#edit-name').attr('placeholder', 'Enter your Open Government Partnership username');
     $('#edit-pass').attr('placeholder', 'Enter the password that accompanies your username.');
-  })(jQuery);
-}
-'use strict';
-
-function showNewsEventsPage() {
-  (function ($) {
-    // cache
-    var countryFilter = 0;
-    var typeFilter = 0;
-    var page = 1;
-    var totalPages = 0;
-    var totalPagesEvents = 0;
-    var pageEvents = 1;
-
-    //selectors
-    var countrySelector = $('.country-filter');
-    var typeSelector = $('.type-filter');
-    var coverEvents = $('.c-content-banner');
-    var eventsContainer = $('#eventsTiles');
-    var newsContainer = $('#newsTiles');
-
-    // public functions
-    function buildHighlightedEvent(event) {
-      if (event.image) {
-        $('.c-content-banner').css('background-image', 'url(' + event.image + ')');
-      }
-      if (moment() > moment(event.date.value)) {
-        $('.banner-type-date-event').html('Past Event');
-      } else {
-        $('.banner-type-date-event').html('Upcoming Event');
-      }
-      $('.banner-link', coverEvents).attr('href', event.alias);
-      $('.banner-title', coverEvents).html(event.label);
-      $('.banner-date', coverEvents).html(moment(event.date.value).format('MMMM DD, hh:mm a'));
-      $('.c-content-banner').removeClass('-hidden');
-    }
-
-    function setPageCount(val) {
-      $('.page-count').data('value', val);
-    }
-
-    function getCurrentPage() {
-      var pageCount = $('.page-count').data('value');
-      return pageCount;
-    }
-
-    function onClickPagination() {
-      $('.page-count').on('click', function () {
-        setPageCount(getCurrentPage() + 1);
-        pageEvents = getCurrentPage();
-        if (totalPagesEvents > getCurrentPage()) {
-          showLoader('#eventsContainer');
-          showEvents(countryFilter, typeFilter, getCurrentPage());
-        }
-      });
-    }
-
-    function buildSelector(selector, placeholder, endpoint, query) {
-      selector.select2({
-        minimumResultsForSearch: Infinity,
-        containerCssClass: '-green -tall',
-        dropdownCssClass: '-green',
-        placeholder: '' + placeholder
-      });
-      selector.append('<option value="0">' + placeholder + '</option>');
-
-      $.getJSON('/apiJSON/' + endpoint + '?' + query, function (data) {
-        data.data.forEach(function (data) {
-          var option = '<option value="' + data.id + '">' + data.label + '</option>';
-          selector.append(option);
-        });
-
-        selector.on('change', function () {
-          // showLoader('#newsContainer');
-          showLoader('#eventsContainer');
-          countryFilter = countrySelector.val();
-          typeFilter = typeSelector.val();
-          page = 1;
-          // showNews(countryFilter, typeFilter, page);
-          showEvents(countryFilter, typeFilter, page);
-        });
-      });
-    }
-
-    function setPaginationListerners() {
-      countryFilter = countrySelector.val();
-      typeFilter = typeSelector.val();
-      $('.onClickPagination').on('click', function (e) {
-        showLoader('#newsContainer');
-        var pageNum = $(this).data('value');
-        showNews(countryFilter, typeFilter, pageNum);
-      });
-    }
-
-    function showEvents(country, type, page) {
-      var activeCountry = parseInt(country) > 0 ? 'filter[country]=' + country + '&' : '';
-      var activeType = parseInt(type) > 0 ? 'filter[category]=' + type + '&' : '';
-      var activeFilters = '' + activeCountry + activeType + '&page=' + page;
-      $.getJSON('/apiJSON/events?' + activeFilters + '&sort=-date', function (events) {
-        totalPagesEvents = getPageCount(events.count, 4);
-        if (events.data.length > 0) {
-          if (pageEvents === 1) {
-            $.getJSON('/apiJSON/events?sort=-date', function (highlightedEvent) {
-              buildHighlightedEvent(highlightedEvent.data[0]);
-              appendTilesEvent(events.data, eventsContainer);
-              removeLoader('#eventsContainer', null, true);
-            });
-          } else {
-            appendTilesEvent(events.data, eventsContainer);
-            removeLoader('#eventsContainer', null, true);
-          }
-        } else {
-          showNoResults('#eventsContainer', 'No events with these filters', 'tall', 'grey', 'xxlarge', 'blue');
-          removeLoader('#eventsContainer', null, true);
-        }
-      });
-    }
-
-    function showNews(country, type, page) {
-      var activeCountry = parseInt(country) > 0 ? 'filter[country]=' + country + '&' : '';
-      var activeType = parseInt(type) > 0 ? 'filter[category]=' + type + '&' : '';
-      var activeFilters = '' + activeCountry + activeType + '&page=' + page;
-      $.getJSON('/apiJSON/news?' + activeFilters + '&sort=-date', function (news) {
-        if (news.data.length > 0) {
-          totalPages = getPageCount(news.count, 4);
-          if (page === 1) {
-            $.getJSON('/apiJSON/news?sort=-date', function (highlightedNews) {
-              buildHighlightedEvent(highlightedNews.data[0]);
-              appendTilesDetailedNews(news.data, newsContainer, 2);
-              initPagination(page, totalPages, 'newsEventsPage');
-              setPaginationListerners();
-              removeLoader('#newsContainer', null, true);
-            });
-          } else {
-            appendTilesDetailedNews(news.data, newsContainer, 2);
-            removeLoader('#newsContainer', null, true);
-            initPagination(page, totalPages, 'newsEventsPage');
-            setPaginationListerners();
-          }
-        } else {
-          showNoResults('#newsTiles', 'No news with these filters', 'tall', 'grey', 'xxlarge', 'blue');
-          $('.c-pagination').html('');
-          removeLoader('#newsContainer', null, true);
-        }
-      });
-    }
-
-    // build page
-    buildSelector(countrySelector, 'All countries', 'countries', 'fields=id,label&sort=label');
-    buildSelector(typeSelector, 'All story types', 'stories_categories', 'fields=id,label&sort=label');
-    showEvents(countryFilter, typeFilter, page);
-    showNews(countryFilter, typeFilter, page);
-    onClickPagination();
   })(jQuery);
 }
 'use strict';
@@ -2371,30 +2078,6 @@ function showPageList() {
     }
 
     showPages(page, sortValue);
-  })(jQuery);
-}
-'use strict';
-
-function peopleInvolved(id) {
-  (function ($) {
-    function getPeopleInvolvedStories(idPeople) {
-      showLoader('.container-content-user');
-      var content = '';
-      $.getJSON('/apiJSON/stories?filter[author]=' + idPeople, function (data) {
-        if (data.count !== 0) {
-          data.data.forEach(function (data) {
-            content += '<div class="small-12 column  medium-4 blogs-detail">\n                      <a href="/' + data.alias + '"><div class="contain-text">\n                        <span class="text -white -title-x-small">' + data.label + '</span>\n                        <span class="text -white">' + moment.unix(parseInt(data.created)).format('D MMMM YYYY') + '</span>\n                      </div></a>\n                    </div>';
-          });
-        } else {
-          $('.l-people-involved').removeClass('-no-bottom ');
-          $('.container-content-user').remove();
-        }
-        removeLoader('.container-content-user');
-        $('.containter-people-detail').append(content);
-      });
-    }
-
-    getPeopleInvolvedStories(id);
   })(jQuery);
 }
 'use strict';
@@ -2469,6 +2152,30 @@ function showResourcesDetail(id) {
     $.getJSON('/apiJSON/resources?filter[id]=' + id, function (data) {
       buildExploreMoreTiles('resources', 'group_resource', data.data[0].group_resource[0]);
     });
+  })(jQuery);
+}
+'use strict';
+
+function peopleInvolved(id) {
+  (function ($) {
+    function getPeopleInvolvedStories(idPeople) {
+      showLoader('.container-content-user');
+      var content = '';
+      $.getJSON('/apiJSON/stories?filter[author]=' + idPeople, function (data) {
+        if (data.count !== 0) {
+          data.data.forEach(function (data) {
+            content += '<div class="small-12 column  medium-4 blogs-detail">\n                      <a href="/' + data.alias + '"><div class="contain-text">\n                        <span class="text -white -title-x-small">' + data.label + '</span>\n                        <span class="text -white">' + moment.unix(parseInt(data.created)).format('D MMMM YYYY') + '</span>\n                      </div></a>\n                    </div>';
+          });
+        } else {
+          $('.l-people-involved').removeClass('-no-bottom ');
+          $('.container-content-user').remove();
+        }
+        removeLoader('.container-content-user');
+        $('.containter-people-detail').append(content);
+      });
+    }
+
+    getPeopleInvolvedStories(id);
   })(jQuery);
 }
 'use strict';
@@ -2970,6 +2677,299 @@ function showWorkingGroupDetail(id) {
       }
       removeLoader('.working-group-content', null, true);
     });
+  })(jQuery);
+}
+'use strict';
+
+function showNewsEventsPage() {
+  (function ($) {
+    // cache
+    var countryFilter = 0;
+    var typeFilter = 0;
+    var page = 1;
+    var totalPages = 0;
+    var totalPagesEvents = 0;
+    var pageEvents = 1;
+
+    //selectors
+    var countrySelector = $('.country-filter');
+    var typeSelector = $('.type-filter');
+    var coverEvents = $('.c-content-banner');
+    var eventsContainer = $('#eventsTiles');
+    var newsContainer = $('#newsTiles');
+
+    // public functions
+    function buildHighlightedEvent(event) {
+      if (event.image) {
+        $('.c-content-banner').css('background-image', 'url(' + event.image + ')');
+      }
+      if (moment() > moment(event.date.value)) {
+        $('.banner-type-date-event').html('Past Event');
+      } else {
+        $('.banner-type-date-event').html('Upcoming Event');
+      }
+      $('.banner-link', coverEvents).attr('href', event.alias);
+      $('.banner-title', coverEvents).html(event.label);
+      $('.banner-date', coverEvents).html(moment(event.date.value).format('MMMM DD, hh:mm a'));
+      $('.c-content-banner').removeClass('-hidden');
+    }
+
+    function setPageCount(val) {
+      $('.page-count').data('value', val);
+    }
+
+    function getCurrentPage() {
+      var pageCount = $('.page-count').data('value');
+      return pageCount;
+    }
+
+    function onClickPagination() {
+      $('.page-count').on('click', function () {
+        setPageCount(getCurrentPage() + 1);
+        pageEvents = getCurrentPage();
+        if (totalPagesEvents > getCurrentPage()) {
+          showLoader('#eventsContainer');
+          showEvents(countryFilter, typeFilter, getCurrentPage());
+        }
+      });
+    }
+
+    function buildSelector(selector, placeholder, endpoint, query) {
+      selector.select2({
+        minimumResultsForSearch: Infinity,
+        containerCssClass: '-green -tall',
+        dropdownCssClass: '-green',
+        placeholder: '' + placeholder
+      });
+      selector.append('<option value="0">' + placeholder + '</option>');
+
+      $.getJSON('/apiJSON/' + endpoint + '?' + query, function (data) {
+        data.data.forEach(function (data) {
+          var option = '<option value="' + data.id + '">' + data.label + '</option>';
+          selector.append(option);
+        });
+
+        selector.on('change', function () {
+          // showLoader('#newsContainer');
+          showLoader('#eventsContainer');
+          countryFilter = countrySelector.val();
+          typeFilter = typeSelector.val();
+          page = 1;
+          // showNews(countryFilter, typeFilter, page);
+          showEvents(countryFilter, typeFilter, page);
+        });
+      });
+    }
+
+    function setPaginationListerners() {
+      countryFilter = countrySelector.val();
+      typeFilter = typeSelector.val();
+      $('.onClickPagination').on('click', function (e) {
+        showLoader('#newsContainer');
+        var pageNum = $(this).data('value');
+        showNews(countryFilter, typeFilter, pageNum);
+      });
+    }
+
+    function showEvents(country, type, page) {
+      var activeCountry = parseInt(country) > 0 ? 'filter[country]=' + country + '&' : '';
+      var activeType = parseInt(type) > 0 ? 'filter[category]=' + type + '&' : '';
+      var activeFilters = '' + activeCountry + activeType + '&page=' + page;
+      $.getJSON('/apiJSON/events?' + activeFilters + '&sort=-date', function (events) {
+        totalPagesEvents = getPageCount(events.count, 4);
+        if (events.data.length > 0) {
+          if (pageEvents === 1) {
+            $.getJSON('/apiJSON/events?sort=-date', function (highlightedEvent) {
+              buildHighlightedEvent(highlightedEvent.data[0]);
+              appendTilesEvent(events.data, eventsContainer);
+              removeLoader('#eventsContainer', null, true);
+            });
+          } else {
+            appendTilesEvent(events.data, eventsContainer);
+            removeLoader('#eventsContainer', null, true);
+          }
+        } else {
+          showNoResults('#eventsContainer', 'No events with these filters', 'tall', 'grey', 'xxlarge', 'blue');
+          removeLoader('#eventsContainer', null, true);
+        }
+      });
+    }
+
+    function showNews(country, type, page) {
+      var activeCountry = parseInt(country) > 0 ? 'filter[country]=' + country + '&' : '';
+      var activeType = parseInt(type) > 0 ? 'filter[category]=' + type + '&' : '';
+      var activeFilters = '' + activeCountry + activeType + '&page=' + page;
+      $.getJSON('/apiJSON/news?' + activeFilters + '&sort=-date', function (news) {
+        if (news.data.length > 0) {
+          totalPages = getPageCount(news.count, 4);
+          if (page === 1) {
+            $.getJSON('/apiJSON/news?sort=-date', function (highlightedNews) {
+              buildHighlightedEvent(highlightedNews.data[0]);
+              appendTilesDetailedNews(news.data, newsContainer, 2);
+              initPagination(page, totalPages, 'newsEventsPage');
+              setPaginationListerners();
+              removeLoader('#newsContainer', null, true);
+            });
+          } else {
+            appendTilesDetailedNews(news.data, newsContainer, 2);
+            removeLoader('#newsContainer', null, true);
+            initPagination(page, totalPages, 'newsEventsPage');
+            setPaginationListerners();
+          }
+        } else {
+          showNoResults('#newsTiles', 'No news with these filters', 'tall', 'grey', 'xxlarge', 'blue');
+          $('.c-pagination').html('');
+          removeLoader('#newsContainer', null, true);
+        }
+      });
+    }
+
+    // build page
+    buildSelector(countrySelector, 'All countries', 'countries', 'fields=id,label&sort=label');
+    buildSelector(typeSelector, 'All story types', 'stories_categories', 'fields=id,label&sort=label');
+    showEvents(countryFilter, typeFilter, page);
+    showNews(countryFilter, typeFilter, page);
+    onClickPagination();
+  })(jQuery);
+}
+'use strict';
+
+function showIrmReports() {
+  (function ($) {
+
+    // cache
+    var countryFilter = 0;
+    var typeFilter = 0;
+    var page = 1;
+    var totalPages = 0;
+
+    //selectors
+    var countrySelectorDownload = $('.country-filter-download');
+    var countrySelectorComments = $('.country-filter-comments');
+    var tabsContainer = $('.tabs-container');
+    var containerInfo = $('#container-info');
+    var irmContainer = $('#downloadContainer');
+    var commentsContainer = $('#commentsContainer');
+
+    // custom callback for tabs component
+    var onChangeIRMTabs = function onChangeIRMTabs(id, label) {
+      $('.tab-content').addClass('-hidden');
+      $('.' + id).removeClass('-hidden');
+    };
+
+    function initIRMTabs(onChange) {
+      initTabs();
+      setTabListeners(onChange);
+    }
+
+    function setPageCount(val) {
+      $('.reload-thematic-download').data('value', val);
+    }
+
+    function setPageCountComments(val) {
+      $('.reload-thematic-comments').data('value', val);
+    }
+
+    function getCurrentPage() {
+      var pageCount = $('.reload-thematic-download').data('value');
+      return pageCount;
+    }
+
+    function getCurrentPageComments() {
+      var pageCount = $('.reload-thematic-comments').data('value');
+      return pageCount;
+    }
+
+    function onClickPagination() {
+      $('.c-pagination-click-download').on('click', function () {
+        setPageCount(getCurrentPage() + 1);
+        showLoader('#container-info');
+        showTilesIrmReports(countryFilter, getCurrentPage());
+      });
+    }
+
+    function onClickPaginationComments() {
+      $('.c-pagination-click-comments').on('click', function () {
+        setPageCountComments(getCurrentPageComments() + 1);
+        showLoader('#container-info');
+        showTilesComments(countryFilter, getCurrentPageComments());
+      });
+    }
+
+    function showTilesIrmReports(country, pageNext) {
+      var activeCountry = parseInt(country) > 0 ? 'filter[id]=' + country + '&' : '';
+      $.getJSON('/apiJSON/countries?' + activeCountry + 'sort=label', function (countries) {
+        appendTilesIRM(countries.data, irmContainer);
+        appendTilesComments(countries.data, commentsContainer);
+        removeLoader('#container-info', null, true);
+      });
+    }
+
+    // function showTilesComments(country, pageNext) {
+    //   const activeCountry = parseInt(country) > 0 ? `filter[id]=${country}&` : '';
+    //   $.getJSON(`/apiJSON/countries?${activeCountry}sort=label`, function (countries) {
+    //     for (let i = 0; i < countries.data.length; i += 1) {
+    //
+    //     }
+    //   });
+    // }
+
+    function buildSelectorDownload(selector, placeholder, endpoint, query) {
+      selector.select2({
+        minimumResultsForSearch: Infinity,
+        containerCssClass: '-green -tall',
+        dropdownCssClass: '-green',
+        placeholder: '' + placeholder
+      });
+      selector.append('<option value="0">' + placeholder + '</option>');
+      $.getJSON('/apiJSON/' + endpoint + '?' + query, function (data) {
+        data.data.forEach(function (data) {
+          var option = '<option value="' + data.id + '">' + data.label + '</option>';
+          selector.append(option);
+        });
+
+        $(countrySelectorDownload).on('change', function () {
+          $(irmContainer).html('');
+          showLoader('#tab-loader');
+          countryFilter = countrySelectorDownload.val();
+          page = 1;
+          showTilesIrmReports(countryFilter, page);
+        });
+      });
+    }
+
+    function buildSelectorComments(selector, placeholder, endpoint, query) {
+      selector.select2({
+        minimumResultsForSearch: Infinity,
+        containerCssClass: '-green -tall',
+        dropdownCssClass: '-green',
+        placeholder: '' + placeholder
+      });
+      selector.append('<option value="0">' + placeholder + '</option>');
+      $.getJSON('/apiJSON/' + endpoint + '?' + query, function (data) {
+        data.data.forEach(function (data) {
+          var option = '<option value="' + data.id + '">' + data.label + '</option>';
+          selector.append(option);
+        });
+
+        $(countrySelectorComments).on('change', function () {
+          $(irmContainer).html('');
+          showLoader('#tab-loader-comments');
+          countryFilter = countrySelectorComments.val();
+          page = 1;
+          showTilesComments(countryFilter, page);
+        });
+      });
+    }
+
+    buildSelectorDownload(countrySelectorDownload, 'All countries', 'countries', 'fields=id,label&sort=label');
+    buildSelectorComments(countrySelectorComments, 'All countries', 'countries', 'fields=id,label&sort=label');
+    onClickPagination();
+    onClickPaginationComments();
+    initIRMTabs(onChangeIRMTabs);
+    showTilesIrmReports(countryFilter, page);
+    // showTilesComments(countryFilter, page);
+
   })(jQuery);
 }
 //# sourceMappingURL=bundle.js.map

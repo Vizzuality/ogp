@@ -9,7 +9,7 @@ $field_job_title = field_get_items('node', $node, 'field_job_title')[0]['value']
 $field_countries_involved = field_get_items('node', $node, 'field_countries_involved');
 $field_countries_poc = field_get_items('node', $node, 'field_countries_poc');
 ?>
-<div id="peopleInvolved" class="l-people-involved l-page -tall">
+<div id="peopleInvolved" class="l-people-involved -no-bottom l-page -tall">
     <div class="row">
         <div class="column small-12 medium-12 content-header people-header">
           <div class="image-profile">
