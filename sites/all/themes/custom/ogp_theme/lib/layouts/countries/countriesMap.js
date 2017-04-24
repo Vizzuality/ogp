@@ -56,22 +56,22 @@ function initMapLayer(map, countriesData, layers, cartoQueryLink) {
       }
       switch (layer.layers[0].options.name) {
         case 'action':
-          $.getJSON(`${cartoQueryLink} SELECT * FROM countries_homepage WHERE cartodb_id = ${data.cartodb_id}`, function (actionPlanData) {
+          $.getJSON(`${cartoQueryLink} SELECT * FROM bwhyco5uex5gk6l2sjbo4w WHERE cartodb_id = ${data.cartodb_id}`, function (actionPlanData) {
             updateMapModal(actionPlanData.rows[0].nid, 'actionPlan', countriesData);
           });
           break;
         case 'starred':
-          $.getJSON(`${cartoQueryLink} SELECT * FROM starred_commitments WHERE cartodb_id = ${data.cartodb_id}`, function (starredData) {
+          $.getJSON(`${cartoQueryLink} SELECT * FROM zzpexx07fxnjtcvjpptz2q WHERE cartodb_id = ${data.cartodb_id}`, function (starredData) {
             updateMapModal(starredData.rows[0].countryid, 'starred', countriesData);
           });
           break;
         case 'people':
-          $.getJSON(`${cartoQueryLink} SELECT * FROM people_involved WHERE cartodb_id = ${data.cartodb_id}`, function (peopleInvolvedData) {
+          $.getJSON(`${cartoQueryLink} SELECT * FROM u4yhv_fq5_jb91rzuzgd8q WHERE cartodb_id = ${data.cartodb_id}`, function (peopleInvolvedData) {
             updateMapModal(peopleInvolvedData.rows[0].countryid, 'people', countriesData);
           });
           break;
         case 'stories':
-          $.getJSON(`${cartoQueryLink} SELECT * FROM stories WHERE cartodb_id = ${data.cartodb_id}`, function (storiesData) {
+          $.getJSON(`${cartoQueryLink} SELECT * FROM qx43gnom2bzwcwxqladsyg WHERE cartodb_id = ${data.cartodb_id}`, function (storiesData) {
             updateMapModal(storiesData.rows[0].countryid, 'stories', countriesData);
           });
           break;
