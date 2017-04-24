@@ -18,32 +18,46 @@ $field_countries_poc = field_get_items('node', $node, 'field_countries_poc');
             <h1 class="text -title"><?php echo $node->title ?></h1>
             <h2 class="text">
               <a href="/<?php echo (drupal_get_path_alias('node/' . $field_countries_involved[0]['target_id'])) ?>" class="text -small-bold -uppercase -blue tag"><?php echo $field_countries_involved[0]['entity']->title; ?></a>
-              <span class="line text -blank">|</span>
-              <?php echo '<strong class="text -bold">Job title:<strong><span class="text -blank"> '.$field_job_title.'</span>' ?>
+              <?php
+                if($field_job_title) {
+              ?>
               <span class="line text -blank">|</span>
               <?php
-              $temp = explode(' ', $field_contact[0]['value']);
-              $result = '';
-              foreach($temp as $t)
-                  $result .= $t[0];
+                  echo '<strong class="text -bold">Job title:<strong><span class="text -blank"> '.$field_job_title.'</span>';
+                }
+              ?>
 
-              if(filter_var($field_contact[0]['value'], FILTER_VALIDATE_EMAIL)) {
-                  echo '<strong class="text -blank -bold">Email: <a class="text -blank" href="mailto:' . $field_contact[0]['value'] . '"></strong>'.$field_contact[0]['value'].'</a>';
-              }
+              <?php
+              if($field_contact[0]['value']) { ?>
+                <span class="line text -blank">|</span>
+                <?php
+                $temp = explode(' ', $field_contact[0]['value']);
+                $result = '';
+                foreach($temp as $t)
+                    $result .= $t[0];
 
-              if($result === '@') {
-                  echo '<strong class="text -blank -bold">Twitter: <a class="text -blank" href="mailto:' . str_replace('@', '', $field_contact[0]['value']) . '"></strong>'.$field_contact[0]['value'].'</a>';
+                if(filter_var($field_contact[0]['value'], FILTER_VALIDATE_EMAIL)) {
+                    echo '<strong class="text -blank -bold">Email: <a class="text -blank" href="mailto:' . $field_contact[0]['value'] . '"></strong>'.$field_contact[0]['value'].'</a>';
+                }
+
+                if($result === '@') {
+                    echo '<strong class="text -blank -bold">Twitter: <a class="text -blank" href="mailto:' . str_replace('@', '', $field_contact[0]['value']) . '"></strong>'.$field_contact[0]['value'].'</a>';
+                }
               }
               ?>
             </h2>
             <p>
-              <strong class="text -bold"><?php echo $fields['field_countries_poc']['label'].': ' ?></strong>
               <?php
-                for ($i = 0; $i < $iMax = count($field_countries_poc); $i++) {
-                  if($i === (count($field_countries_poc) - 1)) {
-                    echo '<a class="text -blue -small-bold" href="/'. drupal_get_path_alias('node/' . $field_countries_poc[$i]['target_id']) .'">' . $field_countries_poc[$i]['entity']->title .'</a>';
-                  } else {
-                    echo '<a class="text -blue -small-bold" href="/'. drupal_get_path_alias('node/' . $field_countries_poc[$i]['target_id']) .'">' . $field_countries_poc[$i]['entity']->title  . ', </a>';
+              if ($field_countries_poc) {
+                ?>
+                  <strong class="text -bold"><?php echo $fields['field_countries_poc']['label'].': ' ?></strong>
+                <?php
+                  for ($i = 0; $i < $iMax = count($field_countries_poc); $i++) {
+                    if($i === (count($field_countries_poc) - 1)) {
+                      echo '<a class="text -blue -small-bold" href="/'. drupal_get_path_alias('node/' . $field_countries_poc[$i]['target_id']) .'">' . $field_countries_poc[$i]['entity']->title .'</a>';
+                    } else {
+                      echo '<a class="text -blue -small-bold" href="/'. drupal_get_path_alias('node/' . $field_countries_poc[$i]['target_id']) .'">' . $field_countries_poc[$i]['entity']->title  . ', </a>';
+                    }
                   }
                 }
               ?>
@@ -61,6 +75,7 @@ $field_countries_poc = field_get_items('node', $node, 'field_countries_poc');
     </div>
 
     <div class="container-content-user">
+      <div class="c-loader -white"><div class="loader"></div></div>
       <div class="row containter-people-detail">
         <div class="column small-12 medium-12 title-blogs">
           <h1 class="text -title-small -white">Blogs</h1>

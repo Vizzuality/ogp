@@ -2381,6 +2381,7 @@ function peopleInvolved(id) {
       showLoader('.container-content-user');
       var content = '';
       $.getJSON('/apiJSON/stories?filter[author]=' + idPeople, function (data) {
+<<<<<<< HEAD
         if (data.count !== 0) {
           data.data.forEach(function (data) {
             content += '<div class="small-12 column  medium-4 blogs-detail">\n                      <a href="/' + data.alias + '"><div class="contain-text">\n                        <span class="text -white -title-x-small">' + data.label + '</span>\n                        <span class="text -white">' + moment.unix(parseInt(data.created)).format('D MMMM YYYY') + '</span>\n                      </div></a>\n                    </div>';
@@ -2389,6 +2390,11 @@ function peopleInvolved(id) {
           $('.l-people-involved').removeClass('-no-bottom ');
           $('.container-content-user').remove();
         }
+=======
+        data.data.forEach(function (data) {
+          content += '<div class="small-12 column  medium-4 blogs-detail">\n                    <a href="' + data.alias + '"><div class="contain-text">\n                      <span class="text -white -title-x-small">' + data.label + '</span>\n                      <span class="text -white">' + moment.unix(parseInt(data.created)).format('D MMMM YYYY') + '</span>\n                    </div></a>\n                  </div>';
+        });
+>>>>>>> add loader and improve template code
         removeLoader('.container-content-user');
         $('.containter-people-detail').append(content);
       });
