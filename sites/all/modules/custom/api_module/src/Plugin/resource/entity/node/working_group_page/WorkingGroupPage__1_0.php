@@ -51,6 +51,10 @@ class WorkingGroupPage__1_0 extends ResourceNode{
       'property' => 'field_wgp_in_menu',
     );
 
+    $public_fields['order'] = array(
+      'property' => 'field_menu_order',
+    );
+
     $public_fields['working_group'] = array(
       'property' => 'field_working_group_parent',
     );

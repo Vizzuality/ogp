@@ -14,7 +14,7 @@ function showWorkingGroupDetail(id) {
       setTabListeners(onChange);
     }
     showLoader('.working-group-content');
-    $.getJSON(`/apiJSON/working_group_page?filter[working_group]=${id}&filter[show]=1`, (data) => {
+    $.getJSON(`/apiJSON/working_group_page?filter[working_group]=${id}&filter[show]=1&sort=order`, (data) => {
       buildTabs(data.data, tabsContainer, onChangeWorkinPageTab);
       initWorkingTabs(onChangeWorkinPageTab);
       for (let i = 0; i < data.data.length; i += 1) {

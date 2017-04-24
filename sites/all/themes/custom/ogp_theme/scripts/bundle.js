@@ -2937,7 +2937,7 @@ function showWorkingGroupDetail(id) {
       setTabListeners(onChange);
     }
     showLoader('.working-group-content');
-    $.getJSON('/apiJSON/working_group_page?filter[working_group]=' + id + '&filter[show]=1', function (data) {
+    $.getJSON('/apiJSON/working_group_page?filter[working_group]=' + id + '&filter[show]=1&sort=order', function (data) {
       buildTabs(data.data, tabsContainer, onChangeWorkinPageTab);
       initWorkingTabs(onChangeWorkinPageTab);
       for (var i = 0; i < data.data.length; i += 1) {
