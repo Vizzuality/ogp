@@ -120,6 +120,7 @@ function getAbsolutePath() {
 
       // People Involved
       if ($(context).find('#peopleInvolved').length !== 0) {
+        peopleInvolved(settings.block_refresh.args[1]);
         addBanner('newsletter');
       }
 

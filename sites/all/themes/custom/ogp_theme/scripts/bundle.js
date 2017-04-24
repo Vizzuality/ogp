@@ -121,6 +121,7 @@ function getAbsolutePath() {
 
       // People Involved
       if ($(context).find('#peopleInvolved').length !== 0) {
+        peopleInvolved(settings.block_refresh.args[1]);
         addBanner('newsletter');
       }
 
@@ -1912,108 +1913,6 @@ function showNewsEventsPage() {
 }
 'use strict';
 
-function showHomePage() {
-  (function ($) {
-
-    var map = L.map('maphome', {
-      zoomControl: false,
-      center: [35, -60],
-      zoom: 2,
-      maxZoom: 6,
-      minZoom: 2,
-      scrollWheelZoom: false
-    });
-    var over = false;
-
-    $('#in').click(function () {
-      map.setZoom(map.getZoom() + 1);
-    });
-
-    $('#out').click(function () {
-      map.setZoom(map.getZoom() - 1);
-    });
-
-    var basemap = L.tileLayer('http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png', {
-      attribution: ''
-    }).addTo(map);
-
-    cartodb.createLayer(map, {
-      user_name: 'jmonaco',
-      type: 'cartodb',
-      sublayers: [{
-        sql: 'SELECT * FROM bwhyco5uex5gk6l2sjbo4w',
-        cartocss: '#layer{polygon-fill:ramp([actionplan],(#c30,#c30,#2d4f00,#66bc29,#2d4f00,#2d4f00,#2d4f00,#66bc29,#2d4f00),("","Inactive","Implementing 1st action plan and Developing 2nd action plan","Developing action plan","Implementing 2nd action plan","Implementing 1st action plan","Developing 1st Action Plan","Implementing action plan"),"=");line-width:1;line-color:#FFF;line-opacity:.5}',
-        interactivity: 'the_geom, nid, country, cartodb_id'
-      }]
-    }).addTo(map).done(function (layer) {
-      layer.setInteraction(true);
-      var hovers = [];
-      layer.on('featureClick', function (e, latlng, pos, data) {
-        $.getJSON('https://jmonaco.carto.com/api/v2/sql?q= SELECT * FROM countries_homepage WHERE cartodb_id =  ' + data.cartodb_id, function (datapath) {
-          document.location.href = '' + window.location.origin + datapath.rows[0].path;
-        });
-      });
-
-      layer.bind('featureOver', function (e, latlon, pxPos, data, layers) {
-        hovers[layers] = 1;
-        if (_.any(hovers)) {
-          $('#maphome').css('cursor', 'pointer');
-        }
-      });
-
-      layer.bind('featureOut', function (m, layers) {
-        hovers[layers] = 0;
-        if (!_.any(hovers)) {
-          $('#maphome').css('cursor', 'auto');
-        }
-      });
-
-      layer.on('featureOver', function (e, latlng, pos, data) {
-        if (over === false) {
-          $('body').append('<div class="tooltip" style="padding: 5px; position: absolute; z-index: 10; background-color: rgba(255, 255, 255, 1); top:' + (e.pageY - 25) + 'px; left:' + (e.pageX + 25) + 'px">' + data.country + '</div>');
-          over = true;
-        } else {
-          $('.tooltip').html(data.country);
-          $('.tooltip').css('top', e.pageY - 25 + 'px');
-          $('.tooltip').css('left', e.pageX + 25 + 'px');
-        }
-      });
-
-      layer.on('featureOut', function (e, latlng, pos, data) {
-        over = false;
-        $('.tooltip').remove();
-      });
-      map.invalidateSize();
-    });
-  })(jQuery);
-}
-'use strict';
-
-function showSliderHomePage() {
-  (function ($) {
-    $.getJSON('/apiJSON/stories?fields=label,alias,image&sort=-created&range=3', function (stories) {
-      showLoader('.slider-cover-home');
-      for (var i = 0; i < 3; i += 1) {
-        $('.slider-cover-home').append('\n          <div class="c-slider-home-page slider-image-0 ' + (stories.data[i].image ? '-image' : '') + '">\n            <div class="row">\n              <div class="column small-12 medium-9">\n                <div class="container slider-0">\n                  <div>\n                    <h1 class="title-text -white">\n                      <a href="' + stories.data[i].alias + '">' + stories.data[i].label + '</a>\n                    </h1>\n                    <div class="small-12 medium-5 large-4">\n                      <a class="c-button -box" href="' + stories.data[i].alias + '">Explore the story</a>\n                    <div>\n                  </div>\n                  </div>\n                </div>\n              </div>\n            </div>\n        ');
-        if (stories.data[i].image) {
-          $('.slider-image-' + i).css('background-image', 'url(' + stories.data[i].image + ')');
-        }
-      }
-      removeLoader('.slider-cover-home');
-      $('.slider-cover-home').slick({
-        dots: true,
-        arrows: false,
-        speed: 500,
-        fade: true,
-        cssEase: 'linear',
-        dotsClass: 'dots-slider',
-        adaptiveHeight: true
-      });
-    });
-  })(jQuery);
-}
-'use strict';
-
 function showIrmReports() {
   (function ($) {
 
@@ -2159,6 +2058,108 @@ function loginPage() {
 
     $('#edit-name').attr('placeholder', 'Enter your Open Government Partnership username');
     $('#edit-pass').attr('placeholder', 'Enter the password that accompanies your username.');
+  })(jQuery);
+}
+'use strict';
+
+function showHomePage() {
+  (function ($) {
+
+    var map = L.map('maphome', {
+      zoomControl: false,
+      center: [35, -60],
+      zoom: 2,
+      maxZoom: 6,
+      minZoom: 2,
+      scrollWheelZoom: false
+    });
+    var over = false;
+
+    $('#in').click(function () {
+      map.setZoom(map.getZoom() + 1);
+    });
+
+    $('#out').click(function () {
+      map.setZoom(map.getZoom() - 1);
+    });
+
+    var basemap = L.tileLayer('http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png', {
+      attribution: ''
+    }).addTo(map);
+
+    cartodb.createLayer(map, {
+      user_name: 'jmonaco',
+      type: 'cartodb',
+      sublayers: [{
+        sql: 'SELECT * FROM bwhyco5uex5gk6l2sjbo4w',
+        cartocss: '#layer{polygon-fill:ramp([actionplan],(#c30,#c30,#2d4f00,#66bc29,#2d4f00,#2d4f00,#2d4f00,#66bc29,#2d4f00),("","Inactive","Implementing 1st action plan and Developing 2nd action plan","Developing action plan","Implementing 2nd action plan","Implementing 1st action plan","Developing 1st Action Plan","Implementing action plan"),"=");line-width:1;line-color:#FFF;line-opacity:.5}',
+        interactivity: 'the_geom, nid, country, cartodb_id'
+      }]
+    }).addTo(map).done(function (layer) {
+      layer.setInteraction(true);
+      var hovers = [];
+      layer.on('featureClick', function (e, latlng, pos, data) {
+        $.getJSON('https://jmonaco.carto.com/api/v2/sql?q= SELECT * FROM countries_homepage WHERE cartodb_id =  ' + data.cartodb_id, function (datapath) {
+          document.location.href = '' + window.location.origin + datapath.rows[0].path;
+        });
+      });
+
+      layer.bind('featureOver', function (e, latlon, pxPos, data, layers) {
+        hovers[layers] = 1;
+        if (_.any(hovers)) {
+          $('#maphome').css('cursor', 'pointer');
+        }
+      });
+
+      layer.bind('featureOut', function (m, layers) {
+        hovers[layers] = 0;
+        if (!_.any(hovers)) {
+          $('#maphome').css('cursor', 'auto');
+        }
+      });
+
+      layer.on('featureOver', function (e, latlng, pos, data) {
+        if (over === false) {
+          $('body').append('<div class="tooltip" style="padding: 5px; position: absolute; z-index: 10; background-color: rgba(255, 255, 255, 1); top:' + (e.pageY - 25) + 'px; left:' + (e.pageX + 25) + 'px">' + data.country + '</div>');
+          over = true;
+        } else {
+          $('.tooltip').html(data.country);
+          $('.tooltip').css('top', e.pageY - 25 + 'px');
+          $('.tooltip').css('left', e.pageX + 25 + 'px');
+        }
+      });
+
+      layer.on('featureOut', function (e, latlng, pos, data) {
+        over = false;
+        $('.tooltip').remove();
+      });
+      map.invalidateSize();
+    });
+  })(jQuery);
+}
+'use strict';
+
+function showSliderHomePage() {
+  (function ($) {
+    $.getJSON('/apiJSON/stories?fields=label,alias,image&sort=-created&range=3', function (stories) {
+      showLoader('.slider-cover-home');
+      for (var i = 0; i < 3; i += 1) {
+        $('.slider-cover-home').append('\n          <div class="c-slider-home-page slider-image-0 ' + (stories.data[i].image ? '-image' : '') + '">\n            <div class="row">\n              <div class="column small-12 medium-9">\n                <div class="container slider-0">\n                  <div>\n                    <h1 class="title-text -white">\n                      <a href="' + stories.data[i].alias + '">' + stories.data[i].label + '</a>\n                    </h1>\n                    <div class="small-12 medium-5 large-4">\n                      <a class="c-button -box" href="' + stories.data[i].alias + '">Explore the story</a>\n                    <div>\n                  </div>\n                  </div>\n                </div>\n              </div>\n            </div>\n        ');
+        if (stories.data[i].image) {
+          $('.slider-image-' + i).css('background-image', 'url(' + stories.data[i].image + ')');
+        }
+      }
+      removeLoader('.slider-cover-home');
+      $('.slider-cover-home').slick({
+        dots: true,
+        arrows: false,
+        speed: 500,
+        fade: true,
+        cssEase: 'linear',
+        dotsClass: 'dots-slider',
+        adaptiveHeight: true
+      });
+    });
   })(jQuery);
 }
 'use strict';
@@ -2370,6 +2371,30 @@ function showPageList() {
     }
 
     showPages(page, sortValue);
+  })(jQuery);
+}
+'use strict';
+
+function peopleInvolved(id) {
+  (function ($) {
+    function getPeopleInvolvedStories(idPeople) {
+      showLoader('.container-content-user');
+      var content = '';
+      $.getJSON('/apiJSON/stories?filter[author]=' + idPeople, function (data) {
+        if (data.count !== 0) {
+          data.data.forEach(function (data) {
+            content += '<div class="small-12 column  medium-4 blogs-detail">\n                      <a href="/' + data.alias + '"><div class="contain-text">\n                        <span class="text -white -title-x-small">' + data.label + '</span>\n                        <span class="text -white">' + moment.unix(parseInt(data.created)).format('D MMMM YYYY') + '</span>\n                      </div></a>\n                    </div>';
+          });
+        } else {
+          $('.l-people-involved').removeClass('-no-bottom ');
+          $('.container-content-user').remove();
+        }
+        removeLoader('.container-content-user');
+        $('.containter-people-detail').append(content);
+      });
+    }
+
+    getPeopleInvolvedStories(id);
   })(jQuery);
 }
 'use strict';
