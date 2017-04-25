@@ -38,18 +38,21 @@
     display: none !important;
   }
 
-  .container-content-user {
+  .container-content-user,
+  .container-content-user-news {
     position: relative;
     margin-top: 60px;
     padding-top: 40px;
     padding-bottom: 40px;
     background-color: $color-2;
 
-    .title-blogs {
+    .title-blogs,
+    .title-news {
       margin-bottom: 40px;
     }
 
-    .blogs-detail {
+    .blogs-detail,
+    .news-detail {
       margin-bottom: 50px;
 
       .contain-text {
@@ -65,5 +68,10 @@
         }
       }
     }
+  }
+
+  .container-content-user-news {
+    margin-top: 0;
+    border-top: 1px solid rgba($color-4, .5);
   }
 }

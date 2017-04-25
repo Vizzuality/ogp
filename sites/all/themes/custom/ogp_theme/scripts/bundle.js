@@ -1738,28 +1738,6 @@ function initCountryTabs(onChangeCountryTab) {
 }
 'use strict';
 
-function showDocumentResourcePage() {
-  (function ($) {
-    // cache dom
-    var tileContainer = $('#resourceDocsTiles');
-    var searchEl = $('.c-tile');
-    var searchText = $('.c-tile .tile');
-    var searchContainer = $('#resourceTilesSearch input');
-
-    // fetch content and append
-    $.getJSON('/apiJSON/resource', function (data) {
-      setSearchPlaceholder(searchContainer, data.data[0].label);
-      setSearchListeners(searchEl, searchText);
-      if (data.data.length) {
-        appendTiles(data.data, tileContainer, 4);
-      } else {
-        showNoResults();
-      }
-    });
-  })(jQuery);
-}
-'use strict';
-
 function showNewsEventsPage() {
   (function ($) {
     // cache
@@ -1878,11 +1856,11 @@ function showNewsEventsPage() {
       var activeCountry = parseInt(country) > 0 ? 'filter[country]=' + country + '&' : '';
       var activeType = parseInt(type) > 0 ? 'filter[category]=' + type + '&' : '';
       var activeFilters = '' + activeCountry + activeType + '&page=' + page;
-      $.getJSON('/apiJSON/news?' + activeFilters + '&sort=-date', function (news) {
+      $.getJSON('/apiJSON/news?' + activeFilters + '&sort=-date&range=4', function (news) {
         if (news.data.length > 0) {
           totalPages = getPageCount(news.count, 4);
           if (page === 1) {
-            $.getJSON('/apiJSON/news?sort=-date', function (highlightedNews) {
+            $.getJSON('/apiJSON/news?sort=-date&range=4', function (highlightedNews) {
               buildHighlightedEvent(highlightedNews.data[0]);
               appendTilesDetailedNews(news.data, newsContainer, 2);
               initPagination(page, totalPages, 'newsEventsPage');
@@ -1909,6 +1887,28 @@ function showNewsEventsPage() {
     showEvents(countryFilter, typeFilter, page);
     showNews(countryFilter, typeFilter, page);
     onClickPagination();
+  })(jQuery);
+}
+'use strict';
+
+function showDocumentResourcePage() {
+  (function ($) {
+    // cache dom
+    var tileContainer = $('#resourceDocsTiles');
+    var searchEl = $('.c-tile');
+    var searchText = $('.c-tile .tile');
+    var searchContainer = $('#resourceTilesSearch input');
+
+    // fetch content and append
+    $.getJSON('/apiJSON/resource', function (data) {
+      setSearchPlaceholder(searchContainer, data.data[0].label);
+      setSearchListeners(searchEl, searchText);
+      if (data.data.length) {
+        appendTiles(data.data, tileContainer, 4);
+      } else {
+        showNoResults();
+      }
+    });
   })(jQuery);
 }
 'use strict';
@@ -2164,6 +2164,64 @@ function loginPage() {
 }
 'use strict';
 
+function showPageList() {
+  (function ($) {
+    var page = 1;
+    var totalPages = 0;
+    var sortValue = 'asc';
+
+    $('.sort-field').click(function () {
+      if (sortValue === 'asc') {
+        $('.triangle-sort').css('transform', 'rotate(180deg)'); // use this functions, because jquery method addClass not work with svg.
+        sortValue = 'desc';
+      } else {
+        $('.triangle-sort').css('transform', 'rotate(0deg)');
+        sortValue = 'asc';
+      }
+      page = 1;
+      showLoader('#tableContainer');
+      showPages(page, sortValue);
+    });
+
+    function setPaginationListerners() {
+      $('.onClickPagination').on('click', function (e) {
+        showLoader('#tableContainer');
+        var pageNum = $(this).data('value');
+        showPages(pageNum, sortValue);
+      });
+    }
+
+    function showPages(pageNumber, sort) {
+      var sortApi = '';
+      if (sort === 'asc') {
+        sortApi = 'sort=label';
+      } else {
+        sortApi = 'sort-=label';
+      }
+
+      $.getJSON('/apiJSON/page?&page=' + pageNumber + '&' + sortApi, function (pageresult) {
+        totalPages = getPageCount(pageresult.count, 5);
+        if (page === 1) {
+          $.getJSON('/apiJSON/page?date&page=' + pageNumber + '&' + sortApi, function (pageTable) {
+            createTable(pageTable, 'pages');
+            initPagination(pageNumber, totalPages, 'pagesList');
+            setPaginationListerners();
+            removeLoader('#tableContainer', null, true);
+          });
+        } else {
+          createTable(pageresult, 'pages');
+          removeLoader('#tableContainer', null, true);
+          initPagination(pageNumber, totalPages, 'pagesList');
+          setPaginationListerners();
+        }
+      });
+    }
+
+    showPages(page, sortValue);
+  })(jQuery);
+}
+'use strict';
+
 function showNewsEventsPage() {
   (function ($) {
     // cache
@@ -2317,64 +2375,6 @@ function showNewsEventsPage() {
 }
 'use strict';
 
-function showPageList() {
-  (function ($) {
-    var page = 1;
-    var totalPages = 0;
-    var sortValue = 'asc';
-
-    $('.sort-field').click(function () {
-      if (sortValue === 'asc') {
-        $('.triangle-sort').css('transform', 'rotate(180deg)'); // use this functions, because jquery method addClass not work with svg.
-        sortValue = 'desc';
-      } else {
-        $('.triangle-sort').css('transform', 'rotate(0deg)');
-        sortValue = 'asc';
-      }
-      page = 1;
-      showLoader('#tableContainer');
-      showPages(page, sortValue);
-    });
-
-    function setPaginationListerners() {
-      $('.onClickPagination').on('click', function (e) {
-        showLoader('#tableContainer');
-        var pageNum = $(this).data('value');
-        showPages(pageNum, sortValue);
-      });
-    }
-
-    function showPages(pageNumber, sort) {
-      var sortApi = '';
-      if (sort === 'asc') {
-        sortApi = 'sort=label';
-      } else {
-        sortApi = 'sort-=label';
-      }
-
-      $.getJSON('/apiJSON/page?&page=' + pageNumber + '&' + sortApi, function (pageresult) {
-        totalPages = getPageCount(pageresult.count, 5);
-        if (page === 1) {
-          $.getJSON('/apiJSON/page?date&page=' + pageNumber + '&' + sortApi, function (pageTable) {
-            createTable(pageTable, 'pages');
-            initPagination(pageNumber, totalPages, 'pagesList');
-            setPaginationListerners();
-            removeLoader('#tableContainer', null, true);
-          });
-        } else {
-          createTable(pageresult, 'pages');
-          removeLoader('#tableContainer', null, true);
-          initPagination(pageNumber, totalPages, 'pagesList');
-          setPaginationListerners();
-        }
-      });
-    }
-
-    showPages(page, sortValue);
-  })(jQuery);
-}
-'use strict';
-
 function peopleInvolved(id) {
   (function ($) {
     function getPeopleInvolvedStories(idPeople) {
@@ -2394,7 +2394,25 @@ function peopleInvolved(id) {
       });
     }
 
+    function getPeopleInvolvedNews(idPeople) {
+      var content = '';
+      $.getJSON('/apiJSON/news?filter[author]=' + idPeople, function (data) {
+        showLoader('.container-content-user-news');
+        if (data.count !== 0) {
+          data.data.forEach(function (data) {
+            content += '<div class="small-12 column  medium-4 news-detail">\n                      <a href="/' + data.alias + '"><div class="contain-text">\n                        <span class="text -white -title-x-small">' + data.label + '</span>\n                        <span class="text -white">' + moment.unix(parseInt(data.created)).format('D MMMM YYYY') + '</span>\n                      </div></a>\n                    </div>';
+          });
+          removeLoader('.container-content-user-news');
+          $('.containter-people-detail-news').append(content);
+        } else {
+          removeLoader('.container-content-user-news');
+          $('.containter-people-detail-news').append('<div class="small-12 column"><span class="text -white -small-bold">This author has no blogs published</span></div>');
+        }
+      });
+    }
+
     getPeopleInvolvedStories(id);
+    getPeopleInvolvedNews(id);
   })(jQuery);
 }
 'use strict';
@@ -2730,6 +2748,93 @@ function showStoriesSubmitPage(id) {
 }
 'use strict';
 
+function showGroupList() {
+  (function ($) {
+    var page = 1;
+    var totalPages = 0;
+    var sortValue = 'asc';
+    var tableContainer = $('.container-info-table');
+
+    $('.sort-field').click(function () {
+      if (sortValue === 'asc') {
+        $('.triangle-sort').css('transform', 'rotate(180deg)'); // use this functions, because jquery method addClass not work with svg.
+        sortValue = 'desc';
+      } else {
+        $('.triangle-sort').css('transform', 'rotate(0deg)');
+        sortValue = 'asc';
+      }
+      page = 1;
+      showLoader('#tableContainer');
+      showGroups(page, sortValue);
+    });
+
+    function setPaginationListerners() {
+      $('.onClickPagination').on('click', function (e) {
+        showLoader('#tableContainer');
+        var pageNum = $(this).data('value');
+        showGroups(pageNum, sortValue);
+      });
+    }
+
+    function showGroups(page, sort) {
+      var sortApi = '';
+
+      if (sort === 'asc') {
+        sortApi = 'sort=label';
+      } else {
+        sortApi = 'sort-=label';
+      }
+
+      $.getJSON('/apiJSON/working_group?&page=' + page + '&' + sortApi, function (working) {
+        totalPages = getPageCount(working.count, 5);
+        if (page === 1) {
+          $.getJSON('/apiJSON/working_group?date&page=' + page + '&' + sortApi, function (workingTable) {
+            createTable(workingTable, 'groups');
+            initPagination(page, totalPages, 'workingGroupList');
+            setPaginationListerners();
+            removeLoader('#tableContainer', null, true);
+          });
+        } else {
+          createTable(working, 'groups');
+          removeLoader('#tableContainer', null, true);
+          initPagination(page, totalPages, 'workingGroupList');
+          setPaginationListerners();
+        }
+      });
+    }
+    showGroups(page, sortValue);
+  })(jQuery);
+}
+'use strict';
+
+function showWorkingGroupDetail(id) {
+  (function ($) {
+    var tabsContainer = $('.tabs-container');
+    var containerInfo = $('#container-info');
+
+    // custom callback for tabs component
+    var onChangeWorkinPageTab = function onChangeWorkinPageTab(id, label) {
+      $('.tab-content').addClass('-hidden');
+      $('.' + id).removeClass('-hidden');
+    };
+
+    function initWorkingTabs(onChange) {
+      initTabs();
+      setTabListeners(onChange);
+    }
+    showLoader('.working-group-content');
+    $.getJSON('/apiJSON/working_group_page?filter[working_group]=' + id + '&filter[show]=1&sort=order', function (data) {
+      buildTabs(data.data, tabsContainer, onChangeWorkinPageTab);
+      initWorkingTabs(onChangeWorkinPageTab);
+      for (var i = 0; i < data.data.length; i += 1) {
+        containerInfo.append('\n          <div class="tab-content -hidden ' + data.data[i].id + '">\n            <h3 class="text -section-title">' + data.data[i].label + '</h3>\n            <div class="text -body-content">\n              ' + data.data[i].body.value + '\n            </div>\n          </div>\n        ');
+      }
+      removeLoader('.working-group-content', null, true);
+    });
+  })(jQuery);
+}
+'use strict';
+
 function showThemesDetail(id) {
   (function showAPIThemes($) {
 
@@ -2883,93 +2988,6 @@ function showThemesPage() {
     initTabs();
     setTabListeners(onChangeTab);
     setSearchListeners(searchEl, searchText);
-  })(jQuery);
-}
-'use strict';
-
-function showGroupList() {
-  (function ($) {
-    var page = 1;
-    var totalPages = 0;
-    var sortValue = 'asc';
-    var tableContainer = $('.container-info-table');
-
-    $('.sort-field').click(function () {
-      if (sortValue === 'asc') {
-        $('.triangle-sort').css('transform', 'rotate(180deg)'); // use this functions, because jquery method addClass not work with svg.
-        sortValue = 'desc';
-      } else {
-        $('.triangle-sort').css('transform', 'rotate(0deg)');
-        sortValue = 'asc';
-      }
-      page = 1;
-      showLoader('#tableContainer');
-      showGroups(page, sortValue);
-    });
-
-    function setPaginationListerners() {
-      $('.onClickPagination').on('click', function (e) {
-        showLoader('#tableContainer');
-        var pageNum = $(this).data('value');
-        showGroups(pageNum, sortValue);
-      });
-    }
-
-    function showGroups(page, sort) {
-      var sortApi = '';
-
-      if (sort === 'asc') {
-        sortApi = 'sort=label';
-      } else {
-        sortApi = 'sort-=label';
-      }
-
-      $.getJSON('/apiJSON/working_group?&page=' + page + '&' + sortApi, function (working) {
-        totalPages = getPageCount(working.count, 5);
-        if (page === 1) {
-          $.getJSON('/apiJSON/working_group?date&page=' + page + '&' + sortApi, function (workingTable) {
-            createTable(workingTable, 'groups');
-            initPagination(page, totalPages, 'workingGroupList');
-            setPaginationListerners();
-            removeLoader('#tableContainer', null, true);
-          });
-        } else {
-          createTable(working, 'groups');
-          removeLoader('#tableContainer', null, true);
-          initPagination(page, totalPages, 'workingGroupList');
-          setPaginationListerners();
-        }
-      });
-    }
-    showGroups(page, sortValue);
-  })(jQuery);
-}
-'use strict';
-
-function showWorkingGroupDetail(id) {
-  (function ($) {
-    var tabsContainer = $('.tabs-container');
-    var containerInfo = $('#container-info');
-
-    // custom callback for tabs component
-    var onChangeWorkinPageTab = function onChangeWorkinPageTab(id, label) {
-      $('.tab-content').addClass('-hidden');
-      $('.' + id).removeClass('-hidden');
-    };
-
-    function initWorkingTabs(onChange) {
-      initTabs();
-      setTabListeners(onChange);
-    }
-    showLoader('.working-group-content');
-    $.getJSON('/apiJSON/working_group_page?filter[working_group]=' + id + '&filter[show]=1&sort=order', function (data) {
-      buildTabs(data.data, tabsContainer, onChangeWorkinPageTab);
-      initWorkingTabs(onChangeWorkinPageTab);
-      for (var i = 0; i < data.data.length; i += 1) {
-        containerInfo.append('\n          <div class="tab-content -hidden ' + data.data[i].id + '">\n            <h3 class="text -section-title">' + data.data[i].label + '</h3>\n            <div class="text -body-content">\n              ' + data.data[i].body.value + '\n            </div>\n          </div>\n        ');
-      }
-      removeLoader('.working-group-content', null, true);
-    });
   })(jQuery);
 }
 //# sourceMappingURL=bundle.js.map

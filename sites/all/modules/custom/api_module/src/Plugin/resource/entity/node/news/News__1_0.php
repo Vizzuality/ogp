@@ -22,7 +22,6 @@ use Drupal\restful\Plugin\resource\ResourceNode;
  *   authenticationOptional = TRUE,
  *   dataProvider = {
  *     "entityType": "node",
-*     "range" = 4,
  *     "bundles": {
  *       "news"
  *     },
@@ -51,7 +50,16 @@ class News__1_0 extends ResourceNode{
       )
     );
 
+    $public_fields['author'] = array(
+      'property' => 'field_content_authors',
+    );
+
+    $public_fields['created'] = array(
+      'property' => 'created',
+    );
+
     $public_fields['name'] = array(
+
     );
 
     return $public_fields;

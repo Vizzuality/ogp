@@ -85,6 +85,14 @@ $field_countries_poc = field_get_items('node', $node, 'field_countries_poc');
         </div>
       </div>
     </div>
+    <div class="container-content-user-news">
+      <div class="c-loader -white"><div class="loader"></div></div>
+      <div class="row containter-people-detail-news ">
+        <div class="column small-12 medium-12 title-news">
+          <h1 class="text -title-small -white">News</h1>
+        </div>
+      </div>
+    </div>
 
 </div>
 
