@@ -17,19 +17,23 @@ $field_countries_poc = field_get_items('node', $node, 'field_countries_poc');
           <div>
             <h1 class="text -title"><?php echo $node->title ?></h1>
             <h2 class="text">
-              <a href="/<?php echo (drupal_get_path_alias('node/' . $field_countries_involved[0]['target_id'])) ?>" class="text -small-bold -uppercase -blue tag"><?php echo $field_countries_involved[0]['entity']->title; ?></a>
               <?php
-                if($field_job_title) {
+                if($field_countries_involved) {
               ?>
+              <a href="/<?php echo (drupal_get_path_alias('node/' . $field_countries_involved[0]['target_id'])) ?>" class="text -small-bold -uppercase -blue tag"><?php echo $field_countries_involved[0]['entity']->title; ?></a>
               <span class="line text -blank">|</span>
               <?php
+                }
+                if($field_job_title) {
                   echo '<strong class="text -bold">Job title:<strong><span class="text -blank"> '.$field_job_title.'</span>';
+                ?>
+                  <span class="line text -blank">|</span>
+                <?php
                 }
               ?>
 
               <?php
               if($field_contact[0]['value']) { ?>
-                <span class="line text -blank">|</span>
                 <?php
                 $temp = explode(' ', $field_contact[0]['value']);
                 $result = '';
