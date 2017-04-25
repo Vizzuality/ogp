@@ -91,7 +91,7 @@ function showNewsEventsPage() {
     function showEvents(country, type, page) {
       const activeCountry = parseInt(country) > 0 ? `filter[country]=${country}&` : '';
       const activeType = parseInt(type) > 0 ? `filter[category]=${type}&` : '';
-      const activeFilters = `${activeCountry}${activeType}&page=${page}`;
+      const activeFilters = `${activeCountry}${activeType}&page[number]=${page}&page[size]=8`;
       $.getJSON(`/apiJSON/events?${activeFilters}&sort=-date`, function (events) {
         totalPagesEvents = getPageCount(events.count, 4);
         if (events.data.length > 0) {
