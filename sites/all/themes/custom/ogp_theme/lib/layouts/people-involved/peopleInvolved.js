@@ -1,10 +1,10 @@
 function peopleInvolved(id) {
   (function($) {
     function getPeopleInvolvedStories(idPeople) {
-      showLoader('.container-content-user');
       let content = '';
       $.getJSON(`/apiJSON/stories?filter[author]=${idPeople}`, function (data) {
-        if (data.count !== 0){
+        showLoader('.container-content-user');
+        if (data.count !== 0) {
           data.data.forEach(function(data) {
             content += `<div class="small-12 column  medium-4 blogs-detail">
                       <a href="/${data.alias}"><div class="contain-text">
@@ -13,12 +13,12 @@ function peopleInvolved(id) {
                       </div></a>
                     </div>`;
           });
+          removeLoader('.container-content-user');
+          $('.containter-people-detail').append(content);
         } else {
-          $('.l-people-involved').removeClass('-no-bottom ');
-          $('.container-content-user').remove();
+          removeLoader('.container-content-user');
+          $('.containter-people-detail').append('<div class="small-12 column"><span class="text -white -small-bold">This author has no blogs published</span></div>');
         }
-        removeLoader('.container-content-user');
-        $('.containter-people-detail').append(content);
       });
     }
 

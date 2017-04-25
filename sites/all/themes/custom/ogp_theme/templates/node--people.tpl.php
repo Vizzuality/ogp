@@ -31,7 +31,6 @@ $field_countries_poc = field_get_items('node', $node, 'field_countries_poc');
                 <?php
                 }
               ?>
-
               <?php
               if($field_contact[0]['value']) { ?>
                 <?php
