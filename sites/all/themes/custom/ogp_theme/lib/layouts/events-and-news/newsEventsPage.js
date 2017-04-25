@@ -116,11 +116,11 @@ function showNewsEventsPage() {
       const activeCountry = parseInt(country) > 0 ? `filter[country]=${country}&` : '';
       const activeType = parseInt(type) > 0 ? `filter[category]=${type}&` : '';
       const activeFilters = `${activeCountry}${activeType}&page=${page}`;
-      $.getJSON(`/apiJSON/news?${activeFilters}&sort=-date`, function (news) {
+      $.getJSON(`/apiJSON/news?${activeFilters}&sort=-date&range=4`, function (news) {
         if (news.data.length > 0) {
           totalPages = getPageCount(news.count, 4);
           if (page === 1) {
-            $.getJSON(`/apiJSON/news?sort=-date`, function (highlightedNews) {
+            $.getJSON(`/apiJSON/news?sort=-date&range=4`, function (highlightedNews) {
               buildHighlightedEvent(highlightedNews.data[0]);
               appendTilesDetailedNews(news.data, newsContainer, 2);
               initPagination(page, totalPages, 'newsEventsPage');
