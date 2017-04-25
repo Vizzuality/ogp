@@ -1,16 +1,35 @@
 .c-main-menu {
+  position: absolute;
+  left: -100vw;
+  width: 100vw;
+  height: 100vh;
   z-index: 1200;
+  background-color: $color-4;
+  top: 0;
+  box-shadow: 0 -3px 3px 1px $color-6;
+
+  @media screen and (min-width: $screen-s) {
+    display: block;
+    position: inherit;
+    left: auto;
+    height: auto;
+    width: auto;
+    z-index: 1000;
+    box-shadow: 0;
+  }
 
   .primary-menu {
-    display: flex;
-    align-content: center;
-    align-items: center;
-    justify-content: flex-end;
-    height: 90px;
-    margin-right: 50px;
-    z-index: 1000;
+    display: block;
+    padding: 80px 40px;
 
     @media screen and (min-width: $screen-m) {
+      display: flex;
+      align-content: center;
+      align-items: center;
+      justify-content: flex-end;
+      height: 90px;
+      padding: inherit;
+      z-index: 1000;
       margin-right: 80px;
     }
 
@@ -206,6 +225,10 @@
     li {
       color: $color-22;
 
+      @media screen and (min-width: $screen-m) {
+
+      }
+
       &.-world-icon {
         color: red;
 
@@ -232,5 +255,47 @@
 
   .language-selector {
     width: 100px;
+  }
+}
+
+.menu-icon-responsive {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  align-content: center;
+  width: 50px;
+  height: 50px;
+  margin-left: calc(100vw - 70px);
+  cursor: pointer;
+  z-index: 1201;
+
+  @media screen and (min-width: $screen-s) {
+    display: none;
+  }
+
+  .icon-cross {
+    display: none;
+  }
+
+  &.-home {
+    background-color: $color-2;
+
+    svg {
+      fill: $color-4;
+    }
+  }
+
+  &.-page {
+    margin-bottom: 40px;
+    background-color: $color-4;
+
+    svg {
+      fill: $color-5;
+    }
+  }
+
+  svg {
+    width: 30px !important;
+    height: 30px !important;
   }
 }

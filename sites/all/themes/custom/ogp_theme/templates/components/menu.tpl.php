@@ -3,8 +3,16 @@ $main_menu = menu_build_tree('menu-main-menu-2-0');
 $path = explode('/', drupal_get_path_alias());
 ?>
 <?php if (drupal_is_front_page()) { ?>
+  <div class="menu-icon-responsive -home" data-value="false">
+    <svg class="icon -medium icon-lines"><use xlink:href="#icon-menu"></use></svg>
+    <svg class="icon -medium icon-cross"><use xlink:href="#icon-cross"></use></svg>
+  </div>
   <nav class="c-main-menu">
 <?php } else { ?>
+  <div class="menu-icon-responsive -page" data-value="false">
+    <svg class="icon -medium icon-lines"><use xlink:href="#icon-menu"></use></svg>
+    <svg class="icon -medium icon-cross"><use xlink:href="#icon-cross"></use></svg>
+  </div>
   <nav class="c-main-menu -page">
 <?php } ?>
     <ul class="primary-menu">

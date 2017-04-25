@@ -30,6 +30,10 @@ function getAbsolutePath() {
       // Routing action
       /////////////////
 
+
+      //General
+      menuPage();
+
       // home page
       if ($(context).find('#homePage').length !== 0) {
         showHomePage();
