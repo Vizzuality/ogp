@@ -9,7 +9,7 @@ function showSliderHomePage() {
               <div class="column small-12 medium-9">
                 <div class="container slider-0">
                   <div>
-                    <h1 class="title-text -white">
+                    <h1 class="text -title -white">
                       <a href="${stories.data[i].alias}">${stories.data[i].label}</a>
                     </h1>
                     <div class="small-12 medium-5 large-4">

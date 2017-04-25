@@ -1,10 +1,18 @@
 .l-home-page {
-  min-height: 750px;
+  min-height: 470px;
   margin-top: -90px;
+
+  @media screen and (min-width: $screen-s) {
+    min-height: 750px;
+  }
 
   .slider-cover-home {
     position: relative;
-    min-height: 750px;
+    min-height: 470px;
     background-color: $color-2;
+
+    @media screen and (min-width: $screen-s) {
+      min-height: 750px;
+    }
   }
 }

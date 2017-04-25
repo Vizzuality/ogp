@@ -1,12 +1,16 @@
 //Cover slider Home Page
 .c-slider-home-page {
-  min-height: 750px;
-  background-color: $color-2;
   position: relative;
+  min-height: 470px;
   padding-top: 80px;
+  background-color: $color-2;
   background-repeat: no-repeat;
   background-position: center;
   background-size: cover;
+
+  @media screen and (min-width: $screen-s) {
+    min-height: 750px;
+  }
 
   &.-image {
     &::after {
@@ -23,21 +27,18 @@
   }
 
   .container {
-    height: 650px;
     display: flex;
-    justify-content: center;
-    align-items: flex-start;
     flex-direction: column;
+    align-items: flex-start;
+    justify-content: center;
+    height: 470px;
 
-    .title-text {
+    @media screen and (min-width: $screen-s) {
+      height: 650px;
+    }
+
+    .text {
       margin-bottom: 40px;
-      font-size: $font-size-big;
-      font-weight: $font-weight-semi-bold;
-      line-height: 1.3;
-
-      a {
-        color: $color-4;
-      }
     }
   }
 
@@ -48,8 +49,14 @@
 
 .dots-slider {
   position: absolute;
-  right: 80px;
   bottom: 40px;
+  left: 50%;
+  transform: translate(-50%, 0);
+
+  @media screen and (min-width: $screen-s) {
+    right: 80px;
+  }
+
 
   li {
     display: inline-block;

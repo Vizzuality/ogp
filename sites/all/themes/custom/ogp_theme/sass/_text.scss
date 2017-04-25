@@ -35,9 +35,13 @@ h6 {
   }
 
   &.-title {
-    font-size: $font-size-big;
+    font-size: $font-size-medium;
     font-weight: $font-weight-semi-bold;
     line-height: 1.3;
+
+    @media screen and (min-width: $screen-s) {
+      font-size: $font-size-big;
+    }
   }
 
   &.-title-small {
