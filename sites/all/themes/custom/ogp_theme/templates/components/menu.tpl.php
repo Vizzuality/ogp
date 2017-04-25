@@ -7,7 +7,7 @@ $path = explode('/', drupal_get_path_alias());
     <svg class="icon -medium icon-lines"><use xlink:href="#icon-menu"></use></svg>
     <svg class="icon -medium icon-cross"><use xlink:href="#icon-cross"></use></svg>
   </div>
-  <nav class="c-main-menu">
+  <nav class="c-main-menu -home">
 <?php } else { ?>
   <div class="menu-icon-responsive -page" data-value="false">
     <svg class="icon -medium icon-lines"><use xlink:href="#icon-menu"></use></svg>

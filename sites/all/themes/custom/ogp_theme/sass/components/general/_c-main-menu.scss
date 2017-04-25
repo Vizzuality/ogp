@@ -1,12 +1,21 @@
 .c-main-menu {
   position: absolute;
+  background-color: $color-4;
   left: -100vw;
   width: 100vw;
   height: 100vh;
   z-index: 1200;
-  background-color: $color-4;
   top: 0;
   box-shadow: 0 -3px 3px 1px $color-6;
+  transition: .25s linear;
+
+  &.-home {
+    background-color: $color-4;
+
+    @media screen and (min-width: $screen-s) {
+      background-color: $color-2;
+    }
+  }
 
   @media screen and (min-width: $screen-s) {
     display: block;
@@ -22,7 +31,7 @@
     display: block;
     padding: 80px 40px;
 
-    @media screen and (min-width: $screen-m) {
+    @media screen and (min-width: $screen-s) {
       display: flex;
       align-content: center;
       align-items: center;
