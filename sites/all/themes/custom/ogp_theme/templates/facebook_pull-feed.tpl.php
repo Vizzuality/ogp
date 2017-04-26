@@ -5,6 +5,7 @@
   </a>
 <?php foreach ($items as $item): ?>
   <li class="item">
+    <?php $new_date_format = date('F m, Y - H:iA', strtotime('2008-07-01T22:35:17.02')); ?>
   <?php if (isset($item->from)): ?>
     <span class="facebook-feed-picture"><img alt="<?php echo $item->from->name; ?>" src="//graph.facebook.com/<?php echo $item->from->id; ?>/picture" /></span>
     <span class="facebook-feed-from"><a href="//facebook.com/profile.php?id=<?php echo $item->from->id; ?>"><?php echo $item->from->name; ?></a></span>
@@ -25,6 +26,7 @@
           <?php echo $item->question; ?>
         <?php endif; ?>
     </span>
+    <div class="text -blank -small-bold"><?php echo $new_date_format; ?></div>
     <div class="original-facebook-post">
       <a href="https://www.facebook.com/<?php echo $item->id ?>" target="_blank" class="text  -blue">Go to original post</a>
     </div>
