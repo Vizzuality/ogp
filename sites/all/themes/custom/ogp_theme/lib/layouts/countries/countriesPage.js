@@ -29,13 +29,13 @@ function showCountriesPage() {
         name: 'stories'
       },
       upcomingevent: {
-        sql: 'SELECT now(), country,countryid, count(country),Min(cartodb_id) cartodb_id, Min(date) date, Min(end_date) end_date, Min(start_date) start_date, Min(title) title, st_centroid(st_transform(cdb_geocode_admin0_polygon(country), 3857)) the_geom_webmercator FROM ojy344p9szp9irh8dc1uaa WHERE title IS NOT NULL AND end_date > now() GROUP BY  the_geom_webmercator, country, countryid ORDER BY country',
+        sql: 'SELECT now(), country,countryid, count(country),Min(cartodb_id) cartodb_id, Min(date) date, Min(end_date) end_date, Min(start_date) start_date, Min(title) title, st_centroid(st_transform(cdb_geocode_admin0_polygon(country), 3857)) AS the_geom_webmercator FROM ojy344p9szp9irh8dc1uaa WHERE title IS NOT NULL AND end_date > now() GROUP BY  the_geom_webmercator, country, countryid ORDER BY country',
         cartocss: '#layer::z1 {marker-width: 30;marker-fill: #66bc29;marker-fill-opacity: 1;marker-line-width: 0;marker-line-color: #151718;marker-line-opacity: 0.2;marker-allow-overlap:true;marker-comp-op: src;[zoom = 2] {marker-width: 30;}[zoom = 3] {marker-width: 35;}[zoom = 4] {marker-width: 40;}[zoom = 5] {marker-width: 45;}[zoom = 6] {marker-width: 45;}} #layer::z1 {text-name: [count];text-face-name: "DejaVu Sans Book";text-size: 10;text-fill: #FFFFFF;text-label-position-tolerance: 0;text-halo-radius: 0;text-halo-fill: #6F808D;text-dy: 0;text-allow-overlap: true;}',
         interactivity: 'cartodb_id, the_geom_webmercator',
         name: 'event'
       },
       pastevent: {
-        sql: 'SELECT now(), country,countryid, count(country),Min(cartodb_id) cartodb_id, Min(date) date, Min(end_date) end_date, Min(start_date) start_date, Min(title) title, st_centroid(st_transform(cdb_geocode_admin0_polygon(country), 3857)) the_geom_webmercator FROM ojy344p9szp9irh8dc1uaa WHERE title IS NOT NULL AND end_date < now() GROUP BY  the_geom_webmercator, country, countryid ORDER BY country',
+        sql: 'SELECT now(), country,countryid, count(country),Min(cartodb_id) cartodb_id, Min(date) date, Min(end_date) end_date, Min(start_date) start_date, Min(title) title, st_centroid(st_transform(cdb_geocode_admin0_polygon(country), 3857)) AS the_geom_webmercator FROM ojy344p9szp9irh8dc1uaa WHERE title IS NOT NULL AND end_date < now() GROUP BY  the_geom_webmercator, country, countryid ORDER BY country',
         cartocss: '#layer::z1 {marker-width: 30;marker-fill: #66bc29;marker-fill-opacity: 1;marker-line-width: 0;marker-line-color: #151718;marker-line-opacity: 0.2;marker-allow-overlap:true;marker-comp-op: src;[zoom = 2] {marker-width: 30;}[zoom = 3] {marker-width: 35;}[zoom = 4] {marker-width: 40;}[zoom = 5] {marker-width: 45;}[zoom = 6] {marker-width: 45;}} #layer::z1 {text-name: [count];text-face-name: "DejaVu Sans Book";text-size: 10;text-fill: #FFFFFF;text-label-position-tolerance: 0;text-halo-radius: 0;text-halo-fill: #6F808D;text-dy: 0;text-allow-overlap: true;}',
         interactivity: 'cartodb_id, the_geom_webmercator, country',
         name: 'event'
