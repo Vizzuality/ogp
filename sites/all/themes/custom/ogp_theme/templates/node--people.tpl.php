@@ -8,12 +8,14 @@ $field_contact = field_get_items('node', $node, 'field_contact');
 $field_job_title = field_get_items('node', $node, 'field_job_title')[0]['value'];
 $field_countries_involved = field_get_items('node', $node, 'field_countries_involved');
 $field_countries_poc = field_get_items('node', $node, 'field_countries_poc');
+$field_people_pic = field_get_items('node', $node, 'field_profile_picture');
 ?>
 <div id="peopleInvolved" class="l-people-involved -no-bottom l-page -tall">
     <div class="row">
         <div class="column small-12 medium-12 content-header people-header">
-          <div class="image-profile">
-          </div>
+          <?php if($field_people_pic) { ?>
+            <div class="image-profile" style="background-image: url('<?php echo $field_people_pic[0]['uri'] ?>')"></div>
+          <?php } ?>
           <div>
             <h1 class="text -title"><?php echo $node->title ?></h1>
             <h2 class="text">

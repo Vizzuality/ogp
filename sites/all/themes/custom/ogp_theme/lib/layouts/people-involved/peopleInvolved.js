@@ -17,7 +17,7 @@ function peopleInvolved(id) {
           $('.containter-people-detail').append(content);
         } else {
           removeLoader('.container-content-user');
-          $('.containter-people-detail').append('<div class="small-12 column"><span class="text -white -small-bold">This author has no blogs published</span></div>');
+          $('.containter-people-detail').append('<div class="small-12 column"><span class="text -white -small-bold">No results found</span></div>');
         }
       });
     }
@@ -39,7 +39,7 @@ function peopleInvolved(id) {
           $('.containter-people-detail-news').append(content);
         } else {
           removeLoader('.container-content-user-news');
-          $('.containter-people-detail-news').append('<div class="small-12 column"><span class="text -white -small-bold">This author has no blogs published</span></div>');
+          $('.containter-people-detail-news').append('<div class="small-12 column"><span class="text -white -small-bold">No results found</span></div>');
         }
       });
     }
