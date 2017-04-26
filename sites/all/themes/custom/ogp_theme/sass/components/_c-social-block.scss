@@ -48,6 +48,10 @@
   &.-facebook {
     display: inline-block;
     flex: 1;
+
+    .original-facebook-post {
+      margin-top: 20px;
+    }
   }
 
 }
