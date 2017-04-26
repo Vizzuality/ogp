@@ -34,6 +34,15 @@
         font-size: $font-size-xxsmall;
       }
     }
+
+    .views-field-twitter-id {
+      display: none;
+    }
+
+    .link-twitter {
+      display: block;
+      margin-top: 20px;
+    }
   }
 
   &.-facebook {

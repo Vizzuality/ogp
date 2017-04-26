@@ -30,6 +30,9 @@ function getAbsolutePath() {
       // Routing action
       /////////////////
 
+      // General
+      twitterLink();
+
       // home page
       if ($(context).find('#homePage').length !== 0) {
         showHomePage();

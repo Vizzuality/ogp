@@ -30,6 +30,9 @@ function getAbsolutePath() {
       // Routing action
       /////////////////
 
+      // General
+      twitterLink();
+
       // home page
       if ($(context).find('#homePage').length !== 0) {
         showHomePage();
@@ -875,6 +878,14 @@ function appendCountriesThematicBars(item, topContainer) {
   var container = $(topContainer + ' .data-tiles');
   var html = '\n    <div class="column small-12">\n      <div class="c-country-thematic-bar">\n        <div class="thematic-bar">\n        <div class="thematic-bar">\n          <h4>' + item.current_themes[0] + ' ' + (item.current_percentage.length > 0 ? '(' + item.current_percentage[0] + '%)' : '') + '</h4>\n          <div class="' + (item.current_percentage[0] ? 'bar-border' : 'bar-border -hiden') + '">\n            <div class="' + (item.current_percentage[0] ? 'bar -green' : 'bar -hiden') + '" style="' + (item.current_percentage[0] ? 'width:' + item.current_percentage[0] + '%' : '') + '" >\n              <span class="' + (item.current_percentage[0] ? 'bar-error -hiden' : 'bar-error') + '">Sorry, nothing to see.</span>\n            </div>\n          </div>\n          <h4>' + item.current_themes[1] + ' ' + (item.current_percentage[1] ? '(' + item.current_percentage[1] + '%)' : '') + '</h4>\n          <div class="' + (item.current_percentage[1] ? 'bar-border' : 'bar-border -hiden') + '">\n            <div class="' + (item.current_percentage[1] ? 'bar -green' : 'bar -hiden') + '" style="' + (item.current_percentage[1] ? 'width:' + item.current_percentage[1] + '%' : '') + '" >\n              <span class="' + (item.current_percentage[1] ? 'bar-error -hiden' : 'bar-error') + '">Sorry, nothing to see.</span>\n            </div>\n          </div>\n          <h4>' + item.current_themes[2] + ' ' + (item.current_percentage[2] ? '(' + item.current_percentage[2] + '%)' : '') + '</h4>\n          <div class="' + (item.current_percentage[2] ? 'bar-border' : 'bar-border -hiden') + '">\n            <div class="' + (item.current_percentage[2] ? 'bar -green' : 'bar -hiden') + '" style="' + (item.current_percentage[2] ? 'width:' + item.current_percentage[2] + '%' : '') + '" >\n              <span class="' + (item.current_percentage[2] ? 'bar-error -hiden' : 'bar-error') + '">Sorry, nothing to see.</span>\n            </div>\n          </div>\n        </div>\n        </div>\n        <a href="http://www.opengovpartnership.org/explorer/all-data.html" target="_blank" class="text -blue">For data definitions and more data, see the OGP Explorer</a>\n      </div>\n    </div>\n  ';
   container.html(html);
+}
+'use strict';
+
+function twitterLink() {
+  (function ($) {
+    var idStatus = $('.value-status').text();
+    $('.link-twitter').attr('href', 'https://twitter.com/opengovpart/status/' + idStatus);
+  })(jQuery);
 }
 'use strict';
 
@@ -1913,108 +1924,6 @@ function showNewsEventsPage() {
 }
 'use strict';
 
-function showHomePage() {
-  (function ($) {
-
-    var map = L.map('maphome', {
-      zoomControl: false,
-      center: [35, -60],
-      zoom: 2,
-      maxZoom: 6,
-      minZoom: 2,
-      scrollWheelZoom: false
-    });
-    var over = false;
-
-    $('#in').click(function () {
-      map.setZoom(map.getZoom() + 1);
-    });
-
-    $('#out').click(function () {
-      map.setZoom(map.getZoom() - 1);
-    });
-
-    var basemap = L.tileLayer('http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png', {
-      attribution: ''
-    }).addTo(map);
-
-    cartodb.createLayer(map, {
-      user_name: 'jmonaco',
-      type: 'cartodb',
-      sublayers: [{
-        sql: 'SELECT * FROM bwhyco5uex5gk6l2sjbo4w',
-        cartocss: '#layer{polygon-fill:ramp([actionplan],(#c30,#c30,#2d4f00,#66bc29,#2d4f00,#2d4f00,#2d4f00,#66bc29,#2d4f00),("","Inactive","Implementing 1st action plan and Developing 2nd action plan","Developing action plan","Implementing 2nd action plan","Implementing 1st action plan","Developing 1st Action Plan","Implementing action plan"),"=");line-width:1;line-color:#FFF;line-opacity:.5}',
-        interactivity: 'the_geom, nid, country, cartodb_id'
-      }]
-    }).addTo(map).done(function (layer) {
-      layer.setInteraction(true);
-      var hovers = [];
-      layer.on('featureClick', function (e, latlng, pos, data) {
-        $.getJSON('https://jmonaco.carto.com/api/v2/sql?q= SELECT * FROM countries_homepage WHERE cartodb_id =  ' + data.cartodb_id, function (datapath) {
-          document.location.href = '' + window.location.origin + datapath.rows[0].path;
-        });
-      });
-
-      layer.bind('featureOver', function (e, latlon, pxPos, data, layers) {
-        hovers[layers] = 1;
-        if (_.any(hovers)) {
-          $('#maphome').css('cursor', 'pointer');
-        }
-      });
-
-      layer.bind('featureOut', function (m, layers) {
-        hovers[layers] = 0;
-        if (!_.any(hovers)) {
-          $('#maphome').css('cursor', 'auto');
-        }
-      });
-
-      layer.on('featureOver', function (e, latlng, pos, data) {
-        if (over === false) {
-          $('body').append('<div class="tooltip" style="padding: 5px; position: absolute; z-index: 10; background-color: rgba(255, 255, 255, 1); top:' + (e.pageY - 25) + 'px; left:' + (e.pageX + 25) + 'px">' + data.country + '</div>');
-          over = true;
-        } else {
-          $('.tooltip').html(data.country);
-          $('.tooltip').css('top', e.pageY - 25 + 'px');
-          $('.tooltip').css('left', e.pageX + 25 + 'px');
-        }
-      });
-
-      layer.on('featureOut', function (e, latlng, pos, data) {
-        over = false;
-        $('.tooltip').remove();
-      });
-      map.invalidateSize();
-    });
-  })(jQuery);
-}
-'use strict';
-
-function showSliderHomePage() {
-  (function ($) {
-    $.getJSON('/apiJSON/stories?fields=label,alias,image&sort=-created&range=3', function (stories) {
-      showLoader('.slider-cover-home');
-      for (var i = 0; i < 3; i += 1) {
-        $('.slider-cover-home').append('\n          <div class="c-slider-home-page slider-image-0 ' + (stories.data[i].image ? '-image' : '') + '">\n            <div class="row">\n              <div class="column small-12 medium-9">\n                <div class="container slider-0">\n                  <div>\n                    <h1 class="title-text -white">\n                      <a href="' + stories.data[i].alias + '">' + stories.data[i].label + '</a>\n                    </h1>\n                    <div class="small-12 medium-5 large-4">\n                      <a class="c-button -box" href="' + stories.data[i].alias + '">Explore the story</a>\n                    <div>\n                  </div>\n                  </div>\n                </div>\n              </div>\n            </div>\n        ');
-        if (stories.data[i].image) {
-          $('.slider-image-' + i).css('background-image', 'url(' + stories.data[i].image + ')');
-        }
-      }
-      removeLoader('.slider-cover-home');
-      $('.slider-cover-home').slick({
-        dots: true,
-        arrows: false,
-        speed: 500,
-        fade: true,
-        cssEase: 'linear',
-        dotsClass: 'dots-slider',
-        adaptiveHeight: true
-      });
-    });
-  })(jQuery);
-}
-'use strict';
-
 function showIrmReports() {
   (function ($) {
 
@@ -2155,11 +2064,171 @@ function showIrmReports() {
 }
 'use strict';
 
+function showHomePage() {
+  (function ($) {
+
+    var map = L.map('maphome', {
+      zoomControl: false,
+      center: [35, -60],
+      zoom: 2,
+      maxZoom: 6,
+      minZoom: 2,
+      scrollWheelZoom: false
+    });
+    var over = false;
+
+    $('#in').click(function () {
+      map.setZoom(map.getZoom() + 1);
+    });
+
+    $('#out').click(function () {
+      map.setZoom(map.getZoom() - 1);
+    });
+
+    var basemap = L.tileLayer('http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png', {
+      attribution: ''
+    }).addTo(map);
+
+    cartodb.createLayer(map, {
+      user_name: 'jmonaco',
+      type: 'cartodb',
+      sublayers: [{
+        sql: 'SELECT * FROM bwhyco5uex5gk6l2sjbo4w',
+        cartocss: '#layer{polygon-fill:ramp([actionplan],(#c30,#c30,#2d4f00,#66bc29,#2d4f00,#2d4f00,#2d4f00,#66bc29,#2d4f00),("","Inactive","Implementing 1st action plan and Developing 2nd action plan","Developing action plan","Implementing 2nd action plan","Implementing 1st action plan","Developing 1st Action Plan","Implementing action plan"),"=");line-width:1;line-color:#FFF;line-opacity:.5}',
+        interactivity: 'the_geom, nid, country, cartodb_id'
+      }]
+    }).addTo(map).done(function (layer) {
+      layer.setInteraction(true);
+      var hovers = [];
+      layer.on('featureClick', function (e, latlng, pos, data) {
+        $.getJSON('https://jmonaco.carto.com/api/v2/sql?q= SELECT * FROM countries_homepage WHERE cartodb_id =  ' + data.cartodb_id, function (datapath) {
+          document.location.href = '' + window.location.origin + datapath.rows[0].path;
+        });
+      });
+
+      layer.bind('featureOver', function (e, latlon, pxPos, data, layers) {
+        hovers[layers] = 1;
+        if (_.any(hovers)) {
+          $('#maphome').css('cursor', 'pointer');
+        }
+      });
+
+      layer.bind('featureOut', function (m, layers) {
+        hovers[layers] = 0;
+        if (!_.any(hovers)) {
+          $('#maphome').css('cursor', 'auto');
+        }
+      });
+
+      layer.on('featureOver', function (e, latlng, pos, data) {
+        if (over === false) {
+          $('body').append('<div class="tooltip" style="padding: 5px; position: absolute; z-index: 10; background-color: rgba(255, 255, 255, 1); top:' + (e.pageY - 25) + 'px; left:' + (e.pageX + 25) + 'px">' + data.country + '</div>');
+          over = true;
+        } else {
+          $('.tooltip').html(data.country);
+          $('.tooltip').css('top', e.pageY - 25 + 'px');
+          $('.tooltip').css('left', e.pageX + 25 + 'px');
+        }
+      });
+
+      layer.on('featureOut', function (e, latlng, pos, data) {
+        over = false;
+        $('.tooltip').remove();
+      });
+      map.invalidateSize();
+    });
+  })(jQuery);
+}
+'use strict';
+
+function showSliderHomePage() {
+  (function ($) {
+    $.getJSON('/apiJSON/stories?fields=label,alias,image&sort=-created&range=3', function (stories) {
+      showLoader('.slider-cover-home');
+      for (var i = 0; i < 3; i += 1) {
+        $('.slider-cover-home').append('\n          <div class="c-slider-home-page slider-image-0 ' + (stories.data[i].image ? '-image' : '') + '">\n            <div class="row">\n              <div class="column small-12 medium-9">\n                <div class="container slider-0">\n                  <div>\n                    <h1 class="title-text -white">\n                      <a href="' + stories.data[i].alias + '">' + stories.data[i].label + '</a>\n                    </h1>\n                    <div class="small-12 medium-5 large-4">\n                      <a class="c-button -box" href="' + stories.data[i].alias + '">Explore the story</a>\n                    <div>\n                  </div>\n                  </div>\n                </div>\n              </div>\n            </div>\n        ');
+        if (stories.data[i].image) {
+          $('.slider-image-' + i).css('background-image', 'url(' + stories.data[i].image + ')');
+        }
+      }
+      removeLoader('.slider-cover-home');
+      $('.slider-cover-home').slick({
+        dots: true,
+        arrows: false,
+        speed: 500,
+        fade: true,
+        cssEase: 'linear',
+        dotsClass: 'dots-slider',
+        adaptiveHeight: true
+      });
+    });
+  })(jQuery);
+}
+'use strict';
+
 function loginPage() {
   (function ($) {
 
     $('#edit-name').attr('placeholder', 'Enter your Open Government Partnership username');
     $('#edit-pass').attr('placeholder', 'Enter the password that accompanies your username.');
+  })(jQuery);
+}
+'use strict';
+
+function showPageList() {
+  (function ($) {
+    var page = 1;
+    var totalPages = 0;
+    var sortValue = 'asc';
+
+    $('.sort-field').click(function () {
+      if (sortValue === 'asc') {
+        $('.triangle-sort').css('transform', 'rotate(180deg)'); // use this functions, because jquery method addClass not work with svg.
+        sortValue = 'desc';
+      } else {
+        $('.triangle-sort').css('transform', 'rotate(0deg)');
+        sortValue = 'asc';
+      }
+      page = 1;
+      showLoader('#tableContainer');
+      showPages(page, sortValue);
+    });
+
+    function setPaginationListerners() {
+      $('.onClickPagination').on('click', function (e) {
+        showLoader('#tableContainer');
+        var pageNum = $(this).data('value');
+        showPages(pageNum, sortValue);
+      });
+    }
+
+    function showPages(pageNumber, sort) {
+      var sortApi = '';
+      if (sort === 'asc') {
+        sortApi = 'sort=label';
+      } else {
+        sortApi = 'sort-=label';
+      }
+
+      $.getJSON('/apiJSON/page?&page=' + pageNumber + '&' + sortApi, function (pageresult) {
+        totalPages = getPageCount(pageresult.count, 5);
+        if (page === 1) {
+          $.getJSON('/apiJSON/page?date&page=' + pageNumber + '&' + sortApi, function (pageTable) {
+            createTable(pageTable, 'pages');
+            initPagination(pageNumber, totalPages, 'pagesList');
+            setPaginationListerners();
+            removeLoader('#tableContainer', null, true);
+          });
+        } else {
+          createTable(pageresult, 'pages');
+          removeLoader('#tableContainer', null, true);
+          initPagination(pageNumber, totalPages, 'pagesList');
+          setPaginationListerners();
+        }
+      });
+    }
+
+    showPages(page, sortValue);
   })(jQuery);
 }
 'use strict';
@@ -2313,64 +2382,6 @@ function showNewsEventsPage() {
     showEvents(countryFilter, typeFilter, page);
     showNews(countryFilter, typeFilter, page);
     onClickPagination();
-  })(jQuery);
-}
-'use strict';
-
-function showPageList() {
-  (function ($) {
-    var page = 1;
-    var totalPages = 0;
-    var sortValue = 'asc';
-
-    $('.sort-field').click(function () {
-      if (sortValue === 'asc') {
-        $('.triangle-sort').css('transform', 'rotate(180deg)'); // use this functions, because jquery method addClass not work with svg.
-        sortValue = 'desc';
-      } else {
-        $('.triangle-sort').css('transform', 'rotate(0deg)');
-        sortValue = 'asc';
-      }
-      page = 1;
-      showLoader('#tableContainer');
-      showPages(page, sortValue);
-    });
-
-    function setPaginationListerners() {
-      $('.onClickPagination').on('click', function (e) {
-        showLoader('#tableContainer');
-        var pageNum = $(this).data('value');
-        showPages(pageNum, sortValue);
-      });
-    }
-
-    function showPages(pageNumber, sort) {
-      var sortApi = '';
-      if (sort === 'asc') {
-        sortApi = 'sort=label';
-      } else {
-        sortApi = 'sort-=label';
-      }
-
-      $.getJSON('/apiJSON/page?&page=' + pageNumber + '&' + sortApi, function (pageresult) {
-        totalPages = getPageCount(pageresult.count, 5);
-        if (page === 1) {
-          $.getJSON('/apiJSON/page?date&page=' + pageNumber + '&' + sortApi, function (pageTable) {
-            createTable(pageTable, 'pages');
-            initPagination(pageNumber, totalPages, 'pagesList');
-            setPaginationListerners();
-            removeLoader('#tableContainer', null, true);
-          });
-        } else {
-          createTable(pageresult, 'pages');
-          removeLoader('#tableContainer', null, true);
-          initPagination(pageNumber, totalPages, 'pagesList');
-          setPaginationListerners();
-        }
-      });
-    }
-
-    showPages(page, sortValue);
   })(jQuery);
 }
 'use strict';
