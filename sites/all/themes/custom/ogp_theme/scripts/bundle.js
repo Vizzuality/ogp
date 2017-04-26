@@ -183,6 +183,11 @@ function getAbsolutePath() {
         addBanner('newsletter');
       }
 
+      if ($(context).find('#tagDetail').length !== 0) {
+        tagsPage();
+        addBanner('newsletter');
+      }
+
       if ($(context).find('#resultSearchPage').length !== 0) {
         featuresResultPage();
       }
@@ -2572,7 +2577,6 @@ function showStoryDetail(id) {
       }
 
       if (story.tags) {
-        console.log(story.tags);
         $('.tags').append('<strong class="text -bold">Tags: </strong>');
         story.tags.forEach(function (tag, index) {
           if (index === story.tags.length - 1) {
@@ -2755,6 +2759,14 @@ function showStoriesSubmitPage(id) {
         data: {}
       }).done(function (data) {});
     });
+  })(jQuery);
+}
+'use strict';
+
+function tagsPage() {
+  (function ($) {
+
+    console.log('hello');
   })(jQuery);
 }
 'use strict';

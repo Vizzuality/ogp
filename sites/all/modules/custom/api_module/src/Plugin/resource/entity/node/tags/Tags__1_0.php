@@ -44,6 +44,10 @@ class Tags__1_0 extends ResourceNode{
         array($this, 'getAlias')
       )
     );
+
+    $public_fields['all'] = array(
+    );
+    
     return $public_fields;
   }
 
