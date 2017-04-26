@@ -51,6 +51,10 @@ class People__1_0 extends ResourceNode{
       'property' => 'body',
     );
 
+    $public_fields['picture'] = array(
+      'property' => 'field_profile_picture',
+    );
+
     $public_fields['alias'] = array(
       'property' => 'nid',
       'process_callbacks' => array(
