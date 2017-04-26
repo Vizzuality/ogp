@@ -183,6 +183,11 @@ function getAbsolutePath() {
         addBanner('newsletter');
       }
 
+      if ($(context).find('#tagDetail').length !== 0) {
+        tagsPage();
+        addBanner('newsletter');
+      }
+
       if ($(context).find('#resultSearchPage').length !== 0) {
         featuresResultPage();
       }
@@ -2754,6 +2759,14 @@ function showStoriesSubmitPage(id) {
         data: {}
       }).done(function (data) {});
     });
+  })(jQuery);
+}
+'use strict';
+
+function tagsPage() {
+  (function ($) {
+
+    console.log('hello');
   })(jQuery);
 }
 'use strict';

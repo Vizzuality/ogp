@@ -38,7 +38,21 @@ class Tags__1_0 extends ResourceNode{
 
   protected function publicFields() {
     $public_fields = parent::publicFields();
+    $public_fields['alias'] = array(
+      'property' => 'tid',
+      'process_callbacks' => array(
+        array($this, 'getAlias')
+      )
+    );
+
+    $public_fields['all'] = array(
+    );
+    
     return $public_fields;
+  }
+
+  public function getAlias($value) {
+    return drupal_get_path_alias('taxonomy/term/' . $value);
   }
 
 }
