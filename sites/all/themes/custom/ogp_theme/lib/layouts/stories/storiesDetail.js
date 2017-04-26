@@ -7,7 +7,7 @@ function showStoryDetail(id) {
       const story = data.data[0];
       const creationDate = moment.unix(parseInt(story.created)).format('D MMMM YYYY');
       let metaHtml = '';
-      let authorsHtml = '<strong class="text">Authors: </strong>';
+      let authorsHtml = '<strong class="text -bold">Authors: </strong>';
       // set country tags
       if (story.country.length) {
         const countries = story.country;
@@ -32,22 +32,22 @@ function showStoryDetail(id) {
       if (story.author[0]) {
         story.author.forEach(function(author ,index) {
           if (index === story.author.length - 1) {
-            authorsHtml += `<a class="text" href="/${author.alias}">${author.label}</a>`;
+            authorsHtml += `<a class="text -blank" href="/${author.alias}">${author.label}</a>`;
           } else {
-            authorsHtml += `<a class="text" href="/${author.alias}">${author.label}, </a>`;
+            authorsHtml += `<a class="text -blank" href="/${author.alias}">${author.label}, </a>`;
           }
         });
         $('.author').append(authorsHtml);
       }
 
       if (story.topic[0]) {
-        $('.topic').append('<strong class="text">Topics: </strong>');
+        $('.topic').append('<strong class="text -bold">Topics: </strong>');
         story.topic.forEach(function(topic, index) {
           const pathTheme = `${topic.alias}`;
           if (index === story.topic.length - 1) {
-            $('.topic').append(`<a class="text" href="/${pathTheme}">${topic.label}</a>`);
+            $('.topic').append(`<a class="text -blank" href="/${pathTheme}">${topic.label}</a>`);
           } else {
-            $('.topic').append(`<a class="text" href="/${pathTheme}">${topic.label}</a>, `);
+            $('.topic').append(`<a class="text -blank" href="/${pathTheme}">${topic.label}</a>, `);
           }
         });
       }
@@ -56,16 +56,16 @@ function showStoryDetail(id) {
         $('.tags').append('<strong class="text -bold">Tags: </strong>');
         story.tags.forEach(function(tag, index) {
           if (index === story.tags.length - 1) {
-            $('.tags').append(`<span class="text">${tag.label}</span>`);
+            $('.tags').append(`<span class="text -blank">${tag.label}</span>`);
           } else {
-            $('.tags').append(`<span class="text">${tag.label}</span>, `);
+            $('.tags').append(`<span class="text -blank">${tag.label}</span>, `);
           }
         });
       }
 
       if (story.type) {
         $('.filed-under').append('<strong class="text -bold">Filed Under: </strong>');
-        $('.filed-under').append(`<span class="text">${story.type.label}</a>`);
+        $('.filed-under').append(`<span class="text -blank">${story.type.label}</a>`);
       }
 
       removeLoader('#storiesDetail');

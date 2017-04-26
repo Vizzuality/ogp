@@ -18,10 +18,10 @@
         <div class="c-loader"><div class="loader"></div></div>
         <div class="text -body-content"></div>
         <div class="story-detail">
-          <div class="author text -grey -meta"></div>
-          <div class="topic text -grey -meta"></div>
-          <div class="filed-under text -grey -meta"></div>
-          <div class="tags text -grey -meta"></div>
+          <div class="author text"></div>
+          <div class="topic text"></div>
+          <div class="filed-under text"></div>
+          <div class="tags text"></div>
         </div>
       </div>
     </div>
