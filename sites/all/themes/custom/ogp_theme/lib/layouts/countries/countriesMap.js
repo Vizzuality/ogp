@@ -81,12 +81,12 @@ function initMapLayer(map, countriesData, layers, cartoQueryLink) {
           });
           break;
         case 'commitment':
-          $.getJSON(`${cartoQueryLink} SELECT * FROM currentcommitments_countries WHERE cartodb_id = ${data.cartodb_id}`, function (commitmentsData) {
+          $.getJSON(`${cartoQueryLink} SELECT * FROM c73t2gfiumef0fs5de9huq WHERE cartodb_id = ${data.cartodb_id}`, function (commitmentsData) {
             updateMapModal(commitmentsData.rows[0].countryid, 'commitment', countriesData);
           });
           break;
         case 'participants':
-          $.getJSON(`${cartoQueryLink} SELECT * FROM working_group WHERE cartodb_id = ${data.cartodb_id}`, function (participantsData) {
+          $.getJSON(`${cartoQueryLink} SELECT * FROM table_4q9xwd8iroblyagpt_dx5q WHERE cartodb_id = ${data.cartodb_id}`, function (participantsData) {
             document.location.href = `${window.location.origin}${participantsData.rows[0].path}`;
           });
           break;

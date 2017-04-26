@@ -1381,12 +1381,12 @@ function initMapLayer(map, countriesData, layers, cartoQueryLink) {
           });
           break;
         case 'commitment':
-          $.getJSON(cartoQueryLink + ' SELECT * FROM currentcommitments_countries WHERE cartodb_id = ' + data.cartodb_id, function (commitmentsData) {
+          $.getJSON(cartoQueryLink + ' SELECT * FROM c73t2gfiumef0fs5de9huq WHERE cartodb_id = ' + data.cartodb_id, function (commitmentsData) {
             updateMapModal(commitmentsData.rows[0].countryid, 'commitment', countriesData);
           });
           break;
         case 'participants':
-          $.getJSON(cartoQueryLink + ' SELECT * FROM working_group WHERE cartodb_id = ' + data.cartodb_id, function (participantsData) {
+          $.getJSON(cartoQueryLink + ' SELECT * FROM table_4q9xwd8iroblyagpt_dx5q WHERE cartodb_id = ' + data.cartodb_id, function (participantsData) {
             document.location.href = '' + window.location.origin + participantsData.rows[0].path;
           });
           break;
@@ -1538,25 +1538,25 @@ function showCountriesPage() {
         name: 'stories'
       },
       upcomingevent: {
-        sql: 'SELECT now(), country,countryid, count(country),Min(cartodb_id) cartodb_id, Min(date) date, Min(end_date) end_date, Min(start_date) start_date, Min(title) title, st_centroid(the_geom_webmercator) the_geom_webmercator FROM events_country WHERE title IS NOT NULL AND the_geom_webmercator IS NOT NULL AND end_date > now() GROUP BY  the_geom_webmercator, country, countryid ORDER BY country',
+        sql: 'SELECT now(), country,countryid, count(country),Min(cartodb_id) cartodb_id, Min(date) date, Min(end_date) end_date, Min(start_date) start_date, Min(title) title, st_centroid(st_transform(cdb_geocode_admin0_polygon(country), 3857)) the_geom_webmercator FROM ojy344p9szp9irh8dc1uaa WHERE title IS NOT NULL AND end_date > now() GROUP BY  the_geom_webmercator, country, countryid ORDER BY country',
         cartocss: '#layer::z1 {marker-width: 30;marker-fill: #66bc29;marker-fill-opacity: 1;marker-line-width: 0;marker-line-color: #151718;marker-line-opacity: 0.2;marker-allow-overlap:true;marker-comp-op: src;[zoom = 2] {marker-width: 30;}[zoom = 3] {marker-width: 35;}[zoom = 4] {marker-width: 40;}[zoom = 5] {marker-width: 45;}[zoom = 6] {marker-width: 45;}} #layer::z1 {text-name: [count];text-face-name: "DejaVu Sans Book";text-size: 10;text-fill: #FFFFFF;text-label-position-tolerance: 0;text-halo-radius: 0;text-halo-fill: #6F808D;text-dy: 0;text-allow-overlap: true;}',
         interactivity: 'cartodb_id, the_geom_webmercator',
         name: 'event'
       },
       pastevent: {
-        sql: 'SELECT now(), country,countryid, count(country),Min(cartodb_id) cartodb_id, Min(date) date, Min(end_date) end_date, Min(start_date) start_date, Min(title) title, st_centroid(the_geom_webmercator) the_geom_webmercator FROM events_country WHERE title IS NOT NULL AND the_geom_webmercator IS NOT NULL AND end_date < now() GROUP BY  the_geom_webmercator, country, countryid ORDER BY country',
+        sql: 'SELECT now(), country,countryid, count(country),Min(cartodb_id) cartodb_id, Min(date) date, Min(end_date) end_date, Min(start_date) start_date, Min(title) title, st_centroid(st_transform(cdb_geocode_admin0_polygon(country), 3857)) the_geom_webmercator FROM ojy344p9szp9irh8dc1uaa WHERE title IS NOT NULL AND end_date < now() GROUP BY  the_geom_webmercator, country, countryid ORDER BY country',
         cartocss: '#layer::z1 {marker-width: 30;marker-fill: #66bc29;marker-fill-opacity: 1;marker-line-width: 0;marker-line-color: #151718;marker-line-opacity: 0.2;marker-allow-overlap:true;marker-comp-op: src;[zoom = 2] {marker-width: 30;}[zoom = 3] {marker-width: 35;}[zoom = 4] {marker-width: 40;}[zoom = 5] {marker-width: 45;}[zoom = 6] {marker-width: 45;}} #layer::z1 {text-name: [count];text-face-name: "DejaVu Sans Book";text-size: 10;text-fill: #FFFFFF;text-label-position-tolerance: 0;text-halo-radius: 0;text-halo-fill: #6F808D;text-dy: 0;text-allow-overlap: true;}',
         interactivity: 'cartodb_id, the_geom_webmercator, country',
         name: 'event'
       },
       commitment: {
-        sql: 'SELECT country,Min(countryid) countryid, Min(cartodb_id) cartodb_id, count(country), st_centroid(the_geom_webmercator) the_geom_webmercator FROM currentcommitments_countries WHERE country IS NOT NULL AND the_geom_webmercator IS NOT NULL AND LENGTH(country) > 0 GROUP BY the_geom_webmercator, country ORDER BY country DESC',
-        cartocss: '#layer::z1 {marker-width: 30;marker-fill: #ffa200;marker-fill-opacity: 1;marker-line-width: 1;marker-line-color: #4b392f;marker-line-opacity: 0.1;marker-allow-overlap:true;marker-comp-op: src;[zoom = 2] {marker-width: 30;}[zoom = 3] {marker-width: 35;}[zoom = 4] {marker-width: 40;}[zoom = 5] {marker-width:45;} [zoom = 6] {marker-width: 45;}} #layer::z1 {text-name: [count];text-face-name: "DejaVu Sans Book";text-size: 10;text-fill: #FFFFFF;text-label-position-tolerance: 0;text-halo-radius: 0;text-halo-fill: #6F808D;text-dy: 0;text-allow-overlap: true;}',
+        sql: 'SELECT country,Min(countryid) countryid, Min(cartodb_id) cartodb_id, count(country), st_centroid(st_transform(cdb_geocode_admin0_polygon(country), 3857)) the_geom_webmercator FROM c73t2gfiumef0fs5de9huq WHERE country IS NOT NULL AND LENGTH(country) > 0 GROUP BY the_geom_webmercator, country ORDER BY country DESC',
+        cartocss: '#layer{marker-width:7;marker-fill:#FFB927;marker-fill-opacity:.9;marker-allow-overlap:true;marker-line-width:1;marker-line-color:#FFF;marker-line-opacity:1}#layer::labels{text-name:[count];text-face-name:"DejaVu Sans Book";text-size:10;text-fill:#FFF;text-label-position-tolerance:0;text-halo-radius:1;text-halo-fill:#6F808D;text-dy:-10;text-allow-overlap:true;text-placement:point;text-placement-type:dummy}',
         interactivity: 'cartodb_id, the_geom_webmercator, country',
         name: 'commitment'
       },
       participants: {
-        sql: 'SELECT * FROM working_group WHERE show_on_map IS TRUE',
+        sql: 'SELECT * FROM table_4q9xwd8iroblyagpt_dx5q WHERE show_on_map IS TRUE',
         cartocss: '#layer {marker-width: 50;marker-height: 45;marker-fill: #FFB927;marker-fill-opacity: 1;marker-file: url("https://s3.amazonaws.com/com.cartodb.users-assets.production/maki-icons/marker-18.svg");marker-allow-overlap: true;marker-line-width: 1;marker-line-color: #4b392f;marker-line-opacity: 1;marker-comp-op: src-over;[zoom = 2] {marker-width: 30;marker-height: 25;}[zoom = 3] {marker-width: 35;marker-height: 30;}[zoom = 4] {marker-width: 45;marker-height: 40;}[zoom = 5] {marker-width: 50;marker-height: 45;}[zoom = 6] {marker-width: 55;marker-height: 50;}}',
         interactivity: 'cartodb_id, title',
         name: 'participants'
