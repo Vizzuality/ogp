@@ -2386,6 +2386,48 @@ function showPageList() {
 }
 'use strict';
 
+function peopleInvolved(id) {
+  (function ($) {
+    function getPeopleInvolvedStories(idPeople) {
+      var content = '';
+      $.getJSON('/apiJSON/stories?filter[author]=' + idPeople, function (data) {
+        showLoader('.container-content-user');
+        if (data.count !== 0) {
+          data.data.forEach(function (data) {
+            content += '<div class="small-12 column  medium-4 blogs-detail">\n                      <a href="/' + data.alias + '"><div class="contain-text">\n                        <span class="text -white -title-x-small">' + data.label + '</span>\n                        <span class="text -white">' + moment.unix(parseInt(data.created)).format('D MMMM YYYY') + '</span>\n                      </div></a>\n                    </div>';
+          });
+          removeLoader('.container-content-user');
+          $('.containter-people-detail').append(content);
+        } else {
+          removeLoader('.container-content-user');
+          $('.containter-people-detail').append('<div class="small-12 column"><span class="text -white -small-bold">This author has no blogs published</span></div>');
+        }
+      });
+    }
+
+    function getPeopleInvolvedNews(idPeople) {
+      var content = '';
+      $.getJSON('/apiJSON/news?filter[author]=' + idPeople, function (data) {
+        showLoader('.container-content-user-news');
+        if (data.count !== 0) {
+          data.data.forEach(function (data) {
+            content += '<div class="small-12 column  medium-4 news-detail">\n                      <a href="/' + data.alias + '"><div class="contain-text">\n                        <span class="text -white -title-x-small">' + data.label + '</span>\n                        <span class="text -white">' + moment.unix(parseInt(data.created)).format('D MMMM YYYY') + '</span>\n                      </div></a>\n                    </div>';
+          });
+          removeLoader('.container-content-user-news');
+          $('.containter-people-detail-news').append(content);
+        } else {
+          removeLoader('.container-content-user-news');
+          $('.containter-people-detail-news').append('<div class="small-12 column"><span class="text -white -small-bold">This author has no blogs published</span></div>');
+        }
+      });
+    }
+
+    getPeopleInvolvedStories(id);
+    getPeopleInvolvedNews(id);
+  })(jQuery);
+}
+'use strict';
+
 function showGroupResourcesDetail(id) {
   (function ($) {
 
@@ -2456,48 +2498,6 @@ function showResourcesDetail(id) {
     $.getJSON('/apiJSON/resources?filter[id]=' + id, function (data) {
       buildExploreMoreTiles('resources', 'group_resource', data.data[0].group_resource[0]);
     });
-  })(jQuery);
-}
-'use strict';
-
-function peopleInvolved(id) {
-  (function ($) {
-    function getPeopleInvolvedStories(idPeople) {
-      var content = '';
-      $.getJSON('/apiJSON/stories?filter[author]=' + idPeople, function (data) {
-        showLoader('.container-content-user');
-        if (data.count !== 0) {
-          data.data.forEach(function (data) {
-            content += '<div class="small-12 column  medium-4 blogs-detail">\n                      <a href="/' + data.alias + '"><div class="contain-text">\n                        <span class="text -white -title-x-small">' + data.label + '</span>\n                        <span class="text -white">' + moment.unix(parseInt(data.created)).format('D MMMM YYYY') + '</span>\n                      </div></a>\n                    </div>';
-          });
-          removeLoader('.container-content-user');
-          $('.containter-people-detail').append(content);
-        } else {
-          removeLoader('.container-content-user');
-          $('.containter-people-detail').append('<div class="small-12 column"><span class="text -white -small-bold">This author has no blogs published</span></div>');
-        }
-      });
-    }
-
-    function getPeopleInvolvedNews(idPeople) {
-      var content = '';
-      $.getJSON('/apiJSON/news?filter[author]=' + idPeople, function (data) {
-        showLoader('.container-content-user-news');
-        if (data.count !== 0) {
-          data.data.forEach(function (data) {
-            content += '<div class="small-12 column  medium-4 news-detail">\n                      <a href="/' + data.alias + '"><div class="contain-text">\n                        <span class="text -white -title-x-small">' + data.label + '</span>\n                        <span class="text -white">' + moment.unix(parseInt(data.created)).format('D MMMM YYYY') + '</span>\n                      </div></a>\n                    </div>';
-          });
-          removeLoader('.container-content-user-news');
-          $('.containter-people-detail-news').append(content);
-        } else {
-          removeLoader('.container-content-user-news');
-          $('.containter-people-detail-news').append('<div class="small-12 column"><span class="text -white -small-bold">This author has no blogs published</span></div>');
-        }
-      });
-    }
-
-    getPeopleInvolvedStories(id);
-    getPeopleInvolvedNews(id);
   })(jQuery);
 }
 'use strict';
@@ -2573,7 +2573,6 @@ function showStoryDetail(id) {
       }
 
       if (story.tags) {
-        console.log(story.tags);
         $('.tags').append('<strong class="text -bold">Tags: </strong>');
         story.tags.forEach(function (tag, index) {
           if (index === story.tags.length - 1) {
