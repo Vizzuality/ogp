@@ -28,6 +28,12 @@
         color: $color-2;
       }
     }
+
+    .views-field-created-time {
+      span {
+        font-size: $font-size-xxsmall;
+      }
+    }
   }
 
   &.-facebook {
