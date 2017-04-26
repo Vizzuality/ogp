@@ -56,7 +56,7 @@ function initMapLayer(map, countriesData, layers, cartoQueryLink) {
       }
       switch (layer.layers[0].options.name) {
         case 'action':
-          $.getJSON(`${cartoQueryLink} SELECT * FROM bwhyco5uex5gk6l2sjbo4w WHERE cartodb_id = ${data.cartodb_id}`, function (actionPlanData) {
+          $.getJSON(`${cartoQueryLink} SELECT * FROM ggtqckcj2bioeepnuvxoow WHERE cartodb_id = ${data.cartodb_id}`, function (actionPlanData) {
             updateMapModal(actionPlanData.rows[0].nid, 'actionPlan', countriesData);
           });
           break;
@@ -81,12 +81,12 @@ function initMapLayer(map, countriesData, layers, cartoQueryLink) {
           });
           break;
         case 'commitment':
-          $.getJSON(`${cartoQueryLink} SELECT * FROM currentcommitments_countries WHERE cartodb_id = ${data.cartodb_id}`, function (commitmentsData) {
+          $.getJSON(`${cartoQueryLink} SELECT * FROM c73t2gfiumef0fs5de9huq WHERE cartodb_id = ${data.cartodb_id}`, function (commitmentsData) {
             updateMapModal(commitmentsData.rows[0].countryid, 'commitment', countriesData);
           });
           break;
         case 'participants':
-          $.getJSON(`${cartoQueryLink} SELECT * FROM working_group WHERE cartodb_id = ${data.cartodb_id}`, function (participantsData) {
+          $.getJSON(`${cartoQueryLink} SELECT * FROM table_4q9xwd8iroblyagpt_dx5q WHERE cartodb_id = ${data.cartodb_id}`, function (participantsData) {
             document.location.href = `${window.location.origin}${participantsData.rows[0].path}`;
           });
           break;
@@ -199,7 +199,7 @@ function changeCommitmentLayer(){
   removeLayers(layerMap);
   layerMap.setInteraction(true);
   layerMap.createSubLayer({
-    sql: 'SELECT country, Min(cartodb_id) cartodb_id, Min(theme) theme, count(country), st_centroid(the_geom_webmercator) the_geom_webmercator FROM currentcommitments_countries WHERE country IS NOT NULL AND theme LIKE \'%' + theme + '%\' AND the_geom_webmercator IS NOT NULL AND LENGTH(country) > 0 GROUP BY the_geom_webmercator, country ORDER BY country',
+    sql: 'SELECT country, Min(cartodb_id) cartodb_id, Min(theme) theme, count(country), st_centroid(st_transform(cdb_geocode_admin0_polygon(country), 3857)) the_geom_webmercator FROM c73t2gfiumef0fs5de9huq WHERE country IS NOT NULL AND theme LIKE \'%' + theme + '%\' AND LENGTH(country) > 0 GROUP BY the_geom_webmercator, country ORDER BY country',
     cartocss: '#layer::z1 {marker-width: ramp([count], range(25, 45), quantiles(7));marker-fill: #ffa200;marker-fill-opacity: 1;marker-line-width: 1;marker-line-color: #4b392f;marker-line-opacity: 0.1;marker-allow-overlap:true;marker-comp-op: src;[zoom = 2] {marker-width: ramp([count], range(25, 30), quantiles(3));}[zoom = 3] {marker-width: ramp([count], range(30, 35), quantiles(4));}[zoom = 4] {marker-width: ramp([count], range(30, 40), quantiles(5));}[zoom = 5] {marker-width: ramp([count], range(30, 45), quantiles(6));} [zoom = 6] {marker-width: ramp([count], range(35, 45), quantiles(7));}} #layer::z1 {text-name: [count];text-face-name: "DejaVu Sans Book";text-size: 10;text-fill: #FFFFFF;text-label-position-tolerance: 0;text-halo-radius: 0;text-halo-fill: #6F808D;text-dy: 0;text-allow-overlap: true;}',
     interactivity: 'cartodb_id, the_geom_webmercator, country',
     name: 'commitment'
