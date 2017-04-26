@@ -5,10 +5,10 @@ function addBanner(type, id) {
         <div class="l-full-width -blue -short -center">
           <div class="row">
             <div class="column small-12 medium-7 large-9">
-              <h3 class="text -title-small -white">What is your country doing?</h3>
+              <h3 class="text -title-small -white">Have a story worth sharing? </h3>
               <p class="text -white">
-                See how your goverment and civil society are working together to accomplish commitments
-               for the current National Action Plan cycle. Or write your own story.
+                Write your own story and tell us how your government and civil society are working
+                together to accomplish open government commitments.
               </p>
             </div>
             <div class="column small-12 medium-5 large-3 vertical">
