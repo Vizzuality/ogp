@@ -26,7 +26,7 @@
           <?php echo $item->question; ?>
         <?php endif; ?>
     </span>
-    <div class="text -blank -small-bold"><?php echo $new_date_format; ?></div>
+    <div class="text -blank -small-bold date-facebook"><?php echo $new_date_format; ?></div>
     <div class="original-facebook-post">
       <a href="https://www.facebook.com/<?php echo $item->id ?>" target="_blank" class="text  -blue">Go to original post</a>
     </div>
