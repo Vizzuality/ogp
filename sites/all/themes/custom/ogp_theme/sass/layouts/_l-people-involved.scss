@@ -9,10 +9,11 @@
     align-items: center;
 
     .image-profile {
+      position: relative;
       width: 150px;
       height: 200px;
       margin-right: 50px;
-      background-color: $color-2;
+      border: 1px solid $color-2;
       background-repeat: no-repeat;
       background-size: cover;
     }

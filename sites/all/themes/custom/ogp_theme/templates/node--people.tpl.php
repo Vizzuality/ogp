@@ -14,7 +14,9 @@ $field_people_pic = field_get_items('node', $node, 'field_profile_picture');
     <div class="row">
         <div class="column small-12 medium-12 content-header people-header">
           <?php if($field_people_pic) { ?>
-            <div class="image-profile" style="background-image: url('<?php echo $field_people_pic[0]['uri'] ?>')"></div>
+            <div class="image-profile">
+              <div class="c-loader"><div class="loader"></div></div>
+            </div>
           <?php } ?>
           <div>
             <h1 class="text -title"><?php echo $node->title ?></h1>
