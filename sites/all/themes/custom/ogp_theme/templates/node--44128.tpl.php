@@ -6,8 +6,6 @@
 ?>
 <div id="newsEventsPage">
 
-  <?php include(drupal_get_path('theme', 'ogp_theme').'/templates/components/header.tpl.php'); ?>
-
   <!-- Stories page view/block -->
   <div class="l-page l-news-events">
     <div class="row">
@@ -52,7 +50,7 @@
       <div class="row">
         <div class="columns small-12">
           <div class="container-load-more">
-            <span class="c-button -box -large -center column small-12 medium-5 large-3 vertical page-count" data-value="1">More events</span>
+            <span class="c-button -blue -box -large -center column small-12 medium-5 large-3 vertical page-count" data-value="1">More events</span>
           </div>
         </div>
       </div>
@@ -73,14 +71,5 @@
   </div>
 
   <div class="banners-container"></div>
-
-  <div class="l-social-region">
-    <?php
-    $social = block_get_blocks_by_region('contentSocialFeed');
-    print render($social);
-    ?>
-  </div>
-
-  <?php include(drupal_get_path('theme', 'ogp_theme').'/templates/components/footer.tpl.php'); ?>
 
 </div>

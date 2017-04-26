@@ -13,8 +13,6 @@
 ?>
 <div id="irmReportsPage" class="<?php print $classes; ?>">
 
-  <?php include(drupal_get_path('theme', 'ogp_theme').'/templates/components/header.tpl.php'); ?>
-
     <div class="l-page l-irm-reports">
 
       <div class="row">
@@ -99,14 +97,5 @@
   </div>
 
   <div class="banners-container"></div>
-
-  <div class="l-social-region">
-    <?php
-    $social = block_get_blocks_by_region('contentSocialFeed');
-    print render($social);
-    ?>
-  </div>
-
-  <?php include(drupal_get_path('theme', 'ogp_theme').'/templates/components/footer.tpl.php'); ?>
 
 </div>
