@@ -71,7 +71,7 @@ function initMapLayer(map, countriesData, layers, cartoQueryLink) {
           });
           break;
         case 'stories':
-          $.getJSON(`${cartoQueryLink} SELECT * FROM qx43gnom2bzwcwxqladsyg WHERE cartodb_id = ${data.cartodb_id}`, function (storiesData) {
+          $.getJSON(`${cartoQueryLink} SELECT * FROM cajq0nm1zsu0aav_wrnyvg WHERE cartodb_id = ${data.cartodb_id}`, function (storiesData) {
             updateMapModal(storiesData.rows[0].countryid, 'stories', countriesData);
           });
           break;

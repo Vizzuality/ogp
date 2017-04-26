@@ -23,7 +23,7 @@ function showCountriesPage() {
         name: 'people'
       },
       stories: {
-        sql: 'SELECT numberstories,country, cartodb_id, st_centroid(the_geom_webmercator) the_geom_webmercator FROM qx43gnom2bzwcwxqladsyg WHERE the_geom_webmercator IS NOT NULL',
+        sql: 'SELECT numberstories,country, cartodb_id, st_centroid(the_geom_webmercator) the_geom_webmercator FROM cajq0nm1zsu0aav_wrnyvg WHERE the_geom_webmercator IS NOT NULL',
         cartocss: '#layer::z1{marker-width: 50;marker-height: 45;marker-fill: #0099ff;marker-fill-opacity: 1;marker-file:url("https://s3.amazonaws.com/com.cartodb.users-assets.production/maki-icons/marker-18.svg");marker-allow-overlap: true;marker-line-width: 1;marker-line-color: #4b392f;marker-line-opacity: 1;marker-comp-op: src-over;[zoom = 2] {marker-width: 50;marker-height: 45;}[zoom = 3] {marker-width: 55;marker-height: 50;}[zoom = 4] {marker-width: 60;marker-height: 55;}[zoom = 5] {marker-width: 65;marker-height: 60;}[zoom = 6] {marker-width: 70;marker-height: 65;}} #layer::z1{text-name: [numberstories];text-face-name: "DejaVu Sans Book";text-size: 10;text-fill: #FFFFFF;text-label-position-tolerance: 0;text-halo-radius: 0;text-halo-fill: #6F808D;text-dy: -0.9;text-allow-overlap: true;text-placement: point;text-placement-type: simple;text-comp-op: screen;}',
         interactivity: 'numberstories, country, cartodb_id, the_geom_webmercator',
         name: 'stories'

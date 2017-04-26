@@ -88,7 +88,6 @@ function setDataToModal(id, html) {
 }
 
 function pushDefaultModal(id, query, countryData, dataLabel, buttonText, buttonLink, modalType, secondData) {
-
   $.getJSON(`apiJSON/${query}`, function (data) {
     let dataInfo = '';
     let id_people= [];
@@ -243,7 +242,7 @@ function setMapModalContent(id, type, countryId, countriesData) {
         });
         break;
       case 'stories':
-        pushDefaultModal(id, `stories?filter[country]=${countryId}`, countryData, 'stories', 'latest stories', 'stories', 'slider', '');
+        pushDefaultModal(id, `stories?filter[country]=${countryId}&sort=-created`, countryData, 'stories', 'latest stories', 'stories', 'slider', '');
         break;
       default:
         break;
