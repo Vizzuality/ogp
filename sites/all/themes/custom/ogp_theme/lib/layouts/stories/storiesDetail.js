@@ -53,6 +53,7 @@ function showStoryDetail(id) {
       }
 
       if (story.tags) {
+        console.log(story.tags)
         $('.tags').append('<strong class="text -bold">Tags: </strong>');
         story.tags.forEach(function(tag, index) {
           if (index === story.tags.length - 1) {
