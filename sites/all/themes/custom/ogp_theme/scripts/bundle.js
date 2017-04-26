@@ -967,36 +967,6 @@ function addDots(string, limit) {
 }
 'use strict';
 
-function showAboutPages() {
-  (function ($) {
-
-    var tabsContainer = $('.tabs-container');
-    var containerInfo = $('#containerInfo');
-
-    // custom callback for tabs component
-    var onChangeAboutPageTab = function onChangeAboutPageTab(id, label) {
-      $('.tab-content').addClass('-hidden');
-      $('.' + id).removeClass('-hidden');
-    };
-
-    function initAboutTabs(onChange) {
-      initTabs();
-      setTabListeners(onChange);
-    }
-
-    showLoader('#containerInfo');
-    $.getJSON('/apiJSON/page?filter[page_category]=2925', function (data) {
-      buildTabs(data.data, tabsContainer, onChangeAboutPageTab);
-      initAboutTabs(onChangeAboutPageTab);
-      for (var i = 0; i < data.data.length; i += 1) {
-        containerInfo.append('\n        <div class="tab-content -hidden ' + data.data[i].id + '">\n          <h3 class="text -section-title">' + data.data[i].label + '</h3>\n          <div class="text -body-content">\n            <p class="text -body-content">\n              ' + data.data[i].body.value + '\n            </p>\n          </div>\n        </div>\n      ');
-      }
-      removeLoader('#containerInfo', null, true);
-    });
-  })(jQuery);
-}
-'use strict';
-
 function showCurrentCommitmentDetail(id) {
   (function ($) {
 
@@ -1057,6 +1027,36 @@ function showStarredCommitmentDetail(id) {
   (function ($) {
     $('#theme-menu').addClass('active');
     buildExploreMoreTiles('starredcommitments');
+  })(jQuery);
+}
+'use strict';
+
+function showAboutPages() {
+  (function ($) {
+
+    var tabsContainer = $('.tabs-container');
+    var containerInfo = $('#containerInfo');
+
+    // custom callback for tabs component
+    var onChangeAboutPageTab = function onChangeAboutPageTab(id, label) {
+      $('.tab-content').addClass('-hidden');
+      $('.' + id).removeClass('-hidden');
+    };
+
+    function initAboutTabs(onChange) {
+      initTabs();
+      setTabListeners(onChange);
+    }
+
+    showLoader('#containerInfo');
+    $.getJSON('/apiJSON/page?filter[page_category]=2925', function (data) {
+      buildTabs(data.data, tabsContainer, onChangeAboutPageTab);
+      initAboutTabs(onChangeAboutPageTab);
+      for (var i = 0; i < data.data.length; i += 1) {
+        containerInfo.append('\n        <div class="tab-content -hidden ' + data.data[i].id + '">\n          <h3 class="text -section-title">' + data.data[i].label + '</h3>\n          <div class="text -body-content">\n            <p class="text -body-content">\n              ' + data.data[i].body.value + '\n            </p>\n          </div>\n        </div>\n      ');
+      }
+      removeLoader('#containerInfo', null, true);
+    });
   })(jQuery);
 }
 'use strict';
@@ -1356,7 +1356,7 @@ function initMapLayer(map, countriesData, layers, cartoQueryLink) {
       }
       switch (layer.layers[0].options.name) {
         case 'action':
-          $.getJSON(cartoQueryLink + ' SELECT * FROM bwhyco5uex5gk6l2sjbo4w WHERE cartodb_id = ' + data.cartodb_id, function (actionPlanData) {
+          $.getJSON(cartoQueryLink + ' SELECT * FROM ggtqckcj2bioeepnuvxoow WHERE cartodb_id = ' + data.cartodb_id, function (actionPlanData) {
             updateMapModal(actionPlanData.rows[0].nid, 'actionPlan', countriesData);
           });
           break;
@@ -1514,7 +1514,7 @@ function showCountriesPage() {
     var cartoQueryLink = 'https://jmonaco.carto.com/api/v2/sql?q=';
     var layers = {
       action: {
-        sql: 'SELECT * FROM bwhyco5uex5gk6l2sjbo4w',
+        sql: 'SELECT * FROM ggtqckcj2bioeepnuvxoow',
         cartocss: '#layer{polygon-fill:ramp([actionplan],(#c30,#c30,#2d4f00,#66bc29,#2d4f00,#2d4f00,#2d4f00,#66bc29,#2d4f00),("","Inactive","Implementing 1st action plan and Developing 2nd action plan","Developing action plan","Implementing 2nd action plan","Implementing 1st action plan","Developing 1st Action Plan","Implementing action plan"),"=");line-width:1;line-color:#FFF;line-opacity:.5}',
         interactivity: 'the_geom, nid, country, cartodb_id',
         name: 'action'
@@ -1952,7 +1952,7 @@ function showHomePage() {
       user_name: 'jmonaco',
       type: 'cartodb',
       sublayers: [{
-        sql: 'SELECT * FROM bwhyco5uex5gk6l2sjbo4w',
+        sql: 'SELECT * FROM ggtqckcj2bioeepnuvxoow',
         cartocss: '#layer{polygon-fill:ramp([actionplan],(#c30,#c30,#2d4f00,#66bc29,#2d4f00,#2d4f00,#2d4f00,#66bc29,#2d4f00),("","Inactive","Implementing 1st action plan and Developing 2nd action plan","Developing action plan","Implementing 2nd action plan","Implementing 1st action plan","Developing 1st Action Plan","Implementing action plan"),"=");line-width:1;line-color:#FFF;line-opacity:.5}',
         interactivity: 'the_geom, nid, country, cartodb_id'
       }]

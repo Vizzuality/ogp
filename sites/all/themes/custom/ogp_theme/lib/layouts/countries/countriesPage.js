@@ -5,7 +5,7 @@ function showCountriesPage() {
     const cartoQueryLink = 'https://jmonaco.carto.com/api/v2/sql?q=';
     const layers = {
       action: {
-        sql: 'SELECT * FROM bwhyco5uex5gk6l2sjbo4w',
+        sql: 'SELECT * FROM ggtqckcj2bioeepnuvxoow',
         cartocss: '#layer{polygon-fill:ramp([actionplan],(#c30,#c30,#2d4f00,#66bc29,#2d4f00,#2d4f00,#2d4f00,#66bc29,#2d4f00),("","Inactive","Implementing 1st action plan and Developing 2nd action plan","Developing action plan","Implementing 2nd action plan","Implementing 1st action plan","Developing 1st Action Plan","Implementing action plan"),"=");line-width:1;line-color:#FFF;line-opacity:.5}',
         interactivity: 'the_geom, nid, country, cartodb_id',
         name: 'action'

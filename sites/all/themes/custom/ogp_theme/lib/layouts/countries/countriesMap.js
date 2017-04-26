@@ -56,7 +56,7 @@ function initMapLayer(map, countriesData, layers, cartoQueryLink) {
       }
       switch (layer.layers[0].options.name) {
         case 'action':
-          $.getJSON(`${cartoQueryLink} SELECT * FROM bwhyco5uex5gk6l2sjbo4w WHERE cartodb_id = ${data.cartodb_id}`, function (actionPlanData) {
+          $.getJSON(`${cartoQueryLink} SELECT * FROM ggtqckcj2bioeepnuvxoow WHERE cartodb_id = ${data.cartodb_id}`, function (actionPlanData) {
             updateMapModal(actionPlanData.rows[0].nid, 'actionPlan', countriesData);
           });
           break;
