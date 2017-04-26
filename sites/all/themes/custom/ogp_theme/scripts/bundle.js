@@ -226,6 +226,85 @@ function getAbsolutePath() {
 })(jQuery);
 'use strict';
 
+function convertPostDate(date, format) {
+  var dateString = new Date(date * 1e3);
+  var dd = dateString.getDate();
+  var mm = dateString.getMonth() + 1; //January is 0!
+  var yyyy = dateString.getFullYear();
+
+  if (format === 'dd/mm/yyyy') {
+    if (dd < 10) {
+      dd = '0' + dd;
+    }
+
+    if (mm < 10) {
+      mm = '0' + mm;
+    }
+  }
+
+  dateString = dd + '/' + mm + '/' + yyyy;
+
+  return dateString;
+}
+
+function convertEventDate(date) {
+  var myDate = moment(date, 'YYYY-M-DD HH:mm:ss');
+  return myDate.format('MMMM D, YYYY - hh:mm');
+}
+
+function dateDiff(date) {
+  return moment().diff(date, 'days');
+}
+'use strict';
+
+function smoothScroll() {
+  $('a[href*="#"]:not([href="#"])').click(function () {
+    if (location.pathname.replace(/^\//, '') == this.pathname.replace(/^\//, '') && location.hostname == this.hostname) {
+      var target = $(this.hash);
+      target = target.length ? target : $('[name=' + this.hash.slice(1) + ']');
+      if (target.length) {
+        $('html, body').animate({
+          scrollTop: target.offset().top
+        }, 500);
+        return false;
+      }
+    }
+  });
+}
+'use strict';
+
+function getAuthors(data) {
+  var authorString = '';
+  if (data[0]) {
+    data.forEach(function (author, index) {
+      if (index === data.length - 1) {
+        authorString += '' + author.label;
+      } else {
+        authorString += author.label + ', ';
+      }
+    });
+  }
+  return authorString;
+}
+
+function stripEmptyStrings() {
+  $('p').each(function () {
+    var $this = $(this);
+    if ($this.html().replace(/\s|&nbsp;/g, '').length == 0) $this.remove();
+  });
+}
+'use strict';
+
+function addDots(string, limit) {
+  var dots = '...';
+  if (string.length > limit) {
+    string = string.substring(0, limit) + dots;
+  }
+
+  return string;
+}
+'use strict';
+
 function aboutMenu() {
   (function ($) {
 
@@ -890,85 +969,6 @@ function twitterLink() {
     var idStatus = $('.value-status').text();
     $('.link-twitter').attr('href', 'https://twitter.com/opengovpart/status/' + idStatus);
   })(jQuery);
-}
-'use strict';
-
-function convertPostDate(date, format) {
-  var dateString = new Date(date * 1e3);
-  var dd = dateString.getDate();
-  var mm = dateString.getMonth() + 1; //January is 0!
-  var yyyy = dateString.getFullYear();
-
-  if (format === 'dd/mm/yyyy') {
-    if (dd < 10) {
-      dd = '0' + dd;
-    }
-
-    if (mm < 10) {
-      mm = '0' + mm;
-    }
-  }
-
-  dateString = dd + '/' + mm + '/' + yyyy;
-
-  return dateString;
-}
-
-function convertEventDate(date) {
-  var myDate = moment(date, 'YYYY-M-DD HH:mm:ss');
-  return myDate.format('MMMM D, YYYY - hh:mm');
-}
-
-function dateDiff(date) {
-  return moment().diff(date, 'days');
-}
-'use strict';
-
-function smoothScroll() {
-  $('a[href*="#"]:not([href="#"])').click(function () {
-    if (location.pathname.replace(/^\//, '') == this.pathname.replace(/^\//, '') && location.hostname == this.hostname) {
-      var target = $(this.hash);
-      target = target.length ? target : $('[name=' + this.hash.slice(1) + ']');
-      if (target.length) {
-        $('html, body').animate({
-          scrollTop: target.offset().top
-        }, 500);
-        return false;
-      }
-    }
-  });
-}
-'use strict';
-
-function getAuthors(data) {
-  var authorString = '';
-  if (data[0]) {
-    data.forEach(function (author, index) {
-      if (index === data.length - 1) {
-        authorString += '' + author.label;
-      } else {
-        authorString += author.label + ', ';
-      }
-    });
-  }
-  return authorString;
-}
-
-function stripEmptyStrings() {
-  $('p').each(function () {
-    var $this = $(this);
-    if ($this.html().replace(/\s|&nbsp;/g, '').length == 0) $this.remove();
-  });
-}
-'use strict';
-
-function addDots(string, limit) {
-  var dots = '...';
-  if (string.length > limit) {
-    string = string.substring(0, limit) + dots;
-  }
-
-  return string;
 }
 'use strict';
 
@@ -2404,7 +2404,7 @@ function peopleInvolved(id) {
           $('.containter-people-detail').append(content);
         } else {
           removeLoader('.container-content-user');
-          $('.containter-people-detail').append('<div class="small-12 column"><span class="text -white -small-bold">This author has no blogs published</span></div>');
+          $('.containter-people-detail').append('<div class="small-12 column"><span class="text -white -small-bold">No results found</span></div>');
         }
       });
     }
@@ -2421,7 +2421,7 @@ function peopleInvolved(id) {
           $('.containter-people-detail-news').append(content);
         } else {
           removeLoader('.container-content-user-news');
-          $('.containter-people-detail-news').append('<div class="small-12 column"><span class="text -white -small-bold">This author has no blogs published</span></div>');
+          $('.containter-people-detail-news').append('<div class="small-12 column"><span class="text -white -small-bold">No results found</span></div>');
         }
       });
     }
