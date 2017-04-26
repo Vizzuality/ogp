@@ -972,36 +972,6 @@ function addDots(string, limit) {
 }
 'use strict';
 
-function showAboutPages() {
-  (function ($) {
-
-    var tabsContainer = $('.tabs-container');
-    var containerInfo = $('#containerInfo');
-
-    // custom callback for tabs component
-    var onChangeAboutPageTab = function onChangeAboutPageTab(id, label) {
-      $('.tab-content').addClass('-hidden');
-      $('.' + id).removeClass('-hidden');
-    };
-
-    function initAboutTabs(onChange) {
-      initTabs();
-      setTabListeners(onChange);
-    }
-
-    showLoader('#containerInfo');
-    $.getJSON('/apiJSON/page?filter[page_category]=2925', function (data) {
-      buildTabs(data.data, tabsContainer, onChangeAboutPageTab);
-      initAboutTabs(onChangeAboutPageTab);
-      for (var i = 0; i < data.data.length; i += 1) {
-        containerInfo.append('\n        <div class="tab-content -hidden ' + data.data[i].id + '">\n          <h3 class="text -section-title">' + data.data[i].label + '</h3>\n          <div class="text -body-content">\n            <p class="text -body-content">\n              ' + data.data[i].body.value + '\n            </p>\n          </div>\n        </div>\n      ');
-      }
-      removeLoader('#containerInfo', null, true);
-    });
-  })(jQuery);
-}
-'use strict';
-
 function showCurrentCommitmentDetail(id) {
   (function ($) {
 
@@ -1775,6 +1745,36 @@ function showDocumentResourcePage() {
 }
 'use strict';
 
+function showAboutPages() {
+  (function ($) {
+
+    var tabsContainer = $('.tabs-container');
+    var containerInfo = $('#containerInfo');
+
+    // custom callback for tabs component
+    var onChangeAboutPageTab = function onChangeAboutPageTab(id, label) {
+      $('.tab-content').addClass('-hidden');
+      $('.' + id).removeClass('-hidden');
+    };
+
+    function initAboutTabs(onChange) {
+      initTabs();
+      setTabListeners(onChange);
+    }
+
+    showLoader('#containerInfo');
+    $.getJSON('/apiJSON/page?filter[page_category]=2925', function (data) {
+      buildTabs(data.data, tabsContainer, onChangeAboutPageTab);
+      initAboutTabs(onChangeAboutPageTab);
+      for (var i = 0; i < data.data.length; i += 1) {
+        containerInfo.append('\n        <div class="tab-content -hidden ' + data.data[i].id + '">\n          <h3 class="text -section-title">' + data.data[i].label + '</h3>\n          <div class="text -body-content">\n            <p class="text -body-content">\n              ' + data.data[i].body.value + '\n            </p>\n          </div>\n        </div>\n      ');
+      }
+      removeLoader('#containerInfo', null, true);
+    });
+  })(jQuery);
+}
+'use strict';
+
 function showNewsEventsPage() {
   (function ($) {
     // cache
@@ -2426,8 +2426,17 @@ function peopleInvolved(id) {
       });
     }
 
+    function getPicture(idPeople) {
+      $.getJSON('/apiJSON/people/' + idPeople + '?fields=image', function (data) {
+        showLoader('.image-profile');
+        $('.image-profile').css('background-image', 'url(' + data.data[0].image + ')');
+        removeLoader('.image-profile');
+      });
+    }
+
     getPeopleInvolvedStories(id);
     getPeopleInvolvedNews(id);
+    getPicture(id);
   })(jQuery);
 }
 'use strict';
@@ -2761,13 +2770,10 @@ function showStoriesSubmitPage(id) {
     });
   })(jQuery);
 }
-'use strict';
+"use strict";
 
 function tagsPage() {
-  (function ($) {
-
-    console.log('hello');
-  })(jQuery);
+  (function ($) {})(jQuery);
 }
 'use strict';
 

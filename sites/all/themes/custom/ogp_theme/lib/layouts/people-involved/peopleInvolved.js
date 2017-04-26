@@ -44,7 +44,16 @@ function peopleInvolved(id) {
       });
     }
 
+    function getPicture(idPeople) {
+      $.getJSON(`/apiJSON/people/${idPeople}?fields=image`, function (data) {
+        showLoader('.image-profile');
+        $('.image-profile').css('background-image', `url(${data.data[0].image})`);
+        removeLoader('.image-profile');
+      });
+    }
+
     getPeopleInvolvedStories(id);
     getPeopleInvolvedNews(id);
+    getPicture(id);
   })(jQuery);
 }

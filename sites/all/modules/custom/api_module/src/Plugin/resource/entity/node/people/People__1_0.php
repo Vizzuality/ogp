@@ -51,8 +51,11 @@ class People__1_0 extends ResourceNode{
       'property' => 'body',
     );
 
-    $public_fields['picture'] = array(
+    $public_fields['image'] = array(
       'property' => 'field_profile_picture',
+      'process_callbacks' => array(
+        array($this, 'getStyleUrl')
+      )
     );
 
     $public_fields['alias'] = array(
@@ -67,5 +70,10 @@ class People__1_0 extends ResourceNode{
 
   public function getAlias($value) {
     return drupal_get_path_alias('node/' . $value);
+  }
+
+  public function getStyleUrl($image) {
+    $image_path = file_create_url($image['uri']);
+    return $image_path;
   }
 }
