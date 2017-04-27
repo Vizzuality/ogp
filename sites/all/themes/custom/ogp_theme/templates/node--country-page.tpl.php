@@ -96,7 +96,7 @@ $reviewed_body = field_get_items('node', $reviewed, 'body')[0]['value'];
         <div class="l-section" id="resourceDocsContainer">
           <div id="actionPlansLinks" class="row document-panel">
             <div class="columns small-12 medium-6">
-              <h3 class="text -section-title">Action plans</h3>
+              <h3 class="text -section-title">National Action Plans</h3>
             </div>
             <div class="columns small-12 medium-6">
               <select class="years-filter -hidden">
