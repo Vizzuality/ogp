@@ -23,9 +23,9 @@ function addBanner(type, id) {
         <div class="l-full-width -black -short -center">
           <div class="row">
             <div class="column small-12 medium-7 large-9">
-              <h3 class="text -title-small -white">OGP’s monthly newsletter</h3>
+              <h3 class="text -title-small -white">OGP Newsletters</h3>
               <p class="text -white">
-                Helps goverments, civil society actors and concerned citizens stay informed
+                Sign-ups for OGP in the News, the Gazette, the Civil Society mailing list, and our monthly highlights.
               </p>
             </div>
             <div class="column small-12 medium-5 large-3 vertical">
