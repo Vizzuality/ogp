@@ -972,36 +972,6 @@ function addDots(string, limit) {
 }
 'use strict';
 
-function showAboutPages() {
-  (function ($) {
-
-    var tabsContainer = $('.tabs-container');
-    var containerInfo = $('#containerInfo');
-
-    // custom callback for tabs component
-    var onChangeAboutPageTab = function onChangeAboutPageTab(id, label) {
-      $('.tab-content').addClass('-hidden');
-      $('.' + id).removeClass('-hidden');
-    };
-
-    function initAboutTabs(onChange) {
-      initTabs();
-      setTabListeners(onChange);
-    }
-
-    showLoader('#containerInfo');
-    $.getJSON('/apiJSON/page?filter[page_category]=2925', function (data) {
-      buildTabs(data.data, tabsContainer, onChangeAboutPageTab);
-      initAboutTabs(onChangeAboutPageTab);
-      for (var i = 0; i < data.data.length; i += 1) {
-        containerInfo.append('\n        <div class="tab-content -hidden ' + data.data[i].id + '">\n          <h3 class="text -section-title">' + data.data[i].label + '</h3>\n          <div class="text -body-content">\n            <p class="text -body-content">\n              ' + data.data[i].body.value + '\n            </p>\n          </div>\n        </div>\n      ');
-      }
-      removeLoader('#containerInfo', null, true);
-    });
-  })(jQuery);
-}
-'use strict';
-
 function showCurrentCommitmentDetail(id) {
   (function ($) {
 
@@ -1753,6 +1723,172 @@ function initCountryTabs(onChangeCountryTab) {
 }
 'use strict';
 
+function showHomePage() {
+  (function ($) {
+
+    var map = L.map('maphome', {
+      zoomControl: false,
+      center: [35, -60],
+      zoom: 2,
+      maxZoom: 6,
+      minZoom: 2,
+      scrollWheelZoom: false
+    });
+    var over = false;
+
+    $('#in').click(function () {
+      map.setZoom(map.getZoom() + 1);
+    });
+
+    $('#out').click(function () {
+      map.setZoom(map.getZoom() - 1);
+    });
+
+    var basemap = L.tileLayer('http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png', {
+      attribution: ''
+    }).addTo(map);
+
+    cartodb.createLayer(map, {
+      user_name: 'jmonaco',
+      type: 'cartodb',
+      sublayers: [{
+        sql: 'SELECT * FROM bwhyco5uex5gk6l2sjbo4w',
+        cartocss: '#layer{polygon-fill:ramp([actionplan],(#c30,#c30,#2d4f00,#66bc29,#2d4f00,#2d4f00,#2d4f00,#66bc29,#2d4f00),("","Inactive","Implementing 1st action plan and Developing 2nd action plan","Developing action plan","Implementing 2nd action plan","Implementing 1st action plan","Developing 1st Action Plan","Implementing action plan"),"=");line-width:1;line-color:#FFF;line-opacity:.5}',
+        interactivity: 'the_geom, nid, country, cartodb_id'
+      }]
+    }).addTo(map).done(function (layer) {
+      layer.setInteraction(true);
+      var hovers = [];
+      layer.on('featureClick', function (e, latlng, pos, data) {
+        $.getJSON('https://jmonaco.carto.com/api/v2/sql?q= SELECT * FROM countries_homepage WHERE cartodb_id =  ' + data.cartodb_id, function (datapath) {
+          document.location.href = '' + window.location.origin + datapath.rows[0].path;
+        });
+      });
+
+      layer.bind('featureOver', function (e, latlon, pxPos, data, layers) {
+        hovers[layers] = 1;
+        if (_.any(hovers)) {
+          $('#maphome').css('cursor', 'pointer');
+        }
+      });
+
+      layer.bind('featureOut', function (m, layers) {
+        hovers[layers] = 0;
+        if (!_.any(hovers)) {
+          $('#maphome').css('cursor', 'auto');
+        }
+      });
+
+      layer.on('featureOver', function (e, latlng, pos, data) {
+        if (over === false) {
+          $('body').append('<div class="tooltip" style="padding: 5px; position: absolute; z-index: 10; background-color: rgba(255, 255, 255, 1); top:' + (e.pageY - 25) + 'px; left:' + (e.pageX + 25) + 'px">' + data.country + '</div>');
+          over = true;
+        } else {
+          $('.tooltip').html(data.country);
+          $('.tooltip').css('top', e.pageY - 25 + 'px');
+          $('.tooltip').css('left', e.pageX + 25 + 'px');
+        }
+      });
+
+      layer.on('featureOut', function (e, latlng, pos, data) {
+        over = false;
+        $('.tooltip').remove();
+      });
+      map.invalidateSize();
+    });
+  })(jQuery);
+}
+'use strict';
+
+function showSliderHomePage() {
+  (function ($) {
+
+    function getSlideConten(dataContent, dataSlide, imageContent) {
+      var textLink = 'Explore the content';
+      var imageSlide = void 0;
+      if (dataSlide.text_link) {
+        textLink = '' + dataSlide.text_link;
+      }
+      if (imageContent) {
+        if (dataSlide.image) {
+          imageSlide = '<div class="c-slider-home-page slider-image-0 ' + (dataSlide.image ? '-image' : '') + '">';
+        } else {
+          imageSlide = '<div class="c-slider-home-page slider-image-0 ' + (dataContent.image ? '-image' : '') + '">';
+        }
+      } else {
+        imageSlide = '<div class="c-slider-home-page slider-image-0 ' + (dataSlide.image ? '-image' : '') + '">';
+      }
+      var slideContent = '\n        ' + imageSlide + '\n          <div class="row">\n            <div class="column small-12 medium-9">\n              <div class="container slider-0">\n                <div>\n                  <h1 class="title-text -white">\n                    <a href="' + dataSlide.alias + '">' + dataContent.label + '</a>\n                  </h1>\n                  <div class="small-12 medium-5 large-4">\n                    <a class="c-button -box" href="' + dataSlide.alias + '">' + textLink + '</a>\n                  <div>\n                </div>\n              </div>\n            </div>\n          </div>\n        </div>\n      ';
+      return slideContent;
+    }
+
+    $.getJSON('/apiJSON/slider_home_page', function (stories) {
+      showLoader('.slider-cover-home');
+      for (var i = 0; i < stories.count; i += 1) {
+        if (stories.data[i].show) {
+          var slide = '';
+
+          if (stories.data[i].information_current) {
+            slide = getSlideConten(stories.data[i].information_current, stories.data[i], false);
+          }
+
+          if (stories.data[i].information_event) {
+            slide = getSlideConten(stories.data[i].information_event, stories.data[i], false);
+          }
+
+          if (stories.data[i].information_irm) {
+            slide = getSlideConten(stories.data[i].information_irm, stories.data[i], false);
+          }
+
+          if (stories.data[i].information_model) {
+            slide = getSlideConten(stories.data[i].information_model, stories.data[i], false);
+          }
+
+          if (stories.data[i].information_news) {
+            slide = getSlideConten(stories.data[i].information_news, stories.data[i], false);
+          }
+
+          if (stories.data[i].information_page) {
+            slide = getSlideConten(stories.data[i].information_page, stories.data[i], false);
+          }
+
+          if (stories.data[i].information_starred) {
+            slide = getSlideConten(stories.data[i].information_starred, stories.data[i], false);
+          }
+
+          if (stories.data[i].information_stories) {
+            slide = getSlideConten(stories.data[i].information_stories, stories.data[i], true);
+          }
+
+          if (stories.data[i].information_working) {
+            slide = getSlideConten(stories.data[i].information_working, stories.data[i], false);
+          }
+
+          if (stories.data[i].information_working_page) {
+            slide = getSlideConten(stories.data[i].information_working_page, stories.data[i], false);
+          }
+
+          $('.slider-cover-home').append(slide);
+        }
+        if (stories.data[i].image) {
+          $('.slider-image-' + i).css('background-image', 'url(' + stories.data[i].image + ')');
+        }
+      }
+      removeLoader('.slider-cover-home');
+      $('.slider-cover-home').slick({
+        dots: true,
+        arrows: false,
+        speed: 500,
+        fade: true,
+        cssEase: 'linear',
+        dotsClass: 'dots-slider',
+        adaptiveHeight: true
+      });
+    });
+  })(jQuery);
+}
+'use strict';
+
 function showDocumentResourcePage() {
   (function ($) {
     // cache dom
@@ -1771,6 +1907,45 @@ function showDocumentResourcePage() {
         showNoResults();
       }
     });
+  })(jQuery);
+}
+'use strict';
+
+function showAboutPages() {
+  (function ($) {
+
+    var tabsContainer = $('.tabs-container');
+    var containerInfo = $('#containerInfo');
+
+    // custom callback for tabs component
+    var onChangeAboutPageTab = function onChangeAboutPageTab(id, label) {
+      $('.tab-content').addClass('-hidden');
+      $('.' + id).removeClass('-hidden');
+    };
+
+    function initAboutTabs(onChange) {
+      initTabs();
+      setTabListeners(onChange);
+    }
+
+    showLoader('#containerInfo');
+    $.getJSON('/apiJSON/page?filter[page_category]=2925', function (data) {
+      buildTabs(data.data, tabsContainer, onChangeAboutPageTab);
+      initAboutTabs(onChangeAboutPageTab);
+      for (var i = 0; i < data.data.length; i += 1) {
+        containerInfo.append('\n        <div class="tab-content -hidden ' + data.data[i].id + '">\n          <h3 class="text -section-title">' + data.data[i].label + '</h3>\n          <div class="text -body-content">\n            <p class="text -body-content">\n              ' + data.data[i].body.value + '\n            </p>\n          </div>\n        </div>\n      ');
+      }
+      removeLoader('#containerInfo', null, true);
+    });
+  })(jQuery);
+}
+'use strict';
+
+function loginPage() {
+  (function ($) {
+
+    $('#edit-name').attr('placeholder', 'Enter your Open Government Partnership username');
+    $('#edit-pass').attr('placeholder', 'Enter the password that accompanies your username.');
   })(jQuery);
 }
 'use strict';
@@ -1868,7 +2043,7 @@ function showNewsEventsPage() {
     function showEvents(country, type, page) {
       var activeCountry = parseInt(country) > 0 ? 'filter[country]=' + country + '&' : '';
       var activeType = parseInt(type) > 0 ? 'filter[category]=' + type + '&' : '';
-      var activeFilters = '' + activeCountry + activeType + '&page=' + page;
+      var activeFilters = '' + activeCountry + activeType + '&page[number]=' + page + '&page[size]=8';
       $.getJSON('/apiJSON/events?' + activeFilters + '&sort=-date', function (events) {
         totalPagesEvents = getPageCount(events.count, 4);
         if (events.data.length > 0) {
@@ -1893,11 +2068,11 @@ function showNewsEventsPage() {
       var activeCountry = parseInt(country) > 0 ? 'filter[country]=' + country + '&' : '';
       var activeType = parseInt(type) > 0 ? 'filter[category]=' + type + '&' : '';
       var activeFilters = '' + activeCountry + activeType + '&page=' + page;
-      $.getJSON('/apiJSON/news?' + activeFilters + '&sort=-date&range=4', function (news) {
+      $.getJSON('/apiJSON/news?' + activeFilters + '&sort=-date', function (news) {
         if (news.data.length > 0) {
           totalPages = getPageCount(news.count, 4);
           if (page === 1) {
-            $.getJSON('/apiJSON/news?sort=-date&range=4', function (highlightedNews) {
+            $.getJSON('/apiJSON/news?sort=-date', function (highlightedNews) {
               buildHighlightedEvent(highlightedNews.data[0]);
               appendTilesDetailedNews(news.data, newsContainer, 2);
               initPagination(page, totalPages, 'newsEventsPage');
@@ -2068,11 +2243,76 @@ function showIrmReports() {
 }
 'use strict';
 
-function loginPage() {
+function showGroupResourcesDetail(id) {
   (function ($) {
 
-    $('#edit-name').attr('placeholder', 'Enter your Open Government Partnership username');
-    $('#edit-pass').attr('placeholder', 'Enter the password that accompanies your username.');
+    // cache dom
+    var currentNode = $('#groupResourcesDetail').data('node');
+    var tabsContainer = $('#groupResourcesTabs .tabs-container');
+    var searchContainer = $('#resourceTilesSearch input');
+    var tilesContainer = $('#tilesContainer');
+    var searchEl = $('.c-tile');
+    var searchText = $('.c-tile .tile');
+
+    // custom callback for tabs component
+    var onChangeTab = function onChangeTab(sub_group_id, label) {
+      hideNoResults('#noResultsContainer');
+      showLoader('.l-section');
+      tilesContainer.html('');
+      searchContainer.val('');
+      var filterGroup = currentNode === 2920 ? '' : 'filter[group_resource]=' + currentNode + '&';
+      $.getJSON('/apiJSON/resources?' + filterGroup + 'filter[sub_group]=' + sub_group_id + '&sort=-post_highlighted', function (data) {
+        if (data.data.length) {
+          appendTiles(data.data, tilesContainer, 4);
+        } else {
+          showNoResults('#noResultsContainer', 'No resources available', 'tall', 'grey', 'xxlarge', 'blue');
+        }
+        removeLoader('.l-section', null, true);
+      });
+      setSearchPlaceholder(searchContainer, label);
+    };
+
+    // fetch content and append
+    $.getJSON('/apiJSON/sub_group_resource', function (data) {
+      buildTabs(data.data, tabsContainer, onChangeTab);
+      setSearchPlaceholder(searchContainer, data.data[0].label);
+      setSearchListeners(searchEl, searchText);
+      var filterGroup = currentNode === 2920 ? '' : 'filter[group_resource]=' + currentNode + '&';
+      $.getJSON('/apiJSON/resources?' + filterGroup + 'filter[sub_group]=' + data.data[0].id + '&sort=-post_highlighted', function (resources) {
+        if (resources.data.length) {
+          appendTiles(resources.data, tilesContainer, 4);
+        } else {
+          showNoResults('#noResultsContainer', 'No resources available', 'tall', 'grey', 'xxlarge', 'blue');
+        }
+        removeLoader('.l-section', null, true);
+      });
+    });
+  })(jQuery);
+}
+'use strict';
+
+function showGroupResourcesPage() {
+  (function ($) {
+    // cache dom
+    var tileContainer = $('#groupResourcesTiles');
+
+    // fetch content and append
+    $.getJSON('/apiJSON/group_resources', function (data) {
+      data.data.forEach(function (resource) {
+        var html = '\n          <div class="column small-12 medium-4 c-tile">\n            <a href="/' + resource.alias + '" class="tile -tall">\n              <span class="text -tile -white">\n                ' + resource.label + '\n              </span>\n            </a>\n          </div>\n        ';
+        tileContainer.append(html);
+      });
+      removeLoader('.l-section', null, true);
+    });
+  })(jQuery);
+}
+'use strict';
+
+function showResourcesDetail(id) {
+  (function ($) {
+    $.getJSON('/apiJSON/resources?filter[id]=' + id, function (data) {
+      buildExploreMoreTiles('resources', 'group_resource', data.data[0].group_resource[0]);
+    });
   })(jQuery);
 }
 'use strict';
@@ -2170,7 +2410,7 @@ function showNewsEventsPage() {
     function showEvents(country, type, page) {
       var activeCountry = parseInt(country) > 0 ? 'filter[country]=' + country + '&' : '';
       var activeType = parseInt(type) > 0 ? 'filter[category]=' + type + '&' : '';
-      var activeFilters = '' + activeCountry + activeType + '&page[number]=' + page + '&page[size]=8';
+      var activeFilters = '' + activeCountry + activeType + '&page=' + page;
       $.getJSON('/apiJSON/events?' + activeFilters + '&sort=-date', function (events) {
         totalPagesEvents = getPageCount(events.count, 4);
         if (events.data.length > 0) {
@@ -2195,11 +2435,11 @@ function showNewsEventsPage() {
       var activeCountry = parseInt(country) > 0 ? 'filter[country]=' + country + '&' : '';
       var activeType = parseInt(type) > 0 ? 'filter[category]=' + type + '&' : '';
       var activeFilters = '' + activeCountry + activeType + '&page=' + page;
-      $.getJSON('/apiJSON/news?' + activeFilters + '&sort=-date', function (news) {
+      $.getJSON('/apiJSON/news?' + activeFilters + '&sort=-date&range=4', function (news) {
         if (news.data.length > 0) {
           totalPages = getPageCount(news.count, 4);
           if (page === 1) {
-            $.getJSON('/apiJSON/news?sort=-date', function (highlightedNews) {
+            $.getJSON('/apiJSON/news?sort=-date&range=4', function (highlightedNews) {
               buildHighlightedEvent(highlightedNews.data[0]);
               appendTilesDetailedNews(news.data, newsContainer, 2);
               initPagination(page, totalPages, 'newsEventsPage');
@@ -2226,205 +2466,6 @@ function showNewsEventsPage() {
     showEvents(countryFilter, typeFilter, page);
     showNews(countryFilter, typeFilter, page);
     onClickPagination();
-  })(jQuery);
-}
-'use strict';
-
-function showPageList() {
-  (function ($) {
-    var page = 1;
-    var totalPages = 0;
-    var sortValue = 'asc';
-
-    $('.sort-field').click(function () {
-      if (sortValue === 'asc') {
-        $('.triangle-sort').css('transform', 'rotate(180deg)'); // use this functions, because jquery method addClass not work with svg.
-        sortValue = 'desc';
-      } else {
-        $('.triangle-sort').css('transform', 'rotate(0deg)');
-        sortValue = 'asc';
-      }
-      page = 1;
-      showLoader('#tableContainer');
-      showPages(page, sortValue);
-    });
-
-    function setPaginationListerners() {
-      $('.onClickPagination').on('click', function (e) {
-        showLoader('#tableContainer');
-        var pageNum = $(this).data('value');
-        showPages(pageNum, sortValue);
-      });
-    }
-
-    function showPages(pageNumber, sort) {
-      var sortApi = '';
-      if (sort === 'asc') {
-        sortApi = 'sort=label';
-      } else {
-        sortApi = 'sort-=label';
-      }
-
-      $.getJSON('/apiJSON/page?&page=' + pageNumber + '&' + sortApi, function (pageresult) {
-        totalPages = getPageCount(pageresult.count, 5);
-        if (page === 1) {
-          $.getJSON('/apiJSON/page?date&page=' + pageNumber + '&' + sortApi, function (pageTable) {
-            createTable(pageTable, 'pages');
-            initPagination(pageNumber, totalPages, 'pagesList');
-            setPaginationListerners();
-            removeLoader('#tableContainer', null, true);
-          });
-        } else {
-          createTable(pageresult, 'pages');
-          removeLoader('#tableContainer', null, true);
-          initPagination(pageNumber, totalPages, 'pagesList');
-          setPaginationListerners();
-        }
-      });
-    }
-
-    showPages(page, sortValue);
-  })(jQuery);
-}
-'use strict';
-
-function peopleInvolved(id) {
-  (function ($) {
-    function getPeopleInvolvedStories(idPeople) {
-      var content = '';
-      $.getJSON('/apiJSON/stories?filter[author]=' + idPeople, function (data) {
-        showLoader('.container-content-user');
-        if (data.count !== 0) {
-          data.data.forEach(function (data) {
-            content += '<div class="small-12 column  medium-4 blogs-detail">\n                      <a href="/' + data.alias + '"><div class="contain-text">\n                        <span class="text -white -title-x-small">' + data.label + '</span>\n                        <span class="text -white">' + moment.unix(parseInt(data.created)).format('D MMMM YYYY') + '</span>\n                      </div></a>\n                    </div>';
-          });
-          removeLoader('.container-content-user');
-          $('.containter-people-detail').append(content);
-        } else {
-          removeLoader('.container-content-user');
-          $('.containter-people-detail').append('<div class="small-12 column"><span class="text -white -small-bold">No results found</span></div>');
-        }
-      });
-    }
-
-    function getPeopleInvolvedNews(idPeople) {
-      var content = '';
-      $.getJSON('/apiJSON/news?filter[author]=' + idPeople, function (data) {
-        showLoader('.container-content-user-news');
-        if (data.count !== 0) {
-          data.data.forEach(function (data) {
-            content += '<div class="small-12 column  medium-4 news-detail">\n                      <a href="/' + data.alias + '"><div class="contain-text">\n                        <span class="text -white -title-x-small">' + data.label + '</span>\n                        <span class="text -white">' + moment.unix(parseInt(data.created)).format('D MMMM YYYY') + '</span>\n                      </div></a>\n                    </div>';
-          });
-          removeLoader('.container-content-user-news');
-          $('.containter-people-detail-news').append(content);
-        } else {
-          removeLoader('.container-content-user-news');
-          $('.containter-people-detail-news').append('<div class="small-12 column"><span class="text -white -small-bold">No results found</span></div>');
-        }
-      });
-    }
-
-    function getPicture(idPeople) {
-      $.getJSON('/apiJSON/people/' + idPeople + '?fields=image', function (data) {
-        showLoader('.image-profile');
-        $('.image-profile').css('background-image', 'url(' + data.data[0].image + ')');
-        removeLoader('.image-profile');
-      });
-    }
-
-    getPeopleInvolvedStories(id);
-    getPeopleInvolvedNews(id);
-    getPicture(id);
-  })(jQuery);
-}
-'use strict';
-
-function showGroupResourcesDetail(id) {
-  (function ($) {
-
-    // cache dom
-    var currentNode = $('#groupResourcesDetail').data('node');
-    var tabsContainer = $('#groupResourcesTabs .tabs-container');
-    var searchContainer = $('#resourceTilesSearch input');
-    var tilesContainer = $('#tilesContainer');
-    var searchEl = $('.c-tile');
-    var searchText = $('.c-tile .tile');
-
-    // custom callback for tabs component
-    var onChangeTab = function onChangeTab(sub_group_id, label) {
-      hideNoResults('#noResultsContainer');
-      showLoader('.l-section');
-      tilesContainer.html('');
-      searchContainer.val('');
-      var filterGroup = currentNode === 2920 ? '' : 'filter[group_resource]=' + currentNode + '&';
-      $.getJSON('/apiJSON/resources?' + filterGroup + 'filter[sub_group]=' + sub_group_id + '&sort=-post_highlighted', function (data) {
-        if (data.data.length) {
-          appendTiles(data.data, tilesContainer, 4);
-        } else {
-          showNoResults('#noResultsContainer', 'No resources available', 'tall', 'grey', 'xxlarge', 'blue');
-        }
-        removeLoader('.l-section', null, true);
-      });
-      setSearchPlaceholder(searchContainer, label);
-    };
-
-    // fetch content and append
-    $.getJSON('/apiJSON/sub_group_resource', function (data) {
-      buildTabs(data.data, tabsContainer, onChangeTab);
-      setSearchPlaceholder(searchContainer, data.data[0].label);
-      setSearchListeners(searchEl, searchText);
-      var filterGroup = currentNode === 2920 ? '' : 'filter[group_resource]=' + currentNode + '&';
-      $.getJSON('/apiJSON/resources?' + filterGroup + 'filter[sub_group]=' + data.data[0].id + '&sort=-post_highlighted', function (resources) {
-        if (resources.data.length) {
-          appendTiles(resources.data, tilesContainer, 4);
-        } else {
-          showNoResults('#noResultsContainer', 'No resources available', 'tall', 'grey', 'xxlarge', 'blue');
-        }
-        removeLoader('.l-section', null, true);
-      });
-    });
-  })(jQuery);
-}
-'use strict';
-
-function showGroupResourcesPage() {
-  (function ($) {
-    // cache dom
-    var tileContainer = $('#groupResourcesTiles');
-
-    // fetch content and append
-    $.getJSON('/apiJSON/group_resources', function (data) {
-      data.data.forEach(function (resource) {
-        var html = '\n          <div class="column small-12 medium-4 c-tile">\n            <a href="/' + resource.alias + '" class="tile -tall">\n              <span class="text -tile -white">\n                ' + resource.label + '\n              </span>\n            </a>\n          </div>\n        ';
-        tileContainer.append(html);
-      });
-      removeLoader('.l-section', null, true);
-    });
-  })(jQuery);
-}
-'use strict';
-
-function showResourcesDetail(id) {
-  (function ($) {
-    $.getJSON('/apiJSON/resources?filter[id]=' + id, function (data) {
-      buildExploreMoreTiles('resources', 'group_resource', data.data[0].group_resource[0]);
-    });
-  })(jQuery);
-}
-'use strict';
-
-function featuresResultPage() {
-  (function ($) {
-
-    $('#value-search').html('Search for: ' + $('#edit-keys').val());
-  })(jQuery);
-}
-'use strict';
-
-function searchPage() {
-  (function ($) {
-
-    $('.search-form input').attr('placeholder', 'Type what you are searching for...');
   })(jQuery);
 }
 'use strict';
@@ -2668,10 +2709,63 @@ function showStoriesSubmitPage(id) {
     });
   })(jQuery);
 }
-"use strict";
+'use strict';
 
-function tagsPage() {
-  (function ($) {})(jQuery);
+function showPageList() {
+  (function ($) {
+    var page = 1;
+    var totalPages = 0;
+    var sortValue = 'asc';
+
+    $('.sort-field').click(function () {
+      if (sortValue === 'asc') {
+        $('.triangle-sort').css('transform', 'rotate(180deg)'); // use this functions, because jquery method addClass not work with svg.
+        sortValue = 'desc';
+      } else {
+        $('.triangle-sort').css('transform', 'rotate(0deg)');
+        sortValue = 'asc';
+      }
+      page = 1;
+      showLoader('#tableContainer');
+      showPages(page, sortValue);
+    });
+
+    function setPaginationListerners() {
+      $('.onClickPagination').on('click', function (e) {
+        showLoader('#tableContainer');
+        var pageNum = $(this).data('value');
+        showPages(pageNum, sortValue);
+      });
+    }
+
+    function showPages(pageNumber, sort) {
+      var sortApi = '';
+      if (sort === 'asc') {
+        sortApi = 'sort=label';
+      } else {
+        sortApi = 'sort-=label';
+      }
+
+      $.getJSON('/apiJSON/page?&page=' + pageNumber + '&' + sortApi, function (pageresult) {
+        totalPages = getPageCount(pageresult.count, 5);
+        if (page === 1) {
+          $.getJSON('/apiJSON/page?date&page=' + pageNumber + '&' + sortApi, function (pageTable) {
+            createTable(pageTable, 'pages');
+            initPagination(pageNumber, totalPages, 'pagesList');
+            setPaginationListerners();
+            removeLoader('#tableContainer', null, true);
+          });
+        } else {
+          createTable(pageresult, 'pages');
+          removeLoader('#tableContainer', null, true);
+          initPagination(pageNumber, totalPages, 'pagesList');
+          setPaginationListerners();
+        }
+      });
+    }
+
+    showPages(page, sortValue);
+  })(jQuery);
 }
 'use strict';
 
@@ -2917,170 +3011,76 @@ function showWorkingGroupDetail(id) {
     });
   })(jQuery);
 }
+"use strict";
+
+function tagsPage() {
+  (function ($) {})(jQuery);
+}
 'use strict';
 
-function showHomePage() {
+function featuresResultPage() {
   (function ($) {
 
-    var map = L.map('maphome', {
-      zoomControl: false,
-      center: [35, -60],
-      zoom: 2,
-      maxZoom: 6,
-      minZoom: 2,
-      scrollWheelZoom: false
-    });
-    var over = false;
-
-    $('#in').click(function () {
-      map.setZoom(map.getZoom() + 1);
-    });
-
-    $('#out').click(function () {
-      map.setZoom(map.getZoom() - 1);
-    });
-
-    var basemap = L.tileLayer('http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png', {
-      attribution: ''
-    }).addTo(map);
-
-    cartodb.createLayer(map, {
-      user_name: 'jmonaco',
-      type: 'cartodb',
-      sublayers: [{
-        sql: 'SELECT * FROM bwhyco5uex5gk6l2sjbo4w',
-        cartocss: '#layer{polygon-fill:ramp([actionplan],(#c30,#c30,#2d4f00,#66bc29,#2d4f00,#2d4f00,#2d4f00,#66bc29,#2d4f00),("","Inactive","Implementing 1st action plan and Developing 2nd action plan","Developing action plan","Implementing 2nd action plan","Implementing 1st action plan","Developing 1st Action Plan","Implementing action plan"),"=");line-width:1;line-color:#FFF;line-opacity:.5}',
-        interactivity: 'the_geom, nid, country, cartodb_id'
-      }]
-    }).addTo(map).done(function (layer) {
-      layer.setInteraction(true);
-      var hovers = [];
-      layer.on('featureClick', function (e, latlng, pos, data) {
-        $.getJSON('https://jmonaco.carto.com/api/v2/sql?q= SELECT * FROM countries_homepage WHERE cartodb_id =  ' + data.cartodb_id, function (datapath) {
-          document.location.href = '' + window.location.origin + datapath.rows[0].path;
-        });
-      });
-
-      layer.bind('featureOver', function (e, latlon, pxPos, data, layers) {
-        hovers[layers] = 1;
-        if (_.any(hovers)) {
-          $('#maphome').css('cursor', 'pointer');
-        }
-      });
-
-      layer.bind('featureOut', function (m, layers) {
-        hovers[layers] = 0;
-        if (!_.any(hovers)) {
-          $('#maphome').css('cursor', 'auto');
-        }
-      });
-
-      layer.on('featureOver', function (e, latlng, pos, data) {
-        if (over === false) {
-          $('body').append('<div class="tooltip" style="padding: 5px; position: absolute; z-index: 10; background-color: rgba(255, 255, 255, 1); top:' + (e.pageY - 25) + 'px; left:' + (e.pageX + 25) + 'px">' + data.country + '</div>');
-          over = true;
-        } else {
-          $('.tooltip').html(data.country);
-          $('.tooltip').css('top', e.pageY - 25 + 'px');
-          $('.tooltip').css('left', e.pageX + 25 + 'px');
-        }
-      });
-
-      layer.on('featureOut', function (e, latlng, pos, data) {
-        over = false;
-        $('.tooltip').remove();
-      });
-      map.invalidateSize();
-    });
+    $('#value-search').html('Search for: ' + $('#edit-keys').val());
   })(jQuery);
 }
 'use strict';
 
-function showSliderHomePage() {
+function searchPage() {
   (function ($) {
 
-    function getSlideConten(dataContent, dataSlide, imageContent) {
-      var textLink = 'Explore the story';
-      var imageSlide = void 0;
-      if (dataSlide) {
-        textLink = '' + dataSlide.text_link;
-      }
-      if (imageContent) {
-        if (dataSlide.image) {
-          imageSlide = '<div class="c-slider-home-page slider-image-0 ' + (dataSlide.image ? '-image' : '') + '">';
+    $('.search-form input').attr('placeholder', 'Type what you are searching for...');
+  })(jQuery);
+}
+'use strict';
+
+function peopleInvolved(id) {
+  (function ($) {
+    function getPeopleInvolvedStories(idPeople) {
+      var content = '';
+      $.getJSON('/apiJSON/stories?filter[author]=' + idPeople, function (data) {
+        showLoader('.container-content-user');
+        if (data.count !== 0) {
+          data.data.forEach(function (data) {
+            content += '<div class="small-12 column  medium-4 blogs-detail">\n                      <a href="/' + data.alias + '"><div class="contain-text">\n                        <span class="text -white -title-x-small">' + data.label + '</span>\n                        <span class="text -white">' + moment.unix(parseInt(data.created)).format('D MMMM YYYY') + '</span>\n                      </div></a>\n                    </div>';
+          });
+          removeLoader('.container-content-user');
+          $('.containter-people-detail').append(content);
         } else {
-          imageSlide = '<div class="c-slider-home-page slider-image-0 ' + (dataContent.image ? '-image' : '') + '">';
+          removeLoader('.container-content-user');
+          $('.containter-people-detail').append('<div class="small-12 column"><span class="text -white -small-bold">No results found</span></div>');
         }
-      } else {
-        imageSlide = '<div class="c-slider-home-page slider-image-0 ' + (dataSlide.image ? '-image' : '') + '">';
-      }
-      var slideContent = '\n        ' + imageSlide + '\n          <div class="row">\n            <div class="column small-12 medium-9">\n              <div class="container slider-0">\n                <div>\n                  <h1 class="title-text -white">\n                    <a href="' + dataSlide.alias + '">' + dataContent.label + '</a>\n                  </h1>\n                  <div class="small-12 medium-5 large-4">\n                    <a class="c-button -box" href="' + dataSlide.alias + '">' + textLink + '</a>\n                  <div>\n                </div>\n              </div>\n            </div>\n          </div>\n        </div>\n      ';
-      return slideContent;
+      });
     }
 
-    $.getJSON('/apiJSON/slider_home_page', function (stories) {
-      showLoader('.slider-cover-home');
-      for (var i = 0; i < stories.count; i += 1) {
-        if (stories.data[i].show) {
-          var slide = '';
-
-          if (stories.data[i].information_current) {
-            slide = getSlideConten(stories.data[i].information_current, stories.data[i], false);
-          }
-
-          if (stories.data[i].information_event) {
-            slide = getSlideConten(stories.data[i].information_event, stories.data[i], false);
-          }
-
-          if (stories.data[i].information_irm) {
-            slide = getSlideConten(stories.data[i].information_irm, stories.data[i], false);
-          }
-
-          if (stories.data[i].information_model) {
-            slide = getSlideConten(stories.data[i].information_model, stories.data[i], false);
-          }
-
-          if (stories.data[i].information_news) {
-            slide = getSlideConten(stories.data[i].information_news, stories.data[i], false);
-          }
-
-          if (stories.data[i].information_page) {
-            slide = getSlideConten(stories.data[i].information_page, stories.data[i], false);
-          }
-
-          if (stories.data[i].information_starred) {
-            slide = getSlideConten(stories.data[i].information_starred, stories.data[i], false);
-          }
-
-          if (stories.data[i].information_stories) {
-            slide = getSlideConten(stories.data[i].information_stories, stories.data[i], true);
-          }
-
-          if (stories.data[i].information_working) {
-            slide = getSlideConten(stories.data[i].information_working, stories.data[i], false);
-          }
-
-          if (stories.data[i].information_working_page) {
-            slide = getSlideConten(stories.data[i].information_working_page, stories.data[i], false);
-          }
-
-          $('.slider-cover-home').append(slide);
+    function getPeopleInvolvedNews(idPeople) {
+      var content = '';
+      $.getJSON('/apiJSON/news?filter[author]=' + idPeople, function (data) {
+        showLoader('.container-content-user-news');
+        if (data.count !== 0) {
+          data.data.forEach(function (data) {
+            content += '<div class="small-12 column  medium-4 news-detail">\n                      <a href="/' + data.alias + '"><div class="contain-text">\n                        <span class="text -white -title-x-small">' + data.label + '</span>\n                        <span class="text -white">' + moment.unix(parseInt(data.created)).format('D MMMM YYYY') + '</span>\n                      </div></a>\n                    </div>';
+          });
+          removeLoader('.container-content-user-news');
+          $('.containter-people-detail-news').append(content);
+        } else {
+          removeLoader('.container-content-user-news');
+          $('.containter-people-detail-news').append('<div class="small-12 column"><span class="text -white -small-bold">No results found</span></div>');
         }
-        if (stories.data[i].image) {
-          $('.slider-image-' + i).css('background-image', 'url(' + stories.data[i].image + ')');
-        }
-      }
-      removeLoader('.slider-cover-home');
-      $('.slider-cover-home').slick({
-        dots: true,
-        arrows: false,
-        speed: 500,
-        fade: true,
-        cssEase: 'linear',
-        dotsClass: 'dots-slider',
-        adaptiveHeight: true
       });
-    });
+    }
+
+    function getPicture(idPeople) {
+      $.getJSON('/apiJSON/people/' + idPeople + '?fields=image', function (data) {
+        showLoader('.image-profile');
+        $('.image-profile').css('background-image', 'url(' + data.data[0].image + ')');
+        removeLoader('.image-profile');
+      });
+    }
+
+    getPeopleInvolvedStories(id);
+    getPeopleInvolvedNews(id);
+    getPicture(id);
   })(jQuery);
 }
 //# sourceMappingURL=bundle.js.map

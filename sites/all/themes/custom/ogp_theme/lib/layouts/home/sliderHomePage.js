@@ -2,9 +2,9 @@ function showSliderHomePage() {
   (function ($) {
 
     function getSlideConten(dataContent, dataSlide, imageContent) {
-      let textLink = 'Explore the story';
+      let textLink = 'Explore the content';
       let imageSlide;
-      if (dataSlide) {
+      if (dataSlide.text_link) {
         textLink = `${dataSlide.text_link}`;
       }
       if (imageContent) {
