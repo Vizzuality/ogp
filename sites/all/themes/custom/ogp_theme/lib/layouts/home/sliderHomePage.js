@@ -1,7 +1,7 @@
 function showSliderHomePage() {
   (function ($) {
 
-    function getSlideConten(dataContent, dataSlide, imageContent) {
+    function getSlideConten(dataContent, dataSlide, imageContent, i) {
       let textLink = 'Explore the content';
       let imageSlide;
       if (dataSlide.text_link) {
@@ -9,12 +9,13 @@ function showSliderHomePage() {
       }
       if (imageContent) {
         if (dataSlide.image) {
-          imageSlide = `<div class="c-slider-home-page slider-image-0 ${dataSlide.image ? '-image' : ''}">`;
+          imageSlide = `<div class="c-slider-home-page slider-image-${i} ${dataSlide.image ? '-image' : ''}">`;
+
         } else {
-          imageSlide = `<div class="c-slider-home-page slider-image-0 ${dataContent.image ? '-image' : ''}">`;
+          imageSlide = `<div class="c-slider-home-page slider-image-${i} ${dataContent.image ? '-image' : ''}">`;
         }
       } else {
-        imageSlide = `<div class="c-slider-home-page slider-image-0 ${dataSlide.image ? '-image' : ''}">`;
+        imageSlide = `<div class="c-slider-home-page slider-image-${i} ${dataSlide.image ? '-image' : ''}">`;
       }
       const slideContent = `
         ${imageSlide}
@@ -44,49 +45,59 @@ function showSliderHomePage() {
           let slide = '';
 
           if (stories.data[i].information_current) {
-            slide = getSlideConten(stories.data[i].information_current, stories.data[i], false);
+            slide = getSlideConten(stories.data[i].information_current, stories.data[i], false, i);
           }
 
           if (stories.data[i].information_event) {
-            slide = getSlideConten(stories.data[i].information_event, stories.data[i], false);
+            slide = getSlideConten(stories.data[i].information_event, stories.data[i], false, i);
           }
 
           if (stories.data[i].information_irm) {
-            slide = getSlideConten(stories.data[i].information_irm, stories.data[i], false);
+            slide = getSlideConten(stories.data[i].information_irm, stories.data[i], false, i);
           }
 
           if (stories.data[i].information_model) {
-            slide = getSlideConten(stories.data[i].information_model, stories.data[i], false);
+            slide = getSlideConten(stories.data[i].information_model, stories.data[i], false, i);
           }
 
           if (stories.data[i].information_news) {
-            slide = getSlideConten(stories.data[i].information_news, stories.data[i], false);
+            slide = getSlideConten(stories.data[i].information_news, stories.data[i], false, i);
           }
 
           if (stories.data[i].information_page) {
-            slide = getSlideConten(stories.data[i].information_page, stories.data[i], false);
+            slide = getSlideConten(stories.data[i].information_page, stories.data[i], false, i);
           }
 
           if (stories.data[i].information_starred) {
-            slide = getSlideConten(stories.data[i].information_starred, stories.data[i], false);
+            slide = getSlideConten(stories.data[i].information_starred, stories.data[i], false, i);
           }
 
           if (stories.data[i].information_stories) {
-            slide = getSlideConten(stories.data[i].information_stories, stories.data[i], true);
+            slide = getSlideConten(stories.data[i].information_stories, stories.data[i], true, i);
           }
 
           if (stories.data[i].information_working) {
-            slide = getSlideConten(stories.data[i].information_working, stories.data[i], false);
+            slide = getSlideConten(stories.data[i].information_working, stories.data[i], false, i);
           }
 
           if (stories.data[i].information_working_page) {
-            slide = getSlideConten(stories.data[i].information_working_page, stories.data[i], false);
+            slide = getSlideConten(stories.data[i].information_working_page, stories.data[i], false, i);
           }
 
           $('.slider-cover-home').append(slide);
         }
-        if (stories.data[i].image) {
-          $(`.slider-image-${i}`).css('background-image', `url(${stories.data[i].image})`);
+
+        if (stories.data[i].information_stories) {
+          if (stories.data[i].image) {
+            $(`.slider-image-${i}`).css('background-image', `url(${stories.data[i].image})`);
+          }
+          if (stories.data[i].information_stories.image) {
+            $(`.slider-image-${i}`).css('background-image', `url(${stories.data[i].information_stories.image})`);
+          }
+        } else {
+          if (stories.data[i].image) {
+            $(`.slider-image-${i}`).css('background-image', `url(${stories.data[i].image})`);
+          }
         }
       }
       removeLoader('.slider-cover-home');
