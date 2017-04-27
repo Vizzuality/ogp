@@ -226,6 +226,85 @@ function getAbsolutePath() {
 })(jQuery);
 'use strict';
 
+function convertPostDate(date, format) {
+  var dateString = new Date(date * 1e3);
+  var dd = dateString.getDate();
+  var mm = dateString.getMonth() + 1; //January is 0!
+  var yyyy = dateString.getFullYear();
+
+  if (format === 'dd/mm/yyyy') {
+    if (dd < 10) {
+      dd = '0' + dd;
+    }
+
+    if (mm < 10) {
+      mm = '0' + mm;
+    }
+  }
+
+  dateString = dd + '/' + mm + '/' + yyyy;
+
+  return dateString;
+}
+
+function convertEventDate(date) {
+  var myDate = moment(date, 'YYYY-M-DD HH:mm:ss');
+  return myDate.format('MMMM D, YYYY - hh:mm');
+}
+
+function dateDiff(date) {
+  return moment().diff(date, 'days');
+}
+'use strict';
+
+function smoothScroll() {
+  $('a[href*="#"]:not([href="#"])').click(function () {
+    if (location.pathname.replace(/^\//, '') == this.pathname.replace(/^\//, '') && location.hostname == this.hostname) {
+      var target = $(this.hash);
+      target = target.length ? target : $('[name=' + this.hash.slice(1) + ']');
+      if (target.length) {
+        $('html, body').animate({
+          scrollTop: target.offset().top
+        }, 500);
+        return false;
+      }
+    }
+  });
+}
+'use strict';
+
+function getAuthors(data) {
+  var authorString = '';
+  if (data[0]) {
+    data.forEach(function (author, index) {
+      if (index === data.length - 1) {
+        authorString += '' + author.label;
+      } else {
+        authorString += author.label + ', ';
+      }
+    });
+  }
+  return authorString;
+}
+
+function stripEmptyStrings() {
+  $('p').each(function () {
+    var $this = $(this);
+    if ($this.html().replace(/\s|&nbsp;/g, '').length == 0) $this.remove();
+  });
+}
+'use strict';
+
+function addDots(string, limit) {
+  var dots = '...';
+  if (string.length > limit) {
+    string = string.substring(0, limit) + dots;
+  }
+
+  return string;
+}
+'use strict';
+
 function aboutMenu() {
   (function ($) {
 
@@ -893,85 +972,6 @@ function twitterLink() {
 }
 'use strict';
 
-function convertPostDate(date, format) {
-  var dateString = new Date(date * 1e3);
-  var dd = dateString.getDate();
-  var mm = dateString.getMonth() + 1; //January is 0!
-  var yyyy = dateString.getFullYear();
-
-  if (format === 'dd/mm/yyyy') {
-    if (dd < 10) {
-      dd = '0' + dd;
-    }
-
-    if (mm < 10) {
-      mm = '0' + mm;
-    }
-  }
-
-  dateString = dd + '/' + mm + '/' + yyyy;
-
-  return dateString;
-}
-
-function convertEventDate(date) {
-  var myDate = moment(date, 'YYYY-M-DD HH:mm:ss');
-  return myDate.format('MMMM D, YYYY - hh:mm');
-}
-
-function dateDiff(date) {
-  return moment().diff(date, 'days');
-}
-'use strict';
-
-function smoothScroll() {
-  $('a[href*="#"]:not([href="#"])').click(function () {
-    if (location.pathname.replace(/^\//, '') == this.pathname.replace(/^\//, '') && location.hostname == this.hostname) {
-      var target = $(this.hash);
-      target = target.length ? target : $('[name=' + this.hash.slice(1) + ']');
-      if (target.length) {
-        $('html, body').animate({
-          scrollTop: target.offset().top
-        }, 500);
-        return false;
-      }
-    }
-  });
-}
-'use strict';
-
-function getAuthors(data) {
-  var authorString = '';
-  if (data[0]) {
-    data.forEach(function (author, index) {
-      if (index === data.length - 1) {
-        authorString += '' + author.label;
-      } else {
-        authorString += author.label + ', ';
-      }
-    });
-  }
-  return authorString;
-}
-
-function stripEmptyStrings() {
-  $('p').each(function () {
-    var $this = $(this);
-    if ($this.html().replace(/\s|&nbsp;/g, '').length == 0) $this.remove();
-  });
-}
-'use strict';
-
-function addDots(string, limit) {
-  var dots = '...';
-  if (string.length > limit) {
-    string = string.substring(0, limit) + dots;
-  }
-
-  return string;
-}
-'use strict';
-
 function showAboutPages() {
   (function ($) {
 
@@ -1361,7 +1361,7 @@ function initMapLayer(map, countriesData, layers, cartoQueryLink) {
       }
       switch (layer.layers[0].options.name) {
         case 'action':
-          $.getJSON(cartoQueryLink + ' SELECT * FROM bwhyco5uex5gk6l2sjbo4w WHERE cartodb_id = ' + data.cartodb_id, function (actionPlanData) {
+          $.getJSON(cartoQueryLink + ' SELECT * FROM ggtqckcj2bioeepnuvxoow WHERE cartodb_id = ' + data.cartodb_id, function (actionPlanData) {
             updateMapModal(actionPlanData.rows[0].nid, 'actionPlan', countriesData);
           });
           break;
@@ -1381,17 +1381,17 @@ function initMapLayer(map, countriesData, layers, cartoQueryLink) {
           });
           break;
         case 'event':
-          $.getJSON(cartoQueryLink + ' SELECT * FROM events_country WHERE cartodb_id = ' + data.cartodb_id + ' AND country IS NOT NULL', function (eventData) {
+          $.getJSON(cartoQueryLink + ' SELECT * FROM ojy344p9szp9irh8dc1uaa WHERE cartodb_id = ' + data.cartodb_id + ' AND country IS NOT NULL', function (eventData) {
             updateMapModal(eventData.rows[0].countryid, 'event', countriesData);
           });
           break;
         case 'commitment':
-          $.getJSON(cartoQueryLink + ' SELECT * FROM currentcommitments_countries WHERE cartodb_id = ' + data.cartodb_id, function (commitmentsData) {
+          $.getJSON(cartoQueryLink + ' SELECT * FROM c73t2gfiumef0fs5de9huq WHERE cartodb_id = ' + data.cartodb_id, function (commitmentsData) {
             updateMapModal(commitmentsData.rows[0].countryid, 'commitment', countriesData);
           });
           break;
         case 'participants':
-          $.getJSON(cartoQueryLink + ' SELECT * FROM working_group WHERE cartodb_id = ' + data.cartodb_id, function (participantsData) {
+          $.getJSON(cartoQueryLink + ' SELECT * FROM table_4q9xwd8iroblyagpt_dx5q WHERE cartodb_id = ' + data.cartodb_id, function (participantsData) {
             document.location.href = '' + window.location.origin + participantsData.rows[0].path;
           });
           break;
@@ -1504,7 +1504,7 @@ function changeCommitmentLayer() {
   removeLayers(layerMap);
   layerMap.setInteraction(true);
   layerMap.createSubLayer({
-    sql: 'SELECT country, Min(cartodb_id) cartodb_id, Min(theme) theme, count(country), st_centroid(the_geom_webmercator) the_geom_webmercator FROM currentcommitments_countries WHERE country IS NOT NULL AND theme LIKE \'%' + theme + '%\' AND the_geom_webmercator IS NOT NULL AND LENGTH(country) > 0 GROUP BY the_geom_webmercator, country ORDER BY country',
+    sql: 'SELECT country,Min(countryid) countryid, Min(cc.cartodb_id) cartodb_id, count(country), st_centroid(wb.the_geom_webmercator) the_geom_webmercator FROM c73t2gfiumef0fs5de9huq cc INNER JOIN world_borders_hd wb on cc.country = wb.name WHERE country IS NOT NULL AND wb.the_geom_webmercator IS NOT NULL AND LENGTH(country) > 0 AND theme LIKE \'%' + theme + '%\' GROUP BY wb.the_geom_webmercator, country ORDER BY country DESC',
     cartocss: '#layer::z1 {marker-width: ramp([count], range(25, 45), quantiles(7));marker-fill: #ffa200;marker-fill-opacity: 1;marker-line-width: 1;marker-line-color: #4b392f;marker-line-opacity: 0.1;marker-allow-overlap:true;marker-comp-op: src;[zoom = 2] {marker-width: ramp([count], range(25, 30), quantiles(3));}[zoom = 3] {marker-width: ramp([count], range(30, 35), quantiles(4));}[zoom = 4] {marker-width: ramp([count], range(30, 40), quantiles(5));}[zoom = 5] {marker-width: ramp([count], range(30, 45), quantiles(6));} [zoom = 6] {marker-width: ramp([count], range(35, 45), quantiles(7));}} #layer::z1 {text-name: [count];text-face-name: "DejaVu Sans Book";text-size: 10;text-fill: #FFFFFF;text-label-position-tolerance: 0;text-halo-radius: 0;text-halo-fill: #6F808D;text-dy: 0;text-allow-overlap: true;}',
     interactivity: 'cartodb_id, the_geom_webmercator, country',
     name: 'commitment'
@@ -1519,49 +1519,49 @@ function showCountriesPage() {
     var cartoQueryLink = 'https://jmonaco.carto.com/api/v2/sql?q=';
     var layers = {
       action: {
-        sql: 'SELECT * FROM bwhyco5uex5gk6l2sjbo4w',
-        cartocss: '#layer{polygon-fill:ramp([actionplan],(#c30,#c30,#2d4f00,#66bc29,#2d4f00,#2d4f00,#2d4f00,#66bc29,#2d4f00),("","Inactive","Implementing 1st action plan and Developing 2nd action plan","Developing action plan","Implementing 2nd action plan","Implementing 1st action plan","Developing 1st Action Plan","Implementing action plan"),"=");line-width:1;line-color:#FFF;line-opacity:.5}',
-        interactivity: 'the_geom, nid, country, cartodb_id',
+        sql: 'SELECT  wb.the_geom_webmercator the_geom_webmercator, nid, member_since, at.path, actionplan, at.country, at.cartodb_id FROM ggtqckcj2bioeepnuvxoow at INNER JOIN world_borders_hd wb on at.country = wb.name',
+        cartocss: '#layer {polygon-fill: ramp([actionplan], (#2d4f00, #66bc29, #2d4f00, #66bc29, #2d4f00, #2d4f00, #cc3300, #cc3300), ("Implementing 1st action plan and Developing 2nd action plan","Developing action plan", "Implementing 2nd action plan", "Developing 1st Action Plan", "Implementing 1st action plan", "Implementing action plan", , "Inactive"), "="); line-width: 1; line-color: #FFF; line-opacity: 0.5;}',
+        interactivity: 'the_geom_webmercator, nid, country, cartodb_id',
         name: 'action'
       },
       starred: {
-        sql: 'SELECT numberstarred,country, cartodb_id, st_centroid(the_geom_webmercator) the_geom_webmercator FROM zzpexx07fxnjtcvjpptz2q WHERE the_geom_webmercator IS NOT NULL ORDER BY numberstarred',
+        sql: 'SELECT numberstarred,country, st.cartodb_id, st_centroid(wb.the_geom_webmercator) the_geom_webmercator FROM zzpexx07fxnjtcvjpptz2q st INNER JOIN world_borders_hd wb on st.country = wb.name WHERE wb.the_geom_webmercator IS NOT NULL ORDER BY numberstarred',
         cartocss: '#layer::z1 {marker-width: 30;marker-fill: #ffffff;marker-fill-opacity: 1;marker-line-width: 1;marker-line-color: #4b392f;marker-line-opacity: 0.2;marker-allow-overlap:true;marker-comp-op: src;[zoom = 2] {marker-width: 30;}[zoom = 3] {marker-width: 35;}[zoom = 4] {marker-width: 40;}[zoom = 5] {marker-width: 45;}[zoom = 6] {marker-width: 45;}} #layer::z1 {text-name: [numberstarred];text-face-name: "DejaVu Sans Book";text-size: 10;text-fill: #000000;text-label-position-tolerance: 0;text-halo-radius: 0;text-halo-fill: #6F808D;text-dy: 0;text-allow-overlap: true;}',
         interactivity: 'numberstarred, country, cartodb_id, the_geom_webmercator',
         name: 'starred'
       },
       people: {
-        sql: 'SELECT numberpeopleinvolved,country,countryid, cartodb_id, st_centroid(the_geom_webmercator) the_geom_webmercator FROM u4yhv_fq5_jb91rzuzgd8q WHERE the_geom_webmercator IS NOT NULL',
+        sql: 'SELECT numberpeopleinvolved,country,countryid, pi.cartodb_id, st_centroid(wb.the_geom_webmercator) the_geom_webmercator FROM u4yhv_fq5_jb91rzuzgd8q pi INNER JOIN world_borders_hd wb on pi.country = wb.name WHERE wb.the_geom_webmercator IS NOT NULL',
         cartocss: '#layer {marker-width: 50;marker-height: 45;marker-fill: #007acb;marker-fill-opacity: 1;marker-file:url("https://s3.amazonaws.com/com.cartodb.users-assets.production/maki-icons/marker-18.svg");marker-allow-overlap: true;marker-line-width: 1;marker-line-color: #4b392f;marker-line-opacity: 1;marker-comp-op: src-over;[zoom = 2] {marker-width: 30;marker-height: 25;}[zoom = 3] {marker-width: 35;marker-height: 30;}[zoom = 4] {marker-width: 45;marker-height: 40;} [zoom = 5] {marker-width: 50;marker-height: 45;}[zoom = 6] {marker-width: 55;marker-height: 50;}}',
         interactivity: 'numberpeopleinvolved,countryid, country, cartodb_id, the_geom_webmercator',
         name: 'people'
       },
       stories: {
-        sql: 'SELECT numberstories,country, cartodb_id, st_centroid(the_geom_webmercator) the_geom_webmercator FROM cajq0nm1zsu0aav_wrnyvg WHERE the_geom_webmercator IS NOT NULL',
+        sql: 'SELECT numberstories,country, st.cartodb_id, st_centroid(wb.the_geom_webmercator) the_geom_webmercator FROM cajq0nm1zsu0aav_wrnyvg st INNER JOIN world_borders_hd wb on st.country = wb.name WHERE st.the_geom_webmercator IS NOT NULL',
         cartocss: '#layer::z1{marker-width: 50;marker-height: 45;marker-fill: #0099ff;marker-fill-opacity: 1;marker-file:url("https://s3.amazonaws.com/com.cartodb.users-assets.production/maki-icons/marker-18.svg");marker-allow-overlap: true;marker-line-width: 1;marker-line-color: #4b392f;marker-line-opacity: 1;marker-comp-op: src-over;[zoom = 2] {marker-width: 50;marker-height: 45;}[zoom = 3] {marker-width: 55;marker-height: 50;}[zoom = 4] {marker-width: 60;marker-height: 55;}[zoom = 5] {marker-width: 65;marker-height: 60;}[zoom = 6] {marker-width: 70;marker-height: 65;}} #layer::z1{text-name: [numberstories];text-face-name: "DejaVu Sans Book";text-size: 10;text-fill: #FFFFFF;text-label-position-tolerance: 0;text-halo-radius: 0;text-halo-fill: #6F808D;text-dy: -0.9;text-allow-overlap: true;text-placement: point;text-placement-type: simple;text-comp-op: screen;}',
         interactivity: 'numberstories, country, cartodb_id, the_geom_webmercator',
         name: 'stories'
       },
       upcomingevent: {
-        sql: 'SELECT now(), country,countryid, count(country),Min(cartodb_id) cartodb_id, Min(date) date, Min(end_date) end_date, Min(start_date) start_date, Min(title) title, st_centroid(the_geom_webmercator) the_geom_webmercator FROM events_country WHERE title IS NOT NULL AND the_geom_webmercator IS NOT NULL AND end_date > now() GROUP BY  the_geom_webmercator, country, countryid ORDER BY country',
+        sql: 'SELECT now(), country, countryid, count(country), Min(ec.cartodb_id) cartodb_id, Min(date) date, Min(end_date) end_date, Min(start_date) start_date, Min(title) title, st_centroid(wb.the_geom_webmercator) the_geom_webmercator FROM ojy344p9szp9irh8dc1uaa ec INNER JOIN world_borders_hd wb on ec.country = wb.name WHERE title IS NOT NULL AND wb.the_geom_webmercator IS NOT NULL AND end_date > now() GROUP BY country, countryid, wb.the_geom_webmercator ORDER BY country',
         cartocss: '#layer::z1 {marker-width: 30;marker-fill: #66bc29;marker-fill-opacity: 1;marker-line-width: 0;marker-line-color: #151718;marker-line-opacity: 0.2;marker-allow-overlap:true;marker-comp-op: src;[zoom = 2] {marker-width: 30;}[zoom = 3] {marker-width: 35;}[zoom = 4] {marker-width: 40;}[zoom = 5] {marker-width: 45;}[zoom = 6] {marker-width: 45;}} #layer::z1 {text-name: [count];text-face-name: "DejaVu Sans Book";text-size: 10;text-fill: #FFFFFF;text-label-position-tolerance: 0;text-halo-radius: 0;text-halo-fill: #6F808D;text-dy: 0;text-allow-overlap: true;}',
         interactivity: 'cartodb_id, the_geom_webmercator',
         name: 'event'
       },
       pastevent: {
-        sql: 'SELECT now(), country,countryid, count(country),Min(cartodb_id) cartodb_id, Min(date) date, Min(end_date) end_date, Min(start_date) start_date, Min(title) title, st_centroid(the_geom_webmercator) the_geom_webmercator FROM events_country WHERE title IS NOT NULL AND the_geom_webmercator IS NOT NULL AND end_date < now() GROUP BY  the_geom_webmercator, country, countryid ORDER BY country',
+        sql: 'SELECT now(), country, countryid, count(country), Min(ec.cartodb_id) cartodb_id, Min(date) date, Min(end_date) end_date, Min(start_date) start_date, Min(title) title, st_centroid(wb.the_geom_webmercator) the_geom_webmercator FROM ojy344p9szp9irh8dc1uaa ec INNER JOIN world_borders_hd wb on ec.country = wb.name WHERE title IS NOT NULL AND wb.the_geom_webmercator IS NOT NULL AND end_date < now() GROUP BY country, countryid, wb.the_geom_webmercator ORDER BY country',
         cartocss: '#layer::z1 {marker-width: 30;marker-fill: #66bc29;marker-fill-opacity: 1;marker-line-width: 0;marker-line-color: #151718;marker-line-opacity: 0.2;marker-allow-overlap:true;marker-comp-op: src;[zoom = 2] {marker-width: 30;}[zoom = 3] {marker-width: 35;}[zoom = 4] {marker-width: 40;}[zoom = 5] {marker-width: 45;}[zoom = 6] {marker-width: 45;}} #layer::z1 {text-name: [count];text-face-name: "DejaVu Sans Book";text-size: 10;text-fill: #FFFFFF;text-label-position-tolerance: 0;text-halo-radius: 0;text-halo-fill: #6F808D;text-dy: 0;text-allow-overlap: true;}',
         interactivity: 'cartodb_id, the_geom_webmercator, country',
         name: 'event'
       },
       commitment: {
-        sql: 'SELECT country,Min(countryid) countryid, Min(cartodb_id) cartodb_id, count(country), st_centroid(the_geom_webmercator) the_geom_webmercator FROM currentcommitments_countries WHERE country IS NOT NULL AND the_geom_webmercator IS NOT NULL AND LENGTH(country) > 0 GROUP BY the_geom_webmercator, country ORDER BY country DESC',
+        sql: 'SELECT country,Min(countryid) countryid, Min(cc.cartodb_id) cartodb_id, count(country), st_centroid(wb.the_geom_webmercator) the_geom_webmercator FROM c73t2gfiumef0fs5de9huq cc INNER JOIN world_borders_hd wb on cc.country = wb.name WHERE country IS NOT NULL AND wb.the_geom_webmercator IS NOT NULL AND LENGTH(country) > 0 GROUP BY wb.the_geom_webmercator, country ORDER BY country DESC',
         cartocss: '#layer::z1 {marker-width: 30;marker-fill: #ffa200;marker-fill-opacity: 1;marker-line-width: 1;marker-line-color: #4b392f;marker-line-opacity: 0.1;marker-allow-overlap:true;marker-comp-op: src;[zoom = 2] {marker-width: 30;}[zoom = 3] {marker-width: 35;}[zoom = 4] {marker-width: 40;}[zoom = 5] {marker-width:45;} [zoom = 6] {marker-width: 45;}} #layer::z1 {text-name: [count];text-face-name: "DejaVu Sans Book";text-size: 10;text-fill: #FFFFFF;text-label-position-tolerance: 0;text-halo-radius: 0;text-halo-fill: #6F808D;text-dy: 0;text-allow-overlap: true;}',
         interactivity: 'cartodb_id, the_geom_webmercator, country',
         name: 'commitment'
       },
       participants: {
-        sql: 'SELECT * FROM working_group WHERE show_on_map IS TRUE',
+        sql: 'SELECT * FROM table_4q9xwd8iroblyagpt_dx5q WHERE show_on_map IS TRUE',
         cartocss: '#layer {marker-width: 50;marker-height: 45;marker-fill: #FFB927;marker-fill-opacity: 1;marker-file: url("https://s3.amazonaws.com/com.cartodb.users-assets.production/maki-icons/marker-18.svg");marker-allow-overlap: true;marker-line-width: 1;marker-line-color: #4b392f;marker-line-opacity: 1;marker-comp-op: src-over;[zoom = 2] {marker-width: 30;marker-height: 25;}[zoom = 3] {marker-width: 35;marker-height: 30;}[zoom = 4] {marker-width: 45;marker-height: 40;}[zoom = 5] {marker-width: 50;marker-height: 45;}[zoom = 6] {marker-width: 55;marker-height: 50;}}',
         interactivity: 'cartodb_id, title',
         name: 'participants'
@@ -1928,146 +1928,6 @@ function showNewsEventsPage() {
 }
 'use strict';
 
-function showIrmReports() {
-  (function ($) {
-
-    // cache
-    var countryFilter = 0;
-    var typeFilter = 0;
-    var page = 1;
-    var totalPages = 0;
-
-    //selectors
-    var countrySelectorDownload = $('.country-filter-download');
-    var countrySelectorComments = $('.country-filter-comments');
-    var tabsContainer = $('.tabs-container');
-    var containerInfo = $('#container-info');
-    var irmContainer = $('#downloadContainer');
-    var commentsContainer = $('#commentsContainer');
-
-    // custom callback for tabs component
-    var onChangeIRMTabs = function onChangeIRMTabs(id, label) {
-      $('.tab-content').addClass('-hidden');
-      $('.' + id).removeClass('-hidden');
-    };
-
-    function initIRMTabs(onChange) {
-      initTabs();
-      setTabListeners(onChange);
-    }
-
-    function setPageCount(val) {
-      $('.reload-thematic-download').data('value', val);
-    }
-
-    function setPageCountComments(val) {
-      $('.reload-thematic-comments').data('value', val);
-    }
-
-    function getCurrentPage() {
-      var pageCount = $('.reload-thematic-download').data('value');
-      return pageCount;
-    }
-
-    function getCurrentPageComments() {
-      var pageCount = $('.reload-thematic-comments').data('value');
-      return pageCount;
-    }
-
-    function onClickPagination() {
-      $('.c-pagination-click-download').on('click', function () {
-        setPageCount(getCurrentPage() + 1);
-        showLoader('#container-info');
-        showTilesIrmReports(countryFilter, getCurrentPage());
-      });
-    }
-
-    function onClickPaginationComments() {
-      $('.c-pagination-click-comments').on('click', function () {
-        setPageCountComments(getCurrentPageComments() + 1);
-        showLoader('#container-info');
-        showTilesComments(countryFilter, getCurrentPageComments());
-      });
-    }
-
-    function showTilesIrmReports(country, pageNext) {
-      var activeCountry = parseInt(country) > 0 ? 'filter[id]=' + country + '&' : '';
-      $.getJSON('/apiJSON/countries?' + activeCountry + 'sort=label', function (countries) {
-        appendTilesIRM(countries.data, irmContainer);
-        appendTilesComments(countries.data, commentsContainer);
-        removeLoader('#container-info', null, true);
-      });
-    }
-
-    // function showTilesComments(country, pageNext) {
-    //   const activeCountry = parseInt(country) > 0 ? `filter[id]=${country}&` : '';
-    //   $.getJSON(`/apiJSON/countries?${activeCountry}sort=label`, function (countries) {
-    //     for (let i = 0; i < countries.data.length; i += 1) {
-    //
-    //     }
-    //   });
-    // }
-
-    function buildSelectorDownload(selector, placeholder, endpoint, query) {
-      selector.select2({
-        minimumResultsForSearch: Infinity,
-        containerCssClass: '-green -tall',
-        dropdownCssClass: '-green',
-        placeholder: '' + placeholder
-      });
-      selector.append('<option value="0">' + placeholder + '</option>');
-      $.getJSON('/apiJSON/' + endpoint + '?' + query, function (data) {
-        data.data.forEach(function (data) {
-          var option = '<option value="' + data.id + '">' + data.label + '</option>';
-          selector.append(option);
-        });
-
-        $(countrySelectorDownload).on('change', function () {
-          $(irmContainer).html('');
-          showLoader('#tab-loader');
-          countryFilter = countrySelectorDownload.val();
-          page = 1;
-          showTilesIrmReports(countryFilter, page);
-        });
-      });
-    }
-
-    function buildSelectorComments(selector, placeholder, endpoint, query) {
-      selector.select2({
-        minimumResultsForSearch: Infinity,
-        containerCssClass: '-green -tall',
-        dropdownCssClass: '-green',
-        placeholder: '' + placeholder
-      });
-      selector.append('<option value="0">' + placeholder + '</option>');
-      $.getJSON('/apiJSON/' + endpoint + '?' + query, function (data) {
-        data.data.forEach(function (data) {
-          var option = '<option value="' + data.id + '">' + data.label + '</option>';
-          selector.append(option);
-        });
-
-        $(countrySelectorComments).on('change', function () {
-          $(irmContainer).html('');
-          showLoader('#tab-loader-comments');
-          countryFilter = countrySelectorComments.val();
-          page = 1;
-          showTilesComments(countryFilter, page);
-        });
-      });
-    }
-
-    buildSelectorDownload(countrySelectorDownload, 'All countries', 'countries', 'fields=id,label&sort=label');
-    buildSelectorComments(countrySelectorComments, 'All countries', 'countries', 'fields=id,label&sort=label');
-    onClickPagination();
-    onClickPaginationComments();
-    initIRMTabs(onChangeIRMTabs);
-    showTilesIrmReports(countryFilter, page);
-    // showTilesComments(countryFilter, page);
-
-  })(jQuery);
-}
-'use strict';
-
 function showHomePage() {
   (function ($) {
 
@@ -2097,9 +1957,9 @@ function showHomePage() {
       user_name: 'jmonaco',
       type: 'cartodb',
       sublayers: [{
-        sql: 'SELECT * FROM bwhyco5uex5gk6l2sjbo4w',
-        cartocss: '#layer{polygon-fill:ramp([actionplan],(#c30,#c30,#2d4f00,#66bc29,#2d4f00,#2d4f00,#2d4f00,#66bc29,#2d4f00),("","Inactive","Implementing 1st action plan and Developing 2nd action plan","Developing action plan","Implementing 2nd action plan","Implementing 1st action plan","Developing 1st Action Plan","Implementing action plan"),"=");line-width:1;line-color:#FFF;line-opacity:.5}',
-        interactivity: 'the_geom, nid, country, cartodb_id'
+        sql: 'SELECT  wb.the_geom_webmercator the_geom_webmercator, nid, member_since, at.path, actionplan, at.country, at.cartodb_id FROM ggtqckcj2bioeepnuvxoow at INNER JOIN world_borders_hd wb on at.country = wb.name',
+        cartocss: '#layer {polygon-fill: ramp([actionplan], (#2d4f00, #66bc29, #2d4f00, #66bc29, #2d4f00, #2d4f00, #cc3300, #cc3300), ("Implementing 1st action plan and Developing 2nd action plan","Developing action plan", "Implementing 2nd action plan", "Developing 1st Action Plan", "Implementing 1st action plan", "Implementing action plan", , "Inactive"), "="); line-width: 1; line-color: #FFF; line-opacity: 0.5;}',
+        interactivity: 'the_geom_webmercator, nid, country, cartodb_id'
       }]
     }).addTo(map).done(function (layer) {
       layer.setInteraction(true);
@@ -2240,6 +2100,146 @@ function showSliderHomePage() {
         adaptiveHeight: true
       });
     });
+  })(jQuery);
+}
+'use strict';
+
+function showIrmReports() {
+  (function ($) {
+
+    // cache
+    var countryFilter = 0;
+    var typeFilter = 0;
+    var page = 1;
+    var totalPages = 0;
+
+    //selectors
+    var countrySelectorDownload = $('.country-filter-download');
+    var countrySelectorComments = $('.country-filter-comments');
+    var tabsContainer = $('.tabs-container');
+    var containerInfo = $('#container-info');
+    var irmContainer = $('#downloadContainer');
+    var commentsContainer = $('#commentsContainer');
+
+    // custom callback for tabs component
+    var onChangeIRMTabs = function onChangeIRMTabs(id, label) {
+      $('.tab-content').addClass('-hidden');
+      $('.' + id).removeClass('-hidden');
+    };
+
+    function initIRMTabs(onChange) {
+      initTabs();
+      setTabListeners(onChange);
+    }
+
+    function setPageCount(val) {
+      $('.reload-thematic-download').data('value', val);
+    }
+
+    function setPageCountComments(val) {
+      $('.reload-thematic-comments').data('value', val);
+    }
+
+    function getCurrentPage() {
+      var pageCount = $('.reload-thematic-download').data('value');
+      return pageCount;
+    }
+
+    function getCurrentPageComments() {
+      var pageCount = $('.reload-thematic-comments').data('value');
+      return pageCount;
+    }
+
+    function onClickPagination() {
+      $('.c-pagination-click-download').on('click', function () {
+        setPageCount(getCurrentPage() + 1);
+        showLoader('#container-info');
+        showTilesIrmReports(countryFilter, getCurrentPage());
+      });
+    }
+
+    function onClickPaginationComments() {
+      $('.c-pagination-click-comments').on('click', function () {
+        setPageCountComments(getCurrentPageComments() + 1);
+        showLoader('#container-info');
+        showTilesComments(countryFilter, getCurrentPageComments());
+      });
+    }
+
+    function showTilesIrmReports(country, pageNext) {
+      var activeCountry = parseInt(country) > 0 ? 'filter[id]=' + country + '&' : '';
+      $.getJSON('/apiJSON/countries?' + activeCountry + 'sort=label', function (countries) {
+        appendTilesIRM(countries.data, irmContainer);
+        appendTilesComments(countries.data, commentsContainer);
+        removeLoader('#container-info', null, true);
+      });
+    }
+
+    // function showTilesComments(country, pageNext) {
+    //   const activeCountry = parseInt(country) > 0 ? `filter[id]=${country}&` : '';
+    //   $.getJSON(`/apiJSON/countries?${activeCountry}sort=label`, function (countries) {
+    //     for (let i = 0; i < countries.data.length; i += 1) {
+    //
+    //     }
+    //   });
+    // }
+
+    function buildSelectorDownload(selector, placeholder, endpoint, query) {
+      selector.select2({
+        minimumResultsForSearch: Infinity,
+        containerCssClass: '-green -tall',
+        dropdownCssClass: '-green',
+        placeholder: '' + placeholder
+      });
+      selector.append('<option value="0">' + placeholder + '</option>');
+      $.getJSON('/apiJSON/' + endpoint + '?' + query, function (data) {
+        data.data.forEach(function (data) {
+          var option = '<option value="' + data.id + '">' + data.label + '</option>';
+          selector.append(option);
+        });
+
+        $(countrySelectorDownload).on('change', function () {
+          $(irmContainer).html('');
+          showLoader('#tab-loader');
+          countryFilter = countrySelectorDownload.val();
+          page = 1;
+          showTilesIrmReports(countryFilter, page);
+        });
+      });
+    }
+
+    function buildSelectorComments(selector, placeholder, endpoint, query) {
+      selector.select2({
+        minimumResultsForSearch: Infinity,
+        containerCssClass: '-green -tall',
+        dropdownCssClass: '-green',
+        placeholder: '' + placeholder
+      });
+      selector.append('<option value="0">' + placeholder + '</option>');
+      $.getJSON('/apiJSON/' + endpoint + '?' + query, function (data) {
+        data.data.forEach(function (data) {
+          var option = '<option value="' + data.id + '">' + data.label + '</option>';
+          selector.append(option);
+        });
+
+        $(countrySelectorComments).on('change', function () {
+          $(irmContainer).html('');
+          showLoader('#tab-loader-comments');
+          countryFilter = countrySelectorComments.val();
+          page = 1;
+          showTilesComments(countryFilter, page);
+        });
+      });
+    }
+
+    buildSelectorDownload(countrySelectorDownload, 'All countries', 'countries', 'fields=id,label&sort=label');
+    buildSelectorComments(countrySelectorComments, 'All countries', 'countries', 'fields=id,label&sort=label');
+    onClickPagination();
+    onClickPaginationComments();
+    initIRMTabs(onChangeIRMTabs);
+    showTilesIrmReports(countryFilter, page);
+    // showTilesComments(countryFilter, page);
+
   })(jQuery);
 }
 'use strict';
@@ -2464,6 +2464,57 @@ function showPageList() {
 }
 'use strict';
 
+function peopleInvolved(id) {
+  (function ($) {
+    function getPeopleInvolvedStories(idPeople) {
+      var content = '';
+      $.getJSON('/apiJSON/stories?filter[author]=' + idPeople, function (data) {
+        showLoader('.container-content-user');
+        if (data.count !== 0) {
+          data.data.forEach(function (data) {
+            content += '<div class="small-12 column  medium-4 blogs-detail">\n                      <a href="/' + data.alias + '"><div class="contain-text">\n                        <span class="text -white -title-x-small">' + data.label + '</span>\n                        <span class="text -white">' + moment.unix(parseInt(data.created)).format('D MMMM YYYY') + '</span>\n                      </div></a>\n                    </div>';
+          });
+          removeLoader('.container-content-user');
+          $('.containter-people-detail').append(content);
+        } else {
+          removeLoader('.container-content-user');
+          $('.containter-people-detail').append('<div class="small-12 column"><span class="text -white -small-bold">No results found</span></div>');
+        }
+      });
+    }
+
+    function getPeopleInvolvedNews(idPeople) {
+      var content = '';
+      $.getJSON('/apiJSON/news?filter[author]=' + idPeople, function (data) {
+        showLoader('.container-content-user-news');
+        if (data.count !== 0) {
+          data.data.forEach(function (data) {
+            content += '<div class="small-12 column  medium-4 news-detail">\n                      <a href="/' + data.alias + '"><div class="contain-text">\n                        <span class="text -white -title-x-small">' + data.label + '</span>\n                        <span class="text -white">' + moment.unix(parseInt(data.created)).format('D MMMM YYYY') + '</span>\n                      </div></a>\n                    </div>';
+          });
+          removeLoader('.container-content-user-news');
+          $('.containter-people-detail-news').append(content);
+        } else {
+          removeLoader('.container-content-user-news');
+          $('.containter-people-detail-news').append('<div class="small-12 column"><span class="text -white -small-bold">No results found</span></div>');
+        }
+      });
+    }
+
+    function getPicture(idPeople) {
+      $.getJSON('/apiJSON/people/' + idPeople + '?fields=image', function (data) {
+        showLoader('.image-profile');
+        $('.image-profile').css('background-image', 'url(' + data.data[0].image + ')');
+        removeLoader('.image-profile');
+      });
+    }
+
+    getPeopleInvolvedStories(id);
+    getPeopleInvolvedNews(id);
+    getPicture(id);
+  })(jQuery);
+}
+'use strict';
+
 function showGroupResourcesDetail(id) {
   (function ($) {
 
@@ -2534,57 +2585,6 @@ function showResourcesDetail(id) {
     $.getJSON('/apiJSON/resources?filter[id]=' + id, function (data) {
       buildExploreMoreTiles('resources', 'group_resource', data.data[0].group_resource[0]);
     });
-  })(jQuery);
-}
-'use strict';
-
-function peopleInvolved(id) {
-  (function ($) {
-    function getPeopleInvolvedStories(idPeople) {
-      var content = '';
-      $.getJSON('/apiJSON/stories?filter[author]=' + idPeople, function (data) {
-        showLoader('.container-content-user');
-        if (data.count !== 0) {
-          data.data.forEach(function (data) {
-            content += '<div class="small-12 column  medium-4 blogs-detail">\n                      <a href="/' + data.alias + '"><div class="contain-text">\n                        <span class="text -white -title-x-small">' + data.label + '</span>\n                        <span class="text -white">' + moment.unix(parseInt(data.created)).format('D MMMM YYYY') + '</span>\n                      </div></a>\n                    </div>';
-          });
-          removeLoader('.container-content-user');
-          $('.containter-people-detail').append(content);
-        } else {
-          removeLoader('.container-content-user');
-          $('.containter-people-detail').append('<div class="small-12 column"><span class="text -white -small-bold">No results found</span></div>');
-        }
-      });
-    }
-
-    function getPeopleInvolvedNews(idPeople) {
-      var content = '';
-      $.getJSON('/apiJSON/news?filter[author]=' + idPeople, function (data) {
-        showLoader('.container-content-user-news');
-        if (data.count !== 0) {
-          data.data.forEach(function (data) {
-            content += '<div class="small-12 column  medium-4 news-detail">\n                      <a href="/' + data.alias + '"><div class="contain-text">\n                        <span class="text -white -title-x-small">' + data.label + '</span>\n                        <span class="text -white">' + moment.unix(parseInt(data.created)).format('D MMMM YYYY') + '</span>\n                      </div></a>\n                    </div>';
-          });
-          removeLoader('.container-content-user-news');
-          $('.containter-people-detail-news').append(content);
-        } else {
-          removeLoader('.container-content-user-news');
-          $('.containter-people-detail-news').append('<div class="small-12 column"><span class="text -white -small-bold">No results found</span></div>');
-        }
-      });
-    }
-
-    function getPicture(idPeople) {
-      $.getJSON('/apiJSON/people/' + idPeople + '?fields=image', function (data) {
-        showLoader('.image-profile');
-        $('.image-profile').css('background-image', 'url(' + data.data[0].image + ')');
-        removeLoader('.image-profile');
-      });
-    }
-
-    getPeopleInvolvedStories(id);
-    getPeopleInvolvedNews(id);
-    getPicture(id);
   })(jQuery);
 }
 'use strict';
@@ -2844,6 +2844,11 @@ function showStoriesSubmitPage(id) {
     });
   })(jQuery);
 }
+"use strict";
+
+function tagsPage() {
+  (function ($) {})(jQuery);
+}
 'use strict';
 
 function showThemesDetail(id) {
@@ -3000,11 +3005,6 @@ function showThemesPage() {
     setTabListeners(onChangeTab);
     setSearchListeners(searchEl, searchText);
   })(jQuery);
-}
-"use strict";
-
-function tagsPage() {
-  (function ($) {})(jQuery);
 }
 'use strict';
 
