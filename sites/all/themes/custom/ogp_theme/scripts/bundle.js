@@ -226,85 +226,6 @@ function getAbsolutePath() {
 })(jQuery);
 'use strict';
 
-function convertPostDate(date, format) {
-  var dateString = new Date(date * 1e3);
-  var dd = dateString.getDate();
-  var mm = dateString.getMonth() + 1; //January is 0!
-  var yyyy = dateString.getFullYear();
-
-  if (format === 'dd/mm/yyyy') {
-    if (dd < 10) {
-      dd = '0' + dd;
-    }
-
-    if (mm < 10) {
-      mm = '0' + mm;
-    }
-  }
-
-  dateString = dd + '/' + mm + '/' + yyyy;
-
-  return dateString;
-}
-
-function convertEventDate(date) {
-  var myDate = moment(date, 'YYYY-M-DD HH:mm:ss');
-  return myDate.format('MMMM D, YYYY - hh:mm');
-}
-
-function dateDiff(date) {
-  return moment().diff(date, 'days');
-}
-'use strict';
-
-function smoothScroll() {
-  $('a[href*="#"]:not([href="#"])').click(function () {
-    if (location.pathname.replace(/^\//, '') == this.pathname.replace(/^\//, '') && location.hostname == this.hostname) {
-      var target = $(this.hash);
-      target = target.length ? target : $('[name=' + this.hash.slice(1) + ']');
-      if (target.length) {
-        $('html, body').animate({
-          scrollTop: target.offset().top
-        }, 500);
-        return false;
-      }
-    }
-  });
-}
-'use strict';
-
-function getAuthors(data) {
-  var authorString = '';
-  if (data[0]) {
-    data.forEach(function (author, index) {
-      if (index === data.length - 1) {
-        authorString += '' + author.label;
-      } else {
-        authorString += author.label + ', ';
-      }
-    });
-  }
-  return authorString;
-}
-
-function stripEmptyStrings() {
-  $('p').each(function () {
-    var $this = $(this);
-    if ($this.html().replace(/\s|&nbsp;/g, '').length == 0) $this.remove();
-  });
-}
-'use strict';
-
-function addDots(string, limit) {
-  var dots = '...';
-  if (string.length > limit) {
-    string = string.substring(0, limit) + dots;
-  }
-
-  return string;
-}
-'use strict';
-
 function aboutMenu() {
   (function ($) {
 
@@ -361,7 +282,7 @@ function addBanner(type, id) {
       $('.banners-container').append('\n        <div class="l-full-width -blue -short -center">\n          <div class="row">\n            <div class="column small-12 medium-7 large-9">\n              <h3 class="text -title-small -white">Have a story worth sharing? </h3>\n              <p class="text -white">\n                Write your own story and tell us how your government and civil society are working\n                together to accomplish open government commitments.\n              </p>\n            </div>\n            <div class="column small-12 medium-5 large-3 vertical">\n              <a class="c-button -box -large -center" href="/submit-story">write story</a>\n            </div>\n          </div>\n        </div>\n      ');
       break;
     case 'newsletter':
-      $('.banners-container').append('\n        <div class="l-full-width -black -short -center">\n          <div class="row">\n            <div class="column small-12 medium-7 large-9">\n              <h3 class="text -title-small -white">OGP\u2019s monthly newsletter</h3>\n              <p class="text -white">\n                Helps goverments, civil society actors and concerned citizens stay informed\n              </p>\n            </div>\n            <div class="column small-12 medium-5 large-3 vertical">\n                <span class="c-button -box -large -center js-subscribeModalOpen">Subscribe</span>\n            </div>\n          </div>\n        </div>\n      ');
+      $('.banners-container').append('\n        <div class="l-full-width -black -short -center">\n          <div class="row">\n            <div class="column small-12 medium-7 large-9">\n              <h3 class="text -title-small -white">OGP Newsletters</h3>\n              <p class="text -white">\n                Sign-ups for OGP in the News, the Gazette, the Civil Society mailing list, and our monthly highlights.\n              </p>\n            </div>\n            <div class="column small-12 medium-5 large-3 vertical">\n                <span class="c-button -box -large -center js-subscribeModalOpen">Subscribe</span>\n            </div>\n          </div>\n        </div>\n      ');
       break;
     case 'involved':
       $('.banners-container').append('\n        <div class="l-full-width -black -short -center">\n          <div class="row">\n            <div class="column small-12 medium-7 large-9">\n              <h3 class="text -title-small -white">Get involved</h3>\n              <p class="text -white">\n                For the Open Government Partnership model to work, lots of people need to get involved\n              </p>\n            </div>\n            <div class="column small-12 medium-5 large-3 vertical">\n                <a class="c-button -box -large -center" href="/resources">Resources</a>\n            </div>\n          </div>\n        </div>\n      ');
@@ -969,6 +890,85 @@ function twitterLink() {
     var idStatus = $('.value-status').text();
     $('.link-twitter').attr('href', 'https://twitter.com/opengovpart/status/' + idStatus);
   })(jQuery);
+}
+'use strict';
+
+function convertPostDate(date, format) {
+  var dateString = new Date(date * 1e3);
+  var dd = dateString.getDate();
+  var mm = dateString.getMonth() + 1; //January is 0!
+  var yyyy = dateString.getFullYear();
+
+  if (format === 'dd/mm/yyyy') {
+    if (dd < 10) {
+      dd = '0' + dd;
+    }
+
+    if (mm < 10) {
+      mm = '0' + mm;
+    }
+  }
+
+  dateString = dd + '/' + mm + '/' + yyyy;
+
+  return dateString;
+}
+
+function convertEventDate(date) {
+  var myDate = moment(date, 'YYYY-M-DD HH:mm:ss');
+  return myDate.format('MMMM D, YYYY - hh:mm');
+}
+
+function dateDiff(date) {
+  return moment().diff(date, 'days');
+}
+'use strict';
+
+function smoothScroll() {
+  $('a[href*="#"]:not([href="#"])').click(function () {
+    if (location.pathname.replace(/^\//, '') == this.pathname.replace(/^\//, '') && location.hostname == this.hostname) {
+      var target = $(this.hash);
+      target = target.length ? target : $('[name=' + this.hash.slice(1) + ']');
+      if (target.length) {
+        $('html, body').animate({
+          scrollTop: target.offset().top
+        }, 500);
+        return false;
+      }
+    }
+  });
+}
+'use strict';
+
+function getAuthors(data) {
+  var authorString = '';
+  if (data[0]) {
+    data.forEach(function (author, index) {
+      if (index === data.length - 1) {
+        authorString += '' + author.label;
+      } else {
+        authorString += author.label + ', ';
+      }
+    });
+  }
+  return authorString;
+}
+
+function stripEmptyStrings() {
+  $('p').each(function () {
+    var $this = $(this);
+    if ($this.html().replace(/\s|&nbsp;/g, '').length == 0) $this.remove();
+  });
+}
+'use strict';
+
+function addDots(string, limit) {
+  var dots = '...';
+  if (string.length > limit) {
+    string = string.substring(0, limit) + dots;
+  }
+
+  return string;
 }
 'use strict';
 
