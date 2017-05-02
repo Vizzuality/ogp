@@ -1,9 +1,8 @@
-name = Schema.org
-description = Allows to annotate content using the schema.org vocabularies
+name = Schema.org support for contributed modules
+description = Add support for fields from contributed modules such as addressfield and fivestar.
 package = "Schema.org"
-dependencies[] = rdf
+dependencies[] = schemaorg
 core = 7.x
-files[] = schemaorg.test
 
 ; Information added by Drupal.org packaging script on 2015-01-29
 version = "7.x-1.0-rc1"
