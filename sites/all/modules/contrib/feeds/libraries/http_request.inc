@@ -9,29 +9,6 @@
  */
 
 /**
- * Error code for when the URL could not be parsed.
- *
- * @var int
- */
-define('FEEDS_ERROR_PARSE_ERROR', -1001);
-
-/**
- * Error code for when the scheme of an URL could not be determined.
- *
- * An example of a scheme is 'http'.
- *
- * @var int
- */
-define('FEEDS_ERROR_NO_SCHEME', -1002);
-
-/**
- * Error code for when the scheme of an URL is not supported.
- *
- * @var int
- */
-define('FEEDS_ERROR_INVALID_SCHEME', -1003);
-
-/**
  * PCRE for finding the link tags in html.
  */
 define('HTTP_REQUEST_PCRE_LINK_TAG', '/<link((?:[\x09\x0A\x0B\x0C\x0D\x20]+[^\x09\x0A\x0B\x0C\x0D\x20\x2F\x3E][^\x09\x0A\x0B\x0C\x0D\x20\x2F\x3D\x3E]*(?:[\x09\x0A\x0B\x0C\x0D\x20]*=[\x09\x0A\x0B\x0C\x0D\x20]*(?:"(?:[^"]*)"|\'(?:[^\']*)\'|(?:[^\x09\x0A\x0B\x0C\x0D\x20\x22\x27\x3E][^\x09\x0A\x0B\x0C\x0D\x20\x3E]*)?))?)*)[\x09\x0A\x0B\x0C\x0D\x20]*(>(.*)<\/link>|(\/)?>)/si');
@@ -45,11 +22,6 @@ define('HTTP_REQUEST_PCRE_TAG_ATTRIBUTES', '/[\x09\x0A\x0B\x0C\x0D\x20]+([^\x09\
  * For cUrl specific errors.
  */
 class HRCurlException extends Exception {}
-
-/**
- * For HTTP requests that do not return a 2xx code.
- */
-class FeedsHTTPRequestException extends Exception {}
 
 /**
  * Discovers RSS or atom feeds at the given URL.
@@ -116,7 +88,7 @@ function http_request_get_common_syndication($url, $settings = array()) {
 function http_request_get($url, $username = NULL, $password = NULL, $accept_invalid_cert = FALSE, $timeout = NULL) {
   // Intra-pagedownload cache, avoid to download the same content twice within
   // one page download (it's possible, compatible and parse calls).
-  $download_cache = &drupal_static(__FUNCTION__, array());
+  static $download_cache = array();
   if (isset($download_cache[$url])) {
     return $download_cache[$url];
   }
@@ -175,13 +147,9 @@ function http_request_get($url, $username = NULL, $password = NULL, $accept_inva
     // cURL can only support either http:// or https://.
     // CURLOPT_PROTOCOLS is only supported with cURL 7.19.4
     $uri = parse_url($url);
-    if ($uri === FALSE) {
-      $result->error = 'unable to parse URL';
-      $result->code = FEEDS_ERROR_PARSE_ERROR;
-    }
-    elseif (!isset($uri['scheme'])) {
+    if (!isset($uri['scheme'])) {
       $result->error = 'missing schema';
-      $result->code = FEEDS_ERROR_NO_SCHEME;
+      $result->code = -1002;
     }
     else {
       switch ($uri['scheme']) {
@@ -192,7 +160,7 @@ function http_request_get($url, $username = NULL, $password = NULL, $accept_inva
 
         default:
           $result->error = 'invalid schema ' . $uri['scheme'];
-          $result->code = FEEDS_ERROR_INVALID_SCHEME;
+          $result->code = -1003;
           break;
       }
     }
@@ -296,7 +264,7 @@ function http_request_get($url, $username = NULL, $password = NULL, $accept_inva
   // In case of 304 Not Modified try to return cached data.
   if ($result->code == 304) {
 
-    if (isset($last_result->data)) {
+    if (isset($last_result)) {
       $last_result->from_cache = TRUE;
       return $last_result;
     }
@@ -313,56 +281,6 @@ function http_request_get($url, $username = NULL, $password = NULL, $accept_inva
   $download_cache[$url] = $result;
 
   return $result;
-}
-
-/**
- * Checks the result of the HTTP Request.
- *
- * @param string $url
- *   The URL that was requested.
- * @param object $result
- *   The HTTP Request result.
- *
- * @throws FeedsHTTPRequestException
- *   In case the result code of the HTTP request is not in the 2xx series.
- */
-function http_request_check_result($url, $result) {
-  if (!in_array($result->code, array(200, 201, 202, 203, 204, 205, 206))) {
-    $vars = array(
-      '@url' => $url,
-      '@code' => $result->code,
-      '@error' => isset($result->error) ? $result->error : 'Unknown error',
-    );
-
-    switch ($result->code) {
-      case FEEDS_ERROR_PARSE_ERROR:
-        $message = t('Download of @url failed because it could not be parsed.', $vars);
-        break;
-
-      case FEEDS_ERROR_NO_SCHEME:
-        $message = t("Download of @url failed because its scheme could not be determined. The URL is expected to start with something like '@example'.", $vars + array(
-          '@example' => 'http://',
-        ));
-        break;
-
-      case FEEDS_ERROR_INVALID_SCHEME:
-        $message = t('Download of @url failed because its scheme is not supported: @error. Examples of supported schemes are: @supported.', $vars + array(
-          '@supported' => implode(', ', array('http', 'https')),
-        ));
-        break;
-
-      default:
-        if (isset($result->error)) {
-          $message = t('Download of @url failed with code @code and the following error: @error.', $vars);
-        }
-        else {
-          $message = t('Download of @url failed with code @code.', $vars);
-        }
-        break;
-    }
-
-    throw new FeedsHTTPRequestException($message);
-  }
 }
 
 /**
@@ -423,9 +341,8 @@ function http_request_get_cache($url) {
  * @param stdClass $result
  *   The result of the HTTP request.
  */
-function http_request_set_cache($url, $result) {
-  $item = ($result instanceof FeedsHTTPCacheItem) ? $result : new FeedsHTTPCacheItem(hash('sha256', $url), $result);
-  $item->cacheSet();
+function http_request_set_cache($url, stdClass $result) {
+  cache_set(hash('sha256', $url), $result, 'cache_feeds_http');
 }
 
 /**

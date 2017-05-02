@@ -42,16 +42,15 @@ class FeedsHTTPFetcherResult extends FeedsFetcherResult {
   }
 
   /**
-   * Overrides FeedsFetcherResult::getRaw().
-   *
-   * @throws FeedsHTTPRequestException
-   *   In case the result code of the HTTP request is not in the 2xx series.
+   * Overrides FeedsFetcherResult::getRaw();
    */
   public function getRaw() {
     if (!isset($this->raw)) {
       feeds_include_library('http_request.inc', 'http_request');
       $result = http_request_get($this->url, NULL, NULL, $this->acceptInvalidCert, $this->timeout);
-      http_request_check_result($this->url, $result);
+      if (!in_array($result->code, array(200, 201, 202, 203, 204, 205, 206))) {
+        throw new Exception(t('Download of @url failed with code !code.', array('@url' => $this->url, '!code' => $result->code)));
+      }
       $this->raw = $result->data;
     }
 
@@ -120,13 +119,11 @@ class FeedsHTTPFetcher extends FeedsFetcher {
     }
     // No subscription notification has ben sent, we are being notified.
     else {
-      $source = feeds_source($this->id, $feed_nid);
       try {
-        $source->existing()->import();
+        feeds_source($this->id, $feed_nid)->existing()->import();
       }
       catch (Exception $e) {
         // In case of an error, respond with a 503 Service (temporary) unavailable.
-        $source->log('import', 'An exception occurred: %exception', array('%exception' => $e->getMessage()), WATCHDOG_ERROR);
         header('HTTP/1.1 503 "Not Found"', NULL, 503);
         drupal_exit();
       }

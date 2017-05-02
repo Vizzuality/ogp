@@ -55,32 +55,12 @@ function feeds_requirements($phase) {
 }
 
 /**
- * Implements hook_install().
- */
-function feeds_install() {
-  // Activate our custom cache handler for the HTTP cache.
-  variable_set('cache_class_cache_feeds_http', 'FeedsHTTPCache');
-}
-
-/**
- * Implements hook_uninstall().
- */
+  * Implement hook_uninstall()
+  */
 function feeds_uninstall() {
-  variable_del('cache_class_cache_feeds_http');
-  variable_del('cache_flush_cache_feeds_http');
-  variable_del('default_feeds_importer');
-  variable_del('feeds_debug');
-  variable_del('feeds_http_file_cache_dir');
-  variable_del('feeds_importer_class');
-  variable_del('feeds_library_dir');
-  variable_del('feeds_never_use_curl');
-  variable_del('feeds_process_limit');
-  variable_del('feeds_reschedule');
-  variable_del('feeds_source_class');
-  variable_del('feeds_sync_cache_feeds_http_interval');
-  variable_del('feeds_sync_cache_feeds_http_last_check');
-  variable_del('feeds_use_mbstring');
   variable_del('http_request_timeout');
+  variable_del('feeds_reschedule');
+  variable_del('feeds_use_mbstring');
 }
 
 /**
@@ -725,12 +705,4 @@ function feeds_update_7212() {
     $schema['description'] = 'Cache table for Feeds downloads.';
     db_create_table('cache_feeds_http', $schema);
   }
-}
-
-/**
- * Set cache class for Feeds HTTP cache.
- */
-function feeds_update_7213() {
-  // Activate our custom cache handler for the HTTP cache.
-  variable_set('cache_class_cache_feeds_http', 'FeedsHTTPCache');
 }
