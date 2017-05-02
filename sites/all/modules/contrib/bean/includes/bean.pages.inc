@@ -19,7 +19,7 @@ function bean_view_page(Bean $bean) {
  */
 function bean_edit(Bean $bean) {
   $type = bean_fetch_plugin_info($bean->type);
-  drupal_set_title(t('Edit @type: @title', array('@type' => $type['label'], '@title' => $bean->label)));
+  drupal_set_title(t('Edit @type: @title', array('@type' => $type['label'], '@title' => $bean->label)), PASS_THROUGH);
   return drupal_get_form('bean_form', $bean);
 }
 
@@ -29,7 +29,7 @@ function bean_edit(Bean $bean) {
 function bean_add($type) {
   $bean = bean_create(array('type' => $type));
   $bean_type = bean_type_load($type);
-  drupal_set_title(t('Create @type block', array('@type' => $bean_type->getLabel())));
+  drupal_set_title(t('Create @type block', array('@type' => $bean_type->getLabel())), PASS_THROUGH);
 
   return drupal_get_form('bean_form', $bean, $type);
 }
@@ -42,7 +42,7 @@ function bean_add_page() {
 
   $types = array();
   foreach ($bean_types as $key => $bean_type) {
-    if (bean_access('create', $bean_type->type)) {
+    if (entity_access('create', 'bean', $bean_type->type)) {
       $types[$key] = $bean_type;
     }
   }
@@ -116,14 +116,14 @@ function bean_list() {
 
     // Build a list of all the accessible operations for the current bean.
     $operations = array();
-    if (bean_access('edit', $bean)) {
+    if (entity_access('update', 'bean', $bean)) {
       $operations['edit'] = array(
         'title' => t('edit'),
         'href' => 'block/' . $bean->delta . '/edit',
         'query' => $destination,
       );
     }
-    if (bean_access('delete', $bean)) {
+    if (entity_access('delete', 'bean', $bean)) {
       $operations['delete'] = array(
         'title' => t('delete'),
         'href' => 'block/' . $bean->delta . '/delete',
@@ -207,6 +207,10 @@ function bean_form($form, &$form_state, Bean $bean, $type = NULL) {
   else {
     $bean = $form_state['bean'];
   }
+
+  // Add entity api defaults
+  $form['#entity_type'] = 'bean';
+  $form['bean']['#value'] = $bean;
 
   $form['label'] = array(
     '#type' => 'textfield',
@@ -308,14 +312,14 @@ function bean_form($form, &$form_state, Bean $bean, $type = NULL) {
   $form['actions']['submit'] = array(
     '#type' => 'submit',
     '#value' => t('Save'),
-    '#weight' => 200,
+    '#weight' => 0,
     '#submit' => array('bean_form_submit'),
   );
-  if (!empty($bean->bid) && bean_access('delete', $bean)) {
+  if (!empty($bean->bid) && entity_access('delete', 'bean', $bean)) {
     $form['actions']['delete'] = array(
       '#type' => 'submit',
       '#value' => t('Delete'),
-      '#weight' => 201,
+      '#weight' => 1,
       '#submit' => array('bean_form_delete_submit'),
     );
   }
@@ -388,7 +392,7 @@ function bean_form_submit($form, &$form_state) {
   $bean->save();
   $form_state['values']['bean'] = $bean;
 
-  $watchdog_args = array('@type' => $bean->typeName(), '%title' => $bean->label());
+  $watchdog_args = array('@type' => $bean->type, '%title' => $bean->label());
   $t_args = array('@type' => $bean->typeName(), '%title' => $bean->label());
 
   if (!$insert) {
@@ -658,8 +662,8 @@ function bean_revisions_page(Bean $bean) {
   $rows = array();
 
   // Dont' show link for default revision
-  $can_delete = bean_access('delete', $bean);
-  $can_edit = bean_access('edit', $bean);
+  $can_delete = entity_access('delete', 'bean', $bean);
+  $can_edit = entity_access('update', 'bean', $bean);
 
   foreach ($bean->revisions as $rev) {
     $active = $rev->vid == $bean->vid ? TRUE : FALSE;

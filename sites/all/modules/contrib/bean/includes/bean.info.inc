@@ -47,13 +47,34 @@ class BeanMetadataController extends EntityDefaultMetadataController {
     );
 
     $properties['type'] = array(
-      'type' => 'bean_type',
+      'type' => 'token',
       'getter callback' => 'entity_property_verbatim_get',
       'setter callback' => 'entity_property_verbatim_set',
       'setter permission' => 'administer beans',
       'required' => TRUE,
       'description' => t('The bean type.'),
     ) + $properties['type'];
+
+    $properties['created'] = array(
+      'label' => t('Date created'),
+      'description' => t('The date the bean was created.'),
+      'type' => 'date',
+      'schema field' => 'created',
+    );
+
+    $properties['changed'] = array(
+      'label' => t('Date changed'),
+      'description' => t('The date the bean was most recently updated.'),
+      'type' => 'date',
+      'schema field' => 'changed',
+    );
+
+    $properties['user'] = array(
+      'label' => t('User'),
+      'description' => t('The owner of the block'),
+      'type' => 'user',
+      'schema field' => 'uid',
+    );
 
     return $info;
   }
