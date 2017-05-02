@@ -20,7 +20,13 @@ function range_content_migrate_content_migrate_field_alter(&$field, $instance) {
         $field['settings']['decimal_separator'] = '.';
       }
       // Remove unused settings.
-      foreach (array('prefix', 'suffix', 'min', 'max', 'allowed_values', 'allowed_values_php', 'decimal') as $key) {
+      $unused_settings = array(
+        'prefix', 'suffix',
+        'min', 'max',
+        'allowed_values', 'allowed_values_php',
+        'decimal',
+      );
+      foreach ($unused_settings as $key) {
         unset($field['settings'][$key]);
       }
       break;
@@ -37,7 +43,13 @@ function range_content_migrate_content_migrate_instance_alter(&$instance, $field
       $new_type = array(
         'unformatted' => 'range_unformatted',
       );
-      foreach (array('default', 'us_0', 'us_1', 'us_2', 'be_0', 'be_1', 'be_2', 'fr_0', 'fr_1', 'fr_2') as $type) {
+      $old_type = array(
+        'default',
+        'us_0', 'us_1', 'us_2',
+        'be_0', 'be_1', 'be_2',
+        'fr_0', 'fr_1', 'fr_2',
+      );
+      foreach ($old_type as $type) {
         $new_type[$type] = $field['type'] === 'range_integer' ? 'range_integer' : 'range_decimal';
       }
       $base_settings = array(

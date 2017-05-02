@@ -20,17 +20,17 @@
  *
  * See more at https://www.drupal.org/node/2417365
  */
-class MigrateRangeFieldHandler extends MigrateFieldHandler {
+class RangeMigrateFieldHandler extends MigrateFieldHandler {
 
   /**
-   * {@inheritdocs}
+   * {@inheritdoc}
    */
   public function __construct() {
     $this->registerTypes(array('range_integer', 'range_decimal', 'range_float'));
   }
 
   /**
-   * {@inheritdocs}
+   * {@inheritdoc}
    */
   static public function arguments($from = NULL, $to = NULL, $language = NULL) {
     $arguments = array();
@@ -47,7 +47,7 @@ class MigrateRangeFieldHandler extends MigrateFieldHandler {
   }
 
   /**
-   * {@inheritdocs}
+   * {@inheritdoc}
    */
   public function fields($type, $instance, $migration = NULL) {
     return array(
@@ -58,7 +58,7 @@ class MigrateRangeFieldHandler extends MigrateFieldHandler {
   }
 
   /**
-   * {@inheritdocs}
+   * {@inheritdoc}
    */
   public function prepare($entity, array $field_info, array $instance, array $values) {
 

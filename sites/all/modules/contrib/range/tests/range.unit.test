@@ -15,10 +15,18 @@ class RangeUnitTestCase extends DrupalUnitTestCase {
    */
   public static function getInfo() {
     return array(
-      'name' => 'Range unit tests',
+      'name' => 'Unit tests',
       'description' => 'Tests range formatter layer.',
       'group' => 'Range',
     );
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  function setUp() {
+    drupal_load('module', 'range');
+    parent::setUp();
   }
 
   /**
@@ -57,25 +65,31 @@ class RangeUnitTestCase extends DrupalUnitTestCase {
     $instance_settings = array(
       'from' => array('prefix' => 'from_prefix-', 'suffix' => '-from_suffix'),
       'to' => array('prefix' => 'to_prefix-', 'suffix' => '-to_suffix'),
+      'combined' => array('prefix' => 'combined_prefix-', 'suffix' => '-combined_suffix'),
     );
 
-    // Test with disabled prefix and suffix.
-    $settings = array('from_prefix_suffix' => FALSE, 'to_prefix_suffix' => FALSE);
+    // Test with COMBINED enabled.
+    $settings = array('from_prefix_suffix' => FALSE, 'to_prefix_suffix' => FALSE, 'combined_prefix_suffix' => TRUE);
+    $result = _range_field_formatter_view_combined_value($value, $settings, $instance_settings);
+    $this->assertEqual($result, 'combined_prefix-12345-combined_suffix', format_string('COMBINED prefix and suffix have been added: <strong>@output<strong>', array('@output' => var_export($result, TRUE))));
+
+    // Test with COMBINED, FROM and TO disabled.
+    $settings = array('from_prefix_suffix' => FALSE, 'to_prefix_suffix' => FALSE, 'combined_prefix_suffix' => FALSE);
     $result = _range_field_formatter_view_combined_value($value, $settings, $instance_settings);
     $this->assertEqual($result, '12345', format_string('No suffix or prefix has been added: <strong>@output<strong>', array('@output' => var_export($result, TRUE))));
 
-    // Test with enabled prefix only.
-    $settings = array('from_prefix_suffix' => TRUE, 'to_prefix_suffix' => FALSE);
+    // Test with COMBINED and TO disabled; FROM enabled.
+    $settings = array('from_prefix_suffix' => TRUE, 'to_prefix_suffix' => FALSE, 'combined_prefix_suffix' => FALSE);
     $result = _range_field_formatter_view_combined_value($value, $settings, $instance_settings);
     $this->assertEqual($result, 'from_prefix-12345-from_suffix', format_string('FROM value prefix and suffix have been added: <strong>@output<strong>', array('@output' => var_export($result, TRUE))));
 
-    // Test with enabled suffix only.
-    $settings = array('from_prefix_suffix' => FALSE, 'to_prefix_suffix' => TRUE);
+    // Test with COMBINED and FROM disabled; TO enabled.
+    $settings = array('from_prefix_suffix' => FALSE, 'to_prefix_suffix' => TRUE, 'combined_prefix_suffix' => FALSE);
     $result = _range_field_formatter_view_combined_value($value, $settings, $instance_settings);
     $this->assertEqual($result, 'to_prefix-12345-to_suffix', format_string('TO value prefix and suffix have been added: <strong>@output<strong>', array('@output' => var_export($result, TRUE))));
 
-    // Test with enabled prefix and suffix.
-    $settings = array('from_prefix_suffix' => TRUE, 'to_prefix_suffix' => TRUE);
+    // Test with COMBINED disabled; FROM and TO enabled.
+    $settings = array('from_prefix_suffix' => TRUE, 'to_prefix_suffix' => TRUE, 'combined_prefix_suffix' => FALSE);
     $result = _range_field_formatter_view_combined_value($value, $settings, $instance_settings);
     $this->assertEqual($result, 'from_prefix-12345-to_suffix', format_string('FROM prefix and TO suffix have been added: <strong>@output<strong>', array('@output' => var_export($result, TRUE))));
   }

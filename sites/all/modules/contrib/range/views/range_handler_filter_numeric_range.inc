@@ -88,9 +88,7 @@ class range_handler_filter_numeric_range extends views_handler_filter {
    * {@inheritdoc}
    */
   public function query() {
-    $this->ensure_my_table();
-    $field_from = $this->table_alias . '.' . $this->definition['additional fields']['from'];
-    $field_to = $this->table_alias . '.' . $this->definition['additional fields']['to'];
+    list($field_from, $field_to) = $this->get_range_subfields();
 
     $info = $this->operators();
     if (!empty($info[$this->operator]['method'])) {
@@ -110,12 +108,33 @@ class range_handler_filter_numeric_range extends views_handler_filter {
     $inlude_endpoints = !($this->options['include_endpoints'] xor ($this->operator === 'within'));
     list($op_left, $op_right) = array_slice($operators, $inlude_endpoints ? 2 : 0, 2);
 
-    if ($this->operator === 'within') {
+    $this->op_within_query($this->operator, $field_from, $field_to, $op_left, $op_right);
+  }
+
+  /**
+   * Operation query.
+   */
+  protected function op_within_query($operator, $field_from, $field_to, $op_left, $op_right) {
+    if ($operator === 'within') {
       $this->query->add_where($this->options['group'], db_and()->condition($field_from, $this->value, $op_left)->condition($field_to, $this->value, $op_right));
     }
     else {
       $this->query->add_where($this->options['group'], db_or()->condition($field_from, $this->value, $op_right)->condition($field_to, $this->value, $op_left));
     }
+  }
+
+  /**
+   * Returns database field names for FROM and TO values.
+   *
+   * @return array
+   *   FROM and TO values database field names.
+   */
+  protected function get_range_subfields() {
+    $this->ensure_my_table();
+    return array(
+      $this->table_alias . '.' . $this->definition['additional fields']['from'],
+      $this->table_alias . '.' . $this->definition['additional fields']['to']
+    );
   }
 
   /**
@@ -133,6 +152,40 @@ class range_handler_filter_numeric_range extends views_handler_filter {
     $output = check_plain($options[$this->operator]) . ' ' . check_plain($this->value);
 
     return $output;
+  }
+
+}
+
+/**
+ * Filter handler for limiting a view to indexed content which lies within a range.
+ */
+class range_search_api_handler_filter_numeric_range extends range_handler_filter_numeric_range {
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function op_within_query($operator, $field_from, $field_to, $op_left, $op_right) {
+    if ($operator === 'within') {
+      $filter = $this->query->createFilter('AND');
+      $filter->condition($field_from, $this->value, $op_left);
+      $filter->condition($field_to, $this->value, $op_right);
+    }
+    else {
+      $filter = $this->query->createFilter('OR');
+      $filter->condition($field_from, $this->value, $op_right);
+      $filter->condition($field_to, $this->value, $op_left);
+    }
+    $this->query->filter($filter);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function get_range_subfields() {
+    return array(
+      "$this->real_field:from",
+      "$this->real_field:to",
+    );
   }
 
 }

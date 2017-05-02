@@ -6,24 +6,66 @@
  */
 
 /**
- * Implements hook_views_data().
+ * Implements hook_field_views_data().
  */
-function range_views_data() {
-  $data = array();
+function range_field_views_data($field) {
+  $data = field_views_field_default_views_data($field);
 
-  foreach (field_info_fields() as $field) {
-    if ($field['storage']['type'] != 'field_sql_storage') {
-      continue;
-    }
-    if ($field['module'] != 'range') {
-      continue;
-    }
-
+  if (!empty($data)) {
     _range_views_data_filter_handler($data, $field);
     _range_views_data_argument_handler($data, $field);
   }
 
   return $data;
+}
+
+/**
+ * Implements hook_views_data().
+ */
+function range_views_data() {
+  $data = array();
+
+  if (module_exists('search_api_views')) {
+    _range_views_search_api_data($data);
+  }
+
+  return $data;
+}
+
+/**
+ * Helper function.
+ *
+ * Collects views search API data for range fields.
+ *
+ * @param array $data
+ *   Views data array.
+ *
+ * @see search_api_views_views_data()
+ */
+function _range_views_search_api_data(array &$data) {
+  foreach (search_api_index_load_multiple(FALSE) as $index) {
+    $indexed_fields = $index->getFields();
+    $wrapper = $index->entityWrapper(NULL, FALSE);
+    foreach ($wrapper as $key => $property) {
+      // Make sure that both FROM and TO values are being indexed.
+      if ($property->type() === 'field_item_range' && !empty($indexed_fields["$key:from"]['indexed']) && !empty($indexed_fields["$key:to"]['indexed'])) {
+        $info = $property->info();
+        $data['search_api_index_' . $index->machine_name][$key]['filter'] = array(
+          'title' => t('@label range filter', array('@label' => $info['label'])),
+          'help' => t('Range contains (or does not contain) a value'),
+          'handler' => 'range_search_api_handler_filter_numeric_range',
+          'allow empty' => FALSE,
+        );
+        $data['search_api_index_' . $index->machine_name][$key]['argument'] = array(
+          'title' => t('@label range argument', array('@label' => $info['label'])),
+          'help' => t('Range contains (or does not contain) a value'),
+          'handler' => 'range_search_api_handler_argument_numeric_range',
+          'empty field name' => t('- No value -'),
+          'numeric' => TRUE,
+        );
+      }
+    }
+  }
 }
 
 /**
@@ -78,6 +120,7 @@ function _range_views_data_filter_handler(array &$data, array $field) {
   list($label, $current_table, $revision_table, $add_fields) = _range_views_data_base_information($field);
 
   $base = array(
+    'help' => t('Range contains (or does not contain) a value'),
     'handler' => 'range_handler_filter_numeric_range',
     'field_name' => $field['field_name'],
     'allow empty' => FALSE,
@@ -106,6 +149,7 @@ function _range_views_data_argument_handler(array &$data, array $field) {
   list($label, $current_table, $revision_table, $add_fields) = _range_views_data_base_information($field);
 
   $base = array(
+    'help' => t('Range contains (or does not contain) a value'),
     'handler' => 'range_handler_argument_numeric_range',
     'field_name' => $field['field_name'],
     'additional fields' => $add_fields,

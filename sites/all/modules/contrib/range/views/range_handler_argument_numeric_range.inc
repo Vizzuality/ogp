@@ -16,7 +16,7 @@ class range_handler_argument_numeric_range extends views_handler_argument {
   public function option_definition() {
     $options = parent::option_definition();
 
-    $options['operator'] = array('default' => 'within', 'bool' => FALSE);
+    $options['operator'] = array('default' => 'within');
     $options['include_endpoints'] = array('default' => FALSE, 'bool' => TRUE);
 
     return $options;
@@ -51,9 +51,7 @@ class range_handler_argument_numeric_range extends views_handler_argument {
    * {@inheritdoc}
    */
   public function query($group_by = FALSE) {
-    $this->ensure_my_table();
-    $field_from = $this->table_alias . '.' . $this->definition['additional fields']['from'];
-    $field_to = $this->table_alias . '.' . $this->definition['additional fields']['to'];
+    list($field_from, $field_to) = $this->get_range_subfields();
 
     $operators = array(
       '<', '>',
@@ -64,6 +62,13 @@ class range_handler_argument_numeric_range extends views_handler_argument {
     $inlude_endpoints = !($this->options['include_endpoints'] xor ($operator === 'within'));
     list($op_left, $op_right) = array_slice($operators, $inlude_endpoints ? 2 : 0, 2);
 
+    $this->op_within_query($operator, $field_from, $field_to, $op_left, $op_right);
+  }
+
+  /**
+   * Operation query.
+   */
+  protected function op_within_query($operator, $field_from, $field_to, $op_left, $op_right) {
     if ($operator === 'within') {
       $this->query->add_where(0, db_and()->condition($field_from, $this->argument, $op_left)->condition($field_to, $this->argument, $op_right));
     }
@@ -73,10 +78,58 @@ class range_handler_argument_numeric_range extends views_handler_argument {
   }
 
   /**
+   * Returns database field names for FROM and TO values.
+   *
+   * @return array
+   *   FROM and TO values database field names.
+   */
+  protected function get_range_subfields() {
+    $this->ensure_my_table();
+    return array(
+      $this->table_alias . '.' . $this->definition['additional fields']['from'],
+      $this->table_alias . '.' . $this->definition['additional fields']['to']
+    );
+  }
+
+  /**
    * {@inheritdoc}
    */
   public function get_sort_name() {
     return t('Numerical', array(), array('context' => 'Sort order'));
+  }
+
+}
+
+/**
+ * Argument handler for limiting a view to indexed content which lies within a range.
+ */
+class range_search_api_handler_argument_numeric_range extends range_handler_argument_numeric_range {
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function op_within_query($operator, $field_from, $field_to, $op_left, $op_right) {
+    if ($operator === 'within') {
+      $filter = $this->query->createFilter('AND');
+      $filter->condition($field_from, $this->argument, $op_left);
+      $filter->condition($field_to, $this->argument, $op_right);
+    }
+    else {
+      $filter = $this->query->createFilter('OR');
+      $filter->condition($field_from, $this->argument, $op_right);
+      $filter->condition($field_to, $this->argument, $op_left);
+    }
+    $this->query->filter($filter);
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  protected function get_range_subfields() {
+    return array(
+      "$this->real_field:from",
+      "$this->real_field:to",
+    );
   }
 
 }

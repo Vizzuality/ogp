@@ -207,7 +207,7 @@ function _range_update_instance_7005(array &$instance) {
       $return = TRUE;
     }
 
-    if ($display['settings']['number_formatter'] === 'sprintf') {
+    if (!empty($display['settings']['number_formatter']) && $display['settings']['number_formatter'] === 'sprintf') {
       $instance['display'][$view_mode]['type'] = $display['type'] === 'range_integer' ? 'range_integer_sprintf' : 'range_decimal_sprintf';
       unset($display['settings']['number_formatter'], $display['settings']['thousand_separator'], $display['settings']['decimal_separator'], $display['settings']['scale']);
       $instance['display'][$view_mode]['settings'] = $display['settings'];
@@ -215,4 +215,33 @@ function _range_update_instance_7005(array &$instance) {
     }
   }
   return $return;
+}
+
+/**
+ * Updates range field instances' settings.
+ *
+ * Adds support of COMBINED prefix and suffix.
+ */
+function range_update_7006() {
+  _range_update_instances('_range_update_instance_7006');
+}
+
+/**
+ * Instance update callback for 7006 update.
+ *
+ * @param array $instance
+ *   Field instance.
+ *
+ * @return bool
+ *   Whether given instance was updated or not.
+ */
+function _range_update_instance_7006(array &$instance) {
+  if ($instance['widget']['type'] === 'range') {
+    $instance['settings']['combined'] = array('prefix' => '', 'suffix' => '');
+
+    foreach ($instance['display'] as $view_mode => $display) {
+      $instance['display'][$view_mode]['settings']['combined_prefix_suffix'] = FALSE;
+    }
+    return TRUE;
+  }
 }

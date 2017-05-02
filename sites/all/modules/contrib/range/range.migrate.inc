@@ -11,6 +11,6 @@
 function range_migrate_api() {
   return array(
     'api' => 2,
-    'field handlers' => array('MigrateRangeFieldHandler'),
+    'field handlers' => array('RangeMigrateFieldHandler'),
   );
 }
