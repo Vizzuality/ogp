@@ -5,9 +5,16 @@ core = 7.x
 package = Search
 
 files[] = callback_add_combined.inc
-; Information added by drupal.org packaging script on 2013-10-01
-version = "7.x-1.2+0-dev"
+; Information added by drupal.org packaging script on 2013-03-03
+version = "7.x-1.2"
 core = "7.x"
 project = "search_api_combined"
-datestamp = "1380626829"
+datestamp = "1362336012"
+
+
+; Information added by Drupal.org packaging script on 2015-02-11
+version = "7.x-1.3"
+core = "7.x"
+project = "search_api_combined"
+datestamp = "1423684501"
 

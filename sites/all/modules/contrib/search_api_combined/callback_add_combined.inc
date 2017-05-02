@@ -11,9 +11,13 @@ class SearchApiAlterAddCombined extends SearchApiAbstractAlterCallback {
     
     $fields = $this->index->getFields(FALSE);
     $field_options = array();
+    
     foreach ($fields as $name => $field) {
       $field_options[$name] = t('@label (@name)', array('@label' => $field['name'], '@name' => $name));
     }
+    
+    $facets = array('' => t('None')) + $field_options;
+    
     $additional = empty($this->options['fields']) ? array() : $this->options['fields'];
 
     $form['#id'] = 'edit-callbacks-search-api-alter-add-combined-settings';
@@ -42,12 +46,28 @@ class SearchApiAlterAddCombined extends SearchApiAbstractAlterCallback {
         '#default_value' => $field['name'],
         '#required' => TRUE,
       );
+      $form['fields'][$name]['multivalue'] = array(
+        '#type' => 'radios',
+        '#title' => t('Multi-value field'),
+        '#options' => array(0 => t('No'), 1 => t('Yes')),
+        '#default_value' => (TRUE === isset($field['multivalue'])) ? $field['multivalue'] : 1,
+        '#required' => TRUE,
+        '#description' => t('Whether the combined field is a multi-valued field'),
+      );
+      $form['fields'][$name]['type'] = array(
+      	'#type' => 'select',
+        '#title' => t('Data type'),
+        '#options' => search_api_default_field_types(),
+        '#default_value' => (TRUE === isset($field['type'])) ? $field['type'] : 'integer',
+        '#required' => TRUE,
+        '#description' => t('Data type to save field as'),
+      );
       $form['fields'][$name]['imitate'] = array(
         '#type' => 'select',
         '#title' => t('Imitate field'),
-        '#options' => $field_options,
+        '#options' => $facets,
         '#default_value' => $field['imitate'],
-        '#required' => TRUE,
+        '#required' => FALSE,
         '#description' => t('Treat this field as another type of field, useful for making a combined taxonomy field behave as such for FacetAPI')
       );
       $form['fields'][$name]['fields'] = array(
@@ -131,7 +151,6 @@ class SearchApiAlterAddCombined extends SearchApiAbstractAlterCallback {
           if ($field['name']) {
             $required_fields = array();
             foreach ($field['fields'] as $f) {
-//               $vals = array_merge_recursive($vals, $item->{$f});
               if (!isset($required_fields[$f])) {
                 $required_fields[$f]['type'] = 'integer';
               }
@@ -146,6 +165,13 @@ class SearchApiAlterAddCombined extends SearchApiAbstractAlterCallback {
               }
             }
             $values = $this->flattenArray($values);
+            
+            $multivalue = (TRUE === isset($field['multivalue'])) ? $field['multivalue'] : 1;
+            
+            if (!$multivalue) {
+              $values = array_shift($values);
+            }
+            
             $item->$name = $values;
           }
         }
@@ -176,10 +202,13 @@ class SearchApiAlterAddCombined extends SearchApiAbstractAlterCallback {
     $ret = array();
     if (isset($this->options['fields'])) {
       foreach ($this->options['fields'] as $name => $field) {
+        $multivalue = (TRUE === isset($field['multivalue'])) ? $field['multivalue'] : 1;
+        $type = (TRUE === isset($field['type'])) ? $field['type'] : 'integer';
+        
         $ret[$name] = array(
           'label' => $field['name'],
           'description' => empty($field['description']) ? '' : $field['description'],
-          'type' => 'list<integer>',
+          'type' => (TRUE == $multivalue) ? 'list<' . $type . '>' : $type,
         );
       }
     }
@@ -213,7 +242,7 @@ class SearchApiAlterAddCombined extends SearchApiAbstractAlterCallback {
       );
     }
     else {
-      $field = substr($button_name, 34);
+      $field = substr($button_name, 31);
       unset($this->options['fields'][$field]);
     }
     $form_state['rebuild'] = TRUE;
