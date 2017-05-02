@@ -167,11 +167,11 @@ function media_internet_forms($form_id, $args) {
  */
 function media_internet_form_file_entity_add_upload_alter(&$form, &$form_state, $form_id) {
   $step = $form['#step'];
+  $options = $form['#options'];
 
   // Swap the upload field for an embed field when on the first step of the web
   // tab.
   if ($form_id == 'media_internet_add_upload' && $step == 1) {
-    $options = isset($form['#options']) ? $form['#options'] : array();
     unset($form['upload']);
 
     $form['embed_code'] = array(
