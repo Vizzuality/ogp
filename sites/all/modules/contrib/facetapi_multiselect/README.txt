@@ -39,11 +39,6 @@ function MYMODULE_form_facetapi_multiselect_form_alter(&$form, &$form_state) {
   $path = libraries_get_path('jquery.multiselect');
   $form['#attached']['js'][] = $path . '/jquery.multiselect.min.js';
   $form['#attached']['css'][] = $path . '/jquery.multiselect.css';
-  // The jQuery UI MultiSelect Widget depends on the jQuery UI Widget library
-  // shipped with Drupal core, so add that too. As above, if hook_library()
-  // were used instead, this could be declared as a dependency inside that hook
-  // rather than explicitly added to the form here.
-  $form['#attached']['library'][] = array('system', 'ui.widget');
 
   // Add a custom JavaScript file which will trigger the jQuery MultiSelect
   // widget on the correct form elements.

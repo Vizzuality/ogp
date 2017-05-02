@@ -69,13 +69,6 @@ function facetapi_multiselect_form($form, &$form_state, $widget, $element) {
     '#value' => t('Submit'),
   );
 
-  $build = $widget->getBuild();
-  $settings = $build['#settings']->settings;
-
-  if ($settings['auto_submit']) {
-    $form['#attached']['js'][] = drupal_get_path('module', 'facetapi_multiselect') . '/js/facetapi_multiselect_autosubmit.js';
-  }
-
   return $form;
 }
 
