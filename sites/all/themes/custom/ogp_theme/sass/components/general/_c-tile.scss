@@ -1,5 +1,42 @@
 .c-tile {
 
+  &.tile {
+    background-color: $color-2;
+    background-size: cover;
+    background-repeat: no-repeat;
+    background-position: center;
+    padding: 20px 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 25px;
+    flex-basis: 22%;
+
+    .overlay {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      background-color: rgba($color-5, 0.3);
+      z-index: 1;
+    }
+
+    &.-tall {
+      height: 200px;
+    }
+
+    .text {
+      width: 80%;
+      text-align: center;
+      z-index: 5;
+    }
+
+    @media screen and (min-width: $screen-m) {
+      margin-bottom: 50px;
+    }
+  }
+
   .tile {
     background-color: $color-2;
     background-size: cover;

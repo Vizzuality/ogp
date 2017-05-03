@@ -141,6 +141,7 @@ $field_lead_institution = field_get_items('node', $node, 'field_lead_institution
       <div class="column small-12">
         <h3 class="text -module-title">More Current Commitments</h3>
         <div class="c-loader"><div class="loader"></div></div>
+        <div class="explore-more-container"></div>
       </div>
     </div>
   </div>

@@ -320,15 +320,15 @@ function showComments(id) {
 }
 'use strict';
 
-function buildExploreMoreTiles(endPoint, filter, value) {
+function buildExploreMoreTiles(endPoint, filter, value, country, numberInformation) {
   var filters = '';
   if (filter) {
     filters = 'filter[' + filter + ']=' + value + '&';
   }
-  $.getJSON('/apiJSON/' + endPoint + '?' + filters + 'page[size]=4', function (data) {
+  $.getJSON('/apiJSON/' + endPoint + '?' + filters, function (data) {
     if (data.data.length) {
-      var tiles = data.data.slice(0, 4);
-      appendTiles(tiles, $('.c-explore-more .container'), 4);
+      var tiles = data.data;
+      appendTilesRandom(tiles, $('.explore-more-container'), 4, '', country, numberInformation);
     }
     removeLoader('.c-explore-more');
   });
@@ -725,6 +725,9 @@ function buildTabs(data, tabsContainer, callback) {
 'use strict';
 
 // append tiles to div
+var randomTiles = [];
+var numRandoms = 50;
+
 function appendTilesWithoutBackground(data, container, gridNum, customClass) {
   var gridWidth = 12 / gridNum;
   if (data.length !== 0) {
@@ -745,11 +748,35 @@ function appendTiles(data, container, gridNum, customClass) {
   }
 }
 
+function appendTilesRandom(data, container, gridNum, customClass, country, numberInformation) {
+  var countryText = '';
+  var numberText = '';
+  for (var i = 0; i < 4; i += 1) {
+    var rand = makeUniqueRandom();
+    if (i % numRandoms == 0) {}
+    randomTiles[i] = rand;
+  }
+  var gridWidth = 12 / gridNum;
+  if (data.length !== 0) {
+    for (var _i = 0; _i < 4; _i += 1) {
+      if (country === true) {
+        countryText = '(' + data[randomTiles[_i]].country.label + ')';
+      }
+
+      if (numberInformation === true) {
+        numberText = '(' + data[randomTiles[_i]].comm_no + ')';
+      }
+      var html = '\n          <a href="/' + data[randomTiles[_i]].alias + '" class="tile column small-12 medium-' + gridWidth + ' c-tile ' + (customClass ? customClass : '') + '" data-group="' + (data[randomTiles[_i]].group ? data[randomTiles[_i]].group : '') + '" style="background-image: url(\'' + (data[randomTiles[_i]].image ? data[randomTiles[_i]].image : '') + '\')">\n            <div class="' + (data[randomTiles[_i]].image ? 'overlay' : '') + '"></div>\n            <span class="text -tile -white">\n              ' + numberText + ' | ' + data[randomTiles[_i]].label + '\n              <br>\n              ' + countryText + '\n            </span>\n          </a>\n      ';
+      container.append(html);
+    }
+  }
+}
+
 function appendTilesStandards(data, container, gridNum, customClass) {
   var gridWidth = 12 / gridNum;
   if (data.length !== 0) {
     data.forEach(function (item) {
-      var html = '\n        <div class="column small-12 medium-4 large-' + gridWidth + ' c-tile ' + (customClass ? customClass : '') + '" data-group="' + (item.group ? item.group : '') + '">\n          <a href="" class="tile" style="background-image: url(\'' + (item.image ? item.image : '') + '\')">\n            <div class="' + (item.image ? 'overlay' : '') + '"></div>\n            <span class="text -tile -white">\n              ' + item + '\n            </span>\n          </a>\n        </div>\n      ';
+      var html = '\n        <div class="column small-12 medium-4 large-' + gridWidth + ' c-tile ' + (customClass ? customClass : '') + '" data-group="' + (item.group ? item.group : '') + '">\n          <a href="" class="tile" style="background-image: url(\'' + (item.image ? item.image : '') + '\')">\n            <div class="' + (item.image ? 'overlay' : '') + '"></div>\n            <span class="text -tile -white">\n              ' + item + '\n\n            </span>\n          </a>\n        </div>\n      ';
       container.append(html);
     });
   }
@@ -922,6 +949,26 @@ function convertEventDate(date) {
 function dateDiff(date) {
   return moment().diff(date, 'days');
 }
+"use strict";
+
+var uniqueRandoms = [];
+var numRandoms = 50;
+
+function makeUniqueRandom() {
+  // refill the array if needed
+  if (!uniqueRandoms.length) {
+    for (var i = 0; i < numRandoms; i++) {
+      uniqueRandoms.push(i);
+    }
+  }
+  var index = Math.floor(Math.random() * uniqueRandoms.length);
+  var val = uniqueRandoms[index];
+
+  // now remove that value from the array
+  uniqueRandoms.splice(index, 1);
+
+  return val;
+}
 'use strict';
 
 function smoothScroll() {
@@ -1018,7 +1065,7 @@ function showCurrentCommitmentDetail(id) {
 
     $('#theme-menu').addClass('active');
     buildCurrentCommitment();
-    buildExploreMoreTiles('current_commitment');
+    buildExploreMoreTiles('current_commitment', '', '', false, false);
   })(jQuery);
 }
 'use strict';
@@ -1026,7 +1073,7 @@ function showCurrentCommitmentDetail(id) {
 function showIrmCommitmentDetail(id) {
   (function ($) {
     $('#theme-menu').addClass('active');
-    buildExploreMoreTiles('irm_commitments');
+    buildExploreMoreTiles('irm_commitments', '', '', false, false);
   })(jQuery);
 }
 'use strict';
@@ -1053,7 +1100,7 @@ function showModelCommitmentDetail(id) {
     initTabs();
     setTabListeners(onChangeTab);
     fetchModelCommitmentDetail();
-    buildExploreMoreTiles('modelcommitments');
+    buildExploreMoreTiles('modelcommitments', '', '', false, false);
   })(jQuery);
 }
 'use strict';
@@ -1061,7 +1108,7 @@ function showModelCommitmentDetail(id) {
 function showStarredCommitmentDetail(id) {
   (function ($) {
     $('#theme-menu').addClass('active');
-    buildExploreMoreTiles('starredcommitments');
+    buildExploreMoreTiles('starredcommitments', '', '', true, true);
   })(jQuery);
 }
 'use strict';
@@ -2583,7 +2630,7 @@ function showGroupResourcesPage() {
 function showResourcesDetail(id) {
   (function ($) {
     $.getJSON('/apiJSON/resources?filter[id]=' + id, function (data) {
-      buildExploreMoreTiles('resources', 'group_resource', data.data[0].group_resource[0]);
+      buildExploreMoreTiles('resources', 'group_resource', data.data[0].group_resource[0], false, false);
     });
   })(jQuery);
 }
@@ -2937,7 +2984,7 @@ function showThemesDetail(id) {
     setTabListeners(onChangeTab);
     initSelectors();
     showContent(contentContainer, 'starredcommitments');
-    buildExploreMoreTiles('themes');
+    buildExploreMoreTiles('themes', '', '', false, false);
   })(jQuery);
 }
 'use strict';

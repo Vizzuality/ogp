@@ -86,7 +86,7 @@ function showThemesDetail(id) {
     setTabListeners(onChangeTab);
     initSelectors();
     showContent(contentContainer, 'starredcommitments');
-    buildExploreMoreTiles('themes');
+    buildExploreMoreTiles('themes', '', '', false, false);
 
   })(jQuery);
 }

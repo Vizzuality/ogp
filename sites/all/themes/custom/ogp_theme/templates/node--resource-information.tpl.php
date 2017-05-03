@@ -67,6 +67,7 @@
       <div class="column small-12">
         <h3 class="text -module-title">Explore more resources</h3>
         <div class="c-loader"><div class="loader"></div></div>
+        <div class="explore-more-container"></div>
       </div>
     </div>
   </div>

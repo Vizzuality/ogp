@@ -233,6 +233,7 @@ $field_starred_end_term = field_get_items('node', $node, 'field_starred_end_term
       <div class="column small-12">
         <h3 class="text -module-title">More IRM commitments</h3>
         <div class="c-loader"><div class="loader"></div></div>
+        <div class="explore-more-container"></div>
       </div>
     </div>
   </div>

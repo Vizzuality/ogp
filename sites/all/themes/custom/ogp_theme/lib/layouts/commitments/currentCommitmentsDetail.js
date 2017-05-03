@@ -14,7 +14,7 @@ function showCurrentCommitmentDetail(id) {
 
     $('#theme-menu').addClass('active');
     buildCurrentCommitment();
-    buildExploreMoreTiles('current_commitment');
+    buildExploreMoreTiles('current_commitment', '', '', false, false);
 
   })(jQuery);
 }

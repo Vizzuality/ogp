@@ -20,7 +20,7 @@ function showModelCommitmentDetail(id) {
     initTabs();
     setTabListeners(onChangeTab);
     fetchModelCommitmentDetail();
-    buildExploreMoreTiles('modelcommitments');
+    buildExploreMoreTiles('modelcommitments', '', '', false, false);
 
   })(jQuery);
 }
