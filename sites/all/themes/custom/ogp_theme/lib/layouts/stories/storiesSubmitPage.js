@@ -30,9 +30,11 @@ function showStoriesSubmitPage(id) {
       const title = $('#title').val();
       const content = $('.-content').val();
       const country = $('#country').val();
+      const topic = $('#topic').val();
+      alert(topic);
       const url = './submitCookiesStory.php';
       if (title !== '' && content !== '') {
-        const dataString = 'title=' + title + '&content=' + content + '&country=' + country;
+        const dataString = 'title=' + title + '&content=' + content + '&country=' + country + '&topic=' + topic;
         $.ajax({
           type: 'POST',
           url: url,

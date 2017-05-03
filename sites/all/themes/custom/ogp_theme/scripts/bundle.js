@@ -2883,9 +2883,11 @@ function showStoriesSubmitPage(id) {
       var title = $('#title').val();
       var content = $('.-content').val();
       var country = $('#country').val();
+      var topic = $('#topic').val();
+      alert(topic);
       var url = './submitCookiesStory.php';
       if (title !== '' && content !== '') {
-        var dataString = 'title=' + title + '&content=' + content + '&country=' + country;
+        var dataString = 'title=' + title + '&content=' + content + '&country=' + country + '&topic=' + topic;
         $.ajax({
           type: 'POST',
           url: url,
