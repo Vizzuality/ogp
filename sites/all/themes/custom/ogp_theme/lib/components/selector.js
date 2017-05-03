@@ -9,7 +9,6 @@ function appendSelectOptions(selector, options) {
 
 function appendSelectOptionsFromData(selector, options) {
   options.forEach(function(option) {
-    console.log(option);
     const html = `
       <option value="${option.id}" data-value="${option.alias}">${option.label}</option>
     `;
