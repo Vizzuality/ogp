@@ -6,6 +6,7 @@
     "es6": true
   },
   "globals": {
+    "moment": true,
   },
   "parserOptions": {
     "ecmaVersion": 7,

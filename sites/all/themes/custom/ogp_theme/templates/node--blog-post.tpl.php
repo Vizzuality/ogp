@@ -4,13 +4,14 @@
  * @file
  */
  $attachments = field_get_items('node', $node, 'field_attachment');
+ $node = node_load($nid);
 ?>
 <div id="storiesDetail" class="l-page"<?php print $attributes; ?>>
 
   <!-- Narrow content -->
   <div class="row">
     <div class="column small-12 content-header">
-      <h1 class="text -title"></h1>
+      <h1 class="text -title"><?php echo $node->title ?></h1>
       <div class="text -dynamic-link countries"></div>
     </div>
     <div class="column small-12 medium-8 medium-offset-2">
