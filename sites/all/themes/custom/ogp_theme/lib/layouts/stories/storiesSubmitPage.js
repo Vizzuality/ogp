@@ -31,7 +31,6 @@ function showStoriesSubmitPage(id) {
       const content = $('.-content').val();
       const country = $('#country').val();
       const topic = $('#topic').val();
-      alert(topic);
       const url = './submitCookiesStory.php';
       if (title !== '' && content !== '') {
         const dataString = 'title=' + title + '&content=' + content + '&country=' + country + '&topic=' + topic;

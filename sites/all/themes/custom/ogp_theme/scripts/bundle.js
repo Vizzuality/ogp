@@ -1019,6 +1019,787 @@ function addDots(string, limit) {
 }
 'use strict';
 
+function showAboutPages() {
+  (function ($) {
+
+    var tabsContainer = $('.tabs-container');
+    var containerInfo = $('#containerInfo');
+
+    // custom callback for tabs component
+    var onChangeAboutPageTab = function onChangeAboutPageTab(id, label) {
+      $('.tab-content').addClass('-hidden');
+      $('.' + id).removeClass('-hidden');
+    };
+
+    function initAboutTabs(onChange) {
+      initTabs();
+      setTabListeners(onChange);
+    }
+
+    showLoader('#containerInfo');
+    $.getJSON('/apiJSON/page?filter[page_category]=2925', function (data) {
+      buildTabs(data.data, tabsContainer, onChangeAboutPageTab);
+      initAboutTabs(onChangeAboutPageTab);
+      for (var i = 0; i < data.data.length; i += 1) {
+        containerInfo.append('\n        <div class="tab-content -hidden ' + data.data[i].id + '">\n          <h3 class="text -section-title">' + data.data[i].label + '</h3>\n          <div class="text -body-content">\n            <p class="text -body-content">\n              ' + data.data[i].body.value + '\n            </p>\n          </div>\n        </div>\n      ');
+      }
+      removeLoader('#containerInfo', null, true);
+    });
+  })(jQuery);
+}
+'use strict';
+
+function showCurrentCommitmentDetail(id) {
+  (function ($) {
+
+    function buildCurrentCommitment() {
+      $.getJSON('/apiJSON/current_commitment/' + id, function (data) {
+        if (data.data[0].lead_institution[0]) {
+          $('#currentCommitmentContent .lead').html(data.data[0].lead_institution[0]);
+        }
+        if (data.data[0].support_institution[0]) {
+          $('#currentCommitmentContent .support').html(data.data[0].support_institution[0]);
+        }
+      });
+    }
+
+    $('#theme-menu').addClass('active');
+    buildCurrentCommitment();
+    buildExploreMoreTiles('current_commitment', '', '', false, false);
+  })(jQuery);
+}
+'use strict';
+
+function showIrmCommitmentDetail(id) {
+  (function ($) {
+    $('#theme-menu').addClass('active');
+    buildExploreMoreTiles('irm_commitments', '', '', false, false);
+  })(jQuery);
+}
+'use strict';
+
+function showModelCommitmentDetail(id) {
+  (function ($) {
+
+    var onChangeTab = function onChangeTab(id, label) {
+      $('.tab-container').addClass('-hidden');
+      $('#' + id + ' .tab-container').removeClass('-hidden');
+    };
+
+    function fetchModelCommitmentDetail() {
+      $.getJSON('/apiJSON/modelcommitments/' + id, function (data) {
+        $('.strength-info').html('<strong>Strength: </strong>' + data.data[0].strength.label);
+        $('.contributor-info').html('<strong>Contributors: </strong>' + data.data[0].contributors);
+        $('#justification .container').html(data.data[0].justification);
+        appendTilesStandards(data.data[0].standardsguidance, $('#standards .container'), 2);
+        removeLoader('.l-section', null, true);
+      });
+    }
+
+    // init view
+    initTabs();
+    setTabListeners(onChangeTab);
+    fetchModelCommitmentDetail();
+    buildExploreMoreTiles('modelcommitments', '', '', false, false);
+  })(jQuery);
+}
+'use strict';
+
+function showStarredCommitmentDetail(id) {
+  (function ($) {
+    $('#theme-menu').addClass('active');
+    buildExploreMoreTiles('starredcommitments', '', '', true, true);
+  })(jQuery);
+}
+'use strict';
+
+function showCountriesDetail(id) {
+  (function ($) {
+
+    //cache
+    var years = ['2014', '2015', '2016'];
+    var docTypes = {
+      actionPlans: ['2703'],
+      letters: ['2779'],
+      reports: ['2704', '2768', '2705']
+    };
+    var pageThreshold = 10;
+
+    // selectors and containers
+    var actionPlansContainer = '#actionPlansLinks';
+    var reportsContainer = '#reportsLinks';
+    var lettersContainer = '#lettersLinks';
+    var eventsContainer = '#eventsBanner';
+    var themesContainer = '.themes-container';
+    var completionContainer = '.completion-container';
+
+    // initial settings
+    var page = 1;
+    var currentPageCount = 0;
+    var irmPageCount = 0;
+
+    //data cache
+    var lettersData = void 0;
+    var actionPlansData = void 0;
+    var reportsData = void 0;
+
+    // init selectors
+    $('select').select2({
+      minimumResultsForSearch: Infinity,
+      containerCssClass: '-hidden'
+    });
+
+    // local functions
+    function _setDataCount(selector, count) {
+      $(selector).html('' + count);
+    }
+
+    function _appendLoadingBar(view, data) {
+      var container = $(view);
+      data.forEach(function (data) {
+        if (data.value) {
+          var html = '\n          <div class="c-loading-bar">\n          <div class="text -small-bold -white">' + data.value + '% ' + data.theme + '</div>\n          <div class="bar -white" style="width: ' + data.value + '%;"></div>\n          </div>\n          ';
+          container.append(html);
+        }
+      });
+    }
+
+    function _appendStories(view, stories) {
+      var container = $(view);
+      stories.forEach(function (story) {
+        var html = '\n          <li class="story-item">\n            <div class="badge">\n              <svg class="icon -white"><use xlink:href="#icon-external-link"></use></svg>\n            </div>\n            <div class="notification">\n              A new OGP <b>Story</b> has been posted: <b><a href="/' + story.alias + '">' + story.label + '</a></b>\n            </div>\n          </li>\n        ';
+        container.append(html);
+      });
+    }
+
+    function _appendLinks(view, data, selector, type) {
+      var activeFilter = $(selector).val();
+      var container = $(view + ' .links-container');
+      var html = '';
+      data.forEach(function (link) {
+        if (link.type && type.some(function (index) {
+          return link.type.indexOf(index) >= 0;
+        })) {
+          if (link.date && moment(link.date.value).year() === parseInt(activeFilter) || link.date && moment(link.date.value2).year() === parseInt(activeFilter)) {
+            html += buildRelLink(link);
+          }
+        }
+      });
+      if (html === '') {
+        showNoResults(container, 'No documents available', 'short', 'grey', 'xlarge', 'grey');
+      } else {
+        container.html(html);
+      }
+    }
+
+    function _appendEvents(event) {
+      if (event.image) {
+        $(eventsContainer + ' .banner-image').css('background-image', 'url(' + event.image + ')');
+      }
+      $(eventsContainer + ' .banner-title').html(event.label);
+
+      var eventMeta = '';
+      eventMeta += convertEventDate(event.date.value);
+      if (event.date.value2) {
+        var endDate = convertEventDate(event.date.value2);
+        eventMeta += ' to ' + endDate + '.';
+      }
+      eventMeta += ' | ' + event.location.locality + ', ' + event.location.country;
+      $(eventsContainer + ' .banner-date').html(eventMeta);
+      $(eventsContainer + ' .c-button').attr('href', '/' + event.alias);
+    }
+
+    function setPaginationListerners(container, endPoint, pageCount) {
+      $('#' + container + ' .onClickPagination').on('click', function (e) {
+        var pageNum = $(this).data('value');
+        showLoader('#' + container);
+        $.getJSON('/apiJSON/' + endPoint + '?filter[country]=' + id + '&page[number]=' + pageNum + '&page[size]=' + pageThreshold + '&sort=label', function (data) {
+          initAccordion(container, data.data);
+          initPagination(pageNum, pageCount, container);
+          setPaginationListerners(container, endPoint, pageCount);
+          removeLoader('#' + container, null, true);
+        });
+      });
+    }
+
+    function setSelectorListener(view, selector, data, type) {
+      _appendLinks(view, data, selector, type);
+      $(selector).on('change', function () {
+        _appendLinks(view, data, selector, type);
+      });
+    }
+
+    function initLinksSelectorContainer(dataCache, container, filter, type) {
+      if (dataCache.length) {
+        var optionValues = getSelectOptionsFromData(dataCache, filter, type);
+        if (optionValues.length) {
+          $(container + ' select').removeClass('-hidden');
+          buildSelector(container + ' select', optionValues);
+          setSelectorListener('' + container, container + ' select', dataCache, type);
+          $(container + ' .select2-selection').removeClass('-hidden');
+        } else {
+          _appendLinks('' + container, dataCache, container + ' select', type);
+        }
+      }
+    }
+
+    function bodyContentListener() {
+      $('.js-view-more').on('click', function () {
+        $('.body-view-more').toggleClass('-show');
+        $(this).toggleClass('-open');
+        if ($(this).hasClass('-open')) {
+          $('span', this).html('VIEW LESS');
+        } else {
+          $('span', this).html('VIEW MORE');
+        }
+      });
+    }
+
+    /////////////
+    // FETCH DATA
+    /////////////
+
+    // get country data
+    $.getJSON('/apiJSON/countries?filter[id]=' + id, function (data) {
+      if (data.data) {
+        var country = data.data[0];
+        // set banner counts
+        _setDataCount('.c-commitment-count .content-count', country.current_commitments_count);
+        _setDataCount('.irm-count', country.irm_commitments_count);
+        _setDataCount('.starred-count', country.starred_commitments_count);
+        _setDataCount('#currentCommitmentsAccordion .content-count', country.current_commitments_count);
+        _setDataCount('#irmReviewedCommitmentsAccordion .content-count', country.irm_commitments_count);
+        // loading bar data
+        if (country.current_themes) {
+          var themesData = [];
+          for (var i = 0; i < country.current_themes.length; i++) {
+            themesData.push({ theme: country.current_themes[i], value: country.current_percentage[i] });
+          }
+          _appendLoadingBar(themesContainer, themesData);
+        }
+        if (country.midterm_percentage || country.endofterm_percentage) {
+          var completionData = [{ theme: 'Mid term percentage', value: country.midterm_percentage }, { theme: 'End of term percentage', value: country.endofterm_percentage }];
+          _appendLoadingBar(completionContainer, completionData);
+        } else {
+          showNoResults('.completion-container', 'Not yet reviewed', 'short', 'white', 'xlarge', 'grey');
+        }
+      }
+      removeLoader('#countryHeaderBanner', null, true);
+    });
+
+    // fetch current commitments
+    $.getJSON('/apiJSON/current_commitment?filter[country]=' + id + '&sort=label&page[size]=' + pageThreshold + '&page[number]=1', function (data) {
+      if (data.data.length) {
+        initAccordion('currentCommitmentsAccordion', data.data);
+        if (data.count > pageThreshold) {
+          currentPageCount = getPageCount(data.count, pageThreshold);
+          initPagination(page, currentPageCount, 'currentCommitmentsAccordion');
+          setPaginationListerners('currentCommitmentsAccordion', 'current_commitment', currentPageCount);
+        }
+      } else {
+        showNoResults('#currentCommitmentsAccordion .c-accordion', 'No current commitments', 'medium', 'grey', 'xxlarge', 'blue');
+      }
+      removeLoader('#currentCommitmentsAccordion', null, true);
+    });
+
+    // fetch review commitments
+    $.getJSON('/apiJSON/irm_commitments?filter[country]=' + id + '&page[size]=' + pageThreshold + '&sort=label&page[number]=1', function (data) {
+      if (data.data.length) {
+        initAccordion('irmReviewedCommitmentsAccordion', data.data);
+        if (data.count > pageThreshold) {
+          irmPageCount = getPageCount(data.count, pageThreshold);
+          initPagination(page, irmPageCount, 'irmReviewedCommitmentsAccordion');
+          setPaginationListerners('irmReviewedCommitmentsAccordion', 'irm_commitments', irmPageCount);
+        }
+      } else {
+        showNoResults('#irmReviewedCommitmentsAccordion .c-accordion', 'No reviewed commitments', 'medium', 'grey', 'xxlarge', 'blue');
+      }
+      removeLoader('#irmReviewedCommitmentsAccordion', null, true);
+    });
+
+    // fetch stories
+    $.getJSON('/apiJSON/stories?filter[country]=' + id + '&page[size]=9&sort=-created', function (data) {
+      if (data.data.length) {
+        _appendStories('.c-activity-stream ul', data.data);
+        $('.item-bridge').removeClass('-hidden');
+      } else {
+        showNoResults('.c-activity-stream ul', 'No recent activity', 'medium', 'white', 'xlarge', 'grey');
+      }
+      removeLoader('.c-activity-stream');
+    });
+
+    // fetch events
+    $.getJSON('/apiJSON/events?filter[country]=' + id, function (data) {
+      if (data.data.length) {
+        if (dateDiff(data.data[0].date.value) <= 0) {
+          _appendEvents(data.data[0]);
+          $(eventsContainer).removeClass('-hidden');
+        }
+      }
+    });
+
+    $.getJSON('/apiJSON/documents?filter[country]=' + id, function (data) {
+      var dataCache = data.data;
+      initLinksSelectorContainer(dataCache, actionPlansContainer, ['date'], docTypes.actionPlans);
+      initLinksSelectorContainer(dataCache, reportsContainer, ['date'], docTypes.reports);
+      initLinksSelectorContainer(dataCache, lettersContainer, ['date'], docTypes.letters);
+      removeLoader('#resourceDocsContainer', null, true);
+    });
+
+    // init selectors and views for actions, reports and letters data
+    bodyContentListener();
+  })(jQuery);
+}
+'use strict';
+
+var layerMap = '';
+function initCountriesMap() {
+  var map = L.map('countriesMap', {
+    zoomControl: false,
+    center: [35, -60],
+    zoom: 2,
+    maxZoom: 6,
+    minZoom: 2,
+    scrollWheelZoom: false
+  });
+  var basemap = L.tileLayer('http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png', {
+    attribution: ''
+  }).addTo(map);
+  $('#in').click(function () {
+    map.setZoom(map.getZoom() + 1);
+  });
+
+  $('#out').click(function () {
+    map.setZoom(map.getZoom() - 1);
+  });
+  return map;
+}
+
+function initMapLayer(map, countriesData, layers, cartoQueryLink) {
+  var over = false;
+
+  cartodb.createLayer(map, {
+    user_name: 'jmonaco',
+    type: 'cartodb',
+    sublayers: []
+  }).addTo(map).done(function (layer) {
+    layer.setInteraction(true);
+    layer.createSubLayer(layers['action']);
+    var hovers = [];
+
+    layer.bind('featureOver', function (e, latlon, pxPos, data, layers) {
+      hovers[layers] = 1;
+      if (_.any(hovers)) {
+        $('#countriesMap').css('cursor', 'pointer');
+      }
+    });
+
+    layer.bind('featureOut', function (m, layers) {
+      hovers[layers] = 0;
+      if (!_.any(hovers)) {
+        $('#countriesMap').css('cursor', 'auto');
+      }
+    });
+
+    layer.on('featureClick', function (e, latlng, pos, data) {
+      $('.tooltip').remove();
+      if (layer.layers[0].options.name !== 'participants') {
+        showLoader('.l-map');
+      }
+      switch (layer.layers[0].options.name) {
+        case 'action':
+          $.getJSON(cartoQueryLink + ' SELECT * FROM ggtqckcj2bioeepnuvxoow WHERE cartodb_id = ' + data.cartodb_id, function (actionPlanData) {
+            updateMapModal(actionPlanData.rows[0].nid, 'actionPlan', countriesData);
+          });
+          break;
+        case 'starred':
+          $.getJSON(cartoQueryLink + ' SELECT * FROM zzpexx07fxnjtcvjpptz2q WHERE cartodb_id = ' + data.cartodb_id, function (starredData) {
+            updateMapModal(starredData.rows[0].countryid, 'starred', countriesData);
+          });
+          break;
+        case 'people':
+          $.getJSON(cartoQueryLink + ' SELECT * FROM u4yhv_fq5_jb91rzuzgd8q WHERE cartodb_id = ' + data.cartodb_id, function (peopleInvolvedData) {
+            updateMapModal(peopleInvolvedData.rows[0].countryid, 'people', countriesData);
+          });
+          break;
+        case 'stories':
+          $.getJSON(cartoQueryLink + ' SELECT * FROM cajq0nm1zsu0aav_wrnyvg WHERE cartodb_id = ' + data.cartodb_id, function (storiesData) {
+            updateMapModal(storiesData.rows[0].countryid, 'stories', countriesData);
+          });
+          break;
+        case 'event':
+          $.getJSON(cartoQueryLink + ' SELECT * FROM ojy344p9szp9irh8dc1uaa WHERE cartodb_id = ' + data.cartodb_id + ' AND country IS NOT NULL', function (eventData) {
+            updateMapModal(eventData.rows[0].countryid, 'event', countriesData);
+          });
+          break;
+        case 'commitment':
+          $.getJSON(cartoQueryLink + ' SELECT * FROM c73t2gfiumef0fs5de9huq WHERE cartodb_id = ' + data.cartodb_id, function (commitmentsData) {
+            updateMapModal(commitmentsData.rows[0].countryid, 'commitment', countriesData);
+          });
+          break;
+        case 'participants':
+          $.getJSON(cartoQueryLink + ' SELECT * FROM table_4q9xwd8iroblyagpt_dx5q WHERE cartodb_id = ' + data.cartodb_id, function (participantsData) {
+            document.location.href = '' + window.location.origin + participantsData.rows[0].path;
+          });
+          break;
+        default:
+      }
+    });
+
+    layer.on('featureOver', function (e, latlng, pos, data) {
+
+      var country = data.country;
+      var titleEvent = data.title;
+
+      if (over === false) {
+        if (country) {
+          $('body').append('<div class="tooltip" style="padding: 5px; position: absolute; z-index: 10; background-color: rgba(255, 255, 255, 1); top:' + (e.pageY - 25) + 'px; left:' + (e.pageX + 25) + 'px">' + country + '</div>');
+        }
+
+        if (titleEvent) {
+          $('body').append('<div class="tooltip" style="padding: 5px; position: absolute; z-index: 10; background-color: rgba(255, 255, 255, 1); top:' + (e.pageY - 25) + 'px; left:' + (e.pageX + 25) + 'px">' + titleEvent + '</div>');
+        }
+        over = true;
+      } else {
+
+        if (country) {
+          $('.tooltip').html(country);
+        }
+
+        if (titleEvent) {
+          $('.tooltip').html(titleEvent);
+        }
+        $('.tooltip').css('top', e.pageY - 25 + 'px');
+        $('.tooltip').css('left', e.pageX + 25 + 'px');
+      }
+    });
+
+    layer.on('featureOut', function (e, latlng, pos, data) {
+      over = false;
+      $('.tooltip').remove();
+    });
+    layerMap = layer;
+    initEventFunctions(layer, layers);
+    setMapLegendListeners(layer, layers);
+  });
+}
+
+function removeLayers(layer) {
+  layer.getSubLayers().forEach(function (sublayer) {
+    sublayer.remove();
+  });
+}
+
+function initEventFunctions(layer, layers) {
+  $('.change-past-event-layer').click(function () {
+    removeLayers(layer);
+    $(this).html('LOOKING FOR UPCOMING EVENTS?');
+    $('.legend-info-event').html('Past Events');
+    $(this).removeClass('change-past-event-layer');
+    $(this).addClass('change-upcoming-event-layer');
+    layer.setInteraction(true);
+    layer.createSubLayer(layers['pastevent']);
+    initEventFunctions();
+  });
+
+  $('.change-upcoming-event-layer').click(function () {
+    removeLayers(layer);
+    $(this).html('LOOKING FOR PAST EVENTS?');
+    $('.legend-info-event').html('Upcoming Events');
+    $(this).removeClass('change-upcoming-event-layer');
+    $(this).addClass('change-past-event-layer');
+    layer.setInteraction(true);
+    layer.createSubLayer(layers['upcomingevent']);
+    initEventFunctions();
+  });
+}
+
+function setMapLegendListeners(layer, layers) {
+  $('.select-legend').click(function () {
+    $('.tooltip').remove();
+    var container = $(this).attr('data-value');
+    var namelayer = $(this).attr('data-layer');
+    removeLayers(layer);
+    if ($(this).hasClass('-selected') === false) {
+      $('.select-legend').each(function () {
+        if ($(this).hasClass('-selected')) {
+          $(this).prop('disabled', false);
+          $(this).toggleClass('-selected');
+          $('.' + container).toggleClass('-open-legend');
+        }
+      });
+
+      $('.contain-info').each(function () {
+        if ($(this).hasClass('-open-legend')) {
+          $(this).toggleClass('-open-legend');
+        }
+      });
+      if ($('.scroll-contain-legend').hasClass('-scroll') === false) {
+        $('.scroll-contain-legend').toggleClass('-scroll');
+      }
+      $('.' + container).toggleClass('-open-legend');
+      $(this).toggleClass('-selected');
+      $(this).prop('disabled', true);
+      layer.setInteraction(true);
+      layer.createSubLayer(layers[namelayer]);
+    }
+  });
+}
+
+function changeCommitmentLayer() {
+  var theme = $('.select-legend-dropdown').val();
+  removeLayers(layerMap);
+  layerMap.setInteraction(true);
+  layerMap.createSubLayer({
+    sql: 'SELECT country,Min(countryid) countryid, Min(cc.cartodb_id) cartodb_id, count(country), st_centroid(wb.the_geom_webmercator) the_geom_webmercator FROM c73t2gfiumef0fs5de9huq cc INNER JOIN world_borders_hd wb on cc.country = wb.name WHERE country IS NOT NULL AND wb.the_geom_webmercator IS NOT NULL AND LENGTH(country) > 0 AND theme LIKE \'%' + theme + '%\' GROUP BY wb.the_geom_webmercator, country ORDER BY country DESC',
+    cartocss: '#layer::z1 {marker-width: ramp([count], range(25, 45), quantiles(7));marker-fill: #ffa200;marker-fill-opacity: 1;marker-line-width: 1;marker-line-color: #4b392f;marker-line-opacity: 0.1;marker-allow-overlap:true;marker-comp-op: src;[zoom = 2] {marker-width: ramp([count], range(25, 30), quantiles(3));}[zoom = 3] {marker-width: ramp([count], range(30, 35), quantiles(4));}[zoom = 4] {marker-width: ramp([count], range(30, 40), quantiles(5));}[zoom = 5] {marker-width: ramp([count], range(30, 45), quantiles(6));} [zoom = 6] {marker-width: ramp([count], range(35, 45), quantiles(7));}} #layer::z1 {text-name: [count];text-face-name: "DejaVu Sans Book";text-size: 10;text-fill: #FFFFFF;text-label-position-tolerance: 0;text-halo-radius: 0;text-halo-fill: #6F808D;text-dy: 0;text-allow-overlap: true;}',
+    interactivity: 'cartodb_id, the_geom_webmercator, country',
+    name: 'commitment'
+  });
+}
+'use strict';
+
+function showCountriesPage() {
+  (function ($) {
+
+    // consts for map
+    var cartoQueryLink = 'https://jmonaco.carto.com/api/v2/sql?q=';
+    var layers = {
+      action: {
+        sql: 'SELECT  wb.the_geom_webmercator the_geom_webmercator, nid, member_since, at.path, actionplan, at.country, at.cartodb_id FROM ggtqckcj2bioeepnuvxoow at INNER JOIN world_borders_hd wb on at.country = wb.name',
+        cartocss: '#layer {polygon-fill: ramp([actionplan], (#2d4f00, #66bc29, #2d4f00, #66bc29, #2d4f00, #2d4f00, #cc3300, #cc3300), ("Implementing 1st action plan and Developing 2nd action plan","Developing action plan", "Implementing 2nd action plan", "Developing 1st Action Plan", "Implementing 1st action plan", "Implementing action plan", , "Inactive"), "="); line-width: 1; line-color: #FFF; line-opacity: 0.5;}',
+        interactivity: 'the_geom_webmercator, nid, country, cartodb_id',
+        name: 'action'
+      },
+      starred: {
+        sql: 'SELECT numberstarred,country, st.cartodb_id, st_centroid(wb.the_geom_webmercator) the_geom_webmercator FROM zzpexx07fxnjtcvjpptz2q st INNER JOIN world_borders_hd wb on st.country = wb.name WHERE wb.the_geom_webmercator IS NOT NULL ORDER BY numberstarred',
+        cartocss: '#layer::z1 {marker-width: 30;marker-fill: #ffffff;marker-fill-opacity: 1;marker-line-width: 1;marker-line-color: #4b392f;marker-line-opacity: 0.2;marker-allow-overlap:true;marker-comp-op: src;[zoom = 2] {marker-width: 30;}[zoom = 3] {marker-width: 35;}[zoom = 4] {marker-width: 40;}[zoom = 5] {marker-width: 45;}[zoom = 6] {marker-width: 45;}} #layer::z1 {text-name: [numberstarred];text-face-name: "DejaVu Sans Book";text-size: 10;text-fill: #000000;text-label-position-tolerance: 0;text-halo-radius: 0;text-halo-fill: #6F808D;text-dy: 0;text-allow-overlap: true;}',
+        interactivity: 'numberstarred, country, cartodb_id, the_geom_webmercator',
+        name: 'starred'
+      },
+      people: {
+        sql: 'SELECT numberpeopleinvolved,country,countryid, pi.cartodb_id, st_centroid(wb.the_geom_webmercator) the_geom_webmercator FROM u4yhv_fq5_jb91rzuzgd8q pi INNER JOIN world_borders_hd wb on pi.country = wb.name WHERE wb.the_geom_webmercator IS NOT NULL',
+        cartocss: '#layer {marker-width: 50;marker-height: 45;marker-fill: #007acb;marker-fill-opacity: 1;marker-file:url("https://s3.amazonaws.com/com.cartodb.users-assets.production/maki-icons/marker-18.svg");marker-allow-overlap: true;marker-line-width: 1;marker-line-color: #4b392f;marker-line-opacity: 1;marker-comp-op: src-over;[zoom = 2] {marker-width: 30;marker-height: 25;}[zoom = 3] {marker-width: 35;marker-height: 30;}[zoom = 4] {marker-width: 45;marker-height: 40;} [zoom = 5] {marker-width: 50;marker-height: 45;}[zoom = 6] {marker-width: 55;marker-height: 50;}}',
+        interactivity: 'numberpeopleinvolved,countryid, country, cartodb_id, the_geom_webmercator',
+        name: 'people'
+      },
+      stories: {
+        sql: 'SELECT numberstories,country, st.cartodb_id, st_centroid(wb.the_geom_webmercator) the_geom_webmercator FROM cajq0nm1zsu0aav_wrnyvg st INNER JOIN world_borders_hd wb on st.country = wb.name WHERE st.the_geom_webmercator IS NOT NULL',
+        cartocss: '#layer::z1{marker-width: 50;marker-height: 45;marker-fill: #0099ff;marker-fill-opacity: 1;marker-file:url("https://s3.amazonaws.com/com.cartodb.users-assets.production/maki-icons/marker-18.svg");marker-allow-overlap: true;marker-line-width: 1;marker-line-color: #4b392f;marker-line-opacity: 1;marker-comp-op: src-over;[zoom = 2] {marker-width: 50;marker-height: 45;}[zoom = 3] {marker-width: 55;marker-height: 50;}[zoom = 4] {marker-width: 60;marker-height: 55;}[zoom = 5] {marker-width: 65;marker-height: 60;}[zoom = 6] {marker-width: 70;marker-height: 65;}} #layer::z1{text-name: [numberstories];text-face-name: "DejaVu Sans Book";text-size: 10;text-fill: #FFFFFF;text-label-position-tolerance: 0;text-halo-radius: 0;text-halo-fill: #6F808D;text-dy: -0.9;text-allow-overlap: true;text-placement: point;text-placement-type: simple;text-comp-op: screen;}',
+        interactivity: 'numberstories, country, cartodb_id, the_geom_webmercator',
+        name: 'stories'
+      },
+      upcomingevent: {
+        sql: 'SELECT now(), country, countryid, count(country), Min(ec.cartodb_id) cartodb_id, Min(date) date, Min(end_date) end_date, Min(start_date) start_date, Min(title) title, st_centroid(wb.the_geom_webmercator) the_geom_webmercator FROM ojy344p9szp9irh8dc1uaa ec INNER JOIN world_borders_hd wb on ec.country = wb.name WHERE title IS NOT NULL AND wb.the_geom_webmercator IS NOT NULL AND end_date > now() GROUP BY country, countryid, wb.the_geom_webmercator ORDER BY country',
+        cartocss: '#layer::z1 {marker-width: 30;marker-fill: #66bc29;marker-fill-opacity: 1;marker-line-width: 0;marker-line-color: #151718;marker-line-opacity: 0.2;marker-allow-overlap:true;marker-comp-op: src;[zoom = 2] {marker-width: 30;}[zoom = 3] {marker-width: 35;}[zoom = 4] {marker-width: 40;}[zoom = 5] {marker-width: 45;}[zoom = 6] {marker-width: 45;}} #layer::z1 {text-name: [count];text-face-name: "DejaVu Sans Book";text-size: 10;text-fill: #FFFFFF;text-label-position-tolerance: 0;text-halo-radius: 0;text-halo-fill: #6F808D;text-dy: 0;text-allow-overlap: true;}',
+        interactivity: 'cartodb_id, the_geom_webmercator',
+        name: 'event'
+      },
+      pastevent: {
+        sql: 'SELECT now(), country, countryid, count(country), Min(ec.cartodb_id) cartodb_id, Min(date) date, Min(end_date) end_date, Min(start_date) start_date, Min(title) title, st_centroid(wb.the_geom_webmercator) the_geom_webmercator FROM ojy344p9szp9irh8dc1uaa ec INNER JOIN world_borders_hd wb on ec.country = wb.name WHERE title IS NOT NULL AND wb.the_geom_webmercator IS NOT NULL AND end_date < now() GROUP BY country, countryid, wb.the_geom_webmercator ORDER BY country',
+        cartocss: '#layer::z1 {marker-width: 30;marker-fill: #66bc29;marker-fill-opacity: 1;marker-line-width: 0;marker-line-color: #151718;marker-line-opacity: 0.2;marker-allow-overlap:true;marker-comp-op: src;[zoom = 2] {marker-width: 30;}[zoom = 3] {marker-width: 35;}[zoom = 4] {marker-width: 40;}[zoom = 5] {marker-width: 45;}[zoom = 6] {marker-width: 45;}} #layer::z1 {text-name: [count];text-face-name: "DejaVu Sans Book";text-size: 10;text-fill: #FFFFFF;text-label-position-tolerance: 0;text-halo-radius: 0;text-halo-fill: #6F808D;text-dy: 0;text-allow-overlap: true;}',
+        interactivity: 'cartodb_id, the_geom_webmercator, country',
+        name: 'event'
+      },
+      commitment: {
+        sql: 'SELECT country,Min(countryid) countryid, Min(cc.cartodb_id) cartodb_id, count(country), st_centroid(wb.the_geom_webmercator) the_geom_webmercator FROM c73t2gfiumef0fs5de9huq cc INNER JOIN world_borders_hd wb on cc.country = wb.name WHERE country IS NOT NULL AND wb.the_geom_webmercator IS NOT NULL AND LENGTH(country) > 0 GROUP BY wb.the_geom_webmercator, country ORDER BY country DESC',
+        cartocss: '#layer::z1 {marker-width: 30;marker-fill: #ffa200;marker-fill-opacity: 1;marker-line-width: 1;marker-line-color: #4b392f;marker-line-opacity: 0.1;marker-allow-overlap:true;marker-comp-op: src;[zoom = 2] {marker-width: 30;}[zoom = 3] {marker-width: 35;}[zoom = 4] {marker-width: 40;}[zoom = 5] {marker-width:45;} [zoom = 6] {marker-width: 45;}} #layer::z1 {text-name: [count];text-face-name: "DejaVu Sans Book";text-size: 10;text-fill: #FFFFFF;text-label-position-tolerance: 0;text-halo-radius: 0;text-halo-fill: #6F808D;text-dy: 0;text-allow-overlap: true;}',
+        interactivity: 'cartodb_id, the_geom_webmercator, country',
+        name: 'commitment'
+      },
+      participants: {
+        sql: 'SELECT * FROM table_4q9xwd8iroblyagpt_dx5q WHERE show_on_map IS TRUE',
+        cartocss: '#layer {marker-width: 50;marker-height: 45;marker-fill: #FFB927;marker-fill-opacity: 1;marker-file: url("https://s3.amazonaws.com/com.cartodb.users-assets.production/maki-icons/marker-18.svg");marker-allow-overlap: true;marker-line-width: 1;marker-line-color: #4b392f;marker-line-opacity: 1;marker-comp-op: src-over;[zoom = 2] {marker-width: 30;marker-height: 25;}[zoom = 3] {marker-width: 35;marker-height: 30;}[zoom = 4] {marker-width: 45;marker-height: 40;}[zoom = 5] {marker-width: 50;marker-height: 45;}[zoom = 6] {marker-width: 55;marker-height: 50;}}',
+        interactivity: 'cartodb_id, title',
+        name: 'participants'
+      }
+    };
+
+    //consts for tabs
+    var countriesContent = '#countriesContentContainer';
+    var page = 1;
+    var activeTab = 'starred';
+    var pageThreshold = 10;
+
+    // cache
+    var countriesMap = void 0;
+    var countriesData = void 0;
+    var themesData = void 0;
+
+    // custom callback for tabs component
+    var onChangeCountryTab = function onChangeCountryTab(id, label) {
+      setPageCount(1);
+      $('.tab-content').addClass('-hidden');
+      $('.' + id).removeClass('-hidden');
+      showLoader('#countriesContentContainer');
+      showCountriesData(countriesData, id, countriesContent, $('#countriesSearch select').val());
+    };
+
+    function cacheData() {
+      $.getJSON('/apiJSON/countries?sort=label', function (countries) {
+        countriesData = countries.data;
+        initMapLayer(countriesMap, countriesData, layers, cartoQueryLink);
+        countriesMap.invalidateSize();
+        showCountriesData(countriesData, activeTab, countriesContent);
+        buildCountrySelector($('#countriesSearch select'), countriesContent, countriesData, activeTab);
+        onClickPagination(activeTab, countriesContent, countriesData);
+        initCountryTabs(onChangeCountryTab);
+        $.getJSON('/apiJSON/themes?sort=name&fields=id,label,alias', function (themes) {
+          themesData = themes.data;
+          appendSelectOptionsFromData('.select-legend-dropdown', themesData);
+          removeLoader('.l-map', null, true);
+        });
+      });
+    }
+
+    function initViews() {
+      countriesMap = initCountriesMap();
+      $('.select-legend-dropdown').select2({
+        minimumResultsForSearch: Infinity,
+        placeholder: 'All themes'
+      });
+      $('#countriesSearch select').select2({
+        containerCssClass: '-tall',
+        placeholder: 'Search country...'
+      });
+      $('.select-legend-dropdown').change(function () {
+        changeCommitmentLayer();
+      });
+    }
+
+    // let's begin
+    initViews();
+    cacheData();
+    buildMapModal();
+  })(jQuery);
+}
+'use strict';
+
+function buildCountrySelector(selector, container, countries, activeTab) {
+  selector.append('<option value="0">All countries</option>');
+  selector.append('<svg class="icon -medium -blue"><use xlink:href="#icon-search"></use></svg>');
+  appendSelectOptionsFromData(selector, countries);
+  setCountrySelectorListeners(selector, container, countries, activeTab);
+}
+
+function setCountrySelectorListeners(selector, container, countriesData, activeTab) {
+  selector.on('change', function () {
+    setPageCount(1);
+    showLoader(container);
+    var filterValue = $(this).val();
+    showCountriesData(countriesData, activeTab, container, filterValue);
+  });
+}
+
+function setPageCount(val) {
+  $('.page-count').data('value', val);
+}
+
+function getCurrentPage() {
+  var pageCount = $('.page-count').data('value');
+  return pageCount;
+}
+
+function onClickPagination(activeTab, container, countriesData) {
+  $('.c-pagination-click').on('click', function () {
+    setPageCount(getCurrentPage() + 1);
+    showCountriesData(countriesData, activeTab, container);
+  });
+}
+
+function showOnClickPagination() {
+  $('.c-pagination-click').removeClass('-hidden');
+}
+
+function hideOnClickPagination() {
+  $('.c-pagination-click').addClass('-hidden');
+}
+
+function initModalStarred() {
+  $('.show-modal-starred').click(function () {
+    var country = $(this).data('value');
+    $.getJSON('/apiJSON/countries?filter[id]=' + country, function (countriesData) {
+      showLoader('body');
+      setMapModalContent('mapModal', 'starred-tab', country, countriesData);
+    });
+  });
+}
+
+function setCountryDataTiles(container, country) {
+  var activeTab = $('.tabs-container').find('.-selected').data('node');
+  $('#country-' + country.id + ' .data-tiles').html('');
+  if (activeTab === 'starred') {
+    if (country.starred_commitments.length > 0) {
+      var trimCommitments = country.starred_commitments.slice(0, 2);
+      appendSmallTiles(trimCommitments, '#country-' + country.id, 2, '-short -country');
+      $('#country-' + country.id + ' > .c-country-tile').append('\n        <span data-value="' + country.id + '" class="show-modal-starred text -interactive -blue">Show all starred commitments</span>\n      ');
+    } else {
+      showNoResults('#country-' + country.id + ' .data-tiles', 'No starred commitments', 'medium', 'grey', 'xlarge', 'grey');
+    }
+  } else if (activeTab === 'potential') {
+    if (country.year_action_plan !== null) {
+      appendCountriesInfoBars(country, '#country-' + country.id);
+    } else {
+      showNoResults('#country-' + country.id + ' .data-tiles', 'No data available', 'medium', 'grey', 'xlarge', 'grey');
+    }
+  } else if (activeTab === 'relevance') {
+    if (country.access_information || country.civic_participation || country.public_accountability || country.unclear) {
+      appendCountriesRelevance(country, '#country-' + country.id);
+    } else {
+      showNoResults('#country-' + country.id + ' .data-tiles', 'No data available', 'medium', 'grey', 'xlarge', 'grey');
+    }
+  } else if (activeTab === 'thematic') {
+    if (country.current_themes) {
+      appendCountriesThematicBars(country, '#country-' + country.id);
+    } else {
+      showNoResults('#country-' + country.id + ' .data-tiles', 'No data available', 'medium', 'grey', 'xlarge', 'grey');
+    }
+  } else {
+    showNoResults('#country-' + country.id + ' .data-tiles', 'No data available', 'medium', 'grey', 'large', 'grey');
+  }
+  removeLoader('#countriesContentContainer', null, true);
+}
+
+function initCountryBox(container, country, activeTab) {
+  var html = '\n    <div class="column small-12 medium-6" id="country-' + country.id + '">\n      <div class="c-country-tile">\n        <a class="text -title-x-small" href="/' + country.alias + '">' + country.label + '&nbsp;<svg class="icon -blue -medium arrow"><use xlink:href="#icon-arrow"></use></svg></a>\n        <div class="first-info text">\n          <span>Current Commitments ' + parseInt(country.current_commitments_count) + '</span>\n          <span>Reviewed Commitments ' + parseInt(country.irm_commitments_count) + '</span>\n        </div>\n        <div class="text border-line">\n          <span>Starred Commitments ' + parseInt(country.starred_commitments_count) + '</span>\n        </div>\n        <div class="first-info text">\n          <span>Action Plans ' + country.action_plan_count + '</span>\n          <span>Member since ' + moment.unix(country.memberSince).format('YYYY') + '</span>\n        </div>\n        <div class="row data-tiles"></div>\n      </div>\n    </div>\n  ';
+  $('.content-tiles', container).append(html);
+}
+
+function showCountriesData(countriesData, activeTab, container, countryId) {
+  hideOnClickPagination();
+  var page = getCurrentPage();
+  // get filter country data
+  var filteredCountries = '';
+  if (page === 1) {
+    $('.content-tiles', container).html('');
+  }
+  if (countryId && countryId > 0) {
+    filteredCountries = countriesData.filter(function (country) {
+      return country.id == countryId;
+    });
+  } else {
+    var sliceStart = (page - 1) * 10;
+    filteredCountries = countriesData.slice(sliceStart, sliceStart + 10);
+  }
+
+  filteredCountries.forEach(function (country, index) {
+    initCountryBox(container, country, activeTab);
+    setCountryDataTiles(container, country);
+  });
+
+  if (page < Math.ceil(countriesData.length / 10) && filteredCountries.length > 1) {
+    showOnClickPagination();
+  }
+  removeLoader(container, null, true);
+  initModalStarred();
+}
+
+function initCountryTabs(onChangeCountryTab) {
+  initTabs();
+  setTabListeners(onChangeCountryTab);
+}
+'use strict';
+
 function showDocumentResourcePage() {
   (function ($) {
     // cache dom
@@ -1855,784 +2636,19 @@ function showResourcesDetail(id) {
 }
 'use strict';
 
-function showAboutPages() {
+function featuresResultPage() {
   (function ($) {
 
-    var tabsContainer = $('.tabs-container');
-    var containerInfo = $('#containerInfo');
-
-    // custom callback for tabs component
-    var onChangeAboutPageTab = function onChangeAboutPageTab(id, label) {
-      $('.tab-content').addClass('-hidden');
-      $('.' + id).removeClass('-hidden');
-    };
-
-    function initAboutTabs(onChange) {
-      initTabs();
-      setTabListeners(onChange);
-    }
-
-    showLoader('#containerInfo');
-    $.getJSON('/apiJSON/page?filter[page_category]=2925', function (data) {
-      buildTabs(data.data, tabsContainer, onChangeAboutPageTab);
-      initAboutTabs(onChangeAboutPageTab);
-      for (var i = 0; i < data.data.length; i += 1) {
-        containerInfo.append('\n        <div class="tab-content -hidden ' + data.data[i].id + '">\n          <h3 class="text -section-title">' + data.data[i].label + '</h3>\n          <div class="text -body-content">\n            <p class="text -body-content">\n              ' + data.data[i].body.value + '\n            </p>\n          </div>\n        </div>\n      ');
-      }
-      removeLoader('#containerInfo', null, true);
-    });
+    $('#value-search').html('Search for: ' + $('#edit-keys').val());
   })(jQuery);
 }
 'use strict';
 
-function showCurrentCommitmentDetail(id) {
+function searchPage() {
   (function ($) {
 
-    function buildCurrentCommitment() {
-      $.getJSON('/apiJSON/current_commitment/' + id, function (data) {
-        if (data.data[0].lead_institution[0]) {
-          $('#currentCommitmentContent .lead').html(data.data[0].lead_institution[0]);
-        }
-        if (data.data[0].support_institution[0]) {
-          $('#currentCommitmentContent .support').html(data.data[0].support_institution[0]);
-        }
-      });
-    }
-
-    $('#theme-menu').addClass('active');
-    buildCurrentCommitment();
-    buildExploreMoreTiles('current_commitment', '', '', false, false);
+    $('.search-form input').attr('placeholder', 'Type what you are searching for...');
   })(jQuery);
-}
-'use strict';
-
-function showIrmCommitmentDetail(id) {
-  (function ($) {
-    $('#theme-menu').addClass('active');
-    buildExploreMoreTiles('irm_commitments', '', '', false, false);
-  })(jQuery);
-}
-'use strict';
-
-function showModelCommitmentDetail(id) {
-  (function ($) {
-
-    var onChangeTab = function onChangeTab(id, label) {
-      $('.tab-container').addClass('-hidden');
-      $('#' + id + ' .tab-container').removeClass('-hidden');
-    };
-
-    function fetchModelCommitmentDetail() {
-      $.getJSON('/apiJSON/modelcommitments/' + id, function (data) {
-        $('.strength-info').html('<strong>Strength: </strong>' + data.data[0].strength.label);
-        $('.contributor-info').html('<strong>Contributors: </strong>' + data.data[0].contributors);
-        $('#justification .container').html(data.data[0].justification);
-        appendTilesStandards(data.data[0].standardsguidance, $('#standards .container'), 2);
-        removeLoader('.l-section', null, true);
-      });
-    }
-
-    // init view
-    initTabs();
-    setTabListeners(onChangeTab);
-    fetchModelCommitmentDetail();
-    buildExploreMoreTiles('modelcommitments', '', '', false, false);
-  })(jQuery);
-}
-'use strict';
-
-function showStarredCommitmentDetail(id) {
-  (function ($) {
-    $('#theme-menu').addClass('active');
-    buildExploreMoreTiles('starredcommitments', '', '', true, true);
-  })(jQuery);
-}
-'use strict';
-
-function showCountriesDetail(id) {
-  (function ($) {
-
-    //cache
-    var years = ['2014', '2015', '2016'];
-    var docTypes = {
-      actionPlans: ['2703'],
-      letters: ['2779'],
-      reports: ['2704', '2768', '2705']
-    };
-    var pageThreshold = 10;
-
-    // selectors and containers
-    var actionPlansContainer = '#actionPlansLinks';
-    var reportsContainer = '#reportsLinks';
-    var lettersContainer = '#lettersLinks';
-    var eventsContainer = '#eventsBanner';
-    var themesContainer = '.themes-container';
-    var completionContainer = '.completion-container';
-
-    // initial settings
-    var page = 1;
-    var currentPageCount = 0;
-    var irmPageCount = 0;
-
-    //data cache
-    var lettersData = void 0;
-    var actionPlansData = void 0;
-    var reportsData = void 0;
-
-    // init selectors
-    $('select').select2({
-      minimumResultsForSearch: Infinity,
-      containerCssClass: '-hidden'
-    });
-
-    // local functions
-    function _setDataCount(selector, count) {
-      $(selector).html('' + count);
-    }
-
-    function _appendLoadingBar(view, data) {
-      var container = $(view);
-      data.forEach(function (data) {
-        if (data.value) {
-          var html = '\n          <div class="c-loading-bar">\n          <div class="text -small-bold -white">' + data.value + '% ' + data.theme + '</div>\n          <div class="bar -white" style="width: ' + data.value + '%;"></div>\n          </div>\n          ';
-          container.append(html);
-        }
-      });
-    }
-
-    function _appendStories(view, stories) {
-      var container = $(view);
-      stories.forEach(function (story) {
-        var html = '\n          <li class="story-item">\n            <div class="badge">\n              <svg class="icon -white"><use xlink:href="#icon-external-link"></use></svg>\n            </div>\n            <div class="notification">\n              A new OGP <b>Story</b> has been posted: <b><a href="/' + story.alias + '">' + story.label + '</a></b>\n            </div>\n          </li>\n        ';
-        container.append(html);
-      });
-    }
-
-    function _appendLinks(view, data, selector, type) {
-      var activeFilter = $(selector).val();
-      var container = $(view + ' .links-container');
-      var html = '';
-      data.forEach(function (link) {
-        if (link.type && type.some(function (index) {
-          return link.type.indexOf(index) >= 0;
-        })) {
-          if (link.date && moment(link.date.value).year() === parseInt(activeFilter) || link.date && moment(link.date.value2).year() === parseInt(activeFilter)) {
-            html += buildRelLink(link);
-          }
-        }
-      });
-      if (html === '') {
-        showNoResults(container, 'No documents available', 'short', 'grey', 'xlarge', 'grey');
-      } else {
-        container.html(html);
-      }
-    }
-
-    function _appendEvents(event) {
-      if (event.image) {
-        $(eventsContainer + ' .banner-image').css('background-image', 'url(' + event.image + ')');
-      }
-      $(eventsContainer + ' .banner-title').html(event.label);
-
-      var eventMeta = '';
-      eventMeta += convertEventDate(event.date.value);
-      if (event.date.value2) {
-        var endDate = convertEventDate(event.date.value2);
-        eventMeta += ' to ' + endDate + '.';
-      }
-      eventMeta += ' | ' + event.location.locality + ', ' + event.location.country;
-      $(eventsContainer + ' .banner-date').html(eventMeta);
-      $(eventsContainer + ' .c-button').attr('href', '/' + event.alias);
-    }
-
-    function setPaginationListerners(container, endPoint, pageCount) {
-      $('#' + container + ' .onClickPagination').on('click', function (e) {
-        var pageNum = $(this).data('value');
-        showLoader('#' + container);
-        $.getJSON('/apiJSON/' + endPoint + '?filter[country]=' + id + '&page[number]=' + pageNum + '&page[size]=' + pageThreshold + '&sort=label', function (data) {
-          initAccordion(container, data.data);
-          initPagination(pageNum, pageCount, container);
-          setPaginationListerners(container, endPoint, pageCount);
-          removeLoader('#' + container, null, true);
-        });
-      });
-    }
-
-    function setSelectorListener(view, selector, data, type) {
-      _appendLinks(view, data, selector, type);
-      $(selector).on('change', function () {
-        _appendLinks(view, data, selector, type);
-      });
-    }
-
-    function initLinksSelectorContainer(dataCache, container, filter, type) {
-      if (dataCache.length) {
-        var optionValues = getSelectOptionsFromData(dataCache, filter, type);
-        if (optionValues.length) {
-          $(container + ' select').removeClass('-hidden');
-          buildSelector(container + ' select', optionValues);
-          setSelectorListener('' + container, container + ' select', dataCache, type);
-          $(container + ' .select2-selection').removeClass('-hidden');
-        } else {
-          _appendLinks('' + container, dataCache, container + ' select', type);
-        }
-      }
-    }
-
-    function bodyContentListener() {
-      $('.js-view-more').on('click', function () {
-        $('.body-view-more').toggleClass('-show');
-        $(this).toggleClass('-open');
-        if ($(this).hasClass('-open')) {
-          $('span', this).html('VIEW LESS');
-        } else {
-          $('span', this).html('VIEW MORE');
-        }
-      });
-    }
-
-    /////////////
-    // FETCH DATA
-    /////////////
-
-    // get country data
-    $.getJSON('/apiJSON/countries?filter[id]=' + id, function (data) {
-      if (data.data) {
-        var country = data.data[0];
-        // set banner counts
-        _setDataCount('.c-commitment-count .content-count', country.current_commitments_count);
-        _setDataCount('.irm-count', country.irm_commitments_count);
-        _setDataCount('.starred-count', country.starred_commitments_count);
-        _setDataCount('#currentCommitmentsAccordion .content-count', country.current_commitments_count);
-        _setDataCount('#irmReviewedCommitmentsAccordion .content-count', country.irm_commitments_count);
-        // loading bar data
-        if (country.current_themes) {
-          var themesData = [];
-          for (var i = 0; i < country.current_themes.length; i++) {
-            themesData.push({ theme: country.current_themes[i], value: country.current_percentage[i] });
-          }
-          _appendLoadingBar(themesContainer, themesData);
-        }
-        if (country.midterm_percentage || country.endofterm_percentage) {
-          var completionData = [{ theme: 'Mid term percentage', value: country.midterm_percentage }, { theme: 'End of term percentage', value: country.endofterm_percentage }];
-          _appendLoadingBar(completionContainer, completionData);
-        } else {
-          showNoResults('.completion-container', 'Not yet reviewed', 'short', 'white', 'xlarge', 'grey');
-        }
-      }
-      removeLoader('#countryHeaderBanner', null, true);
-    });
-
-    // fetch current commitments
-    $.getJSON('/apiJSON/current_commitment?filter[country]=' + id + '&sort=label&page[size]=' + pageThreshold + '&page[number]=1', function (data) {
-      if (data.data.length) {
-        initAccordion('currentCommitmentsAccordion', data.data);
-        if (data.count > pageThreshold) {
-          currentPageCount = getPageCount(data.count, pageThreshold);
-          initPagination(page, currentPageCount, 'currentCommitmentsAccordion');
-          setPaginationListerners('currentCommitmentsAccordion', 'current_commitment', currentPageCount);
-        }
-      } else {
-        showNoResults('#currentCommitmentsAccordion .c-accordion', 'No current commitments', 'medium', 'grey', 'xxlarge', 'blue');
-      }
-      removeLoader('#currentCommitmentsAccordion', null, true);
-    });
-
-    // fetch review commitments
-    $.getJSON('/apiJSON/irm_commitments?filter[country]=' + id + '&page[size]=' + pageThreshold + '&sort=label&page[number]=1', function (data) {
-      if (data.data.length) {
-        initAccordion('irmReviewedCommitmentsAccordion', data.data);
-        if (data.count > pageThreshold) {
-          irmPageCount = getPageCount(data.count, pageThreshold);
-          initPagination(page, irmPageCount, 'irmReviewedCommitmentsAccordion');
-          setPaginationListerners('irmReviewedCommitmentsAccordion', 'irm_commitments', irmPageCount);
-        }
-      } else {
-        showNoResults('#irmReviewedCommitmentsAccordion .c-accordion', 'No reviewed commitments', 'medium', 'grey', 'xxlarge', 'blue');
-      }
-      removeLoader('#irmReviewedCommitmentsAccordion', null, true);
-    });
-
-    // fetch stories
-    $.getJSON('/apiJSON/stories?filter[country]=' + id + '&page[size]=9&sort=-created', function (data) {
-      if (data.data.length) {
-        _appendStories('.c-activity-stream ul', data.data);
-        $('.item-bridge').removeClass('-hidden');
-      } else {
-        showNoResults('.c-activity-stream ul', 'No recent activity', 'medium', 'white', 'xlarge', 'grey');
-      }
-      removeLoader('.c-activity-stream');
-    });
-
-    // fetch events
-    $.getJSON('/apiJSON/events?filter[country]=' + id, function (data) {
-      if (data.data.length) {
-        if (dateDiff(data.data[0].date.value) <= 0) {
-          _appendEvents(data.data[0]);
-          $(eventsContainer).removeClass('-hidden');
-        }
-      }
-    });
-
-    $.getJSON('/apiJSON/documents?filter[country]=' + id, function (data) {
-      var dataCache = data.data;
-      initLinksSelectorContainer(dataCache, actionPlansContainer, ['date'], docTypes.actionPlans);
-      initLinksSelectorContainer(dataCache, reportsContainer, ['date'], docTypes.reports);
-      initLinksSelectorContainer(dataCache, lettersContainer, ['date'], docTypes.letters);
-      removeLoader('#resourceDocsContainer', null, true);
-    });
-
-    // init selectors and views for actions, reports and letters data
-    bodyContentListener();
-  })(jQuery);
-}
-'use strict';
-
-var layerMap = '';
-function initCountriesMap() {
-  var map = L.map('countriesMap', {
-    zoomControl: false,
-    center: [35, -60],
-    zoom: 2,
-    maxZoom: 6,
-    minZoom: 2,
-    scrollWheelZoom: false
-  });
-  var basemap = L.tileLayer('http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png', {
-    attribution: ''
-  }).addTo(map);
-  $('#in').click(function () {
-    map.setZoom(map.getZoom() + 1);
-  });
-
-  $('#out').click(function () {
-    map.setZoom(map.getZoom() - 1);
-  });
-  return map;
-}
-
-function initMapLayer(map, countriesData, layers, cartoQueryLink) {
-  var over = false;
-
-  cartodb.createLayer(map, {
-    user_name: 'jmonaco',
-    type: 'cartodb',
-    sublayers: []
-  }).addTo(map).done(function (layer) {
-    layer.setInteraction(true);
-    layer.createSubLayer(layers['action']);
-    var hovers = [];
-
-    layer.bind('featureOver', function (e, latlon, pxPos, data, layers) {
-      hovers[layers] = 1;
-      if (_.any(hovers)) {
-        $('#countriesMap').css('cursor', 'pointer');
-      }
-    });
-
-    layer.bind('featureOut', function (m, layers) {
-      hovers[layers] = 0;
-      if (!_.any(hovers)) {
-        $('#countriesMap').css('cursor', 'auto');
-      }
-    });
-
-    layer.on('featureClick', function (e, latlng, pos, data) {
-      $('.tooltip').remove();
-      if (layer.layers[0].options.name !== 'participants') {
-        showLoader('.l-map');
-      }
-      switch (layer.layers[0].options.name) {
-        case 'action':
-          $.getJSON(cartoQueryLink + ' SELECT * FROM ggtqckcj2bioeepnuvxoow WHERE cartodb_id = ' + data.cartodb_id, function (actionPlanData) {
-            updateMapModal(actionPlanData.rows[0].nid, 'actionPlan', countriesData);
-          });
-          break;
-        case 'starred':
-          $.getJSON(cartoQueryLink + ' SELECT * FROM zzpexx07fxnjtcvjpptz2q WHERE cartodb_id = ' + data.cartodb_id, function (starredData) {
-            updateMapModal(starredData.rows[0].countryid, 'starred', countriesData);
-          });
-          break;
-        case 'people':
-          $.getJSON(cartoQueryLink + ' SELECT * FROM u4yhv_fq5_jb91rzuzgd8q WHERE cartodb_id = ' + data.cartodb_id, function (peopleInvolvedData) {
-            updateMapModal(peopleInvolvedData.rows[0].countryid, 'people', countriesData);
-          });
-          break;
-        case 'stories':
-          $.getJSON(cartoQueryLink + ' SELECT * FROM cajq0nm1zsu0aav_wrnyvg WHERE cartodb_id = ' + data.cartodb_id, function (storiesData) {
-            updateMapModal(storiesData.rows[0].countryid, 'stories', countriesData);
-          });
-          break;
-        case 'event':
-          $.getJSON(cartoQueryLink + ' SELECT * FROM ojy344p9szp9irh8dc1uaa WHERE cartodb_id = ' + data.cartodb_id + ' AND country IS NOT NULL', function (eventData) {
-            updateMapModal(eventData.rows[0].countryid, 'event', countriesData);
-          });
-          break;
-        case 'commitment':
-          $.getJSON(cartoQueryLink + ' SELECT * FROM c73t2gfiumef0fs5de9huq WHERE cartodb_id = ' + data.cartodb_id, function (commitmentsData) {
-            updateMapModal(commitmentsData.rows[0].countryid, 'commitment', countriesData);
-          });
-          break;
-        case 'participants':
-          $.getJSON(cartoQueryLink + ' SELECT * FROM table_4q9xwd8iroblyagpt_dx5q WHERE cartodb_id = ' + data.cartodb_id, function (participantsData) {
-            document.location.href = '' + window.location.origin + participantsData.rows[0].path;
-          });
-          break;
-        default:
-      }
-    });
-
-    layer.on('featureOver', function (e, latlng, pos, data) {
-
-      var country = data.country;
-      var titleEvent = data.title;
-
-      if (over === false) {
-        if (country) {
-          $('body').append('<div class="tooltip" style="padding: 5px; position: absolute; z-index: 10; background-color: rgba(255, 255, 255, 1); top:' + (e.pageY - 25) + 'px; left:' + (e.pageX + 25) + 'px">' + country + '</div>');
-        }
-
-        if (titleEvent) {
-          $('body').append('<div class="tooltip" style="padding: 5px; position: absolute; z-index: 10; background-color: rgba(255, 255, 255, 1); top:' + (e.pageY - 25) + 'px; left:' + (e.pageX + 25) + 'px">' + titleEvent + '</div>');
-        }
-        over = true;
-      } else {
-
-        if (country) {
-          $('.tooltip').html(country);
-        }
-
-        if (titleEvent) {
-          $('.tooltip').html(titleEvent);
-        }
-        $('.tooltip').css('top', e.pageY - 25 + 'px');
-        $('.tooltip').css('left', e.pageX + 25 + 'px');
-      }
-    });
-
-    layer.on('featureOut', function (e, latlng, pos, data) {
-      over = false;
-      $('.tooltip').remove();
-    });
-    layerMap = layer;
-    initEventFunctions(layer, layers);
-    setMapLegendListeners(layer, layers);
-  });
-}
-
-function removeLayers(layer) {
-  layer.getSubLayers().forEach(function (sublayer) {
-    sublayer.remove();
-  });
-}
-
-function initEventFunctions(layer, layers) {
-  $('.change-past-event-layer').click(function () {
-    removeLayers(layer);
-    $(this).html('LOOKING FOR UPCOMING EVENTS?');
-    $('.legend-info-event').html('Past Events');
-    $(this).removeClass('change-past-event-layer');
-    $(this).addClass('change-upcoming-event-layer');
-    layer.setInteraction(true);
-    layer.createSubLayer(layers['pastevent']);
-    initEventFunctions();
-  });
-
-  $('.change-upcoming-event-layer').click(function () {
-    removeLayers(layer);
-    $(this).html('LOOKING FOR PAST EVENTS?');
-    $('.legend-info-event').html('Upcoming Events');
-    $(this).removeClass('change-upcoming-event-layer');
-    $(this).addClass('change-past-event-layer');
-    layer.setInteraction(true);
-    layer.createSubLayer(layers['upcomingevent']);
-    initEventFunctions();
-  });
-}
-
-function setMapLegendListeners(layer, layers) {
-  $('.select-legend').click(function () {
-    $('.tooltip').remove();
-    var container = $(this).attr('data-value');
-    var namelayer = $(this).attr('data-layer');
-    removeLayers(layer);
-    if ($(this).hasClass('-selected') === false) {
-      $('.select-legend').each(function () {
-        if ($(this).hasClass('-selected')) {
-          $(this).prop('disabled', false);
-          $(this).toggleClass('-selected');
-          $('.' + container).toggleClass('-open-legend');
-        }
-      });
-
-      $('.contain-info').each(function () {
-        if ($(this).hasClass('-open-legend')) {
-          $(this).toggleClass('-open-legend');
-        }
-      });
-      if ($('.scroll-contain-legend').hasClass('-scroll') === false) {
-        $('.scroll-contain-legend').toggleClass('-scroll');
-      }
-      $('.' + container).toggleClass('-open-legend');
-      $(this).toggleClass('-selected');
-      $(this).prop('disabled', true);
-      layer.setInteraction(true);
-      layer.createSubLayer(layers[namelayer]);
-    }
-  });
-}
-
-function changeCommitmentLayer() {
-  var theme = $('.select-legend-dropdown').val();
-  removeLayers(layerMap);
-  layerMap.setInteraction(true);
-  layerMap.createSubLayer({
-    sql: 'SELECT country,Min(countryid) countryid, Min(cc.cartodb_id) cartodb_id, count(country), st_centroid(wb.the_geom_webmercator) the_geom_webmercator FROM c73t2gfiumef0fs5de9huq cc INNER JOIN world_borders_hd wb on cc.country = wb.name WHERE country IS NOT NULL AND wb.the_geom_webmercator IS NOT NULL AND LENGTH(country) > 0 AND theme LIKE \'%' + theme + '%\' GROUP BY wb.the_geom_webmercator, country ORDER BY country DESC',
-    cartocss: '#layer::z1 {marker-width: ramp([count], range(25, 45), quantiles(7));marker-fill: #ffa200;marker-fill-opacity: 1;marker-line-width: 1;marker-line-color: #4b392f;marker-line-opacity: 0.1;marker-allow-overlap:true;marker-comp-op: src;[zoom = 2] {marker-width: ramp([count], range(25, 30), quantiles(3));}[zoom = 3] {marker-width: ramp([count], range(30, 35), quantiles(4));}[zoom = 4] {marker-width: ramp([count], range(30, 40), quantiles(5));}[zoom = 5] {marker-width: ramp([count], range(30, 45), quantiles(6));} [zoom = 6] {marker-width: ramp([count], range(35, 45), quantiles(7));}} #layer::z1 {text-name: [count];text-face-name: "DejaVu Sans Book";text-size: 10;text-fill: #FFFFFF;text-label-position-tolerance: 0;text-halo-radius: 0;text-halo-fill: #6F808D;text-dy: 0;text-allow-overlap: true;}',
-    interactivity: 'cartodb_id, the_geom_webmercator, country',
-    name: 'commitment'
-  });
-}
-'use strict';
-
-function showCountriesPage() {
-  (function ($) {
-
-    // consts for map
-    var cartoQueryLink = 'https://jmonaco.carto.com/api/v2/sql?q=';
-    var layers = {
-      action: {
-        sql: 'SELECT  wb.the_geom_webmercator the_geom_webmercator, nid, member_since, at.path, actionplan, at.country, at.cartodb_id FROM ggtqckcj2bioeepnuvxoow at INNER JOIN world_borders_hd wb on at.country = wb.name',
-        cartocss: '#layer {polygon-fill: ramp([actionplan], (#2d4f00, #66bc29, #2d4f00, #66bc29, #2d4f00, #2d4f00, #cc3300, #cc3300), ("Implementing 1st action plan and Developing 2nd action plan","Developing action plan", "Implementing 2nd action plan", "Developing 1st Action Plan", "Implementing 1st action plan", "Implementing action plan", , "Inactive"), "="); line-width: 1; line-color: #FFF; line-opacity: 0.5;}',
-        interactivity: 'the_geom_webmercator, nid, country, cartodb_id',
-        name: 'action'
-      },
-      starred: {
-        sql: 'SELECT numberstarred,country, st.cartodb_id, st_centroid(wb.the_geom_webmercator) the_geom_webmercator FROM zzpexx07fxnjtcvjpptz2q st INNER JOIN world_borders_hd wb on st.country = wb.name WHERE wb.the_geom_webmercator IS NOT NULL ORDER BY numberstarred',
-        cartocss: '#layer::z1 {marker-width: 30;marker-fill: #ffffff;marker-fill-opacity: 1;marker-line-width: 1;marker-line-color: #4b392f;marker-line-opacity: 0.2;marker-allow-overlap:true;marker-comp-op: src;[zoom = 2] {marker-width: 30;}[zoom = 3] {marker-width: 35;}[zoom = 4] {marker-width: 40;}[zoom = 5] {marker-width: 45;}[zoom = 6] {marker-width: 45;}} #layer::z1 {text-name: [numberstarred];text-face-name: "DejaVu Sans Book";text-size: 10;text-fill: #000000;text-label-position-tolerance: 0;text-halo-radius: 0;text-halo-fill: #6F808D;text-dy: 0;text-allow-overlap: true;}',
-        interactivity: 'numberstarred, country, cartodb_id, the_geom_webmercator',
-        name: 'starred'
-      },
-      people: {
-        sql: 'SELECT numberpeopleinvolved,country,countryid, pi.cartodb_id, st_centroid(wb.the_geom_webmercator) the_geom_webmercator FROM u4yhv_fq5_jb91rzuzgd8q pi INNER JOIN world_borders_hd wb on pi.country = wb.name WHERE wb.the_geom_webmercator IS NOT NULL',
-        cartocss: '#layer {marker-width: 50;marker-height: 45;marker-fill: #007acb;marker-fill-opacity: 1;marker-file:url("https://s3.amazonaws.com/com.cartodb.users-assets.production/maki-icons/marker-18.svg");marker-allow-overlap: true;marker-line-width: 1;marker-line-color: #4b392f;marker-line-opacity: 1;marker-comp-op: src-over;[zoom = 2] {marker-width: 30;marker-height: 25;}[zoom = 3] {marker-width: 35;marker-height: 30;}[zoom = 4] {marker-width: 45;marker-height: 40;} [zoom = 5] {marker-width: 50;marker-height: 45;}[zoom = 6] {marker-width: 55;marker-height: 50;}}',
-        interactivity: 'numberpeopleinvolved,countryid, country, cartodb_id, the_geom_webmercator',
-        name: 'people'
-      },
-      stories: {
-        sql: 'SELECT numberstories,country, st.cartodb_id, st_centroid(wb.the_geom_webmercator) the_geom_webmercator FROM cajq0nm1zsu0aav_wrnyvg st INNER JOIN world_borders_hd wb on st.country = wb.name WHERE st.the_geom_webmercator IS NOT NULL',
-        cartocss: '#layer::z1{marker-width: 50;marker-height: 45;marker-fill: #0099ff;marker-fill-opacity: 1;marker-file:url("https://s3.amazonaws.com/com.cartodb.users-assets.production/maki-icons/marker-18.svg");marker-allow-overlap: true;marker-line-width: 1;marker-line-color: #4b392f;marker-line-opacity: 1;marker-comp-op: src-over;[zoom = 2] {marker-width: 50;marker-height: 45;}[zoom = 3] {marker-width: 55;marker-height: 50;}[zoom = 4] {marker-width: 60;marker-height: 55;}[zoom = 5] {marker-width: 65;marker-height: 60;}[zoom = 6] {marker-width: 70;marker-height: 65;}} #layer::z1{text-name: [numberstories];text-face-name: "DejaVu Sans Book";text-size: 10;text-fill: #FFFFFF;text-label-position-tolerance: 0;text-halo-radius: 0;text-halo-fill: #6F808D;text-dy: -0.9;text-allow-overlap: true;text-placement: point;text-placement-type: simple;text-comp-op: screen;}',
-        interactivity: 'numberstories, country, cartodb_id, the_geom_webmercator',
-        name: 'stories'
-      },
-      upcomingevent: {
-        sql: 'SELECT now(), country, countryid, count(country), Min(ec.cartodb_id) cartodb_id, Min(date) date, Min(end_date) end_date, Min(start_date) start_date, Min(title) title, st_centroid(wb.the_geom_webmercator) the_geom_webmercator FROM ojy344p9szp9irh8dc1uaa ec INNER JOIN world_borders_hd wb on ec.country = wb.name WHERE title IS NOT NULL AND wb.the_geom_webmercator IS NOT NULL AND end_date > now() GROUP BY country, countryid, wb.the_geom_webmercator ORDER BY country',
-        cartocss: '#layer::z1 {marker-width: 30;marker-fill: #66bc29;marker-fill-opacity: 1;marker-line-width: 0;marker-line-color: #151718;marker-line-opacity: 0.2;marker-allow-overlap:true;marker-comp-op: src;[zoom = 2] {marker-width: 30;}[zoom = 3] {marker-width: 35;}[zoom = 4] {marker-width: 40;}[zoom = 5] {marker-width: 45;}[zoom = 6] {marker-width: 45;}} #layer::z1 {text-name: [count];text-face-name: "DejaVu Sans Book";text-size: 10;text-fill: #FFFFFF;text-label-position-tolerance: 0;text-halo-radius: 0;text-halo-fill: #6F808D;text-dy: 0;text-allow-overlap: true;}',
-        interactivity: 'cartodb_id, the_geom_webmercator',
-        name: 'event'
-      },
-      pastevent: {
-        sql: 'SELECT now(), country, countryid, count(country), Min(ec.cartodb_id) cartodb_id, Min(date) date, Min(end_date) end_date, Min(start_date) start_date, Min(title) title, st_centroid(wb.the_geom_webmercator) the_geom_webmercator FROM ojy344p9szp9irh8dc1uaa ec INNER JOIN world_borders_hd wb on ec.country = wb.name WHERE title IS NOT NULL AND wb.the_geom_webmercator IS NOT NULL AND end_date < now() GROUP BY country, countryid, wb.the_geom_webmercator ORDER BY country',
-        cartocss: '#layer::z1 {marker-width: 30;marker-fill: #66bc29;marker-fill-opacity: 1;marker-line-width: 0;marker-line-color: #151718;marker-line-opacity: 0.2;marker-allow-overlap:true;marker-comp-op: src;[zoom = 2] {marker-width: 30;}[zoom = 3] {marker-width: 35;}[zoom = 4] {marker-width: 40;}[zoom = 5] {marker-width: 45;}[zoom = 6] {marker-width: 45;}} #layer::z1 {text-name: [count];text-face-name: "DejaVu Sans Book";text-size: 10;text-fill: #FFFFFF;text-label-position-tolerance: 0;text-halo-radius: 0;text-halo-fill: #6F808D;text-dy: 0;text-allow-overlap: true;}',
-        interactivity: 'cartodb_id, the_geom_webmercator, country',
-        name: 'event'
-      },
-      commitment: {
-        sql: 'SELECT country,Min(countryid) countryid, Min(cc.cartodb_id) cartodb_id, count(country), st_centroid(wb.the_geom_webmercator) the_geom_webmercator FROM c73t2gfiumef0fs5de9huq cc INNER JOIN world_borders_hd wb on cc.country = wb.name WHERE country IS NOT NULL AND wb.the_geom_webmercator IS NOT NULL AND LENGTH(country) > 0 GROUP BY wb.the_geom_webmercator, country ORDER BY country DESC',
-        cartocss: '#layer::z1 {marker-width: 30;marker-fill: #ffa200;marker-fill-opacity: 1;marker-line-width: 1;marker-line-color: #4b392f;marker-line-opacity: 0.1;marker-allow-overlap:true;marker-comp-op: src;[zoom = 2] {marker-width: 30;}[zoom = 3] {marker-width: 35;}[zoom = 4] {marker-width: 40;}[zoom = 5] {marker-width:45;} [zoom = 6] {marker-width: 45;}} #layer::z1 {text-name: [count];text-face-name: "DejaVu Sans Book";text-size: 10;text-fill: #FFFFFF;text-label-position-tolerance: 0;text-halo-radius: 0;text-halo-fill: #6F808D;text-dy: 0;text-allow-overlap: true;}',
-        interactivity: 'cartodb_id, the_geom_webmercator, country',
-        name: 'commitment'
-      },
-      participants: {
-        sql: 'SELECT * FROM table_4q9xwd8iroblyagpt_dx5q WHERE show_on_map IS TRUE',
-        cartocss: '#layer {marker-width: 50;marker-height: 45;marker-fill: #FFB927;marker-fill-opacity: 1;marker-file: url("https://s3.amazonaws.com/com.cartodb.users-assets.production/maki-icons/marker-18.svg");marker-allow-overlap: true;marker-line-width: 1;marker-line-color: #4b392f;marker-line-opacity: 1;marker-comp-op: src-over;[zoom = 2] {marker-width: 30;marker-height: 25;}[zoom = 3] {marker-width: 35;marker-height: 30;}[zoom = 4] {marker-width: 45;marker-height: 40;}[zoom = 5] {marker-width: 50;marker-height: 45;}[zoom = 6] {marker-width: 55;marker-height: 50;}}',
-        interactivity: 'cartodb_id, title',
-        name: 'participants'
-      }
-    };
-
-    //consts for tabs
-    var countriesContent = '#countriesContentContainer';
-    var page = 1;
-    var activeTab = 'starred';
-    var pageThreshold = 10;
-
-    // cache
-    var countriesMap = void 0;
-    var countriesData = void 0;
-    var themesData = void 0;
-
-    // custom callback for tabs component
-    var onChangeCountryTab = function onChangeCountryTab(id, label) {
-      setPageCount(1);
-      $('.tab-content').addClass('-hidden');
-      $('.' + id).removeClass('-hidden');
-      showLoader('#countriesContentContainer');
-      showCountriesData(countriesData, id, countriesContent, $('#countriesSearch select').val());
-    };
-
-    function cacheData() {
-      $.getJSON('/apiJSON/countries?sort=label', function (countries) {
-        countriesData = countries.data;
-        initMapLayer(countriesMap, countriesData, layers, cartoQueryLink);
-        countriesMap.invalidateSize();
-        showCountriesData(countriesData, activeTab, countriesContent);
-        buildCountrySelector($('#countriesSearch select'), countriesContent, countriesData, activeTab);
-        onClickPagination(activeTab, countriesContent, countriesData);
-        initCountryTabs(onChangeCountryTab);
-        $.getJSON('/apiJSON/themes?sort=name&fields=id,label,alias', function (themes) {
-          themesData = themes.data;
-          appendSelectOptionsFromData('.select-legend-dropdown', themesData);
-          removeLoader('.l-map', null, true);
-        });
-      });
-    }
-
-    function initViews() {
-      countriesMap = initCountriesMap();
-      $('.select-legend-dropdown').select2({
-        minimumResultsForSearch: Infinity,
-        placeholder: 'All themes'
-      });
-      $('#countriesSearch select').select2({
-        containerCssClass: '-tall',
-        placeholder: 'Search country...'
-      });
-      $('.select-legend-dropdown').change(function () {
-        changeCommitmentLayer();
-      });
-    }
-
-    // let's begin
-    initViews();
-    cacheData();
-    buildMapModal();
-  })(jQuery);
-}
-'use strict';
-
-function buildCountrySelector(selector, container, countries, activeTab) {
-  selector.append('<option value="0">All countries</option>');
-  selector.append('<svg class="icon -medium -blue"><use xlink:href="#icon-search"></use></svg>');
-  appendSelectOptionsFromData(selector, countries);
-  setCountrySelectorListeners(selector, container, countries, activeTab);
-}
-
-function setCountrySelectorListeners(selector, container, countriesData, activeTab) {
-  selector.on('change', function () {
-    setPageCount(1);
-    showLoader(container);
-    var filterValue = $(this).val();
-    showCountriesData(countriesData, activeTab, container, filterValue);
-  });
-}
-
-function setPageCount(val) {
-  $('.page-count').data('value', val);
-}
-
-function getCurrentPage() {
-  var pageCount = $('.page-count').data('value');
-  return pageCount;
-}
-
-function onClickPagination(activeTab, container, countriesData) {
-  $('.c-pagination-click').on('click', function () {
-    setPageCount(getCurrentPage() + 1);
-    showCountriesData(countriesData, activeTab, container);
-  });
-}
-
-function showOnClickPagination() {
-  $('.c-pagination-click').removeClass('-hidden');
-}
-
-function hideOnClickPagination() {
-  $('.c-pagination-click').addClass('-hidden');
-}
-
-function initModalStarred() {
-  $('.show-modal-starred').click(function () {
-    var country = $(this).data('value');
-    $.getJSON('/apiJSON/countries?filter[id]=' + country, function (countriesData) {
-      showLoader('body');
-      setMapModalContent('mapModal', 'starred-tab', country, countriesData);
-    });
-  });
-}
-
-function setCountryDataTiles(container, country) {
-  var activeTab = $('.tabs-container').find('.-selected').data('node');
-  $('#country-' + country.id + ' .data-tiles').html('');
-  if (activeTab === 'starred') {
-    if (country.starred_commitments.length > 0) {
-      var trimCommitments = country.starred_commitments.slice(0, 2);
-      appendSmallTiles(trimCommitments, '#country-' + country.id, 2, '-short -country');
-      $('#country-' + country.id + ' > .c-country-tile').append('\n        <span data-value="' + country.id + '" class="show-modal-starred text -interactive -blue">Show all starred commitments</span>\n      ');
-    } else {
-      showNoResults('#country-' + country.id + ' .data-tiles', 'No starred commitments', 'medium', 'grey', 'xlarge', 'grey');
-    }
-  } else if (activeTab === 'potential') {
-    if (country.year_action_plan !== null) {
-      appendCountriesInfoBars(country, '#country-' + country.id);
-    } else {
-      showNoResults('#country-' + country.id + ' .data-tiles', 'No data available', 'medium', 'grey', 'xlarge', 'grey');
-    }
-  } else if (activeTab === 'relevance') {
-    if (country.access_information || country.civic_participation || country.public_accountability || country.unclear) {
-      appendCountriesRelevance(country, '#country-' + country.id);
-    } else {
-      showNoResults('#country-' + country.id + ' .data-tiles', 'No data available', 'medium', 'grey', 'xlarge', 'grey');
-    }
-  } else if (activeTab === 'thematic') {
-    if (country.current_themes) {
-      appendCountriesThematicBars(country, '#country-' + country.id);
-    } else {
-      showNoResults('#country-' + country.id + ' .data-tiles', 'No data available', 'medium', 'grey', 'xlarge', 'grey');
-    }
-  } else {
-    showNoResults('#country-' + country.id + ' .data-tiles', 'No data available', 'medium', 'grey', 'large', 'grey');
-  }
-  removeLoader('#countriesContentContainer', null, true);
-}
-
-function initCountryBox(container, country, activeTab) {
-  var html = '\n    <div class="column small-12 medium-6" id="country-' + country.id + '">\n      <div class="c-country-tile">\n        <a class="text -title-x-small" href="/' + country.alias + '">' + country.label + '&nbsp;<svg class="icon -blue -medium arrow"><use xlink:href="#icon-arrow"></use></svg></a>\n        <div class="first-info text">\n          <span>Current Commitments ' + parseInt(country.current_commitments_count) + '</span>\n          <span>Reviewed Commitments ' + parseInt(country.irm_commitments_count) + '</span>\n        </div>\n        <div class="text border-line">\n          <span>Starred Commitments ' + parseInt(country.starred_commitments_count) + '</span>\n        </div>\n        <div class="first-info text">\n          <span>Action Plans ' + country.action_plan_count + '</span>\n          <span>Member since ' + moment.unix(country.memberSince).format('YYYY') + '</span>\n        </div>\n        <div class="row data-tiles"></div>\n      </div>\n    </div>\n  ';
-  $('.content-tiles', container).append(html);
-}
-
-function showCountriesData(countriesData, activeTab, container, countryId) {
-  hideOnClickPagination();
-  var page = getCurrentPage();
-  // get filter country data
-  var filteredCountries = '';
-  if (page === 1) {
-    $('.content-tiles', container).html('');
-  }
-  if (countryId && countryId > 0) {
-    filteredCountries = countriesData.filter(function (country) {
-      return country.id == countryId;
-    });
-  } else {
-    var sliceStart = (page - 1) * 10;
-    filteredCountries = countriesData.slice(sliceStart, sliceStart + 10);
-  }
-
-  filteredCountries.forEach(function (country, index) {
-    initCountryBox(container, country, activeTab);
-    setCountryDataTiles(container, country);
-  });
-
-  if (page < Math.ceil(countriesData.length / 10) && filteredCountries.length > 1) {
-    showOnClickPagination();
-  }
-  removeLoader(container, null, true);
-  initModalStarred();
-}
-
-function initCountryTabs(onChangeCountryTab) {
-  initTabs();
-  setTabListeners(onChangeCountryTab);
 }
 'use strict';
 
@@ -2867,7 +2883,6 @@ function showStoriesSubmitPage(id) {
       var content = $('.-content').val();
       var country = $('#country').val();
       var topic = $('#topic').val();
-      alert(topic);
       var url = './submitCookiesStory.php';
       if (title !== '' && content !== '') {
         var dataString = 'title=' + title + '&content=' + content + '&country=' + country + '&topic=' + topic;
@@ -2885,6 +2900,11 @@ function showStoriesSubmitPage(id) {
       e.preventDefault();
     });
   })(jQuery);
+}
+"use strict";
+
+function tagsPage() {
+  (function ($) {})(jQuery);
 }
 'use strict';
 
@@ -3129,26 +3149,5 @@ function showWorkingGroupDetail(id) {
       removeLoader('.working-group-content', null, true);
     });
   })(jQuery);
-}
-'use strict';
-
-function featuresResultPage() {
-  (function ($) {
-
-    $('#value-search').html('Search for: ' + $('#edit-keys').val());
-  })(jQuery);
-}
-'use strict';
-
-function searchPage() {
-  (function ($) {
-
-    $('.search-form input').attr('placeholder', 'Type what you are searching for...');
-  })(jQuery);
-}
-"use strict";
-
-function tagsPage() {
-  (function ($) {})(jQuery);
 }
 //# sourceMappingURL=bundle.js.map
