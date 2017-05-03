@@ -56,12 +56,16 @@
     margin-bottom: 40px;
 
     .newsletter-selector {
+      display: flex;
+      align-items: center;
+      justify-content: center;
       background-color: $color-3;
-      padding: 30px 15px;
+      padding: 0 15px;
       margin-right: 15px;
       border: solid 2px $color-3;
       width: 100%;
       text-align: center;
+      min-height: 112px;
 
       &:last-child {
         margin-right: 0;
@@ -94,7 +98,7 @@
   .c-button, button{
     max-width: 220px;
     position: absolute;
-    right: 0;
+    right: 50px;
     bottom: 0;
     margin-bottom: 0;
     border: 0;
@@ -116,13 +120,4 @@
 .view-content {
   z-index: 5;
   position: relative;
-}
-
-.external-link {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  color: $color-2;
-  font-size: 15px;
-  padding: 25px 50px;
 }
