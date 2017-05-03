@@ -117,3 +117,12 @@
   z-index: 5;
   position: relative;
 }
+
+.external-link {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  color: $color-2;
+  font-size: 15px;
+  padding: 25px 50px;
+}

@@ -65,6 +65,7 @@ function buildSubscribeModal() {
           <div class="text newsletter-selector -interactive" data-option="ec2455b5b5">Boletín de OGP</div>
         </div>
       </div>
+      <a class="external-link" href="/subscribe-our-newsletters">More</a>
       <input type="submit" name="subscribe" id="mc-embedded-subscribe" class="c-button -tall -green-back -white" value="subscribe">
     </form>
   `;
