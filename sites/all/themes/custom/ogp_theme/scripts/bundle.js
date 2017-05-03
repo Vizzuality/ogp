@@ -636,6 +636,7 @@ function appendSelectOptions(selector, options) {
 
 function appendSelectOptionsFromData(selector, options) {
   options.forEach(function (option) {
+    console.log(option);
     var html = "\n      <option value=\"" + option.id + "\" data-value=\"" + option.alias + "\">" + option.label + "</option>\n    ";
     $(selector).append(html);
   });
@@ -2881,9 +2882,10 @@ function showStoriesSubmitPage(id) {
     $('.c-form').submit(function (e) {
       var title = $('#title').val();
       var content = $('.-content').val();
+      var country = $('#country').val();
       var url = './submitCookiesStory.php';
       if (title !== '' && content !== '') {
-        var dataString = 'title=' + title + '&content=' + content;
+        var dataString = 'title=' + title + '&content=' + content + '&country=' + country;
         $.ajax({
           type: 'POST',
           url: url,

@@ -1,6 +1,7 @@
 <?php
   $cookie_title_story = 'title_story';
   $cookie_content_story = 'content_story';
+  $cookie_country_story = 'country_story';
 
   global $user;
   $node = new stdClass();
@@ -9,7 +10,7 @@
   node_object_prepare($node); // Sets some defaults. Invokes hook_prepare() and hook_node_prepare().
   $node->language = LANGUAGE_NONE; // Or e.g. 'en' if locale is enabled
   $node->body[$node->language][0]['value']   = $_COOKIE[$cookie_content_story];
-  $node->field_country_ref[0]['value'] = '37555';
+  $node->field_country_ref['und'][0]['target_id'] = [$_COOKIE[$cookie_country_story]];
   $node->uid = $user->uid;
   $node->status = 0; //(1 or 0): published or not
   $node->promote = 0; //(1 or 0): promoted to front page
