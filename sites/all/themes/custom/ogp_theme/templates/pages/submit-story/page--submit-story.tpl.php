@@ -4,6 +4,7 @@
  * Page
  */
 ?>
+
 <div id="storiesSubmitPage">
 
     <?php include(drupal_get_path('theme', 'ogp_theme').'/templates/components/header.tpl.php'); ?>
@@ -25,7 +26,7 @@
       <section class="row">
         <div class="column small-12">
 
-          <form class="c-form">
+          <form class="c-form" action="javascript:void(0);" method="post">
 
             <div class="row">
               <div class="column small-12">
@@ -41,23 +42,23 @@
                   <option></option>
                 </select>
               </div>
-              <div class="column small-12 medium-6">
+              <!-- <div class="column small-12 medium-6">
                 <label class="text -small-bold -blue" for="date">Date</label>
                 <input type="date" class="-date" placeholder="dd/mm/yyyy" id="date" name="date"/>
-              </div>
-            </div>
-
-            <div class="row">
+              </div> -->
               <div class="column small-12 medium-6">
                 <label class="text -small-bold -blue" for="topic">Topics</label>
                 <select class="type-select" name="topic" id="topic">
                   <option></option>
                 </select>
               </div>
-              <div class="column small-12 medium-6">
+            </div>
+
+            <div class="row">
+              <!-- <div class="column small-12 medium-6">
                 <label class="text -small-bold -blue" for="image">Cover image</label>
                 <input type="file" class="-image" placeholder="Cover image" id="image" name="image"/>
-              </div>
+              </div> -->
             </div>
 
             <div class="row">
@@ -67,7 +68,7 @@
               </div>
             </div>
 
-            <div class="row">
+            <!-- <div class="row">
               <div class="column small-12 medium-6">
                 <label class="text -small-bold -blue" for="author">Author name</label>
                 <input type="text" class="-author" placeholder="Your name" id="author" name="author"/>
@@ -76,9 +77,9 @@
                 <label class="text -small-bold -blue" for="email">email contact</label>
                 <input type="email" class="-email" placeholder="Your email" id="email" name="email"/>
               </div>
-            </div>
+            </div> -->
 
-              <span class="c-button -green-back -tall -box js-submit-story">SEND STORY</span>
+              <input type="submit" value="SEND STORY" class="c-button -green-back -tall -box"></input>
 
               <div class="c-loader"><div class="loader"></div></div>
 

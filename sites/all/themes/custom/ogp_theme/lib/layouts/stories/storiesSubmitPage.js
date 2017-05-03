@@ -26,22 +26,26 @@ function showStoriesSubmitPage(id) {
       });
     });
 
-    $('.js-submit-story').click(function() {
-      const title = $('.-title').val();
-      const countryId = $('.country-select').val();
-      const topicId = $('.type-select').val();
-      const date = $('.-date').val();
-      const image = $('.-image').val();
+    $('.c-form').submit(function(e) {
+      const title = $('#title').val();
       const content = $('.-content').val();
-      const email = $('.-email').val();
-      const author = $('.-author').val();
-      $.ajax({
-        url: `/sites/all/themes/custom/ogp_theme/phpFunctions/createNode.php`,
-        type: 'POST',
-        dataType: 'json',
-        data: {}
-      }).done(function (data) {
-      });
+      const country = $('#country').val();
+      const topic = $('#topic').val();
+      const url = './submitCookiesStory.php';
+      if (title !== '' && content !== '') {
+        const dataString = 'title=' + title + '&content=' + content + '&country=' + country + '&topic=' + topic;
+        $.ajax({
+          type: 'POST',
+          url: url,
+          data: dataString,
+          success: function(data) {
+            document.location.href = `${window.location.origin}/submit-story-accepted`;
+          }
+        });
+      } else {
+        // console.log('data not accepted');
+      }
+      e.preventDefault();
     });
 
   })(jQuery);
