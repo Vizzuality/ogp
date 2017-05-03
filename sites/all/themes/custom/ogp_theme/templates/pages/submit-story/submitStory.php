@@ -1,24 +1,19 @@
-<script>
-    console.log('hello');
-</script>
 <?php
-// add node properties
-$newNode = (object) NULL;
-$newNode->type = 'blog_post';
-$newNode->title = 'hi'
-$newNode->uid = '1';
-$newNode->created = strtotime("now");
-$newNode->changed = strtotime("now");
-$newNode->status = 1;
-$newNode->comment = 0;
-$newNode->promote = 0;
-$newNode->moderate = 0;
-$newNode->sticky = 0;
+  $cookie_title_story = 'title_story';
+  $cookie_content_story = 'content_story';
 
-// // add CCK field data
-// $newNode->field_{YOUR_CUSTOM_FIELD_1}[0]['value'] = '{DATA_1}';
-// $newNode->field_{YOUR_CUSTOM_FIELD_2}[0]['value'] = '{DATA_2}';
-
-// save node
-node_save($newNode);
+  global $user;
+  $node = new stdClass();
+  $node->title = $_COOKIE[$cookie_title_story];
+  $node->type = "blog_post";
+  node_object_prepare($node); // Sets some defaults. Invokes hook_prepare() and hook_node_prepare().
+  $node->language = LANGUAGE_NONE; // Or e.g. 'en' if locale is enabled
+  $node->body[$node->language][0]['value']   = $_COOKIE[$cookie_content_story];
+  $node->field_country_ref[0]['value'] = '37555';
+  $node->uid = $user->uid;
+  $node->status = 0; //(1 or 0): published or not
+  $node->promote = 0; //(1 or 0): promoted to front page
+  $node->comment = 2; // 0 = comments disabled, 1 = read only, 2 = read/write
+  $node = node_submit($node); // Prepare node for saving
+  node_save($node);
 ?>
