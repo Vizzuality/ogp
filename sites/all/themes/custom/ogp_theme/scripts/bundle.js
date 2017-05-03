@@ -419,16 +419,15 @@ function showComments(id) {
 }
 'use strict';
 
-function buildExploreMoreTiles(endPoint, filter, value) {
+function buildExploreMoreTiles(endPoint, filter, value, country) {
   var filters = '';
   if (filter) {
     filters = 'filter[' + filter + ']=' + value + '&';
   }
-  console.log('/apiJSON/' + endPoint + '?' + filters);
   $.getJSON('/apiJSON/' + endPoint + '?' + filters, function (data) {
     if (data.data.length) {
       var tiles = data.data;
-      appendTilesRandom(tiles, $('.explore-more-container'), 4);
+      appendTilesRandom(tiles, $('.explore-more-container'), 4, '', country);
     }
     removeLoader('.c-explore-more');
   });
@@ -848,7 +847,8 @@ function appendTiles(data, container, gridNum, customClass) {
   }
 }
 
-function appendTilesRandom(data, container, gridNum, customClass) {
+function appendTilesRandom(data, container, gridNum, customClass, country) {
+  var countryText = '';
   for (var i = 0; i < 4; i += 1) {
     var rand = makeUniqueRandom();
     if (i % numRandoms == 0) {}
@@ -857,7 +857,10 @@ function appendTilesRandom(data, container, gridNum, customClass) {
   var gridWidth = 12 / gridNum;
   if (data.length !== 0) {
     for (var _i = 0; _i < 4; _i += 1) {
-      var html = '\n          <a href="/' + data[randomTiles[_i]].alias + '" class="tile column small-12 medium-' + gridWidth + ' c-tile ' + (customClass ? customClass : '') + '" data-group="' + (data[randomTiles[_i]].group ? data[randomTiles[_i]].group : '') + '" style="background-image: url(\'' + (data[randomTiles[_i]].image ? data[randomTiles[_i]].image : '') + '\')">\n            <div class="' + (data[randomTiles[_i]].image ? 'overlay' : '') + '"></div>\n            <span class="text -tile -white">\n              ' + data[randomTiles[_i]].label + '\n            </span>\n          </a>\n      ';
+      if (country === true) {
+        countryText = '(' + data[randomTiles[_i]].country.label + ')';
+      }
+      var html = '\n          <a href="/' + data[randomTiles[_i]].alias + '" class="tile column small-12 medium-' + gridWidth + ' c-tile ' + (customClass ? customClass : '') + '" data-group="' + (data[randomTiles[_i]].group ? data[randomTiles[_i]].group : '') + '" style="background-image: url(\'' + (data[randomTiles[_i]].image ? data[randomTiles[_i]].image : '') + '\')">\n            <div class="' + (data[randomTiles[_i]].image ? 'overlay' : '') + '"></div>\n            <span class="text -tile -white">\n              ' + data[randomTiles[_i]].label + '\n              <br>\n              ' + countryText + '\n            </span>\n          </a>\n      ';
       container.append(html);
     }
   }
@@ -1011,1345 +1014,33 @@ function twitterLink() {
 }
 'use strict';
 
-function showDocumentResourcePage() {
-  (function ($) {
-    // cache dom
-    var tileContainer = $('#resourceDocsTiles');
-    var searchEl = $('.c-tile');
-    var searchText = $('.c-tile .tile');
-    var searchContainer = $('#resourceTilesSearch input');
-
-    // fetch content and append
-    $.getJSON('/apiJSON/resource', function (data) {
-      setSearchPlaceholder(searchContainer, data.data[0].label);
-      setSearchListeners(searchEl, searchText);
-      if (data.data.length) {
-        appendTiles(data.data, tileContainer, 4);
-      } else {
-        showNoResults();
-      }
-    });
-  })(jQuery);
-}
-'use strict';
-
-function showHomePage() {
+function showAboutPages() {
   (function ($) {
 
-    var map = L.map('maphome', {
-      zoomControl: false,
-      center: [35, -60],
-      zoom: 2,
-      maxZoom: 6,
-      minZoom: 2,
-      scrollWheelZoom: false
-    });
-    var over = false;
-
-    $('#in').click(function () {
-      map.setZoom(map.getZoom() + 1);
-    });
-
-    $('#out').click(function () {
-      map.setZoom(map.getZoom() - 1);
-    });
-
-    var basemap = L.tileLayer('http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png', {
-      attribution: ''
-    }).addTo(map);
-
-    cartodb.createLayer(map, {
-      user_name: 'jmonaco',
-      type: 'cartodb',
-      sublayers: [{
-        sql: 'SELECT  wb.the_geom_webmercator the_geom_webmercator, nid, member_since, at.path, actionplan, at.country, at.cartodb_id FROM ggtqckcj2bioeepnuvxoow at INNER JOIN world_borders_hd wb on at.country = wb.name',
-        cartocss: '#layer {polygon-fill: ramp([actionplan], (#2d4f00, #66bc29, #2d4f00, #66bc29, #2d4f00, #2d4f00, #cc3300, #cc3300), ("Implementing 1st action plan and Developing 2nd action plan","Developing action plan", "Implementing 2nd action plan", "Developing 1st Action Plan", "Implementing 1st action plan", "Implementing action plan", , "Inactive"), "="); line-width: 1; line-color: #FFF; line-opacity: 0.5;}',
-        interactivity: 'the_geom_webmercator, nid, country, cartodb_id'
-      }]
-    }).addTo(map).done(function (layer) {
-      layer.setInteraction(true);
-      var hovers = [];
-      layer.on('featureClick', function (e, latlng, pos, data) {
-        $.getJSON('https://jmonaco.carto.com/api/v2/sql?q= SELECT * FROM countries_homepage WHERE cartodb_id =  ' + data.cartodb_id, function (datapath) {
-          document.location.href = '' + window.location.origin + datapath.rows[0].path;
-        });
-      });
-
-      layer.bind('featureOver', function (e, latlon, pxPos, data, layers) {
-        hovers[layers] = 1;
-        if (_.any(hovers)) {
-          $('#maphome').css('cursor', 'pointer');
-        }
-      });
-
-      layer.bind('featureOut', function (m, layers) {
-        hovers[layers] = 0;
-        if (!_.any(hovers)) {
-          $('#maphome').css('cursor', 'auto');
-        }
-      });
-
-      layer.on('featureOver', function (e, latlng, pos, data) {
-        if (over === false) {
-          $('body').append('<div class="tooltip" style="padding: 5px; position: absolute; z-index: 10; background-color: rgba(255, 255, 255, 1); top:' + (e.pageY - 25) + 'px; left:' + (e.pageX + 25) + 'px">' + data.country + '</div>');
-          over = true;
-        } else {
-          $('.tooltip').html(data.country);
-          $('.tooltip').css('top', e.pageY - 25 + 'px');
-          $('.tooltip').css('left', e.pageX + 25 + 'px');
-        }
-      });
-
-      layer.on('featureOut', function (e, latlng, pos, data) {
-        over = false;
-        $('.tooltip').remove();
-      });
-      map.invalidateSize();
-    });
-  })(jQuery);
-}
-'use strict';
-
-function showSliderHomePage() {
-  (function ($) {
-
-    function getSlideConten(dataContent, dataSlide, imageContent, i) {
-      var textLink = 'Explore the content';
-      var imageSlide = void 0;
-      if (dataSlide.text_link) {
-        textLink = '' + dataSlide.text_link;
-      }
-      if (imageContent) {
-        if (dataSlide.image) {
-          imageSlide = '<div class="c-slider-home-page slider-image-' + i + ' ' + (dataSlide.image ? '-image' : '') + '">';
-        } else {
-          imageSlide = '<div class="c-slider-home-page slider-image-' + i + ' ' + (dataContent.image ? '-image' : '') + '">';
-        }
-      } else {
-        imageSlide = '<div class="c-slider-home-page slider-image-' + i + ' ' + (dataSlide.image ? '-image' : '') + '">';
-      }
-      var slideContent = '\n        ' + imageSlide + '\n          <div class="row">\n            <div class="column small-12 medium-9">\n              <div class="container slider-0">\n                <div>\n                  <h1 class="title-text -white">\n                    <a href="' + dataSlide.alias + '">' + dataContent.label + '</a>\n                  </h1>\n                  <div class="small-12 medium-5 large-4">\n                    <a class="c-button -box" href="' + dataSlide.alias + '">' + textLink + '</a>\n                  <div>\n                </div>\n              </div>\n            </div>\n          </div>\n        </div>\n      ';
-      return slideContent;
-    }
-
-    $.getJSON('/apiJSON/slider_home_page', function (stories) {
-      showLoader('.slider-cover-home');
-      for (var i = 0; i < stories.count; i += 1) {
-        if (stories.data[i].show) {
-          var slide = '';
-
-          if (stories.data[i].information_current) {
-            slide = getSlideConten(stories.data[i].information_current, stories.data[i], false, i);
-          }
-
-          if (stories.data[i].information_event) {
-            slide = getSlideConten(stories.data[i].information_event, stories.data[i], false, i);
-          }
-
-          if (stories.data[i].information_irm) {
-            slide = getSlideConten(stories.data[i].information_irm, stories.data[i], false, i);
-          }
-
-          if (stories.data[i].information_model) {
-            slide = getSlideConten(stories.data[i].information_model, stories.data[i], false, i);
-          }
-
-          if (stories.data[i].information_news) {
-            slide = getSlideConten(stories.data[i].information_news, stories.data[i], false, i);
-          }
-
-          if (stories.data[i].information_page) {
-            slide = getSlideConten(stories.data[i].information_page, stories.data[i], false, i);
-          }
-
-          if (stories.data[i].information_starred) {
-            slide = getSlideConten(stories.data[i].information_starred, stories.data[i], false, i);
-          }
-
-          if (stories.data[i].information_stories) {
-            slide = getSlideConten(stories.data[i].information_stories, stories.data[i], true, i);
-          }
-
-          if (stories.data[i].information_working) {
-            slide = getSlideConten(stories.data[i].information_working, stories.data[i], false, i);
-          }
-
-          if (stories.data[i].information_working_page) {
-            slide = getSlideConten(stories.data[i].information_working_page, stories.data[i], false, i);
-          }
-
-          $('.slider-cover-home').append(slide);
-        }
-
-        if (stories.data[i].information_stories) {
-          if (stories.data[i].image) {
-            $('.slider-image-' + i).css('background-image', 'url(' + stories.data[i].image + ')');
-          }
-          if (stories.data[i].information_stories.image) {
-            $('.slider-image-' + i).css('background-image', 'url(' + stories.data[i].information_stories.image + ')');
-          }
-        } else {
-          if (stories.data[i].image) {
-            $('.slider-image-' + i).css('background-image', 'url(' + stories.data[i].image + ')');
-          }
-        }
-      }
-      removeLoader('.slider-cover-home');
-      $('.slider-cover-home').slick({
-        dots: true,
-        arrows: false,
-        speed: 500,
-        fade: true,
-        cssEase: 'linear',
-        dotsClass: 'dots-slider',
-        adaptiveHeight: true
-      });
-    });
-  })(jQuery);
-}
-'use strict';
-
-function showIrmReports() {
-  (function ($) {
-
-    // cache
-    var countryFilter = 0;
-    var typeFilter = 0;
-    var page = 1;
-    var totalPages = 0;
-
-    //selectors
-    var countrySelectorDownload = $('.country-filter-download');
-    var countrySelectorComments = $('.country-filter-comments');
     var tabsContainer = $('.tabs-container');
-    var containerInfo = $('#container-info');
-    var irmContainer = $('#downloadContainer');
-    var commentsContainer = $('#commentsContainer');
+    var containerInfo = $('#containerInfo');
 
     // custom callback for tabs component
-    var onChangeIRMTabs = function onChangeIRMTabs(id, label) {
+    var onChangeAboutPageTab = function onChangeAboutPageTab(id, label) {
       $('.tab-content').addClass('-hidden');
       $('.' + id).removeClass('-hidden');
     };
 
-    function initIRMTabs(onChange) {
+    function initAboutTabs(onChange) {
       initTabs();
       setTabListeners(onChange);
     }
 
-    function setPageCount(val) {
-      $('.reload-thematic-download').data('value', val);
-    }
-
-    function setPageCountComments(val) {
-      $('.reload-thematic-comments').data('value', val);
-    }
-
-    function getCurrentPage() {
-      var pageCount = $('.reload-thematic-download').data('value');
-      return pageCount;
-    }
-
-    function getCurrentPageComments() {
-      var pageCount = $('.reload-thematic-comments').data('value');
-      return pageCount;
-    }
-
-    function onClickPagination() {
-      $('.c-pagination-click-download').on('click', function () {
-        setPageCount(getCurrentPage() + 1);
-        showLoader('#container-info');
-        showTilesIrmReports(countryFilter, getCurrentPage());
-      });
-    }
-
-    function onClickPaginationComments() {
-      $('.c-pagination-click-comments').on('click', function () {
-        setPageCountComments(getCurrentPageComments() + 1);
-        showLoader('#container-info');
-        showTilesComments(countryFilter, getCurrentPageComments());
-      });
-    }
-
-    function showTilesIrmReports(country, pageNext) {
-      var activeCountry = parseInt(country) > 0 ? 'filter[id]=' + country + '&' : '';
-      $.getJSON('/apiJSON/countries?' + activeCountry + 'sort=label', function (countries) {
-        appendTilesIRM(countries.data, irmContainer);
-        appendTilesComments(countries.data, commentsContainer);
-        removeLoader('#container-info', null, true);
-      });
-    }
-
-    // function showTilesComments(country, pageNext) {
-    //   const activeCountry = parseInt(country) > 0 ? `filter[id]=${country}&` : '';
-    //   $.getJSON(`/apiJSON/countries?${activeCountry}sort=label`, function (countries) {
-    //     for (let i = 0; i < countries.data.length; i += 1) {
-    //
-    //     }
-    //   });
-    // }
-
-    function buildSelectorDownload(selector, placeholder, endpoint, query) {
-      selector.select2({
-        minimumResultsForSearch: Infinity,
-        containerCssClass: '-green -tall',
-        dropdownCssClass: '-green',
-        placeholder: '' + placeholder
-      });
-      selector.append('<option value="0">' + placeholder + '</option>');
-      $.getJSON('/apiJSON/' + endpoint + '?' + query, function (data) {
-        data.data.forEach(function (data) {
-          var option = '<option value="' + data.id + '">' + data.label + '</option>';
-          selector.append(option);
-        });
-
-        $(countrySelectorDownload).on('change', function () {
-          $(irmContainer).html('');
-          showLoader('#tab-loader');
-          countryFilter = countrySelectorDownload.val();
-          page = 1;
-          showTilesIrmReports(countryFilter, page);
-        });
-      });
-    }
-
-    function buildSelectorComments(selector, placeholder, endpoint, query) {
-      selector.select2({
-        minimumResultsForSearch: Infinity,
-        containerCssClass: '-green -tall',
-        dropdownCssClass: '-green',
-        placeholder: '' + placeholder
-      });
-      selector.append('<option value="0">' + placeholder + '</option>');
-      $.getJSON('/apiJSON/' + endpoint + '?' + query, function (data) {
-        data.data.forEach(function (data) {
-          var option = '<option value="' + data.id + '">' + data.label + '</option>';
-          selector.append(option);
-        });
-
-        $(countrySelectorComments).on('change', function () {
-          $(irmContainer).html('');
-          showLoader('#tab-loader-comments');
-          countryFilter = countrySelectorComments.val();
-          page = 1;
-          showTilesComments(countryFilter, page);
-        });
-      });
-    }
-
-    buildSelectorDownload(countrySelectorDownload, 'All countries', 'countries', 'fields=id,label&sort=label');
-    buildSelectorComments(countrySelectorComments, 'All countries', 'countries', 'fields=id,label&sort=label');
-    onClickPagination();
-    onClickPaginationComments();
-    initIRMTabs(onChangeIRMTabs);
-    showTilesIrmReports(countryFilter, page);
-    // showTilesComments(countryFilter, page);
-
-  })(jQuery);
-}
-'use strict';
-
-function showNewsEventsPage() {
-  (function ($) {
-    // cache
-    var countryFilter = 0;
-    var typeFilter = 0;
-    var page = 1;
-    var totalPages = 0;
-    var totalPagesEvents = 0;
-    var pageEvents = 1;
-
-    //selectors
-    var countrySelector = $('.country-filter');
-    var typeSelector = $('.type-filter');
-    var coverEvents = $('.c-content-banner');
-    var eventsContainer = $('#eventsTiles');
-    var newsContainer = $('#newsTiles');
-
-    // public functions
-    function buildHighlightedEvent(event) {
-      if (event.image) {
-        $('.c-content-banner').css('background-image', 'url(' + event.image + ')');
-      }
-      if (moment() > moment(event.date.value)) {
-        $('.banner-type-date-event').html('Past Event');
-      } else {
-        $('.banner-type-date-event').html('Upcoming Event');
-      }
-      $('.banner-link', coverEvents).attr('href', event.alias);
-      $('.banner-title', coverEvents).html(event.label);
-      $('.banner-date', coverEvents).html(moment(event.date.value).format('MMMM DD, hh:mm a'));
-      $('.c-content-banner').removeClass('-hidden');
-    }
-
-    function setPageCount(val) {
-      $('.page-count').data('value', val);
-    }
-
-    function getCurrentPage() {
-      var pageCount = $('.page-count').data('value');
-      return pageCount;
-    }
-
-    function onClickPagination() {
-      $('.page-count').on('click', function () {
-        setPageCount(getCurrentPage() + 1);
-        pageEvents = getCurrentPage();
-        if (totalPagesEvents > getCurrentPage()) {
-          showLoader('#eventsContainer');
-          showEvents(countryFilter, typeFilter, getCurrentPage());
-        }
-      });
-    }
-
-    function buildSelector(selector, placeholder, endpoint, query) {
-      selector.select2({
-        minimumResultsForSearch: Infinity,
-        containerCssClass: '-green -tall',
-        dropdownCssClass: '-green',
-        placeholder: '' + placeholder
-      });
-      selector.append('<option value="0">' + placeholder + '</option>');
-
-      $.getJSON('/apiJSON/' + endpoint + '?' + query, function (data) {
-        data.data.forEach(function (data) {
-          var option = '<option value="' + data.id + '">' + data.label + '</option>';
-          selector.append(option);
-        });
-
-        selector.on('change', function () {
-          // showLoader('#newsContainer');
-          showLoader('#eventsContainer');
-          countryFilter = countrySelector.val();
-          typeFilter = typeSelector.val();
-          page = 1;
-          // showNews(countryFilter, typeFilter, page);
-          showEvents(countryFilter, typeFilter, page);
-        });
-      });
-    }
-
-    function setPaginationListerners() {
-      countryFilter = countrySelector.val();
-      typeFilter = typeSelector.val();
-      $('.onClickPagination').on('click', function (e) {
-        showLoader('#newsContainer');
-        var pageNum = $(this).data('value');
-        showNews(countryFilter, typeFilter, pageNum);
-      });
-    }
-
-    function showEvents(country, type, page) {
-      var activeCountry = parseInt(country) > 0 ? 'filter[country]=' + country + '&' : '';
-      var activeType = parseInt(type) > 0 ? 'filter[category]=' + type + '&' : '';
-      var activeFilters = '' + activeCountry + activeType + '&page=' + page;
-      $.getJSON('/apiJSON/events?' + activeFilters + '&sort=-date', function (events) {
-        totalPagesEvents = getPageCount(events.count, 4);
-        if (events.data.length > 0) {
-          if (pageEvents === 1) {
-            $.getJSON('/apiJSON/events?sort=-date', function (highlightedEvent) {
-              buildHighlightedEvent(highlightedEvent.data[0]);
-              appendTilesEvent(events.data, eventsContainer);
-              removeLoader('#eventsContainer', null, true);
-            });
-          } else {
-            appendTilesEvent(events.data, eventsContainer);
-            removeLoader('#eventsContainer', null, true);
-          }
-        } else {
-          showNoResults('#eventsContainer', 'No events with these filters', 'tall', 'grey', 'xxlarge', 'blue');
-          removeLoader('#eventsContainer', null, true);
-        }
-      });
-    }
-
-    function showNews(country, type, page) {
-      var activeCountry = parseInt(country) > 0 ? 'filter[country]=' + country + '&' : '';
-      var activeType = parseInt(type) > 0 ? 'filter[category]=' + type + '&' : '';
-      var activeFilters = '' + activeCountry + activeType + '&page=' + page;
-      $.getJSON('/apiJSON/news?' + activeFilters + '&sort=-date&range=4', function (news) {
-        if (news.data.length > 0) {
-          totalPages = getPageCount(news.count, 4);
-          if (page === 1) {
-            $.getJSON('/apiJSON/news?sort=-date&range=4', function (highlightedNews) {
-              buildHighlightedEvent(highlightedNews.data[0]);
-              appendTilesDetailedNews(news.data, newsContainer, 2);
-              initPagination(page, totalPages, 'newsEventsPage');
-              setPaginationListerners();
-              removeLoader('#newsContainer', null, true);
-            });
-          } else {
-            appendTilesDetailedNews(news.data, newsContainer, 2);
-            removeLoader('#newsContainer', null, true);
-            initPagination(page, totalPages, 'newsEventsPage');
-            setPaginationListerners();
-          }
-        } else {
-          showNoResults('#newsTiles', 'No news with these filters', 'tall', 'grey', 'xxlarge', 'blue');
-          $('.c-pagination').html('');
-          removeLoader('#newsContainer', null, true);
-        }
-      });
-    }
-
-    // build page
-    buildSelector(countrySelector, 'All countries', 'countries', 'fields=id,label&sort=label');
-    buildSelector(typeSelector, 'All story types', 'stories_categories', 'fields=id,label&sort=label');
-    showEvents(countryFilter, typeFilter, page);
-    showNews(countryFilter, typeFilter, page);
-    onClickPagination();
-  })(jQuery);
-}
-'use strict';
-
-function loginPage() {
-  (function ($) {
-
-    $('#edit-name').attr('placeholder', 'Enter your Open Government Partnership username');
-    $('#edit-pass').attr('placeholder', 'Enter the password that accompanies your username.');
-  })(jQuery);
-}
-'use strict';
-
-function showGroupResourcesDetail(id) {
-  (function ($) {
-
-    // cache dom
-    var currentNode = $('#groupResourcesDetail').data('node');
-    var tabsContainer = $('#groupResourcesTabs .tabs-container');
-    var searchContainer = $('#resourceTilesSearch input');
-    var tilesContainer = $('#tilesContainer');
-    var searchEl = $('.c-tile');
-    var searchText = $('.c-tile .tile');
-
-    // custom callback for tabs component
-    var onChangeTab = function onChangeTab(sub_group_id, label) {
-      hideNoResults('#noResultsContainer');
-      showLoader('.l-section');
-      tilesContainer.html('');
-      searchContainer.val('');
-      var filterGroup = currentNode === 2920 ? '' : 'filter[group_resource]=' + currentNode + '&';
-      $.getJSON('/apiJSON/resources?' + filterGroup + 'filter[sub_group]=' + sub_group_id + '&sort=-post_highlighted', function (data) {
-        if (data.data.length) {
-          appendTiles(data.data, tilesContainer, 4);
-        } else {
-          showNoResults('#noResultsContainer', 'No resources available', 'tall', 'grey', 'xxlarge', 'blue');
-        }
-        removeLoader('.l-section', null, true);
-      });
-      setSearchPlaceholder(searchContainer, label);
-    };
-
-    // fetch content and append
-    $.getJSON('/apiJSON/sub_group_resource', function (data) {
-      buildTabs(data.data, tabsContainer, onChangeTab);
-      setSearchPlaceholder(searchContainer, data.data[0].label);
-      setSearchListeners(searchEl, searchText);
-      var filterGroup = currentNode === 2920 ? '' : 'filter[group_resource]=' + currentNode + '&';
-      $.getJSON('/apiJSON/resources?' + filterGroup + 'filter[sub_group]=' + data.data[0].id + '&sort=-post_highlighted', function (resources) {
-        if (resources.data.length) {
-          appendTiles(resources.data, tilesContainer, 4);
-        } else {
-          showNoResults('#noResultsContainer', 'No resources available', 'tall', 'grey', 'xxlarge', 'blue');
-        }
-        removeLoader('.l-section', null, true);
-      });
-    });
-  })(jQuery);
-}
-'use strict';
-
-function showGroupResourcesPage() {
-  (function ($) {
-    // cache dom
-    var tileContainer = $('#groupResourcesTiles');
-
-    // fetch content and append
-    $.getJSON('/apiJSON/group_resources', function (data) {
-      data.data.forEach(function (resource) {
-        var html = '\n          <div class="column small-12 medium-4 c-tile">\n            <a href="/' + resource.alias + '" class="tile -tall">\n              <span class="text -tile -white">\n                ' + resource.label + '\n              </span>\n            </a>\n          </div>\n        ';
-        tileContainer.append(html);
-      });
-      removeLoader('.l-section', null, true);
-    });
-  })(jQuery);
-}
-'use strict';
-
-function showResourcesDetail(id) {
-  (function ($) {
-    $.getJSON('/apiJSON/resources?filter[id]=' + id, function (data) {
-      buildExploreMoreTiles('resources', 'group_resource', data.data[0].group_resource[0]);
-    });
-  })(jQuery);
-}
-'use strict';
-
-function showNewsEventsPage() {
-  (function ($) {
-    // cache
-    var countryFilter = 0;
-    var typeFilter = 0;
-    var page = 1;
-    var totalPages = 0;
-    var totalPagesEvents = 0;
-    var pageEvents = 1;
-
-    //selectors
-    var countrySelector = $('.country-filter');
-    var typeSelector = $('.type-filter');
-    var coverEvents = $('.c-content-banner');
-    var eventsContainer = $('#eventsTiles');
-    var newsContainer = $('#newsTiles');
-
-    // public functions
-    function buildHighlightedEvent(event) {
-      if (event.image) {
-        $('.c-content-banner').css('background-image', 'url(' + event.image + ')');
-      }
-      if (moment() > moment(event.date.value)) {
-        $('.banner-type-date-event').html('Past Event');
-      } else {
-        $('.banner-type-date-event').html('Upcoming Event');
-      }
-      $('.banner-link', coverEvents).attr('href', event.alias);
-      $('.banner-title', coverEvents).html(event.label);
-      $('.banner-date', coverEvents).html(moment(event.date.value).format('MMMM DD, hh:mm a'));
-      $('.c-content-banner').removeClass('-hidden');
-    }
-
-    function setPageCount(val) {
-      $('.page-count').data('value', val);
-    }
-
-    function getCurrentPage() {
-      var pageCount = $('.page-count').data('value');
-      return pageCount;
-    }
-
-    function onClickPagination() {
-      $('.page-count').on('click', function () {
-        setPageCount(getCurrentPage() + 1);
-        pageEvents = getCurrentPage();
-        if (totalPagesEvents > getCurrentPage()) {
-          showLoader('#eventsContainer');
-          showEvents(countryFilter, typeFilter, getCurrentPage());
-        }
-      });
-    }
-
-    function buildSelector(selector, placeholder, endpoint, query) {
-      selector.select2({
-        minimumResultsForSearch: Infinity,
-        containerCssClass: '-green -tall',
-        dropdownCssClass: '-green',
-        placeholder: '' + placeholder
-      });
-      selector.append('<option value="0">' + placeholder + '</option>');
-
-      $.getJSON('/apiJSON/' + endpoint + '?' + query, function (data) {
-        data.data.forEach(function (data) {
-          var option = '<option value="' + data.id + '">' + data.label + '</option>';
-          selector.append(option);
-        });
-
-        selector.on('change', function () {
-          // showLoader('#newsContainer');
-          showLoader('#eventsContainer');
-          countryFilter = countrySelector.val();
-          typeFilter = typeSelector.val();
-          page = 1;
-          // showNews(countryFilter, typeFilter, page);
-          showEvents(countryFilter, typeFilter, page);
-        });
-      });
-    }
-
-    function setPaginationListerners() {
-      countryFilter = countrySelector.val();
-      typeFilter = typeSelector.val();
-      $('.onClickPagination').on('click', function (e) {
-        showLoader('#newsContainer');
-        var pageNum = $(this).data('value');
-        showNews(countryFilter, typeFilter, pageNum);
-      });
-    }
-
-    function showEvents(country, type, page) {
-      var activeCountry = parseInt(country) > 0 ? 'filter[country]=' + country + '&' : '';
-      var activeType = parseInt(type) > 0 ? 'filter[category]=' + type + '&' : '';
-      var activeFilters = '' + activeCountry + activeType + '&page[number]=' + page + '&page[size]=8';
-      $.getJSON('/apiJSON/events?' + activeFilters + '&sort=-date', function (events) {
-        totalPagesEvents = getPageCount(events.count, 4);
-        if (events.data.length > 0) {
-          if (pageEvents === 1) {
-            $.getJSON('/apiJSON/events?sort=-date', function (highlightedEvent) {
-              buildHighlightedEvent(highlightedEvent.data[0]);
-              appendTilesEvent(events.data, eventsContainer);
-              removeLoader('#eventsContainer', null, true);
-            });
-          } else {
-            appendTilesEvent(events.data, eventsContainer);
-            removeLoader('#eventsContainer', null, true);
-          }
-        } else {
-          showNoResults('#eventsContainer', 'No events with these filters', 'tall', 'grey', 'xxlarge', 'blue');
-          removeLoader('#eventsContainer', null, true);
-        }
-      });
-    }
-
-    function showNews(country, type, page) {
-      var activeCountry = parseInt(country) > 0 ? 'filter[country]=' + country + '&' : '';
-      var activeType = parseInt(type) > 0 ? 'filter[category]=' + type + '&' : '';
-      var activeFilters = '' + activeCountry + activeType + '&page=' + page;
-      $.getJSON('/apiJSON/news?' + activeFilters + '&sort=-date', function (news) {
-        if (news.data.length > 0) {
-          totalPages = getPageCount(news.count, 4);
-          if (page === 1) {
-            $.getJSON('/apiJSON/news?sort=-date', function (highlightedNews) {
-              buildHighlightedEvent(highlightedNews.data[0]);
-              appendTilesDetailedNews(news.data, newsContainer, 2);
-              initPagination(page, totalPages, 'newsEventsPage');
-              setPaginationListerners();
-              removeLoader('#newsContainer', null, true);
-            });
-          } else {
-            appendTilesDetailedNews(news.data, newsContainer, 2);
-            removeLoader('#newsContainer', null, true);
-            initPagination(page, totalPages, 'newsEventsPage');
-            setPaginationListerners();
-          }
-        } else {
-          showNoResults('#newsTiles', 'No news with these filters', 'tall', 'grey', 'xxlarge', 'blue');
-          $('.c-pagination').html('');
-          removeLoader('#newsContainer', null, true);
-        }
-      });
-    }
-
-    // build page
-    buildSelector(countrySelector, 'All countries', 'countries', 'fields=id,label&sort=label');
-    buildSelector(typeSelector, 'All story types', 'stories_categories', 'fields=id,label&sort=label');
-    showEvents(countryFilter, typeFilter, page);
-    showNews(countryFilter, typeFilter, page);
-    onClickPagination();
-  })(jQuery);
-}
-'use strict';
-
-function showStoryDetail(id) {
-  (function ($) {
-
-    // data for post
-    $.getJSON('/apiJSON/stories/' + id, function (data) {
-      // cache
-      var story = data.data[0];
-      var creationDate = moment.unix(parseInt(story.created)).format('D MMMM YYYY');
-      var metaHtml = '';
-      var authorsHtml = '<strong class="text -bold">Authors: </strong>';
-      // set country tags
-      if (story.country.length) {
-        var countries = story.country;
-        countries.forEach(function (country, index) {
-          var pathCountry = '' + country.alias;
-          if (index === countries.length - 1) {
-            metaHtml += '<a href="/' + pathCountry + '">' + country.label + '</a><span class="text -post-meta"> | </span>';
-          } else {
-            metaHtml += '<a href="/' + pathCountry + '">' + country.label + ', </a>';
-          }
-        });
-      }
-      metaHtml += '<span class="text -post-meta">' + creationDate + '</span>';
-      $('.countries').html(metaHtml);
-
-      // set body content
-      if (story.content) {
-        $('.-body-content').html(story.content.value);
-      }
-
-      // set author and topics
-      if (story.author[0]) {
-        story.author.forEach(function (author, index) {
-          if (index === story.author.length - 1) {
-            authorsHtml += '<a class="text -blank" href="/' + author.alias + '">' + author.label + '</a>';
-          } else {
-            authorsHtml += '<a class="text -blank" href="/' + author.alias + '">' + author.label + ', </a>';
-          }
-        });
-        $('.author').append(authorsHtml);
-      }
-
-      if (story.topic[0]) {
-        $('.topic').append('<strong class="text -bold">Topics: </strong>');
-        story.topic.forEach(function (topic, index) {
-          var pathTheme = '' + topic.alias;
-          if (index === story.topic.length - 1) {
-            $('.topic').append('<a class="text -blank" href="/' + pathTheme + '">' + topic.label + '</a>');
-          } else {
-            $('.topic').append('<a class="text -blank" href="/' + pathTheme + '">' + topic.label + '</a>, ');
-          }
-        });
-      }
-
-      if (story.tags) {
-        $('.tags').append('<strong class="text -bold">Tags: </strong>');
-        story.tags.forEach(function (tag, index) {
-          if (index === story.tags.length - 1) {
-            $('.tags').append('<span class="text -blank">' + tag.label + '</span>');
-          } else {
-            $('.tags').append('<span class="text -blank">' + tag.label + '</span>, ');
-          }
-        });
-      }
-
-      if (story.type) {
-        $('.filed-under').append('<strong class="text -bold">Filed Under: </strong>');
-        $('.filed-under').append('<span class="text -blank">' + story.type.label + '</a>');
-      }
-
-      removeLoader('#storiesDetail');
-    });
-  })(jQuery);
-}
-'use strict';
-
-function showStoriesPage() {
-  (function ($) {
-
-    // cache
-    var countryFilter = 0;
-    var typeFilter = 0;
-    var page = 1;
-    var totalPages = 0;
-    var authorsHtml = '';
-
-    //selectors
-    var countrySelector = $('.country-filter');
-    var typeSelector = $('.type-filter');
-    var coverEvents = $('.c-content-banner');
-    var storiesContainer = $('#storiesTiles');
-
-    // public functions
-    function buildHighlightedEvent(story) {
-      if (story.image) {
-        $('.c-content-banner').css('background-image', 'url(' + story.image + ')');
-      }
-      if (story.author[0]) {
-        story.author.forEach(function (author, index) {
-          if (index === story.author.length - 1) {
-            authorsHtml += '<a class="text -white" href="/' + author.alias + '">' + author.label + '</a>';
-          } else {
-            authorsHtml += '<a class="text -white" href="/' + author.alias + '">' + author.label + ', </a>';
-          }
-        });
-      }
-      $('.banner-link', coverEvents).attr('href', story.alias);
-      $('.banner-title', coverEvents).html(story.label);
-      $('.banner-date', coverEvents).html(moment.unix(story.created).format('D MMMM YYYY'));
-      if (story.author[0]) {
-        $('.banner-author', coverEvents).html(authorsHtml);
-      }
-      $('.c-content-banner').removeClass('-hidden');
-    }
-
-    function buildSelector(selector, placeholder, endpoint, query) {
-      selector.select2({
-        minimumResultsForSearch: Infinity,
-        containerCssClass: '-green -tall',
-        dropdownCssClass: '-green',
-        placeholder: '' + placeholder
-      });
-      selector.append('<option value="0">' + placeholder + '</option>');
-
-      $.getJSON('/apiJSON/' + endpoint + '?' + query, function (data) {
-        data.data.forEach(function (data) {
-          var option = '<option value="' + data.id + '">' + data.label + '</option>';
-          selector.append(option);
-        });
-
-        selector.on('change', function () {
-          showLoader('#storiesContainer');
-          countryFilter = countrySelector.val();
-          typeFilter = typeSelector.val();
-          page = 1;
-          showStories(countryFilter, typeFilter, page);
-        });
-      });
-    }
-
-    function setPaginationListerners() {
-      countryFilter = countrySelector.val();
-      typeFilter = typeSelector.val();
-      $('.onClickPagination').on('click', function (e) {
-        showLoader('#storiesContainer');
-        var pageNum = $(this).data('value');
-        showStories(countryFilter, typeFilter, pageNum);
-      });
-    }
-
-    function showStories(country, type, page) {
-      var activeCountry = parseInt(country) > 0 ? 'filter[country]=' + country + '&' : '';
-      var activeType = parseInt(type) > 0 ? 'filter[category]=' + type + '&' : '';
-      var activeFilters = '' + activeCountry + activeType + '&page[number]=' + page + '&page[size]=8';
-      $.getJSON('/apiJSON/stories?' + activeFilters + '&sort=-created', function (stories) {
-        if (stories.data.length > 0) {
-          totalPages = getPageCount(stories.count, 8);
-          // if (page === 1) {
-          //   $.getJSON(`/apiJSON/stories?sort=-created`, function (highlightedStory) {
-          //     if (highlightedStory.data[0]) {
-          //       buildHighlightedEvent(highlightedStory.data[0]);
-          //     }
-          //     appendTilesDetailed(stories.data, storiesContainer, 2);
-          //     initPagination(page, totalPages, 'storiesPage');
-          //     setPaginationListerners();
-          //     removeLoader('#storiesContainer', null, true);
-          //   });
-          // } else {
-          appendTilesDetailed(stories.data, storiesContainer, 2);
-          removeLoader('#storiesContainer', null, true);
-          initPagination(page, totalPages, 'storiesPage');
-          setPaginationListerners();
-          // }
-        } else {
-          showNoResults('#storiesTiles', 'No stories with these filters', 'tall', 'grey', 'xxlarge', 'blue');
-          $('.c-pagination').html('');
-          removeLoader('#storiesContainer', null, true);
-        }
-      }).error(function () {
-        showNoResults('#storiesTiles', 'Sorry, stories counld not be found', 'tall', 'grey', 'xxlarge', 'blue');
-        $('.c-pagination').html('');
-        removeLoader('#storiesContainer', null, true);
-      });
-    }
-
-    // build page
-    buildSelector(countrySelector, 'All countries', 'countries', 'fields=id,label&sort=label');
-    buildSelector(typeSelector, 'All story types', 'stories_categories', 'fields=id,label&sort=label');
-    showStories(countryFilter, typeFilter, page);
-  })(jQuery);
-}
-'use strict';
-
-function showStoriesSubmitPage(id) {
-  (function ($) {
-
-    // cache
-    var themeSelector = '.type-select';
-    var countrySelector = '.country-select';
-
-    $('#stories-menu').addClass('active');
-
-    $(themeSelector).select2({
-      minimumResultsForSearch: Infinity,
-      containerCssClass: '-tall',
-      placeholder: 'All story types'
-    });
-    $(countrySelector).select2({
-      minimumResultsForSearch: Infinity,
-      containerCssClass: '-tall',
-      placeholder: 'All countries'
-    });
-
-    $.getJSON('/apiJSON/countries?fields=id,name,label&sort=label', function (data) {
-      appendSelectOptionsFromData(countrySelector, data.data);
-      $.getJSON('/apiJSON/themes?sort=label&fields=id,label', function (data) {
-        appendSelectOptionsFromData(themeSelector, data.data);
-        removeLoader('.c-form', null, true);
-      });
-    });
-
-    $('.js-submit-story').click(function () {
-      var title = $('.-title').val();
-      var countryId = $('.country-select').val();
-      var topicId = $('.type-select').val();
-      var date = $('.-date').val();
-      var image = $('.-image').val();
-      var content = $('.-content').val();
-      var email = $('.-email').val();
-      var author = $('.-author').val();
-      $.ajax({
-        url: '/sites/all/themes/custom/ogp_theme/phpFunctions/createNode.php',
-        type: 'POST',
-        dataType: 'json',
-        data: {}
-      }).done(function (data) {});
-    });
-  })(jQuery);
-}
-'use strict';
-
-function showPageList() {
-  (function ($) {
-    var page = 1;
-    var totalPages = 0;
-    var sortValue = 'asc';
-
-    $('.sort-field').click(function () {
-      if (sortValue === 'asc') {
-        $('.triangle-sort').css('transform', 'rotate(180deg)'); // use this functions, because jquery method addClass not work with svg.
-        sortValue = 'desc';
-      } else {
-        $('.triangle-sort').css('transform', 'rotate(0deg)');
-        sortValue = 'asc';
-      }
-      page = 1;
-      showLoader('#tableContainer');
-      showPages(page, sortValue);
-    });
-
-    function setPaginationListerners() {
-      $('.onClickPagination').on('click', function (e) {
-        showLoader('#tableContainer');
-        var pageNum = $(this).data('value');
-        showPages(pageNum, sortValue);
-      });
-    }
-
-    function showPages(pageNumber, sort) {
-      var sortApi = '';
-      if (sort === 'asc') {
-        sortApi = 'sort=label';
-      } else {
-        sortApi = 'sort-=label';
-      }
-
-      $.getJSON('/apiJSON/page?&page=' + pageNumber + '&' + sortApi, function (pageresult) {
-        totalPages = getPageCount(pageresult.count, 5);
-        if (page === 1) {
-          $.getJSON('/apiJSON/page?date&page=' + pageNumber + '&' + sortApi, function (pageTable) {
-            createTable(pageTable, 'pages');
-            initPagination(pageNumber, totalPages, 'pagesList');
-            setPaginationListerners();
-            removeLoader('#tableContainer', null, true);
-          });
-        } else {
-          createTable(pageresult, 'pages');
-          removeLoader('#tableContainer', null, true);
-          initPagination(pageNumber, totalPages, 'pagesList');
-          setPaginationListerners();
-        }
-      });
-    }
-
-    showPages(page, sortValue);
-  })(jQuery);
-}
-'use strict';
-
-function showThemesDetail(id) {
-  (function showAPIThemes($) {
-
-    //cache
-    var countrySelector = $('.country-selector');
-    var contentContainer = $('#contentContainer .content-tiles');
-    var contributorText = $('#contributorsText');
-    var countryFilter = void 0;
-
-    // local functions
-    function setContributorsText(log, author, email) {
-      var html = '\n        <b>Contributors:</b> This topic has been developed for the Open Gov Guide by the National Democratic Institute. The lead author was Patrick Merloe with contributions from Michelle Brown and Tova Wang. Please send comments to pat@ndi.org.\n      ';
-      contributorText.html(html);
-    }
-
-    function setSelectCountryListerners() {
-      countrySelector.on('change', function () {
-        hideNoResults();
-        showLoader('#themesDetail');
-        var activeTab = $('.c-tabs .-selected').data('node');
-        var countryModel = $(this).val();
-        if (parseInt(countryModel) === 0) {
-          showContent(contentContainer, activeTab);
-        } else {
-          showContent(contentContainer, activeTab, countryModel);
-        }
-      });
-    }
-
-    // init selector
-    function initSelectors() {
-      countrySelector.select2({
-        minimumResultsForSearch: Infinity,
-        containerCssClass: '-green -tall',
-        dropdownCssClass: '-green',
-        placeholder: 'All countries'
-      });
-      $('.select2').addClass('-green-select');
-      $.getJSON('/apiJSON/countries?fields=id,label&sort=label', function (data) {
-        data.data.forEach(function (country) {
-          var option = '<option value="' + country.id + '">' + country.label + '</option>';
-          countrySelector.append(option);
-        });
-      });
-      setSelectCountryListerners();
-    }
-
-    // custom callback for tabs component
-    var onChangeTab = function onChangeTab(id, label) {
-      hideNoResults();
-      showLoader('#themesDetail');
-      $('#themesDetail .-body-content').addClass('-hidden');
-      $('#themesDetail .' + id).removeClass('-hidden');
-      var activeCountry = countrySelector.val();
-      if (parseInt(activeCountry) === 0) {
-        showContent(contentContainer, id);
-      } else {
-        showContent(contentContainer, id, activeCountry);
-      }
-      setContributorsText();
-      if (id === 'modelcommitments') {
-        contributorText.removeClass('-hidden');
-      } else {
-        contributorText.addClass('-hidden');
-      }
-    };
-
-    function showContent(container, endpoint, countryFilter) {
-      container.html('');
-      var countryQuery = countryFilter && endpoint !== 'modelcommitments' ? '&filter[country]=' + countryFilter : '';
-      var sorting = endpoint === 'stories' ? '-created' : 'label';
-      $.getJSON('/apiJSON/' + endpoint + '?filter[theme]=' + id + countryQuery + '&sort=' + sorting, function (data) {
-        hideNoResults();
-        if (data.data.length) {
-          appendTilesWithoutBackground(data.data, container, 2, '-themes');
-        } else {
-          showNoResults(container, 'No content available', 'tall', 'grey', 'xxlarge', 'blue');
-        }
-        removeLoader('#themesDetail', null, true);
-      });
-    }
-    // init page
-    initTabs();
-    setTabListeners(onChangeTab);
-    initSelectors();
-    showContent(contentContainer, 'starredcommitments');
-    buildExploreMoreTiles('themes');
-  })(jQuery);
-}
-'use strict';
-
-function showThemesPage() {
-  (function showAPIThemes($) {
-
-    //consts
-    var themesContainer = $('#tilesContainer');
-    var searchContainer = $('#themesTilesSearch input');
-    var searchEl = $('.c-tile');
-    var searchText = $('.c-tile .tile');
-    var themesTitle = $('.tiles-heading');
-
-    // local functions
-    function showThemesTiles() {
-      $.getJSON('/apiJSON/themes?sort=label', function (data) {
-        if (data.data.length) {
-          appendTiles(data.data, themesContainer, 3);
-        } else {
-          showNoResults('#tilesNoResults', 'No themes available', 'tall', 'grey', 'xxlarge', 'blue');
-        }
-        removeLoader('.l-section', null, true);
-      });
-    }
-
-    // custom callback for tabs component
-    var onChangeTab = function onChangeTab(id, label) {
-      themesTitle.html(label);
-      var currentSearch = searchContainer.val();
-      currentSearch = currentSearch.toLowerCase();
-      var parseId = parseInt(id);
-      $('.c-tile').each(function () {
-        if (currentSearch) {
-          if ($(this).data('group') === parseId && $(this).html().toLowerCase().indexOf(currentSearch) > -1 || id === '0' && $('.tile', this).html().toLowerCase().indexOf(currentSearch) > -1) {
-            $(this).css('display', 'block');
-          } else {
-            $(this).css('display', 'none');
-          }
-        } else {
-          if ($(this).data('group') === parseId || parseId === 0) {
-            $(this).css('display', 'block');
-          } else {
-            $(this).css('display', 'none');
-          }
-        }
-      });
-
-      // check for zero results
-      var results = $('.c-tile').filter(function () {
-        return $(this).css('display') === 'block';
-      }).length;
-
-      // show empty results
-      if (results === 0) {
-        showNoResults('#noResultsContainer', 'No themes available', 'tall', 'grey', 'xxlarge', 'blue');
-      } else {
-        hideNoResults('#noResultsContainer');
-      }
-    };
-
-    // init page
-    showThemesTiles();
-    initTabs();
-    setTabListeners(onChangeTab);
-    setSearchListeners(searchEl, searchText);
-  })(jQuery);
-}
-'use strict';
-
-function showGroupList() {
-  (function ($) {
-    var page = 1;
-    var totalPages = 0;
-    var sortValue = 'asc';
-    var tableContainer = $('.container-info-table');
-
-    $('.sort-field').click(function () {
-      if (sortValue === 'asc') {
-        $('.triangle-sort').css('transform', 'rotate(180deg)'); // use this functions, because jquery method addClass not work with svg.
-        sortValue = 'desc';
-      } else {
-        $('.triangle-sort').css('transform', 'rotate(0deg)');
-        sortValue = 'asc';
-      }
-      page = 1;
-      showLoader('#tableContainer');
-      showGroups(page, sortValue);
-    });
-
-    function setPaginationListerners() {
-      $('.onClickPagination').on('click', function (e) {
-        showLoader('#tableContainer');
-        var pageNum = $(this).data('value');
-        showGroups(pageNum, sortValue);
-      });
-    }
-
-    function showGroups(page, sort) {
-      var sortApi = '';
-
-      if (sort === 'asc') {
-        sortApi = 'sort=label';
-      } else {
-        sortApi = 'sort-=label';
-      }
-
-      $.getJSON('/apiJSON/working_group?&page=' + page + '&' + sortApi, function (working) {
-        totalPages = getPageCount(working.count, 5);
-        if (page === 1) {
-          $.getJSON('/apiJSON/working_group?date&page=' + page + '&' + sortApi, function (workingTable) {
-            createTable(workingTable, 'groups');
-            initPagination(page, totalPages, 'workingGroupList');
-            setPaginationListerners();
-            removeLoader('#tableContainer', null, true);
-          });
-        } else {
-          createTable(working, 'groups');
-          removeLoader('#tableContainer', null, true);
-          initPagination(page, totalPages, 'workingGroupList');
-          setPaginationListerners();
-        }
-      });
-    }
-    showGroups(page, sortValue);
-  })(jQuery);
-}
-'use strict';
-
-function showWorkingGroupDetail(id) {
-  (function ($) {
-    var tabsContainer = $('.tabs-container');
-    var containerInfo = $('#container-info');
-
-    // custom callback for tabs component
-    var onChangeWorkinPageTab = function onChangeWorkinPageTab(id, label) {
-      $('.tab-content').addClass('-hidden');
-      $('.' + id).removeClass('-hidden');
-    };
-
-    function initWorkingTabs(onChange) {
-      initTabs();
-      setTabListeners(onChange);
-    }
-    showLoader('.working-group-content');
-    $.getJSON('/apiJSON/working_group_page?filter[working_group]=' + id + '&filter[show]=1&sort=order', function (data) {
-      buildTabs(data.data, tabsContainer, onChangeWorkinPageTab);
-      initWorkingTabs(onChangeWorkinPageTab);
+    showLoader('#containerInfo');
+    $.getJSON('/apiJSON/page?filter[page_category]=2925', function (data) {
+      buildTabs(data.data, tabsContainer, onChangeAboutPageTab);
+      initAboutTabs(onChangeAboutPageTab);
       for (var i = 0; i < data.data.length; i += 1) {
-        containerInfo.append('\n          <div class="tab-content -hidden ' + data.data[i].id + '">\n            <h3 class="text -section-title">' + data.data[i].label + '</h3>\n            <div class="text -body-content">\n              ' + data.data[i].body.value + '\n            </div>\n          </div>\n        ');
+        containerInfo.append('\n        <div class="tab-content -hidden ' + data.data[i].id + '">\n          <h3 class="text -section-title">' + data.data[i].label + '</h3>\n          <div class="text -body-content">\n            <p class="text -body-content">\n              ' + data.data[i].body.value + '\n            </p>\n          </div>\n        </div>\n      ');
       }
-      removeLoader('.working-group-content', null, true);
+      removeLoader('#containerInfo', null, true);
     });
   })(jQuery);
-}
-'use strict';
-
-function peopleInvolved(id) {
-  (function ($) {
-    function getPeopleInvolvedStories(idPeople) {
-      var content = '';
-      $.getJSON('/apiJSON/stories?filter[author]=' + idPeople, function (data) {
-        showLoader('.container-content-user');
-        if (data.count !== 0) {
-          data.data.forEach(function (data) {
-            content += '<div class="small-12 column  medium-4 blogs-detail">\n                      <a href="/' + data.alias + '"><div class="contain-text">\n                        <span class="text -white -title-x-small">' + data.label + '</span>\n                        <span class="text -white">' + moment.unix(parseInt(data.created)).format('D MMMM YYYY') + '</span>\n                      </div></a>\n                    </div>';
-          });
-          removeLoader('.container-content-user');
-          $('.containter-people-detail').append(content);
-        } else {
-          removeLoader('.container-content-user');
-          $('.containter-people-detail').append('<div class="small-12 column"><span class="text -white -small-bold">No results found</span></div>');
-        }
-      });
-    }
-
-    function getPeopleInvolvedNews(idPeople) {
-      var content = '';
-      $.getJSON('/apiJSON/news?filter[author]=' + idPeople, function (data) {
-        showLoader('.container-content-user-news');
-        if (data.count !== 0) {
-          data.data.forEach(function (data) {
-            content += '<div class="small-12 column  medium-4 news-detail">\n                      <a href="/' + data.alias + '"><div class="contain-text">\n                        <span class="text -white -title-x-small">' + data.label + '</span>\n                        <span class="text -white">' + moment.unix(parseInt(data.created)).format('D MMMM YYYY') + '</span>\n                      </div></a>\n                    </div>';
-          });
-          removeLoader('.container-content-user-news');
-          $('.containter-people-detail-news').append(content);
-        } else {
-          removeLoader('.container-content-user-news');
-          $('.containter-people-detail-news').append('<div class="small-12 column"><span class="text -white -small-bold">No results found</span></div>');
-        }
-      });
-    }
-
-    function getPicture(idPeople) {
-      $.getJSON('/apiJSON/people/' + idPeople + '?fields=image', function (data) {
-        showLoader('.image-profile');
-        $('.image-profile').css('background-image', 'url(' + data.data[0].image + ')');
-        removeLoader('.image-profile');
-      });
-    }
-
-    getPeopleInvolvedStories(id);
-    getPeopleInvolvedNews(id);
-    getPicture(id);
-  })(jQuery);
-}
-'use strict';
-
-function featuresResultPage() {
-  (function ($) {
-
-    $('#value-search').html('Search for: ' + $('#edit-keys').val());
-  })(jQuery);
-}
-'use strict';
-
-function searchPage() {
-  (function ($) {
-
-    $('.search-form input').attr('placeholder', 'Type what you are searching for...');
-  })(jQuery);
-}
-"use strict";
-
-function tagsPage() {
-  (function ($) {})(jQuery);
 }
 'use strict';
 
@@ -2369,7 +1060,7 @@ function showCurrentCommitmentDetail(id) {
 
     $('#theme-menu').addClass('active');
     buildCurrentCommitment();
-    buildExploreMoreTiles('current_commitment');
+    buildExploreMoreTiles('current_commitment', '', '', false);
   })(jQuery);
 }
 'use strict';
@@ -2377,7 +1068,7 @@ function showCurrentCommitmentDetail(id) {
 function showIrmCommitmentDetail(id) {
   (function ($) {
     $('#theme-menu').addClass('active');
-    buildExploreMoreTiles('irm_commitments');
+    buildExploreMoreTiles('irm_commitments', '', '', false);
   })(jQuery);
 }
 'use strict';
@@ -2404,7 +1095,7 @@ function showModelCommitmentDetail(id) {
     initTabs();
     setTabListeners(onChangeTab);
     fetchModelCommitmentDetail();
-    buildExploreMoreTiles('modelcommitments');
+    buildExploreMoreTiles('modelcommitments', '', '', false);
   })(jQuery);
 }
 'use strict';
@@ -2412,7 +1103,7 @@ function showModelCommitmentDetail(id) {
 function showStarredCommitmentDetail(id) {
   (function ($) {
     $('#theme-menu').addClass('active');
-    buildExploreMoreTiles('starredcommitments');
+    buildExploreMoreTiles('starredcommitments', '', '', true);
   })(jQuery);
 }
 'use strict';
@@ -3104,31 +1795,1343 @@ function initCountryTabs(onChangeCountryTab) {
 }
 'use strict';
 
-function showAboutPages() {
+function showDocumentResourcePage() {
+  (function ($) {
+    // cache dom
+    var tileContainer = $('#resourceDocsTiles');
+    var searchEl = $('.c-tile');
+    var searchText = $('.c-tile .tile');
+    var searchContainer = $('#resourceTilesSearch input');
+
+    // fetch content and append
+    $.getJSON('/apiJSON/resource', function (data) {
+      setSearchPlaceholder(searchContainer, data.data[0].label);
+      setSearchListeners(searchEl, searchText);
+      if (data.data.length) {
+        appendTiles(data.data, tileContainer, 4);
+      } else {
+        showNoResults();
+      }
+    });
+  })(jQuery);
+}
+'use strict';
+
+function showNewsEventsPage() {
+  (function ($) {
+    // cache
+    var countryFilter = 0;
+    var typeFilter = 0;
+    var page = 1;
+    var totalPages = 0;
+    var totalPagesEvents = 0;
+    var pageEvents = 1;
+
+    //selectors
+    var countrySelector = $('.country-filter');
+    var typeSelector = $('.type-filter');
+    var coverEvents = $('.c-content-banner');
+    var eventsContainer = $('#eventsTiles');
+    var newsContainer = $('#newsTiles');
+
+    // public functions
+    function buildHighlightedEvent(event) {
+      if (event.image) {
+        $('.c-content-banner').css('background-image', 'url(' + event.image + ')');
+      }
+      if (moment() > moment(event.date.value)) {
+        $('.banner-type-date-event').html('Past Event');
+      } else {
+        $('.banner-type-date-event').html('Upcoming Event');
+      }
+      $('.banner-link', coverEvents).attr('href', event.alias);
+      $('.banner-title', coverEvents).html(event.label);
+      $('.banner-date', coverEvents).html(moment(event.date.value).format('MMMM DD, hh:mm a'));
+      $('.c-content-banner').removeClass('-hidden');
+    }
+
+    function setPageCount(val) {
+      $('.page-count').data('value', val);
+    }
+
+    function getCurrentPage() {
+      var pageCount = $('.page-count').data('value');
+      return pageCount;
+    }
+
+    function onClickPagination() {
+      $('.page-count').on('click', function () {
+        setPageCount(getCurrentPage() + 1);
+        pageEvents = getCurrentPage();
+        if (totalPagesEvents > getCurrentPage()) {
+          showLoader('#eventsContainer');
+          showEvents(countryFilter, typeFilter, getCurrentPage());
+        }
+      });
+    }
+
+    function buildSelector(selector, placeholder, endpoint, query) {
+      selector.select2({
+        minimumResultsForSearch: Infinity,
+        containerCssClass: '-green -tall',
+        dropdownCssClass: '-green',
+        placeholder: '' + placeholder
+      });
+      selector.append('<option value="0">' + placeholder + '</option>');
+
+      $.getJSON('/apiJSON/' + endpoint + '?' + query, function (data) {
+        data.data.forEach(function (data) {
+          var option = '<option value="' + data.id + '">' + data.label + '</option>';
+          selector.append(option);
+        });
+
+        selector.on('change', function () {
+          // showLoader('#newsContainer');
+          showLoader('#eventsContainer');
+          countryFilter = countrySelector.val();
+          typeFilter = typeSelector.val();
+          page = 1;
+          // showNews(countryFilter, typeFilter, page);
+          showEvents(countryFilter, typeFilter, page);
+        });
+      });
+    }
+
+    function setPaginationListerners() {
+      countryFilter = countrySelector.val();
+      typeFilter = typeSelector.val();
+      $('.onClickPagination').on('click', function (e) {
+        showLoader('#newsContainer');
+        var pageNum = $(this).data('value');
+        showNews(countryFilter, typeFilter, pageNum);
+      });
+    }
+
+    function showEvents(country, type, page) {
+      var activeCountry = parseInt(country) > 0 ? 'filter[country]=' + country + '&' : '';
+      var activeType = parseInt(type) > 0 ? 'filter[category]=' + type + '&' : '';
+      var activeFilters = '' + activeCountry + activeType + '&page=' + page;
+      $.getJSON('/apiJSON/events?' + activeFilters + '&sort=-date', function (events) {
+        totalPagesEvents = getPageCount(events.count, 4);
+        if (events.data.length > 0) {
+          if (pageEvents === 1) {
+            $.getJSON('/apiJSON/events?sort=-date', function (highlightedEvent) {
+              buildHighlightedEvent(highlightedEvent.data[0]);
+              appendTilesEvent(events.data, eventsContainer);
+              removeLoader('#eventsContainer', null, true);
+            });
+          } else {
+            appendTilesEvent(events.data, eventsContainer);
+            removeLoader('#eventsContainer', null, true);
+          }
+        } else {
+          showNoResults('#eventsContainer', 'No events with these filters', 'tall', 'grey', 'xxlarge', 'blue');
+          removeLoader('#eventsContainer', null, true);
+        }
+      });
+    }
+
+    function showNews(country, type, page) {
+      var activeCountry = parseInt(country) > 0 ? 'filter[country]=' + country + '&' : '';
+      var activeType = parseInt(type) > 0 ? 'filter[category]=' + type + '&' : '';
+      var activeFilters = '' + activeCountry + activeType + '&page=' + page;
+      $.getJSON('/apiJSON/news?' + activeFilters + '&sort=-date&range=4', function (news) {
+        if (news.data.length > 0) {
+          totalPages = getPageCount(news.count, 4);
+          if (page === 1) {
+            $.getJSON('/apiJSON/news?sort=-date&range=4', function (highlightedNews) {
+              buildHighlightedEvent(highlightedNews.data[0]);
+              appendTilesDetailedNews(news.data, newsContainer, 2);
+              initPagination(page, totalPages, 'newsEventsPage');
+              setPaginationListerners();
+              removeLoader('#newsContainer', null, true);
+            });
+          } else {
+            appendTilesDetailedNews(news.data, newsContainer, 2);
+            removeLoader('#newsContainer', null, true);
+            initPagination(page, totalPages, 'newsEventsPage');
+            setPaginationListerners();
+          }
+        } else {
+          showNoResults('#newsTiles', 'No news with these filters', 'tall', 'grey', 'xxlarge', 'blue');
+          $('.c-pagination').html('');
+          removeLoader('#newsContainer', null, true);
+        }
+      });
+    }
+
+    // build page
+    buildSelector(countrySelector, 'All countries', 'countries', 'fields=id,label&sort=label');
+    buildSelector(typeSelector, 'All story types', 'stories_categories', 'fields=id,label&sort=label');
+    showEvents(countryFilter, typeFilter, page);
+    showNews(countryFilter, typeFilter, page);
+    onClickPagination();
+  })(jQuery);
+}
+'use strict';
+
+function showHomePage() {
   (function ($) {
 
+    var map = L.map('maphome', {
+      zoomControl: false,
+      center: [35, -60],
+      zoom: 2,
+      maxZoom: 6,
+      minZoom: 2,
+      scrollWheelZoom: false
+    });
+    var over = false;
+
+    $('#in').click(function () {
+      map.setZoom(map.getZoom() + 1);
+    });
+
+    $('#out').click(function () {
+      map.setZoom(map.getZoom() - 1);
+    });
+
+    var basemap = L.tileLayer('http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png', {
+      attribution: ''
+    }).addTo(map);
+
+    cartodb.createLayer(map, {
+      user_name: 'jmonaco',
+      type: 'cartodb',
+      sublayers: [{
+        sql: 'SELECT  wb.the_geom_webmercator the_geom_webmercator, nid, member_since, at.path, actionplan, at.country, at.cartodb_id FROM ggtqckcj2bioeepnuvxoow at INNER JOIN world_borders_hd wb on at.country = wb.name',
+        cartocss: '#layer {polygon-fill: ramp([actionplan], (#2d4f00, #66bc29, #2d4f00, #66bc29, #2d4f00, #2d4f00, #cc3300, #cc3300), ("Implementing 1st action plan and Developing 2nd action plan","Developing action plan", "Implementing 2nd action plan", "Developing 1st Action Plan", "Implementing 1st action plan", "Implementing action plan", , "Inactive"), "="); line-width: 1; line-color: #FFF; line-opacity: 0.5;}',
+        interactivity: 'the_geom_webmercator, nid, country, cartodb_id'
+      }]
+    }).addTo(map).done(function (layer) {
+      layer.setInteraction(true);
+      var hovers = [];
+      layer.on('featureClick', function (e, latlng, pos, data) {
+        $.getJSON('https://jmonaco.carto.com/api/v2/sql?q= SELECT * FROM countries_homepage WHERE cartodb_id =  ' + data.cartodb_id, function (datapath) {
+          document.location.href = '' + window.location.origin + datapath.rows[0].path;
+        });
+      });
+
+      layer.bind('featureOver', function (e, latlon, pxPos, data, layers) {
+        hovers[layers] = 1;
+        if (_.any(hovers)) {
+          $('#maphome').css('cursor', 'pointer');
+        }
+      });
+
+      layer.bind('featureOut', function (m, layers) {
+        hovers[layers] = 0;
+        if (!_.any(hovers)) {
+          $('#maphome').css('cursor', 'auto');
+        }
+      });
+
+      layer.on('featureOver', function (e, latlng, pos, data) {
+        if (over === false) {
+          $('body').append('<div class="tooltip" style="padding: 5px; position: absolute; z-index: 10; background-color: rgba(255, 255, 255, 1); top:' + (e.pageY - 25) + 'px; left:' + (e.pageX + 25) + 'px">' + data.country + '</div>');
+          over = true;
+        } else {
+          $('.tooltip').html(data.country);
+          $('.tooltip').css('top', e.pageY - 25 + 'px');
+          $('.tooltip').css('left', e.pageX + 25 + 'px');
+        }
+      });
+
+      layer.on('featureOut', function (e, latlng, pos, data) {
+        over = false;
+        $('.tooltip').remove();
+      });
+      map.invalidateSize();
+    });
+  })(jQuery);
+}
+'use strict';
+
+function showSliderHomePage() {
+  (function ($) {
+
+    function getSlideConten(dataContent, dataSlide, imageContent, i) {
+      var textLink = 'Explore the content';
+      var imageSlide = void 0;
+      if (dataSlide.text_link) {
+        textLink = '' + dataSlide.text_link;
+      }
+      if (imageContent) {
+        if (dataSlide.image) {
+          imageSlide = '<div class="c-slider-home-page slider-image-' + i + ' ' + (dataSlide.image ? '-image' : '') + '">';
+        } else {
+          imageSlide = '<div class="c-slider-home-page slider-image-' + i + ' ' + (dataContent.image ? '-image' : '') + '">';
+        }
+      } else {
+        imageSlide = '<div class="c-slider-home-page slider-image-' + i + ' ' + (dataSlide.image ? '-image' : '') + '">';
+      }
+      var slideContent = '\n        ' + imageSlide + '\n          <div class="row">\n            <div class="column small-12 medium-9">\n              <div class="container slider-0">\n                <div>\n                  <h1 class="title-text -white">\n                    <a href="' + dataSlide.alias + '">' + dataContent.label + '</a>\n                  </h1>\n                  <div class="small-12 medium-5 large-4">\n                    <a class="c-button -box" href="' + dataSlide.alias + '">' + textLink + '</a>\n                  <div>\n                </div>\n              </div>\n            </div>\n          </div>\n        </div>\n      ';
+      return slideContent;
+    }
+
+    $.getJSON('/apiJSON/slider_home_page', function (stories) {
+      showLoader('.slider-cover-home');
+      for (var i = 0; i < stories.count; i += 1) {
+        if (stories.data[i].show) {
+          var slide = '';
+
+          if (stories.data[i].information_current) {
+            slide = getSlideConten(stories.data[i].information_current, stories.data[i], false, i);
+          }
+
+          if (stories.data[i].information_event) {
+            slide = getSlideConten(stories.data[i].information_event, stories.data[i], false, i);
+          }
+
+          if (stories.data[i].information_irm) {
+            slide = getSlideConten(stories.data[i].information_irm, stories.data[i], false, i);
+          }
+
+          if (stories.data[i].information_model) {
+            slide = getSlideConten(stories.data[i].information_model, stories.data[i], false, i);
+          }
+
+          if (stories.data[i].information_news) {
+            slide = getSlideConten(stories.data[i].information_news, stories.data[i], false, i);
+          }
+
+          if (stories.data[i].information_page) {
+            slide = getSlideConten(stories.data[i].information_page, stories.data[i], false, i);
+          }
+
+          if (stories.data[i].information_starred) {
+            slide = getSlideConten(stories.data[i].information_starred, stories.data[i], false, i);
+          }
+
+          if (stories.data[i].information_stories) {
+            slide = getSlideConten(stories.data[i].information_stories, stories.data[i], true, i);
+          }
+
+          if (stories.data[i].information_working) {
+            slide = getSlideConten(stories.data[i].information_working, stories.data[i], false, i);
+          }
+
+          if (stories.data[i].information_working_page) {
+            slide = getSlideConten(stories.data[i].information_working_page, stories.data[i], false, i);
+          }
+
+          $('.slider-cover-home').append(slide);
+        }
+
+        if (stories.data[i].information_stories) {
+          if (stories.data[i].image) {
+            $('.slider-image-' + i).css('background-image', 'url(' + stories.data[i].image + ')');
+          }
+          if (stories.data[i].information_stories.image) {
+            $('.slider-image-' + i).css('background-image', 'url(' + stories.data[i].information_stories.image + ')');
+          }
+        } else {
+          if (stories.data[i].image) {
+            $('.slider-image-' + i).css('background-image', 'url(' + stories.data[i].image + ')');
+          }
+        }
+      }
+      removeLoader('.slider-cover-home');
+      $('.slider-cover-home').slick({
+        dots: true,
+        arrows: false,
+        speed: 500,
+        fade: true,
+        cssEase: 'linear',
+        dotsClass: 'dots-slider',
+        adaptiveHeight: true
+      });
+    });
+  })(jQuery);
+}
+'use strict';
+
+function showIrmReports() {
+  (function ($) {
+
+    // cache
+    var countryFilter = 0;
+    var typeFilter = 0;
+    var page = 1;
+    var totalPages = 0;
+
+    //selectors
+    var countrySelectorDownload = $('.country-filter-download');
+    var countrySelectorComments = $('.country-filter-comments');
     var tabsContainer = $('.tabs-container');
-    var containerInfo = $('#containerInfo');
+    var containerInfo = $('#container-info');
+    var irmContainer = $('#downloadContainer');
+    var commentsContainer = $('#commentsContainer');
 
     // custom callback for tabs component
-    var onChangeAboutPageTab = function onChangeAboutPageTab(id, label) {
+    var onChangeIRMTabs = function onChangeIRMTabs(id, label) {
       $('.tab-content').addClass('-hidden');
       $('.' + id).removeClass('-hidden');
     };
 
-    function initAboutTabs(onChange) {
+    function initIRMTabs(onChange) {
       initTabs();
       setTabListeners(onChange);
     }
 
-    showLoader('#containerInfo');
-    $.getJSON('/apiJSON/page?filter[page_category]=2925', function (data) {
-      buildTabs(data.data, tabsContainer, onChangeAboutPageTab);
-      initAboutTabs(onChangeAboutPageTab);
-      for (var i = 0; i < data.data.length; i += 1) {
-        containerInfo.append('\n        <div class="tab-content -hidden ' + data.data[i].id + '">\n          <h3 class="text -section-title">' + data.data[i].label + '</h3>\n          <div class="text -body-content">\n            <p class="text -body-content">\n              ' + data.data[i].body.value + '\n            </p>\n          </div>\n        </div>\n      ');
+    function setPageCount(val) {
+      $('.reload-thematic-download').data('value', val);
+    }
+
+    function setPageCountComments(val) {
+      $('.reload-thematic-comments').data('value', val);
+    }
+
+    function getCurrentPage() {
+      var pageCount = $('.reload-thematic-download').data('value');
+      return pageCount;
+    }
+
+    function getCurrentPageComments() {
+      var pageCount = $('.reload-thematic-comments').data('value');
+      return pageCount;
+    }
+
+    function onClickPagination() {
+      $('.c-pagination-click-download').on('click', function () {
+        setPageCount(getCurrentPage() + 1);
+        showLoader('#container-info');
+        showTilesIrmReports(countryFilter, getCurrentPage());
+      });
+    }
+
+    function onClickPaginationComments() {
+      $('.c-pagination-click-comments').on('click', function () {
+        setPageCountComments(getCurrentPageComments() + 1);
+        showLoader('#container-info');
+        showTilesComments(countryFilter, getCurrentPageComments());
+      });
+    }
+
+    function showTilesIrmReports(country, pageNext) {
+      var activeCountry = parseInt(country) > 0 ? 'filter[id]=' + country + '&' : '';
+      $.getJSON('/apiJSON/countries?' + activeCountry + 'sort=label', function (countries) {
+        appendTilesIRM(countries.data, irmContainer);
+        appendTilesComments(countries.data, commentsContainer);
+        removeLoader('#container-info', null, true);
+      });
+    }
+
+    // function showTilesComments(country, pageNext) {
+    //   const activeCountry = parseInt(country) > 0 ? `filter[id]=${country}&` : '';
+    //   $.getJSON(`/apiJSON/countries?${activeCountry}sort=label`, function (countries) {
+    //     for (let i = 0; i < countries.data.length; i += 1) {
+    //
+    //     }
+    //   });
+    // }
+
+    function buildSelectorDownload(selector, placeholder, endpoint, query) {
+      selector.select2({
+        minimumResultsForSearch: Infinity,
+        containerCssClass: '-green -tall',
+        dropdownCssClass: '-green',
+        placeholder: '' + placeholder
+      });
+      selector.append('<option value="0">' + placeholder + '</option>');
+      $.getJSON('/apiJSON/' + endpoint + '?' + query, function (data) {
+        data.data.forEach(function (data) {
+          var option = '<option value="' + data.id + '">' + data.label + '</option>';
+          selector.append(option);
+        });
+
+        $(countrySelectorDownload).on('change', function () {
+          $(irmContainer).html('');
+          showLoader('#tab-loader');
+          countryFilter = countrySelectorDownload.val();
+          page = 1;
+          showTilesIrmReports(countryFilter, page);
+        });
+      });
+    }
+
+    function buildSelectorComments(selector, placeholder, endpoint, query) {
+      selector.select2({
+        minimumResultsForSearch: Infinity,
+        containerCssClass: '-green -tall',
+        dropdownCssClass: '-green',
+        placeholder: '' + placeholder
+      });
+      selector.append('<option value="0">' + placeholder + '</option>');
+      $.getJSON('/apiJSON/' + endpoint + '?' + query, function (data) {
+        data.data.forEach(function (data) {
+          var option = '<option value="' + data.id + '">' + data.label + '</option>';
+          selector.append(option);
+        });
+
+        $(countrySelectorComments).on('change', function () {
+          $(irmContainer).html('');
+          showLoader('#tab-loader-comments');
+          countryFilter = countrySelectorComments.val();
+          page = 1;
+          showTilesComments(countryFilter, page);
+        });
+      });
+    }
+
+    buildSelectorDownload(countrySelectorDownload, 'All countries', 'countries', 'fields=id,label&sort=label');
+    buildSelectorComments(countrySelectorComments, 'All countries', 'countries', 'fields=id,label&sort=label');
+    onClickPagination();
+    onClickPaginationComments();
+    initIRMTabs(onChangeIRMTabs);
+    showTilesIrmReports(countryFilter, page);
+    // showTilesComments(countryFilter, page);
+
+  })(jQuery);
+}
+'use strict';
+
+function loginPage() {
+  (function ($) {
+
+    $('#edit-name').attr('placeholder', 'Enter your Open Government Partnership username');
+    $('#edit-pass').attr('placeholder', 'Enter the password that accompanies your username.');
+  })(jQuery);
+}
+'use strict';
+
+function showNewsEventsPage() {
+  (function ($) {
+    // cache
+    var countryFilter = 0;
+    var typeFilter = 0;
+    var page = 1;
+    var totalPages = 0;
+    var totalPagesEvents = 0;
+    var pageEvents = 1;
+
+    //selectors
+    var countrySelector = $('.country-filter');
+    var typeSelector = $('.type-filter');
+    var coverEvents = $('.c-content-banner');
+    var eventsContainer = $('#eventsTiles');
+    var newsContainer = $('#newsTiles');
+
+    // public functions
+    function buildHighlightedEvent(event) {
+      if (event.image) {
+        $('.c-content-banner').css('background-image', 'url(' + event.image + ')');
       }
-      removeLoader('#containerInfo', null, true);
+      if (moment() > moment(event.date.value)) {
+        $('.banner-type-date-event').html('Past Event');
+      } else {
+        $('.banner-type-date-event').html('Upcoming Event');
+      }
+      $('.banner-link', coverEvents).attr('href', event.alias);
+      $('.banner-title', coverEvents).html(event.label);
+      $('.banner-date', coverEvents).html(moment(event.date.value).format('MMMM DD, hh:mm a'));
+      $('.c-content-banner').removeClass('-hidden');
+    }
+
+    function setPageCount(val) {
+      $('.page-count').data('value', val);
+    }
+
+    function getCurrentPage() {
+      var pageCount = $('.page-count').data('value');
+      return pageCount;
+    }
+
+    function onClickPagination() {
+      $('.page-count').on('click', function () {
+        setPageCount(getCurrentPage() + 1);
+        pageEvents = getCurrentPage();
+        if (totalPagesEvents > getCurrentPage()) {
+          showLoader('#eventsContainer');
+          showEvents(countryFilter, typeFilter, getCurrentPage());
+        }
+      });
+    }
+
+    function buildSelector(selector, placeholder, endpoint, query) {
+      selector.select2({
+        minimumResultsForSearch: Infinity,
+        containerCssClass: '-green -tall',
+        dropdownCssClass: '-green',
+        placeholder: '' + placeholder
+      });
+      selector.append('<option value="0">' + placeholder + '</option>');
+
+      $.getJSON('/apiJSON/' + endpoint + '?' + query, function (data) {
+        data.data.forEach(function (data) {
+          var option = '<option value="' + data.id + '">' + data.label + '</option>';
+          selector.append(option);
+        });
+
+        selector.on('change', function () {
+          // showLoader('#newsContainer');
+          showLoader('#eventsContainer');
+          countryFilter = countrySelector.val();
+          typeFilter = typeSelector.val();
+          page = 1;
+          // showNews(countryFilter, typeFilter, page);
+          showEvents(countryFilter, typeFilter, page);
+        });
+      });
+    }
+
+    function setPaginationListerners() {
+      countryFilter = countrySelector.val();
+      typeFilter = typeSelector.val();
+      $('.onClickPagination').on('click', function (e) {
+        showLoader('#newsContainer');
+        var pageNum = $(this).data('value');
+        showNews(countryFilter, typeFilter, pageNum);
+      });
+    }
+
+    function showEvents(country, type, page) {
+      var activeCountry = parseInt(country) > 0 ? 'filter[country]=' + country + '&' : '';
+      var activeType = parseInt(type) > 0 ? 'filter[category]=' + type + '&' : '';
+      var activeFilters = '' + activeCountry + activeType + '&page[number]=' + page + '&page[size]=8';
+      $.getJSON('/apiJSON/events?' + activeFilters + '&sort=-date', function (events) {
+        totalPagesEvents = getPageCount(events.count, 4);
+        if (events.data.length > 0) {
+          if (pageEvents === 1) {
+            $.getJSON('/apiJSON/events?sort=-date', function (highlightedEvent) {
+              buildHighlightedEvent(highlightedEvent.data[0]);
+              appendTilesEvent(events.data, eventsContainer);
+              removeLoader('#eventsContainer', null, true);
+            });
+          } else {
+            appendTilesEvent(events.data, eventsContainer);
+            removeLoader('#eventsContainer', null, true);
+          }
+        } else {
+          showNoResults('#eventsContainer', 'No events with these filters', 'tall', 'grey', 'xxlarge', 'blue');
+          removeLoader('#eventsContainer', null, true);
+        }
+      });
+    }
+
+    function showNews(country, type, page) {
+      var activeCountry = parseInt(country) > 0 ? 'filter[country]=' + country + '&' : '';
+      var activeType = parseInt(type) > 0 ? 'filter[category]=' + type + '&' : '';
+      var activeFilters = '' + activeCountry + activeType + '&page=' + page;
+      $.getJSON('/apiJSON/news?' + activeFilters + '&sort=-date', function (news) {
+        if (news.data.length > 0) {
+          totalPages = getPageCount(news.count, 4);
+          if (page === 1) {
+            $.getJSON('/apiJSON/news?sort=-date', function (highlightedNews) {
+              buildHighlightedEvent(highlightedNews.data[0]);
+              appendTilesDetailedNews(news.data, newsContainer, 2);
+              initPagination(page, totalPages, 'newsEventsPage');
+              setPaginationListerners();
+              removeLoader('#newsContainer', null, true);
+            });
+          } else {
+            appendTilesDetailedNews(news.data, newsContainer, 2);
+            removeLoader('#newsContainer', null, true);
+            initPagination(page, totalPages, 'newsEventsPage');
+            setPaginationListerners();
+          }
+        } else {
+          showNoResults('#newsTiles', 'No news with these filters', 'tall', 'grey', 'xxlarge', 'blue');
+          $('.c-pagination').html('');
+          removeLoader('#newsContainer', null, true);
+        }
+      });
+    }
+
+    // build page
+    buildSelector(countrySelector, 'All countries', 'countries', 'fields=id,label&sort=label');
+    buildSelector(typeSelector, 'All story types', 'stories_categories', 'fields=id,label&sort=label');
+    showEvents(countryFilter, typeFilter, page);
+    showNews(countryFilter, typeFilter, page);
+    onClickPagination();
+  })(jQuery);
+}
+'use strict';
+
+function showPageList() {
+  (function ($) {
+    var page = 1;
+    var totalPages = 0;
+    var sortValue = 'asc';
+
+    $('.sort-field').click(function () {
+      if (sortValue === 'asc') {
+        $('.triangle-sort').css('transform', 'rotate(180deg)'); // use this functions, because jquery method addClass not work with svg.
+        sortValue = 'desc';
+      } else {
+        $('.triangle-sort').css('transform', 'rotate(0deg)');
+        sortValue = 'asc';
+      }
+      page = 1;
+      showLoader('#tableContainer');
+      showPages(page, sortValue);
+    });
+
+    function setPaginationListerners() {
+      $('.onClickPagination').on('click', function (e) {
+        showLoader('#tableContainer');
+        var pageNum = $(this).data('value');
+        showPages(pageNum, sortValue);
+      });
+    }
+
+    function showPages(pageNumber, sort) {
+      var sortApi = '';
+      if (sort === 'asc') {
+        sortApi = 'sort=label';
+      } else {
+        sortApi = 'sort-=label';
+      }
+
+      $.getJSON('/apiJSON/page?&page=' + pageNumber + '&' + sortApi, function (pageresult) {
+        totalPages = getPageCount(pageresult.count, 5);
+        if (page === 1) {
+          $.getJSON('/apiJSON/page?date&page=' + pageNumber + '&' + sortApi, function (pageTable) {
+            createTable(pageTable, 'pages');
+            initPagination(pageNumber, totalPages, 'pagesList');
+            setPaginationListerners();
+            removeLoader('#tableContainer', null, true);
+          });
+        } else {
+          createTable(pageresult, 'pages');
+          removeLoader('#tableContainer', null, true);
+          initPagination(pageNumber, totalPages, 'pagesList');
+          setPaginationListerners();
+        }
+      });
+    }
+
+    showPages(page, sortValue);
+  })(jQuery);
+}
+'use strict';
+
+function peopleInvolved(id) {
+  (function ($) {
+    function getPeopleInvolvedStories(idPeople) {
+      var content = '';
+      $.getJSON('/apiJSON/stories?filter[author]=' + idPeople, function (data) {
+        showLoader('.container-content-user');
+        if (data.count !== 0) {
+          data.data.forEach(function (data) {
+            content += '<div class="small-12 column  medium-4 blogs-detail">\n                      <a href="/' + data.alias + '"><div class="contain-text">\n                        <span class="text -white -title-x-small">' + data.label + '</span>\n                        <span class="text -white">' + moment.unix(parseInt(data.created)).format('D MMMM YYYY') + '</span>\n                      </div></a>\n                    </div>';
+          });
+          removeLoader('.container-content-user');
+          $('.containter-people-detail').append(content);
+        } else {
+          removeLoader('.container-content-user');
+          $('.containter-people-detail').append('<div class="small-12 column"><span class="text -white -small-bold">No results found</span></div>');
+        }
+      });
+    }
+
+    function getPeopleInvolvedNews(idPeople) {
+      var content = '';
+      $.getJSON('/apiJSON/news?filter[author]=' + idPeople, function (data) {
+        showLoader('.container-content-user-news');
+        if (data.count !== 0) {
+          data.data.forEach(function (data) {
+            content += '<div class="small-12 column  medium-4 news-detail">\n                      <a href="/' + data.alias + '"><div class="contain-text">\n                        <span class="text -white -title-x-small">' + data.label + '</span>\n                        <span class="text -white">' + moment.unix(parseInt(data.created)).format('D MMMM YYYY') + '</span>\n                      </div></a>\n                    </div>';
+          });
+          removeLoader('.container-content-user-news');
+          $('.containter-people-detail-news').append(content);
+        } else {
+          removeLoader('.container-content-user-news');
+          $('.containter-people-detail-news').append('<div class="small-12 column"><span class="text -white -small-bold">No results found</span></div>');
+        }
+      });
+    }
+
+    function getPicture(idPeople) {
+      $.getJSON('/apiJSON/people/' + idPeople + '?fields=image', function (data) {
+        showLoader('.image-profile');
+        $('.image-profile').css('background-image', 'url(' + data.data[0].image + ')');
+        removeLoader('.image-profile');
+      });
+    }
+
+    getPeopleInvolvedStories(id);
+    getPeopleInvolvedNews(id);
+    getPicture(id);
+  })(jQuery);
+}
+'use strict';
+
+function showGroupResourcesDetail(id) {
+  (function ($) {
+
+    // cache dom
+    var currentNode = $('#groupResourcesDetail').data('node');
+    var tabsContainer = $('#groupResourcesTabs .tabs-container');
+    var searchContainer = $('#resourceTilesSearch input');
+    var tilesContainer = $('#tilesContainer');
+    var searchEl = $('.c-tile');
+    var searchText = $('.c-tile .tile');
+
+    // custom callback for tabs component
+    var onChangeTab = function onChangeTab(sub_group_id, label) {
+      hideNoResults('#noResultsContainer');
+      showLoader('.l-section');
+      tilesContainer.html('');
+      searchContainer.val('');
+      var filterGroup = currentNode === 2920 ? '' : 'filter[group_resource]=' + currentNode + '&';
+      $.getJSON('/apiJSON/resources?' + filterGroup + 'filter[sub_group]=' + sub_group_id + '&sort=-post_highlighted', function (data) {
+        if (data.data.length) {
+          appendTiles(data.data, tilesContainer, 4);
+        } else {
+          showNoResults('#noResultsContainer', 'No resources available', 'tall', 'grey', 'xxlarge', 'blue');
+        }
+        removeLoader('.l-section', null, true);
+      });
+      setSearchPlaceholder(searchContainer, label);
+    };
+
+    // fetch content and append
+    $.getJSON('/apiJSON/sub_group_resource', function (data) {
+      buildTabs(data.data, tabsContainer, onChangeTab);
+      setSearchPlaceholder(searchContainer, data.data[0].label);
+      setSearchListeners(searchEl, searchText);
+      var filterGroup = currentNode === 2920 ? '' : 'filter[group_resource]=' + currentNode + '&';
+      $.getJSON('/apiJSON/resources?' + filterGroup + 'filter[sub_group]=' + data.data[0].id + '&sort=-post_highlighted', function (resources) {
+        if (resources.data.length) {
+          appendTiles(resources.data, tilesContainer, 4);
+        } else {
+          showNoResults('#noResultsContainer', 'No resources available', 'tall', 'grey', 'xxlarge', 'blue');
+        }
+        removeLoader('.l-section', null, true);
+      });
+    });
+  })(jQuery);
+}
+'use strict';
+
+function showGroupResourcesPage() {
+  (function ($) {
+    // cache dom
+    var tileContainer = $('#groupResourcesTiles');
+
+    // fetch content and append
+    $.getJSON('/apiJSON/group_resources', function (data) {
+      data.data.forEach(function (resource) {
+        var html = '\n          <div class="column small-12 medium-4 c-tile">\n            <a href="/' + resource.alias + '" class="tile -tall">\n              <span class="text -tile -white">\n                ' + resource.label + '\n              </span>\n            </a>\n          </div>\n        ';
+        tileContainer.append(html);
+      });
+      removeLoader('.l-section', null, true);
+    });
+  })(jQuery);
+}
+'use strict';
+
+function showResourcesDetail(id) {
+  (function ($) {
+    $.getJSON('/apiJSON/resources?filter[id]=' + id, function (data) {
+      buildExploreMoreTiles('resources', 'group_resource', data.data[0].group_resource[0], false);
+    });
+  })(jQuery);
+}
+'use strict';
+
+function featuresResultPage() {
+  (function ($) {
+
+    $('#value-search').html('Search for: ' + $('#edit-keys').val());
+  })(jQuery);
+}
+'use strict';
+
+function searchPage() {
+  (function ($) {
+
+    $('.search-form input').attr('placeholder', 'Type what you are searching for...');
+  })(jQuery);
+}
+'use strict';
+
+function showStoryDetail(id) {
+  (function ($) {
+
+    // data for post
+    $.getJSON('/apiJSON/stories/' + id, function (data) {
+      // cache
+      var story = data.data[0];
+      var creationDate = moment.unix(parseInt(story.created)).format('D MMMM YYYY');
+      var metaHtml = '';
+      var authorsHtml = '<strong class="text -bold">Authors: </strong>';
+      // set country tags
+      if (story.country.length) {
+        var countries = story.country;
+        countries.forEach(function (country, index) {
+          var pathCountry = '' + country.alias;
+          if (index === countries.length - 1) {
+            metaHtml += '<a href="/' + pathCountry + '">' + country.label + '</a><span class="text -post-meta"> | </span>';
+          } else {
+            metaHtml += '<a href="/' + pathCountry + '">' + country.label + ', </a>';
+          }
+        });
+      }
+      metaHtml += '<span class="text -post-meta">' + creationDate + '</span>';
+      $('.countries').html(metaHtml);
+
+      // set body content
+      if (story.content) {
+        $('.-body-content').html(story.content.value);
+      }
+
+      // set author and topics
+      if (story.author[0]) {
+        story.author.forEach(function (author, index) {
+          if (index === story.author.length - 1) {
+            authorsHtml += '<a class="text -blank" href="/' + author.alias + '">' + author.label + '</a>';
+          } else {
+            authorsHtml += '<a class="text -blank" href="/' + author.alias + '">' + author.label + ', </a>';
+          }
+        });
+        $('.author').append(authorsHtml);
+      }
+
+      if (story.topic[0]) {
+        $('.topic').append('<strong class="text -bold">Topics: </strong>');
+        story.topic.forEach(function (topic, index) {
+          var pathTheme = '' + topic.alias;
+          if (index === story.topic.length - 1) {
+            $('.topic').append('<a class="text -blank" href="/' + pathTheme + '">' + topic.label + '</a>');
+          } else {
+            $('.topic').append('<a class="text -blank" href="/' + pathTheme + '">' + topic.label + '</a>, ');
+          }
+        });
+      }
+
+      if (story.tags) {
+        $('.tags').append('<strong class="text -bold">Tags: </strong>');
+        story.tags.forEach(function (tag, index) {
+          if (index === story.tags.length - 1) {
+            $('.tags').append('<span class="text -blank">' + tag.label + '</span>');
+          } else {
+            $('.tags').append('<span class="text -blank">' + tag.label + '</span>, ');
+          }
+        });
+      }
+
+      if (story.type) {
+        $('.filed-under').append('<strong class="text -bold">Filed Under: </strong>');
+        $('.filed-under').append('<span class="text -blank">' + story.type.label + '</a>');
+      }
+
+      removeLoader('#storiesDetail');
+    });
+  })(jQuery);
+}
+'use strict';
+
+function showStoriesPage() {
+  (function ($) {
+
+    // cache
+    var countryFilter = 0;
+    var typeFilter = 0;
+    var page = 1;
+    var totalPages = 0;
+    var authorsHtml = '';
+
+    //selectors
+    var countrySelector = $('.country-filter');
+    var typeSelector = $('.type-filter');
+    var coverEvents = $('.c-content-banner');
+    var storiesContainer = $('#storiesTiles');
+
+    // public functions
+    function buildHighlightedEvent(story) {
+      if (story.image) {
+        $('.c-content-banner').css('background-image', 'url(' + story.image + ')');
+      }
+      if (story.author[0]) {
+        story.author.forEach(function (author, index) {
+          if (index === story.author.length - 1) {
+            authorsHtml += '<a class="text -white" href="/' + author.alias + '">' + author.label + '</a>';
+          } else {
+            authorsHtml += '<a class="text -white" href="/' + author.alias + '">' + author.label + ', </a>';
+          }
+        });
+      }
+      $('.banner-link', coverEvents).attr('href', story.alias);
+      $('.banner-title', coverEvents).html(story.label);
+      $('.banner-date', coverEvents).html(moment.unix(story.created).format('D MMMM YYYY'));
+      if (story.author[0]) {
+        $('.banner-author', coverEvents).html(authorsHtml);
+      }
+      $('.c-content-banner').removeClass('-hidden');
+    }
+
+    function buildSelector(selector, placeholder, endpoint, query) {
+      selector.select2({
+        minimumResultsForSearch: Infinity,
+        containerCssClass: '-green -tall',
+        dropdownCssClass: '-green',
+        placeholder: '' + placeholder
+      });
+      selector.append('<option value="0">' + placeholder + '</option>');
+
+      $.getJSON('/apiJSON/' + endpoint + '?' + query, function (data) {
+        data.data.forEach(function (data) {
+          var option = '<option value="' + data.id + '">' + data.label + '</option>';
+          selector.append(option);
+        });
+
+        selector.on('change', function () {
+          showLoader('#storiesContainer');
+          countryFilter = countrySelector.val();
+          typeFilter = typeSelector.val();
+          page = 1;
+          showStories(countryFilter, typeFilter, page);
+        });
+      });
+    }
+
+    function setPaginationListerners() {
+      countryFilter = countrySelector.val();
+      typeFilter = typeSelector.val();
+      $('.onClickPagination').on('click', function (e) {
+        showLoader('#storiesContainer');
+        var pageNum = $(this).data('value');
+        showStories(countryFilter, typeFilter, pageNum);
+      });
+    }
+
+    function showStories(country, type, page) {
+      var activeCountry = parseInt(country) > 0 ? 'filter[country]=' + country + '&' : '';
+      var activeType = parseInt(type) > 0 ? 'filter[category]=' + type + '&' : '';
+      var activeFilters = '' + activeCountry + activeType + '&page[number]=' + page + '&page[size]=8';
+      $.getJSON('/apiJSON/stories?' + activeFilters + '&sort=-created', function (stories) {
+        if (stories.data.length > 0) {
+          totalPages = getPageCount(stories.count, 8);
+          // if (page === 1) {
+          //   $.getJSON(`/apiJSON/stories?sort=-created`, function (highlightedStory) {
+          //     if (highlightedStory.data[0]) {
+          //       buildHighlightedEvent(highlightedStory.data[0]);
+          //     }
+          //     appendTilesDetailed(stories.data, storiesContainer, 2);
+          //     initPagination(page, totalPages, 'storiesPage');
+          //     setPaginationListerners();
+          //     removeLoader('#storiesContainer', null, true);
+          //   });
+          // } else {
+          appendTilesDetailed(stories.data, storiesContainer, 2);
+          removeLoader('#storiesContainer', null, true);
+          initPagination(page, totalPages, 'storiesPage');
+          setPaginationListerners();
+          // }
+        } else {
+          showNoResults('#storiesTiles', 'No stories with these filters', 'tall', 'grey', 'xxlarge', 'blue');
+          $('.c-pagination').html('');
+          removeLoader('#storiesContainer', null, true);
+        }
+      }).error(function () {
+        showNoResults('#storiesTiles', 'Sorry, stories counld not be found', 'tall', 'grey', 'xxlarge', 'blue');
+        $('.c-pagination').html('');
+        removeLoader('#storiesContainer', null, true);
+      });
+    }
+
+    // build page
+    buildSelector(countrySelector, 'All countries', 'countries', 'fields=id,label&sort=label');
+    buildSelector(typeSelector, 'All story types', 'stories_categories', 'fields=id,label&sort=label');
+    showStories(countryFilter, typeFilter, page);
+  })(jQuery);
+}
+'use strict';
+
+function showStoriesSubmitPage(id) {
+  (function ($) {
+
+    // cache
+    var themeSelector = '.type-select';
+    var countrySelector = '.country-select';
+
+    $('#stories-menu').addClass('active');
+
+    $(themeSelector).select2({
+      minimumResultsForSearch: Infinity,
+      containerCssClass: '-tall',
+      placeholder: 'All story types'
+    });
+    $(countrySelector).select2({
+      minimumResultsForSearch: Infinity,
+      containerCssClass: '-tall',
+      placeholder: 'All countries'
+    });
+
+    $.getJSON('/apiJSON/countries?fields=id,name,label&sort=label', function (data) {
+      appendSelectOptionsFromData(countrySelector, data.data);
+      $.getJSON('/apiJSON/themes?sort=label&fields=id,label', function (data) {
+        appendSelectOptionsFromData(themeSelector, data.data);
+        removeLoader('.c-form', null, true);
+      });
+    });
+
+    $('.js-submit-story').click(function () {
+      var title = $('.-title').val();
+      var countryId = $('.country-select').val();
+      var topicId = $('.type-select').val();
+      var date = $('.-date').val();
+      var image = $('.-image').val();
+      var content = $('.-content').val();
+      var email = $('.-email').val();
+      var author = $('.-author').val();
+      $.ajax({
+        url: '/sites/all/themes/custom/ogp_theme/phpFunctions/createNode.php',
+        type: 'POST',
+        dataType: 'json',
+        data: {}
+      }).done(function (data) {});
+    });
+  })(jQuery);
+}
+"use strict";
+
+function tagsPage() {
+  (function ($) {})(jQuery);
+}
+'use strict';
+
+function showThemesDetail(id) {
+  (function showAPIThemes($) {
+
+    //cache
+    var countrySelector = $('.country-selector');
+    var contentContainer = $('#contentContainer .content-tiles');
+    var contributorText = $('#contributorsText');
+    var countryFilter = void 0;
+
+    // local functions
+    function setContributorsText(log, author, email) {
+      var html = '\n        <b>Contributors:</b> This topic has been developed for the Open Gov Guide by the National Democratic Institute. The lead author was Patrick Merloe with contributions from Michelle Brown and Tova Wang. Please send comments to pat@ndi.org.\n      ';
+      contributorText.html(html);
+    }
+
+    function setSelectCountryListerners() {
+      countrySelector.on('change', function () {
+        hideNoResults();
+        showLoader('#themesDetail');
+        var activeTab = $('.c-tabs .-selected').data('node');
+        var countryModel = $(this).val();
+        if (parseInt(countryModel) === 0) {
+          showContent(contentContainer, activeTab);
+        } else {
+          showContent(contentContainer, activeTab, countryModel);
+        }
+      });
+    }
+
+    // init selector
+    function initSelectors() {
+      countrySelector.select2({
+        minimumResultsForSearch: Infinity,
+        containerCssClass: '-green -tall',
+        dropdownCssClass: '-green',
+        placeholder: 'All countries'
+      });
+      $('.select2').addClass('-green-select');
+      $.getJSON('/apiJSON/countries?fields=id,label&sort=label', function (data) {
+        data.data.forEach(function (country) {
+          var option = '<option value="' + country.id + '">' + country.label + '</option>';
+          countrySelector.append(option);
+        });
+      });
+      setSelectCountryListerners();
+    }
+
+    // custom callback for tabs component
+    var onChangeTab = function onChangeTab(id, label) {
+      hideNoResults();
+      showLoader('#themesDetail');
+      $('#themesDetail .-body-content').addClass('-hidden');
+      $('#themesDetail .' + id).removeClass('-hidden');
+      var activeCountry = countrySelector.val();
+      if (parseInt(activeCountry) === 0) {
+        showContent(contentContainer, id);
+      } else {
+        showContent(contentContainer, id, activeCountry);
+      }
+      setContributorsText();
+      if (id === 'modelcommitments') {
+        contributorText.removeClass('-hidden');
+      } else {
+        contributorText.addClass('-hidden');
+      }
+    };
+
+    function showContent(container, endpoint, countryFilter) {
+      container.html('');
+      var countryQuery = countryFilter && endpoint !== 'modelcommitments' ? '&filter[country]=' + countryFilter : '';
+      var sorting = endpoint === 'stories' ? '-created' : 'label';
+      $.getJSON('/apiJSON/' + endpoint + '?filter[theme]=' + id + countryQuery + '&sort=' + sorting, function (data) {
+        hideNoResults();
+        if (data.data.length) {
+          appendTilesWithoutBackground(data.data, container, 2, '-themes');
+        } else {
+          showNoResults(container, 'No content available', 'tall', 'grey', 'xxlarge', 'blue');
+        }
+        removeLoader('#themesDetail', null, true);
+      });
+    }
+    // init page
+    initTabs();
+    setTabListeners(onChangeTab);
+    initSelectors();
+    showContent(contentContainer, 'starredcommitments');
+    buildExploreMoreTiles('themes', '', '', false);
+  })(jQuery);
+}
+'use strict';
+
+function showThemesPage() {
+  (function showAPIThemes($) {
+
+    //consts
+    var themesContainer = $('#tilesContainer');
+    var searchContainer = $('#themesTilesSearch input');
+    var searchEl = $('.c-tile');
+    var searchText = $('.c-tile .tile');
+    var themesTitle = $('.tiles-heading');
+
+    // local functions
+    function showThemesTiles() {
+      $.getJSON('/apiJSON/themes?sort=label', function (data) {
+        if (data.data.length) {
+          appendTiles(data.data, themesContainer, 3);
+        } else {
+          showNoResults('#tilesNoResults', 'No themes available', 'tall', 'grey', 'xxlarge', 'blue');
+        }
+        removeLoader('.l-section', null, true);
+      });
+    }
+
+    // custom callback for tabs component
+    var onChangeTab = function onChangeTab(id, label) {
+      themesTitle.html(label);
+      var currentSearch = searchContainer.val();
+      currentSearch = currentSearch.toLowerCase();
+      var parseId = parseInt(id);
+      $('.c-tile').each(function () {
+        if (currentSearch) {
+          if ($(this).data('group') === parseId && $(this).html().toLowerCase().indexOf(currentSearch) > -1 || id === '0' && $('.tile', this).html().toLowerCase().indexOf(currentSearch) > -1) {
+            $(this).css('display', 'block');
+          } else {
+            $(this).css('display', 'none');
+          }
+        } else {
+          if ($(this).data('group') === parseId || parseId === 0) {
+            $(this).css('display', 'block');
+          } else {
+            $(this).css('display', 'none');
+          }
+        }
+      });
+
+      // check for zero results
+      var results = $('.c-tile').filter(function () {
+        return $(this).css('display') === 'block';
+      }).length;
+
+      // show empty results
+      if (results === 0) {
+        showNoResults('#noResultsContainer', 'No themes available', 'tall', 'grey', 'xxlarge', 'blue');
+      } else {
+        hideNoResults('#noResultsContainer');
+      }
+    };
+
+    // init page
+    showThemesTiles();
+    initTabs();
+    setTabListeners(onChangeTab);
+    setSearchListeners(searchEl, searchText);
+  })(jQuery);
+}
+'use strict';
+
+function showGroupList() {
+  (function ($) {
+    var page = 1;
+    var totalPages = 0;
+    var sortValue = 'asc';
+    var tableContainer = $('.container-info-table');
+
+    $('.sort-field').click(function () {
+      if (sortValue === 'asc') {
+        $('.triangle-sort').css('transform', 'rotate(180deg)'); // use this functions, because jquery method addClass not work with svg.
+        sortValue = 'desc';
+      } else {
+        $('.triangle-sort').css('transform', 'rotate(0deg)');
+        sortValue = 'asc';
+      }
+      page = 1;
+      showLoader('#tableContainer');
+      showGroups(page, sortValue);
+    });
+
+    function setPaginationListerners() {
+      $('.onClickPagination').on('click', function (e) {
+        showLoader('#tableContainer');
+        var pageNum = $(this).data('value');
+        showGroups(pageNum, sortValue);
+      });
+    }
+
+    function showGroups(page, sort) {
+      var sortApi = '';
+
+      if (sort === 'asc') {
+        sortApi = 'sort=label';
+      } else {
+        sortApi = 'sort-=label';
+      }
+
+      $.getJSON('/apiJSON/working_group?&page=' + page + '&' + sortApi, function (working) {
+        totalPages = getPageCount(working.count, 5);
+        if (page === 1) {
+          $.getJSON('/apiJSON/working_group?date&page=' + page + '&' + sortApi, function (workingTable) {
+            createTable(workingTable, 'groups');
+            initPagination(page, totalPages, 'workingGroupList');
+            setPaginationListerners();
+            removeLoader('#tableContainer', null, true);
+          });
+        } else {
+          createTable(working, 'groups');
+          removeLoader('#tableContainer', null, true);
+          initPagination(page, totalPages, 'workingGroupList');
+          setPaginationListerners();
+        }
+      });
+    }
+    showGroups(page, sortValue);
+  })(jQuery);
+}
+'use strict';
+
+function showWorkingGroupDetail(id) {
+  (function ($) {
+    var tabsContainer = $('.tabs-container');
+    var containerInfo = $('#container-info');
+
+    // custom callback for tabs component
+    var onChangeWorkinPageTab = function onChangeWorkinPageTab(id, label) {
+      $('.tab-content').addClass('-hidden');
+      $('.' + id).removeClass('-hidden');
+    };
+
+    function initWorkingTabs(onChange) {
+      initTabs();
+      setTabListeners(onChange);
+    }
+    showLoader('.working-group-content');
+    $.getJSON('/apiJSON/working_group_page?filter[working_group]=' + id + '&filter[show]=1&sort=order', function (data) {
+      buildTabs(data.data, tabsContainer, onChangeWorkinPageTab);
+      initWorkingTabs(onChangeWorkinPageTab);
+      for (var i = 0; i < data.data.length; i += 1) {
+        containerInfo.append('\n          <div class="tab-content -hidden ' + data.data[i].id + '">\n            <h3 class="text -section-title">' + data.data[i].label + '</h3>\n            <div class="text -body-content">\n              ' + data.data[i].body.value + '\n            </div>\n          </div>\n        ');
+      }
+      removeLoader('.working-group-content', null, true);
     });
   })(jQuery);
 }

@@ -39,7 +39,8 @@ function appendTiles(data, container, gridNum, customClass) {
   }
 }
 
-function appendTilesRandom(data, container, gridNum, customClass) {
+function appendTilesRandom(data, container, gridNum, customClass, country) {
+  let countryText = '';
   for (let i = 0; i < 4; i += 1) {
     const rand = makeUniqueRandom();
     if (i % numRandoms == 0) {}
@@ -48,11 +49,16 @@ function appendTilesRandom(data, container, gridNum, customClass) {
   const gridWidth = 12 / gridNum;
   if (data.length !== 0) {
     for (let i = 0; i < 4; i += 1) {
+      if (country === true) {
+        countryText = `(${data[randomTiles[i]].country.label})`;
+      }
       const html = `
           <a href="/${data[randomTiles[i]].alias}" class="tile column small-12 medium-${gridWidth} c-tile ${customClass ? customClass : ''}" data-group="${data[randomTiles[i]].group ? data[randomTiles[i]].group : ''}" style="background-image: url('${data[randomTiles[i]].image ? data[randomTiles[i]].image : ''}')">
             <div class="${data[randomTiles[i]].image ? 'overlay' : ''}"></div>
             <span class="text -tile -white">
               ${data[randomTiles[i]].label}
+              <br>
+              ${countryText}
             </span>
           </a>
       `;
