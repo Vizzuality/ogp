@@ -92,7 +92,7 @@
     }
 
     .menu-list {
-      padding: 10px 0;
+      padding: 0;
 
       li {
         padding: 0;
@@ -104,8 +104,8 @@
       width: 260px !important;
       margin-top: 20px;
       border-radius: 0;
-      background-color: $color-2;
-      box-shadow: 0 0 8px 0 rgba($color-5, .1);
+      background-color: $color-4;
+      box-shadow: 0 2px 2px 0 rgba(0,0,0,.2);
       overflow: inherit !important;
       z-index: 1200;
 
@@ -117,7 +117,7 @@
         height: 0;
         clear: both;
         transform: rotate(180deg);
-        border-top: 6px solid $color-2;
+        border-top: 6px solid $color-10;
         border-right: 6px solid transparent;
         border-left: 6px solid transparent;
         content: '';
@@ -127,7 +127,7 @@
       li {
         margin-left: 0;
         text-indent: 0;
-        color: $color-3;
+        color: $color-5;
 
         a {
           padding: 15px 20px;
@@ -137,11 +137,11 @@
         }
 
         &:hover {
-          background: $color-4;
-          color: $color-2;
+          background: $color-10;
+          color: $color-5;
 
           a {
-            color: $color-2;
+            color: $color-5;
           }
         }
 
@@ -158,7 +158,7 @@
         }
 
         a {
-          color: $color-4;
+          color: $color-5;
           font-family: $font-family-1;
           font-size: $font-size-xxsmall;
 
@@ -171,7 +171,7 @@
 
     .txlive-langselector-list {
       margin-top: 33px;
-
+      padding: 0;
       li {
         padding: 15px 20px;
       }
@@ -192,7 +192,7 @@
         height: 0;
         clear: both;
         transform: rotate(180deg);
-        border-top: 6px solid $color-2;
+        border-top: 6px solid $color-10;
         border-right: 6px solid transparent;
         border-left: 6px solid transparent;
         content: '';
