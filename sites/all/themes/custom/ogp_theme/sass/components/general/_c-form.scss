@@ -56,16 +56,13 @@
     margin-bottom: 40px;
 
     .newsletter-selector {
-      display: flex;
-      align-items: center;
-      justify-content: center;
       background-color: $color-3;
-      padding: 0 15px;
+      padding: 30px 15px;
       margin-right: 15px;
       border: solid 2px $color-3;
       width: 100%;
       text-align: center;
-      min-height: 112px;
+      white-space: nowrap;
 
       &:last-child {
         margin-right: 0;

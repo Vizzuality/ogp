@@ -410,7 +410,7 @@ function onChangeNewsletterListener() {
 }
 
 function buildSubscribeModal() {
-  var subscribeModalTemplate = '\n    <form class="c-form validate" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" action="http://opengovpartnership.us3.list-manage.com/subscribe/post?u=b25f647af089f5f52485a663d&id=874e29c81c" method="POST">\n      <div class="content-wrapper">\n        <h3 class="text -module-title with-padding">Our Newsletters</h3>\n        <label class="text -small-bold -blue" for="email">Email</label>\n        <input type="email" required="required" placeholder="Your email address" id="mce-EMAIL" name="EMAIL">\n        <label class="text -small-bold -blue">Subscribe to</label>\n        <div class="selector-boxes">\n          <div class="text newsletter-selector -selected -interactive" data-option="874e29c81c">OGP Newsletter</div>\n          <div class="text newsletter-selector -interactive" data-option="20323ef712">OGP Gazette</div>\n          <div class="text newsletter-selector -interactive" data-option="ec2455b5b5">Bolet\xEDn de OGP</div>\n          <div class="text newsletter-selector -interactive" data-option="add766fb76">OGP in the News</div>\n        </div>\n      </div>\n      <input type="submit" name="subscribe" id="mc-embedded-subscribe" class="c-button -green-back -white" value="subscribe">\n    </form>\n    <div class="content-footer">\n    <a href="https://dgroups.org/hivos/ogp/login" rel="noreferrer noopener" target="_blank">Join the OGP Civil Society Mailing List</a>\n    </div>\n  ';
+  var subscribeModalTemplate = '\n    <form class="c-form validate" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" action="http://opengovpartnership.us3.list-manage.com/subscribe/post?u=b25f647af089f5f52485a663d&id=874e29c81c" method="POST">\n      <div class="content-wrapper">\n        <h3 class="text -module-title with-padding">Our Newsletters</h3>\n        <label class="text -small-bold -blue" for="email">Email</label>\n        <input type="email" required="required" placeholder="Your email address" id="mce-EMAIL" name="EMAIL">\n        <label class="text -small-bold -blue">Subscribe to</label>\n        <div class="selector-boxes">\n          <div class="text newsletter-selector -selected -interactive" data-option="874e29c81c">OGP Newsletter</div>\n          <div class="text newsletter-selector -interactive" data-option="20323ef712">OGP Gazette</div>\n          <div class="text newsletter-selector -interactive" data-option="ec2455b5b5">Bolet\xEDn de OGP</div>\n          <div class="text newsletter-selector -interactive" data-option="add766fb76">OGP in the News</div>\n        </div>\n      </div>\n      <input type="submit" name="subscribe" id="mc-embedded-subscribe" class="c-button -tall -green-back -white" value="subscribe">\n    </form>\n    <div class="content-footer">\n    <a href="https://dgroups.org/hivos/ogp/login" rel="noreferrer noopener" target="_blank">Join the OGP Civil Society Mailing List</a>\n    </div>\n  ';
   initModal('subscribeModal', subscribeModalTemplate, '-subscribe');
 }
 
@@ -1975,6 +1975,146 @@ function showNewsEventsPage() {
 }
 'use strict';
 
+function showIrmReports() {
+  (function ($) {
+
+    // cache
+    var countryFilter = 0;
+    var typeFilter = 0;
+    var page = 1;
+    var totalPages = 0;
+
+    //selectors
+    var countrySelectorDownload = $('.country-filter-download');
+    var countrySelectorComments = $('.country-filter-comments');
+    var tabsContainer = $('.tabs-container');
+    var containerInfo = $('#container-info');
+    var irmContainer = $('#downloadContainer');
+    var commentsContainer = $('#commentsContainer');
+
+    // custom callback for tabs component
+    var onChangeIRMTabs = function onChangeIRMTabs(id, label) {
+      $('.tab-content').addClass('-hidden');
+      $('.' + id).removeClass('-hidden');
+    };
+
+    function initIRMTabs(onChange) {
+      initTabs();
+      setTabListeners(onChange);
+    }
+
+    function setPageCount(val) {
+      $('.reload-thematic-download').data('value', val);
+    }
+
+    function setPageCountComments(val) {
+      $('.reload-thematic-comments').data('value', val);
+    }
+
+    function getCurrentPage() {
+      var pageCount = $('.reload-thematic-download').data('value');
+      return pageCount;
+    }
+
+    function getCurrentPageComments() {
+      var pageCount = $('.reload-thematic-comments').data('value');
+      return pageCount;
+    }
+
+    function onClickPagination() {
+      $('.c-pagination-click-download').on('click', function () {
+        setPageCount(getCurrentPage() + 1);
+        showLoader('#container-info');
+        showTilesIrmReports(countryFilter, getCurrentPage());
+      });
+    }
+
+    function onClickPaginationComments() {
+      $('.c-pagination-click-comments').on('click', function () {
+        setPageCountComments(getCurrentPageComments() + 1);
+        showLoader('#container-info');
+        showTilesComments(countryFilter, getCurrentPageComments());
+      });
+    }
+
+    function showTilesIrmReports(country, pageNext) {
+      var activeCountry = parseInt(country) > 0 ? 'filter[id]=' + country + '&' : '';
+      $.getJSON('/apiJSON/countries?' + activeCountry + 'sort=label', function (countries) {
+        appendTilesIRM(countries.data, irmContainer);
+        appendTilesComments(countries.data, commentsContainer);
+        removeLoader('#container-info', null, true);
+      });
+    }
+
+    // function showTilesComments(country, pageNext) {
+    //   const activeCountry = parseInt(country) > 0 ? `filter[id]=${country}&` : '';
+    //   $.getJSON(`/apiJSON/countries?${activeCountry}sort=label`, function (countries) {
+    //     for (let i = 0; i < countries.data.length; i += 1) {
+    //
+    //     }
+    //   });
+    // }
+
+    function buildSelectorDownload(selector, placeholder, endpoint, query) {
+      selector.select2({
+        minimumResultsForSearch: Infinity,
+        containerCssClass: '-green -tall',
+        dropdownCssClass: '-green',
+        placeholder: '' + placeholder
+      });
+      selector.append('<option value="0">' + placeholder + '</option>');
+      $.getJSON('/apiJSON/' + endpoint + '?' + query, function (data) {
+        data.data.forEach(function (data) {
+          var option = '<option value="' + data.id + '">' + data.label + '</option>';
+          selector.append(option);
+        });
+
+        $(countrySelectorDownload).on('change', function () {
+          $(irmContainer).html('');
+          showLoader('#tab-loader');
+          countryFilter = countrySelectorDownload.val();
+          page = 1;
+          showTilesIrmReports(countryFilter, page);
+        });
+      });
+    }
+
+    function buildSelectorComments(selector, placeholder, endpoint, query) {
+      selector.select2({
+        minimumResultsForSearch: Infinity,
+        containerCssClass: '-green -tall',
+        dropdownCssClass: '-green',
+        placeholder: '' + placeholder
+      });
+      selector.append('<option value="0">' + placeholder + '</option>');
+      $.getJSON('/apiJSON/' + endpoint + '?' + query, function (data) {
+        data.data.forEach(function (data) {
+          var option = '<option value="' + data.id + '">' + data.label + '</option>';
+          selector.append(option);
+        });
+
+        $(countrySelectorComments).on('change', function () {
+          $(irmContainer).html('');
+          showLoader('#tab-loader-comments');
+          countryFilter = countrySelectorComments.val();
+          page = 1;
+          showTilesComments(countryFilter, page);
+        });
+      });
+    }
+
+    buildSelectorDownload(countrySelectorDownload, 'All countries', 'countries', 'fields=id,label&sort=label');
+    buildSelectorComments(countrySelectorComments, 'All countries', 'countries', 'fields=id,label&sort=label');
+    onClickPagination();
+    onClickPaginationComments();
+    initIRMTabs(onChangeIRMTabs);
+    showTilesIrmReports(countryFilter, page);
+    // showTilesComments(countryFilter, page);
+
+  })(jQuery);
+}
+'use strict';
+
 function showHomePage() {
   (function ($) {
 
@@ -2147,146 +2287,6 @@ function showSliderHomePage() {
         adaptiveHeight: true
       });
     });
-  })(jQuery);
-}
-'use strict';
-
-function showIrmReports() {
-  (function ($) {
-
-    // cache
-    var countryFilter = 0;
-    var typeFilter = 0;
-    var page = 1;
-    var totalPages = 0;
-
-    //selectors
-    var countrySelectorDownload = $('.country-filter-download');
-    var countrySelectorComments = $('.country-filter-comments');
-    var tabsContainer = $('.tabs-container');
-    var containerInfo = $('#container-info');
-    var irmContainer = $('#downloadContainer');
-    var commentsContainer = $('#commentsContainer');
-
-    // custom callback for tabs component
-    var onChangeIRMTabs = function onChangeIRMTabs(id, label) {
-      $('.tab-content').addClass('-hidden');
-      $('.' + id).removeClass('-hidden');
-    };
-
-    function initIRMTabs(onChange) {
-      initTabs();
-      setTabListeners(onChange);
-    }
-
-    function setPageCount(val) {
-      $('.reload-thematic-download').data('value', val);
-    }
-
-    function setPageCountComments(val) {
-      $('.reload-thematic-comments').data('value', val);
-    }
-
-    function getCurrentPage() {
-      var pageCount = $('.reload-thematic-download').data('value');
-      return pageCount;
-    }
-
-    function getCurrentPageComments() {
-      var pageCount = $('.reload-thematic-comments').data('value');
-      return pageCount;
-    }
-
-    function onClickPagination() {
-      $('.c-pagination-click-download').on('click', function () {
-        setPageCount(getCurrentPage() + 1);
-        showLoader('#container-info');
-        showTilesIrmReports(countryFilter, getCurrentPage());
-      });
-    }
-
-    function onClickPaginationComments() {
-      $('.c-pagination-click-comments').on('click', function () {
-        setPageCountComments(getCurrentPageComments() + 1);
-        showLoader('#container-info');
-        showTilesComments(countryFilter, getCurrentPageComments());
-      });
-    }
-
-    function showTilesIrmReports(country, pageNext) {
-      var activeCountry = parseInt(country) > 0 ? 'filter[id]=' + country + '&' : '';
-      $.getJSON('/apiJSON/countries?' + activeCountry + 'sort=label', function (countries) {
-        appendTilesIRM(countries.data, irmContainer);
-        appendTilesComments(countries.data, commentsContainer);
-        removeLoader('#container-info', null, true);
-      });
-    }
-
-    // function showTilesComments(country, pageNext) {
-    //   const activeCountry = parseInt(country) > 0 ? `filter[id]=${country}&` : '';
-    //   $.getJSON(`/apiJSON/countries?${activeCountry}sort=label`, function (countries) {
-    //     for (let i = 0; i < countries.data.length; i += 1) {
-    //
-    //     }
-    //   });
-    // }
-
-    function buildSelectorDownload(selector, placeholder, endpoint, query) {
-      selector.select2({
-        minimumResultsForSearch: Infinity,
-        containerCssClass: '-green -tall',
-        dropdownCssClass: '-green',
-        placeholder: '' + placeholder
-      });
-      selector.append('<option value="0">' + placeholder + '</option>');
-      $.getJSON('/apiJSON/' + endpoint + '?' + query, function (data) {
-        data.data.forEach(function (data) {
-          var option = '<option value="' + data.id + '">' + data.label + '</option>';
-          selector.append(option);
-        });
-
-        $(countrySelectorDownload).on('change', function () {
-          $(irmContainer).html('');
-          showLoader('#tab-loader');
-          countryFilter = countrySelectorDownload.val();
-          page = 1;
-          showTilesIrmReports(countryFilter, page);
-        });
-      });
-    }
-
-    function buildSelectorComments(selector, placeholder, endpoint, query) {
-      selector.select2({
-        minimumResultsForSearch: Infinity,
-        containerCssClass: '-green -tall',
-        dropdownCssClass: '-green',
-        placeholder: '' + placeholder
-      });
-      selector.append('<option value="0">' + placeholder + '</option>');
-      $.getJSON('/apiJSON/' + endpoint + '?' + query, function (data) {
-        data.data.forEach(function (data) {
-          var option = '<option value="' + data.id + '">' + data.label + '</option>';
-          selector.append(option);
-        });
-
-        $(countrySelectorComments).on('change', function () {
-          $(irmContainer).html('');
-          showLoader('#tab-loader-comments');
-          countryFilter = countrySelectorComments.val();
-          page = 1;
-          showTilesComments(countryFilter, page);
-        });
-      });
-    }
-
-    buildSelectorDownload(countrySelectorDownload, 'All countries', 'countries', 'fields=id,label&sort=label');
-    buildSelectorComments(countrySelectorComments, 'All countries', 'countries', 'fields=id,label&sort=label');
-    onClickPagination();
-    onClickPaginationComments();
-    initIRMTabs(onChangeIRMTabs);
-    showTilesIrmReports(countryFilter, page);
-    // showTilesComments(countryFilter, page);
-
   })(jQuery);
 }
 'use strict';

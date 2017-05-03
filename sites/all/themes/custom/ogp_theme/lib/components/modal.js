@@ -66,7 +66,7 @@ function buildSubscribeModal() {
           <div class="text newsletter-selector -interactive" data-option="add766fb76">OGP in the News</div>
         </div>
       </div>
-      <input type="submit" name="subscribe" id="mc-embedded-subscribe" class="c-button -green-back -white" value="subscribe">
+      <input type="submit" name="subscribe" id="mc-embedded-subscribe" class="c-button -tall -green-back -white" value="subscribe">
     </form>
     <div class="content-footer">
     <a href="https://dgroups.org/hivos/ogp/login" rel="noreferrer noopener" target="_blank">Join the OGP Civil Society Mailing List</a>

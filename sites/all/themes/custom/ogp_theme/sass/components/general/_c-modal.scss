@@ -72,11 +72,20 @@
 
     .content-footer {
       padding: 25px 0;
-      background: #f4f4f4;
+      background-color: $color-4;
+      border-top: solid 1px $color-3;
       display: flex;
       align-items: center;
       justify-content: center;
-      margin-top: 10px;
+      margin-top: 40px;
+
+      > a {
+        color: $color-5;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
     }
 
      .with-padding {
