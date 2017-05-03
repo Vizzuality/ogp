@@ -2659,7 +2659,7 @@ function showStoryDetail(id) {
     $.getJSON('/apiJSON/stories/' + id, function (data) {
       // cache
       var story = data.data[0];
-      var creationDate = moment.unix(parseInt(story.created)).format('D MMMM YYYY');
+      var creationDate = moment.unix(parseInt(story.created, 10)).format('D MMMM YYYY');
       var metaHtml = '';
       var authorsHtml = '<strong class="text -bold">Authors: </strong>';
       // set country tags
@@ -2707,14 +2707,19 @@ function showStoryDetail(id) {
       }
 
       if (story.tags) {
-        $('.tags').append('<strong class="text -bold">Tags: </strong>');
-        story.tags.forEach(function (tag, index) {
-          if (index === story.tags.length - 1) {
-            $('.tags').append('<span class="text -blank">' + tag.label + '</span>');
-          } else {
-            $('.tags').append('<span class="text -blank">' + tag.label + '</span>, ');
-          }
-        });
+        var tags = $('.tags');
+        tags.append('<strong class="text -bold">Tags: </strong>');
+        if (story.tags.length) {
+          story.tags.forEach(function (tag, index) {
+            if (index === story.tags.length - 1) {
+              tags.append('<span class="text -blank">' + tag.label + '</span>');
+            } else {
+              tags.append('<span class="text -blank">' + tag.label + '</span>, ');
+            }
+          });
+        } else {
+          tags.append('<span class="text -grey">N/A</span>');
+        }
       }
 
       if (story.type) {

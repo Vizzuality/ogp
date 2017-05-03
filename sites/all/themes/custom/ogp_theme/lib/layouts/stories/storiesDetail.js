@@ -5,7 +5,7 @@ function showStoryDetail(id) {
     $.getJSON(`/apiJSON/stories/${id}`, function (data) {
       // cache
       const story = data.data[0];
-      const creationDate = moment.unix(parseInt(story.created)).format('D MMMM YYYY');
+      const creationDate = moment.unix(parseInt(story.created, 10)).format('D MMMM YYYY');
       let metaHtml = '';
       let authorsHtml = '<strong class="text -bold">Authors: </strong>';
       // set country tags
@@ -53,14 +53,19 @@ function showStoryDetail(id) {
       }
 
       if (story.tags) {
-        $('.tags').append('<strong class="text -bold">Tags: </strong>');
-        story.tags.forEach(function(tag, index) {
-          if (index === story.tags.length - 1) {
-            $('.tags').append(`<span class="text -blank">${tag.label}</span>`);
-          } else {
-            $('.tags').append(`<span class="text -blank">${tag.label}</span>, `);
-          }
-        });
+        const tags = $('.tags');
+        tags.append('<strong class="text -bold">Tags: </strong>');
+        if (story.tags.length) {
+          story.tags.forEach((tag, index) => {
+            if (index === story.tags.length - 1) {
+              tags.append(`<span class="text -blank">${tag.label}</span>`);
+            } else {
+              tags.append(`<span class="text -blank">${tag.label}</span>, `);
+            }
+          });
+        } else {
+          tags.append('<span class="text -grey">N/A</span>');
+        }
       }
 
       if (story.type) {
