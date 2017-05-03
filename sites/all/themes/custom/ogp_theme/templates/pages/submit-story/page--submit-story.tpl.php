@@ -5,8 +5,6 @@
  */
 ?>
 
-
-
 <div id="storiesSubmitPage">
 
     <?php include(drupal_get_path('theme', 'ogp_theme').'/templates/components/header.tpl.php'); ?>
