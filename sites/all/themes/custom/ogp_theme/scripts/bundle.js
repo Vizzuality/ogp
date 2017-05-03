@@ -226,105 +226,6 @@ function getAbsolutePath() {
 })(jQuery);
 'use strict';
 
-function convertPostDate(date, format) {
-  var dateString = new Date(date * 1e3);
-  var dd = dateString.getDate();
-  var mm = dateString.getMonth() + 1; //January is 0!
-  var yyyy = dateString.getFullYear();
-
-  if (format === 'dd/mm/yyyy') {
-    if (dd < 10) {
-      dd = '0' + dd;
-    }
-
-    if (mm < 10) {
-      mm = '0' + mm;
-    }
-  }
-
-  dateString = dd + '/' + mm + '/' + yyyy;
-
-  return dateString;
-}
-
-function convertEventDate(date) {
-  var myDate = moment(date, 'YYYY-M-DD HH:mm:ss');
-  return myDate.format('MMMM D, YYYY - hh:mm');
-}
-
-function dateDiff(date) {
-  return moment().diff(date, 'days');
-}
-"use strict";
-
-var uniqueRandoms = [];
-var numRandoms = 50;
-
-function makeUniqueRandom() {
-  // refill the array if needed
-  if (!uniqueRandoms.length) {
-    for (var i = 0; i < numRandoms; i++) {
-      uniqueRandoms.push(i);
-    }
-  }
-  var index = Math.floor(Math.random() * uniqueRandoms.length);
-  var val = uniqueRandoms[index];
-
-  // now remove that value from the array
-  uniqueRandoms.splice(index, 1);
-
-  return val;
-}
-'use strict';
-
-function smoothScroll() {
-  $('a[href*="#"]:not([href="#"])').click(function () {
-    if (location.pathname.replace(/^\//, '') == this.pathname.replace(/^\//, '') && location.hostname == this.hostname) {
-      var target = $(this.hash);
-      target = target.length ? target : $('[name=' + this.hash.slice(1) + ']');
-      if (target.length) {
-        $('html, body').animate({
-          scrollTop: target.offset().top
-        }, 500);
-        return false;
-      }
-    }
-  });
-}
-'use strict';
-
-function getAuthors(data) {
-  var authorString = '';
-  if (data[0]) {
-    data.forEach(function (author, index) {
-      if (index === data.length - 1) {
-        authorString += '' + author.label;
-      } else {
-        authorString += author.label + ', ';
-      }
-    });
-  }
-  return authorString;
-}
-
-function stripEmptyStrings() {
-  $('p').each(function () {
-    var $this = $(this);
-    if ($this.html().replace(/\s|&nbsp;/g, '').length == 0) $this.remove();
-  });
-}
-'use strict';
-
-function addDots(string, limit) {
-  var dots = '...';
-  if (string.length > limit) {
-    string = string.substring(0, limit) + dots;
-  }
-
-  return string;
-}
-'use strict';
-
 function aboutMenu() {
   (function ($) {
 
@@ -419,7 +320,7 @@ function showComments(id) {
 }
 'use strict';
 
-function buildExploreMoreTiles(endPoint, filter, value, country) {
+function buildExploreMoreTiles(endPoint, filter, value, country, numberInformation) {
   var filters = '';
   if (filter) {
     filters = 'filter[' + filter + ']=' + value + '&';
@@ -427,7 +328,7 @@ function buildExploreMoreTiles(endPoint, filter, value, country) {
   $.getJSON('/apiJSON/' + endPoint + '?' + filters, function (data) {
     if (data.data.length) {
       var tiles = data.data;
-      appendTilesRandom(tiles, $('.explore-more-container'), 4, '', country);
+      appendTilesRandom(tiles, $('.explore-more-container'), 4, '', country, numberInformation);
     }
     removeLoader('.c-explore-more');
   });
@@ -847,8 +748,9 @@ function appendTiles(data, container, gridNum, customClass) {
   }
 }
 
-function appendTilesRandom(data, container, gridNum, customClass, country) {
+function appendTilesRandom(data, container, gridNum, customClass, country, numberInformation) {
   var countryText = '';
+  var numberText = '';
   for (var i = 0; i < 4; i += 1) {
     var rand = makeUniqueRandom();
     if (i % numRandoms == 0) {}
@@ -860,7 +762,11 @@ function appendTilesRandom(data, container, gridNum, customClass, country) {
       if (country === true) {
         countryText = '(' + data[randomTiles[_i]].country.label + ')';
       }
-      var html = '\n          <a href="/' + data[randomTiles[_i]].alias + '" class="tile column small-12 medium-' + gridWidth + ' c-tile ' + (customClass ? customClass : '') + '" data-group="' + (data[randomTiles[_i]].group ? data[randomTiles[_i]].group : '') + '" style="background-image: url(\'' + (data[randomTiles[_i]].image ? data[randomTiles[_i]].image : '') + '\')">\n            <div class="' + (data[randomTiles[_i]].image ? 'overlay' : '') + '"></div>\n            <span class="text -tile -white">\n              ' + data[randomTiles[_i]].label + '\n              <br>\n              ' + countryText + '\n            </span>\n          </a>\n      ';
+
+      if (numberInformation === true) {
+        numberText = '(' + data[randomTiles[_i]].comm_no + ')';
+      }
+      var html = '\n          <a href="/' + data[randomTiles[_i]].alias + '" class="tile column small-12 medium-' + gridWidth + ' c-tile ' + (customClass ? customClass : '') + '" data-group="' + (data[randomTiles[_i]].group ? data[randomTiles[_i]].group : '') + '" style="background-image: url(\'' + (data[randomTiles[_i]].image ? data[randomTiles[_i]].image : '') + '\')">\n            <div class="' + (data[randomTiles[_i]].image ? 'overlay' : '') + '"></div>\n            <span class="text -tile -white">\n              ' + numberText + ' | ' + data[randomTiles[_i]].label + '\n              <br>\n              ' + countryText + '\n            </span>\n          </a>\n      ';
       container.append(html);
     }
   }
@@ -1014,6 +920,105 @@ function twitterLink() {
 }
 'use strict';
 
+function convertPostDate(date, format) {
+  var dateString = new Date(date * 1e3);
+  var dd = dateString.getDate();
+  var mm = dateString.getMonth() + 1; //January is 0!
+  var yyyy = dateString.getFullYear();
+
+  if (format === 'dd/mm/yyyy') {
+    if (dd < 10) {
+      dd = '0' + dd;
+    }
+
+    if (mm < 10) {
+      mm = '0' + mm;
+    }
+  }
+
+  dateString = dd + '/' + mm + '/' + yyyy;
+
+  return dateString;
+}
+
+function convertEventDate(date) {
+  var myDate = moment(date, 'YYYY-M-DD HH:mm:ss');
+  return myDate.format('MMMM D, YYYY - hh:mm');
+}
+
+function dateDiff(date) {
+  return moment().diff(date, 'days');
+}
+"use strict";
+
+var uniqueRandoms = [];
+var numRandoms = 50;
+
+function makeUniqueRandom() {
+  // refill the array if needed
+  if (!uniqueRandoms.length) {
+    for (var i = 0; i < numRandoms; i++) {
+      uniqueRandoms.push(i);
+    }
+  }
+  var index = Math.floor(Math.random() * uniqueRandoms.length);
+  var val = uniqueRandoms[index];
+
+  // now remove that value from the array
+  uniqueRandoms.splice(index, 1);
+
+  return val;
+}
+'use strict';
+
+function smoothScroll() {
+  $('a[href*="#"]:not([href="#"])').click(function () {
+    if (location.pathname.replace(/^\//, '') == this.pathname.replace(/^\//, '') && location.hostname == this.hostname) {
+      var target = $(this.hash);
+      target = target.length ? target : $('[name=' + this.hash.slice(1) + ']');
+      if (target.length) {
+        $('html, body').animate({
+          scrollTop: target.offset().top
+        }, 500);
+        return false;
+      }
+    }
+  });
+}
+'use strict';
+
+function getAuthors(data) {
+  var authorString = '';
+  if (data[0]) {
+    data.forEach(function (author, index) {
+      if (index === data.length - 1) {
+        authorString += '' + author.label;
+      } else {
+        authorString += author.label + ', ';
+      }
+    });
+  }
+  return authorString;
+}
+
+function stripEmptyStrings() {
+  $('p').each(function () {
+    var $this = $(this);
+    if ($this.html().replace(/\s|&nbsp;/g, '').length == 0) $this.remove();
+  });
+}
+'use strict';
+
+function addDots(string, limit) {
+  var dots = '...';
+  if (string.length > limit) {
+    string = string.substring(0, limit) + dots;
+  }
+
+  return string;
+}
+'use strict';
+
 function showAboutPages() {
   (function ($) {
 
@@ -1060,7 +1065,7 @@ function showCurrentCommitmentDetail(id) {
 
     $('#theme-menu').addClass('active');
     buildCurrentCommitment();
-    buildExploreMoreTiles('current_commitment', '', '', false);
+    buildExploreMoreTiles('current_commitment', '', '', false, false);
   })(jQuery);
 }
 'use strict';
@@ -1068,7 +1073,7 @@ function showCurrentCommitmentDetail(id) {
 function showIrmCommitmentDetail(id) {
   (function ($) {
     $('#theme-menu').addClass('active');
-    buildExploreMoreTiles('irm_commitments', '', '', false);
+    buildExploreMoreTiles('irm_commitments', '', '', false, false);
   })(jQuery);
 }
 'use strict';
@@ -1095,7 +1100,7 @@ function showModelCommitmentDetail(id) {
     initTabs();
     setTabListeners(onChangeTab);
     fetchModelCommitmentDetail();
-    buildExploreMoreTiles('modelcommitments', '', '', false);
+    buildExploreMoreTiles('modelcommitments', '', '', false, false);
   })(jQuery);
 }
 'use strict';
@@ -1103,7 +1108,7 @@ function showModelCommitmentDetail(id) {
 function showStarredCommitmentDetail(id) {
   (function ($) {
     $('#theme-menu').addClass('active');
-    buildExploreMoreTiles('starredcommitments', '', '', true);
+    buildExploreMoreTiles('starredcommitments', '', '', true, true);
   })(jQuery);
 }
 'use strict';
@@ -2625,7 +2630,7 @@ function showGroupResourcesPage() {
 function showResourcesDetail(id) {
   (function ($) {
     $.getJSON('/apiJSON/resources?filter[id]=' + id, function (data) {
-      buildExploreMoreTiles('resources', 'group_resource', data.data[0].group_resource[0], false);
+      buildExploreMoreTiles('resources', 'group_resource', data.data[0].group_resource[0], false, false);
     });
   })(jQuery);
 }
@@ -2979,7 +2984,7 @@ function showThemesDetail(id) {
     setTabListeners(onChangeTab);
     initSelectors();
     showContent(contentContainer, 'starredcommitments');
-    buildExploreMoreTiles('themes', '', '', false);
+    buildExploreMoreTiles('themes', '', '', false, false);
   })(jQuery);
 }
 'use strict';
