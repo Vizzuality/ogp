@@ -47,6 +47,7 @@
     transform: translate(-50%, -50%);
     z-index: 1002;
     min-width: 400px;
+    box-shadow: 0 2px 2px 0 rgba(0,0,0,.2);
 
     .close-icon {
       position: absolute;
@@ -68,6 +69,24 @@
         overflow: auto;
        }
      }
+
+    .content-footer {
+      padding: 25px 0;
+      background-color: $color-4;
+      border-top: solid 1px $color-3;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-top: 40px;
+
+      > a {
+        color: $color-5;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
 
      .with-padding {
        margin-bottom: 40px;
