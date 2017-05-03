@@ -13,7 +13,7 @@
       </div>
       <div class="column small-12 medium-3">
         <ul class="site-links">
-          <li class="text -dynamic-link"><a href="/about">about</a></li>
+          <li class="text -dynamic-link"><a href="/about-ogp">about</a></li>
           <li class="text -dynamic-link"><a href="/about/news-and-events">News & Events</a></li>
         </ul>
       </div>
