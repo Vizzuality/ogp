@@ -92,6 +92,15 @@ class Modelcommitments__1_0 extends ResourceNode{
       )
     );
 
+    $public_fields['country'] = array(
+      'property' => 'field_topic_country',
+      'resource' => array(
+        'name' => 'countries',
+        'majorVersion' => '1',
+        'minorVersion' => '0'
+      )
+    );
+
     return $public_fields;
   }
   public function getAlias($value) {

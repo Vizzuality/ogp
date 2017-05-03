@@ -6,4 +6,19 @@
   h3 {
     margin-bottom: 30px;
   }
+
+  .explore-more-container {
+    display: flex;
+    justify-content: space-between;
+
+    .c-tile {
+      &:first-of-type {
+        padding-left: 0;
+      }
+
+      &:last-of-type {
+        padding-right: 0;
+      }
+    }
+  }
 }

@@ -1,4 +1,7 @@
 // append tiles to div
+let randomTiles = [];
+const numRandoms = 50;
+
 function appendTilesWithoutBackground(data, container, gridNum, customClass) {
   const gridWidth = 12 / gridNum;
   if (data.length !== 0) {
@@ -36,6 +39,28 @@ function appendTiles(data, container, gridNum, customClass) {
   }
 }
 
+function appendTilesRandom(data, container, gridNum, customClass) {
+  for (let i = 0; i < 4; i += 1) {
+    const rand = makeUniqueRandom();
+    if (i % numRandoms == 0) {}
+    randomTiles[i] = rand;
+  }
+  const gridWidth = 12 / gridNum;
+  if (data.length !== 0) {
+    for (let i = 0; i < 4; i += 1) {
+      const html = `
+          <a href="/${data[randomTiles[i]].alias}" class="tile column small-12 medium-${gridWidth} c-tile ${customClass ? customClass : ''}" data-group="${data[randomTiles[i]].group ? data[randomTiles[i]].group : ''}" style="background-image: url('${data[randomTiles[i]].image ? data[randomTiles[i]].image : ''}')">
+            <div class="${data[randomTiles[i]].image ? 'overlay' : ''}"></div>
+            <span class="text -tile -white">
+              ${data[randomTiles[i]].label}
+            </span>
+          </a>
+      `;
+      container.append(html);
+    }
+  }
+}
+
 function appendTilesStandards(data, container, gridNum, customClass) {
   const gridWidth = 12 / gridNum;
   if (data.length !== 0) {
@@ -46,6 +71,7 @@ function appendTilesStandards(data, container, gridNum, customClass) {
             <div class="${item.image ? 'overlay' : ''}"></div>
             <span class="text -tile -white">
               ${item}
+
             </span>
           </a>
         </div>

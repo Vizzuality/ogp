@@ -61,6 +61,7 @@
         <div class="column small-12">
           <h3 class="text -module-title">More model commitments</h3>
           <div class="c-loader"><div class="loader"></div></div>
+          <div class="explore-more-container"></div>
         </div>
       </div>
     </div>

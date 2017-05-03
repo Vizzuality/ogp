@@ -103,6 +103,7 @@ $research_body = field_get_items('node', $research, 'body')[0]['value'];
         <div class="column small-12">
           <h3 class="text -module-title">Explore similar themes</h3>
           <div class="c-loader"><div class="loader"></div></div>
+          <div class="explore-more-container"></div>
         </div>
       </div>
     </div>
