@@ -17,5 +17,5 @@
             <?php print $row; ?>
         </div>
     <?php endforeach; ?>
-    <a href="#" class="text -blue link-twitter" target="_blank">Go to original tweet</a>
+    <a class="text -blue link-twitter" target="_blank">Go to original tweet</a>
 </div>
