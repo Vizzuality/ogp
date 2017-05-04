@@ -135,56 +135,27 @@ function pushDefaultModal(id, query, countryData, dataLabel, buttonText, buttonL
         }
       });
     }
-
-    if (dataLabel === 'starred-tab') {
-      const html = `
-        <div class="modal-header">
-          <div class="header-info">
-            <h3 class="text -module-title">${countryData.data[0].label}</h3>
-            <p class="text -meta">Member since ${moment.unix(countryData.data[0].memberSince).format('YYYY')}, Action plan ${countryData.data[0].action_plan_count}</p>
-          </div>
-          <div class="c-data-number">
-            <h3 class="text -number">${data.count}</h3>
-            <p class="text -small-bold">${dataLabel}</p>
-          </div>
+    const html = `
+      <div class="modal-header">
+        <div class="header-info">
+          <h3 class="text -module-title">${countryData[0].label}</h3>
+          <p class="text -meta">Member since ${moment.unix(countryData[0].memberSince).format('YYYY')}, Action plans ${countryData[0].action_plan_count}</p>
         </div>
-        <div class="content-wrapper -scroll ${modalType === 'slider' ? 'stories-slider': ''}">
-          ${dataInfo}
+        <div class="c-data-number">
+          <h3 class="text -number">${data.count}</h3>
+          <p class="text -small-bold">${dataLabel}</p>
         </div>
-        <div class="button-container -fixed">
-          <a href="/${buttonLink}" class="c-button -tall -green-back -box">${buttonText}</a>
-          <a href="${countryData.data[0].alias}" class="c-button -tall -green-back -box">VIEW COUNTRY</a>
-        </div>
-      `;
-      setDataToModal(id, html);
-      removeLoader('body', null, true);
-    } else {
-      const html = `
-        <div class="modal-header">
-          <div class="header-info">
-            <h3 class="text -module-title">${countryData[0].label}</h3>
-            <p class="text -meta">Member since ${moment.unix(countryData[0].memberSince).format('YYYY')}, Action plan ${countryData[0].action_plan_count}</p>
-          </div>
-          <div class="c-data-number">
-            <h3 class="text -number">${data.count}</h3>
-            <p class="text -small-bold">${dataLabel}</p>
-          </div>
-        </div>
-        <div class="content-wrapper -scroll ${modalType === 'slider' ? 'stories-slider': ''}">
-          ${dataInfo}
-        </div>
-        <div class="button-container -fixed">
-          <a href="/${buttonLink}" class="c-button -tall -green-back -box">${buttonText}</a>
-          <a href="${countryData[0].alias}" class="c-button -tall -green-back -box">VIEW COUNTRY</a>
-        </div>
-      `;
-      setDataToModal(id, html);
-    }
+      </div>
+      <div class="content-wrapper -scroll ${modalType === 'slider' ? 'stories-slider': ''}">
+        ${dataInfo}
+      </div>
+      <div class="button-container -fixed">
+        <a href="/${buttonLink}" class="c-button -tall -green-back -box">${buttonText}</a>
+        <a href="${countryData[0].alias}" class="c-button -tall -green-back -box">VIEW COUNTRY</a>
+      </div>
+    `;
+    setDataToModal(id, html);
   });
-}
-
-function pushTabStarredModal(id, dataStarred) {
-
 }
 
 function pushSmallModal(id, query, countryData, firstDataLabel, secondDataLabel, buttonText, buttonLink) {
@@ -216,40 +187,35 @@ function pushSmallModal(id, query, countryData, firstDataLabel, secondDataLabel,
 
 function setMapModalContent(id, type, countryId, countriesData) {
   let themeCommitmentAlias = 'theme';
-  if (type === 'starred-tab') {
-    pushTabStarredModal(id, countryId);
-    pushDefaultModal(id, `starredcommitments?filter[country]=${countryId}`, countriesData, 'starred-tab', 'latest stories', '/stories', 'list', '');
-  } else {
-    const countryData = countriesData.filter(function(country) {
-      return country.id == countryId;
-    });
-    switch (type) {
-      case 'actionPlan':
-        pushSmallModal(id, `irm_commitments?filter[country]=${countryId}`, countryData, 'commitments', 'themes covered', 'latest stories', 'stories', '');
-        break;
-      case 'starred':
-        pushDefaultModal(id, `starredcommitments?filter[country]=${countryId}`, countryData, 'starred commitments', 'latest stories', 'stories', 'list', '');
-        break;
-      case 'event':
-        pushDefaultModal(id, `events?filter[country]=${countryId}`, countryData, 'events', 'go to events', 'news-and-events', 'list', '');
-        break;
-      case 'commitment':
-        if ($('.select-legend-dropdown').find(':selected').data('value')) {
-          themeCommitmentAlias = $('.select-legend-dropdown').find(':selected').data('value');
-        }
-        const currentFilter = $('.select-legend-dropdown').val() ? `&filter[theme_id]=${$('.select-legend-dropdown').val()}` : '';
-        pushDefaultModal(id, `current_commitment?filter[country]=${countryId}${currentFilter}`, countryData, 'current commitments', 'explore this theme', `${themeCommitmentAlias}`, 'list', '');
-        break;
-      case 'people':
-        $.getJSON(`apiJSON/people?filter[country_poc]=${countryId}`, function (poc) {
-          pushDefaultModal(id, `people?filter[country]=${countryId}`, countryData, 'people involved', 'latest stories', 'stories', 'grid', poc);
-        });
-        break;
-      case 'stories':
-        pushDefaultModal(id, `stories?filter[country]=${countryId}&sort=-created`, countryData, 'stories', 'latest stories', 'stories', 'slider', '');
-        break;
-      default:
-        break;
-    }
+  const countryData = countriesData.filter(function(country) {
+    return country.id == countryId;
+  });
+  switch (type) {
+    case 'actionPlan':
+      pushSmallModal(id, `irm_commitments?filter[country]=${countryId}`, countryData, 'commitments', 'themes covered', 'latest stories', 'stories', '');
+      break;
+    case 'starred':
+      pushDefaultModal(id, `starredcommitments?filter[country]=${countryId}`, countryData, 'starred commitments', 'latest stories', 'stories', 'list', '');
+      break;
+    case 'event':
+      pushDefaultModal(id, `events?filter[country]=${countryId}`, countryData, 'events', 'go to events', 'news-and-events', 'list', '');
+      break;
+    case 'commitment':
+      if ($('.select-legend-dropdown').find(':selected').data('value')) {
+        themeCommitmentAlias = $('.select-legend-dropdown').find(':selected').data('value');
+      }
+      const currentFilter = $('.select-legend-dropdown').val() ? `&filter[theme_id]=${$('.select-legend-dropdown').val()}` : '';
+      pushDefaultModal(id, `current_commitment?filter[country]=${countryId}${currentFilter}`, countryData, 'current commitments', 'explore this theme', `${themeCommitmentAlias}`, 'list', '');
+      break;
+    case 'people':
+      $.getJSON(`apiJSON/people?filter[country_poc]=${countryId}`, function (poc) {
+        pushDefaultModal(id, `people?filter[country]=${countryId}`, countryData, 'people involved', 'latest stories', 'stories', 'grid', poc);
+      });
+      break;
+    case 'stories':
+      pushDefaultModal(id, `stories?filter[country]=${countryId}&sort=-created`, countryData, 'stories', 'latest stories', 'stories', 'slider', '');
+      break;
+    default:
+      break;
   }
 }

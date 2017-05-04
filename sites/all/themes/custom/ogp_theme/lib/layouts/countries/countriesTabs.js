@@ -38,13 +38,10 @@ function hideOnClickPagination() {
   $('.c-pagination-click').addClass('-hidden');
 }
 
-function initModalStarred() {
+function initModalStarred(countriesData) {
   $('.show-modal-starred').click(function() {
     const country = $(this).data('value');
-    $.getJSON(`/apiJSON/countries?filter[id]=${country}`, function (countriesData) {
-      showLoader('body');
-      setMapModalContent('mapModal', 'starred-tab', country, countriesData);
-    });
+    setMapModalContent('mapModal', 'starred', country, countriesData);
   });
 }
 
@@ -134,7 +131,7 @@ function showCountriesData(countriesData, activeTab, container, countryId) {
     showOnClickPagination();
   }
   removeLoader(container, null, true);
-  initModalStarred();
+  initModalStarred(countriesData);
 }
 
 function initCountryTabs(onChangeCountryTab) {

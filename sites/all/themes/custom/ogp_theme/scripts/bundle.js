@@ -226,105 +226,6 @@ function getAbsolutePath() {
 })(jQuery);
 'use strict';
 
-function convertPostDate(date, format) {
-  var dateString = new Date(date * 1e3);
-  var dd = dateString.getDate();
-  var mm = dateString.getMonth() + 1; //January is 0!
-  var yyyy = dateString.getFullYear();
-
-  if (format === 'dd/mm/yyyy') {
-    if (dd < 10) {
-      dd = '0' + dd;
-    }
-
-    if (mm < 10) {
-      mm = '0' + mm;
-    }
-  }
-
-  dateString = dd + '/' + mm + '/' + yyyy;
-
-  return dateString;
-}
-
-function convertEventDate(date) {
-  var myDate = moment(date, 'YYYY-M-DD HH:mm:ss');
-  return myDate.format('MMMM D, YYYY - hh:mm');
-}
-
-function dateDiff(date) {
-  return moment().diff(date, 'days');
-}
-"use strict";
-
-var uniqueRandoms = [];
-var numRandoms = 50;
-
-function makeUniqueRandom() {
-  // refill the array if needed
-  if (!uniqueRandoms.length) {
-    for (var i = 0; i < numRandoms; i++) {
-      uniqueRandoms.push(i);
-    }
-  }
-  var index = Math.floor(Math.random() * uniqueRandoms.length);
-  var val = uniqueRandoms[index];
-
-  // now remove that value from the array
-  uniqueRandoms.splice(index, 1);
-
-  return val;
-}
-'use strict';
-
-function smoothScroll() {
-  $('a[href*="#"]:not([href="#"])').click(function () {
-    if (location.pathname.replace(/^\//, '') == this.pathname.replace(/^\//, '') && location.hostname == this.hostname) {
-      var target = $(this.hash);
-      target = target.length ? target : $('[name=' + this.hash.slice(1) + ']');
-      if (target.length) {
-        $('html, body').animate({
-          scrollTop: target.offset().top
-        }, 500);
-        return false;
-      }
-    }
-  });
-}
-'use strict';
-
-function getAuthors(data) {
-  var authorString = '';
-  if (data[0]) {
-    data.forEach(function (author, index) {
-      if (index === data.length - 1) {
-        authorString += '' + author.label;
-      } else {
-        authorString += author.label + ', ';
-      }
-    });
-  }
-  return authorString;
-}
-
-function stripEmptyStrings() {
-  $('p').each(function () {
-    var $this = $(this);
-    if ($this.html().replace(/\s|&nbsp;/g, '').length == 0) $this.remove();
-  });
-}
-'use strict';
-
-function addDots(string, limit) {
-  var dots = '...';
-  if (string.length > limit) {
-    string = string.substring(0, limit) + dots;
-  }
-
-  return string;
-}
-'use strict';
-
 function aboutMenu() {
   (function ($) {
 
@@ -556,19 +457,10 @@ function pushDefaultModal(id, query, countryData, dataLabel, buttonText, buttonL
         }
       });
     }
-
-    if (dataLabel === 'starred-tab') {
-      var html = '\n        <div class="modal-header">\n          <div class="header-info">\n            <h3 class="text -module-title">' + countryData.data[0].label + '</h3>\n            <p class="text -meta">Member since ' + moment.unix(countryData.data[0].memberSince).format('YYYY') + ', Action plan ' + countryData.data[0].action_plan_count + '</p>\n          </div>\n          <div class="c-data-number">\n            <h3 class="text -number">' + data.count + '</h3>\n            <p class="text -small-bold">' + dataLabel + '</p>\n          </div>\n        </div>\n        <div class="content-wrapper -scroll ' + (modalType === 'slider' ? 'stories-slider' : '') + '">\n          ' + dataInfo + '\n        </div>\n        <div class="button-container -fixed">\n          <a href="/' + buttonLink + '" class="c-button -tall -green-back -box">' + buttonText + '</a>\n          <a href="' + countryData.data[0].alias + '" class="c-button -tall -green-back -box">VIEW COUNTRY</a>\n        </div>\n      ';
-      setDataToModal(id, html);
-      removeLoader('body', null, true);
-    } else {
-      var _html = '\n        <div class="modal-header">\n          <div class="header-info">\n            <h3 class="text -module-title">' + countryData[0].label + '</h3>\n            <p class="text -meta">Member since ' + moment.unix(countryData[0].memberSince).format('YYYY') + ', Action plan ' + countryData[0].action_plan_count + '</p>\n          </div>\n          <div class="c-data-number">\n            <h3 class="text -number">' + data.count + '</h3>\n            <p class="text -small-bold">' + dataLabel + '</p>\n          </div>\n        </div>\n        <div class="content-wrapper -scroll ' + (modalType === 'slider' ? 'stories-slider' : '') + '">\n          ' + dataInfo + '\n        </div>\n        <div class="button-container -fixed">\n          <a href="/' + buttonLink + '" class="c-button -tall -green-back -box">' + buttonText + '</a>\n          <a href="' + countryData[0].alias + '" class="c-button -tall -green-back -box">VIEW COUNTRY</a>\n        </div>\n      ';
-      setDataToModal(id, _html);
-    }
+    var html = '\n      <div class="modal-header">\n        <div class="header-info">\n          <h3 class="text -module-title">' + countryData[0].label + '</h3>\n          <p class="text -meta">Member since ' + moment.unix(countryData[0].memberSince).format('YYYY') + ', Action plans ' + countryData[0].action_plan_count + '</p>\n        </div>\n        <div class="c-data-number">\n          <h3 class="text -number">' + data.count + '</h3>\n          <p class="text -small-bold">' + dataLabel + '</p>\n        </div>\n      </div>\n      <div class="content-wrapper -scroll ' + (modalType === 'slider' ? 'stories-slider' : '') + '">\n        ' + dataInfo + '\n      </div>\n      <div class="button-container -fixed">\n        <a href="/' + buttonLink + '" class="c-button -tall -green-back -box">' + buttonText + '</a>\n        <a href="' + countryData[0].alias + '" class="c-button -tall -green-back -box">VIEW COUNTRY</a>\n      </div>\n    ';
+    setDataToModal(id, html);
   });
 }
-
-function pushTabStarredModal(id, dataStarred) {}
 
 function pushSmallModal(id, query, countryData, firstDataLabel, secondDataLabel, buttonText, buttonLink) {
 
@@ -580,41 +472,36 @@ function pushSmallModal(id, query, countryData, firstDataLabel, secondDataLabel,
 
 function setMapModalContent(id, type, countryId, countriesData) {
   var themeCommitmentAlias = 'theme';
-  if (type === 'starred-tab') {
-    pushTabStarredModal(id, countryId);
-    pushDefaultModal(id, 'starredcommitments?filter[country]=' + countryId, countriesData, 'starred-tab', 'latest stories', '/stories', 'list', '');
-  } else {
-    var countryData = countriesData.filter(function (country) {
-      return country.id == countryId;
-    });
-    switch (type) {
-      case 'actionPlan':
-        pushSmallModal(id, 'irm_commitments?filter[country]=' + countryId, countryData, 'commitments', 'themes covered', 'latest stories', 'stories', '');
-        break;
-      case 'starred':
-        pushDefaultModal(id, 'starredcommitments?filter[country]=' + countryId, countryData, 'starred commitments', 'latest stories', 'stories', 'list', '');
-        break;
-      case 'event':
-        pushDefaultModal(id, 'events?filter[country]=' + countryId, countryData, 'events', 'go to events', 'news-and-events', 'list', '');
-        break;
-      case 'commitment':
-        if ($('.select-legend-dropdown').find(':selected').data('value')) {
-          themeCommitmentAlias = $('.select-legend-dropdown').find(':selected').data('value');
-        }
-        var currentFilter = $('.select-legend-dropdown').val() ? '&filter[theme_id]=' + $('.select-legend-dropdown').val() : '';
-        pushDefaultModal(id, 'current_commitment?filter[country]=' + countryId + currentFilter, countryData, 'current commitments', 'explore this theme', '' + themeCommitmentAlias, 'list', '');
-        break;
-      case 'people':
-        $.getJSON('apiJSON/people?filter[country_poc]=' + countryId, function (poc) {
-          pushDefaultModal(id, 'people?filter[country]=' + countryId, countryData, 'people involved', 'latest stories', 'stories', 'grid', poc);
-        });
-        break;
-      case 'stories':
-        pushDefaultModal(id, 'stories?filter[country]=' + countryId + '&sort=-created', countryData, 'stories', 'latest stories', 'stories', 'slider', '');
-        break;
-      default:
-        break;
-    }
+  var countryData = countriesData.filter(function (country) {
+    return country.id == countryId;
+  });
+  switch (type) {
+    case 'actionPlan':
+      pushSmallModal(id, 'irm_commitments?filter[country]=' + countryId, countryData, 'commitments', 'themes covered', 'latest stories', 'stories', '');
+      break;
+    case 'starred':
+      pushDefaultModal(id, 'starredcommitments?filter[country]=' + countryId, countryData, 'starred commitments', 'latest stories', 'stories', 'list', '');
+      break;
+    case 'event':
+      pushDefaultModal(id, 'events?filter[country]=' + countryId, countryData, 'events', 'go to events', 'news-and-events', 'list', '');
+      break;
+    case 'commitment':
+      if ($('.select-legend-dropdown').find(':selected').data('value')) {
+        themeCommitmentAlias = $('.select-legend-dropdown').find(':selected').data('value');
+      }
+      var currentFilter = $('.select-legend-dropdown').val() ? '&filter[theme_id]=' + $('.select-legend-dropdown').val() : '';
+      pushDefaultModal(id, 'current_commitment?filter[country]=' + countryId + currentFilter, countryData, 'current commitments', 'explore this theme', '' + themeCommitmentAlias, 'list', '');
+      break;
+    case 'people':
+      $.getJSON('apiJSON/people?filter[country_poc]=' + countryId, function (poc) {
+        pushDefaultModal(id, 'people?filter[country]=' + countryId, countryData, 'people involved', 'latest stories', 'stories', 'grid', poc);
+      });
+      break;
+    case 'stories':
+      pushDefaultModal(id, 'stories?filter[country]=' + countryId + '&sort=-created', countryData, 'stories', 'latest stories', 'stories', 'slider', '');
+      break;
+    default:
+      break;
   }
 }
 'use strict';
@@ -1016,6 +903,105 @@ function twitterLink() {
     var idStatus = $('.value-status').text();
     $('.link-twitter').attr('href', idStatus);
   })(jQuery);
+}
+'use strict';
+
+function convertPostDate(date, format) {
+  var dateString = new Date(date * 1e3);
+  var dd = dateString.getDate();
+  var mm = dateString.getMonth() + 1; //January is 0!
+  var yyyy = dateString.getFullYear();
+
+  if (format === 'dd/mm/yyyy') {
+    if (dd < 10) {
+      dd = '0' + dd;
+    }
+
+    if (mm < 10) {
+      mm = '0' + mm;
+    }
+  }
+
+  dateString = dd + '/' + mm + '/' + yyyy;
+
+  return dateString;
+}
+
+function convertEventDate(date) {
+  var myDate = moment(date, 'YYYY-M-DD HH:mm:ss');
+  return myDate.format('MMMM D, YYYY - hh:mm');
+}
+
+function dateDiff(date) {
+  return moment().diff(date, 'days');
+}
+"use strict";
+
+var uniqueRandoms = [];
+var numRandoms = 50;
+
+function makeUniqueRandom() {
+  // refill the array if needed
+  if (!uniqueRandoms.length) {
+    for (var i = 0; i < numRandoms; i++) {
+      uniqueRandoms.push(i);
+    }
+  }
+  var index = Math.floor(Math.random() * uniqueRandoms.length);
+  var val = uniqueRandoms[index];
+
+  // now remove that value from the array
+  uniqueRandoms.splice(index, 1);
+
+  return val;
+}
+'use strict';
+
+function smoothScroll() {
+  $('a[href*="#"]:not([href="#"])').click(function () {
+    if (location.pathname.replace(/^\//, '') == this.pathname.replace(/^\//, '') && location.hostname == this.hostname) {
+      var target = $(this.hash);
+      target = target.length ? target : $('[name=' + this.hash.slice(1) + ']');
+      if (target.length) {
+        $('html, body').animate({
+          scrollTop: target.offset().top
+        }, 500);
+        return false;
+      }
+    }
+  });
+}
+'use strict';
+
+function getAuthors(data) {
+  var authorString = '';
+  if (data[0]) {
+    data.forEach(function (author, index) {
+      if (index === data.length - 1) {
+        authorString += '' + author.label;
+      } else {
+        authorString += author.label + ', ';
+      }
+    });
+  }
+  return authorString;
+}
+
+function stripEmptyStrings() {
+  $('p').each(function () {
+    var $this = $(this);
+    if ($this.html().replace(/\s|&nbsp;/g, '').length == 0) $this.remove();
+  });
+}
+'use strict';
+
+function addDots(string, limit) {
+  var dots = '...';
+  if (string.length > limit) {
+    string = string.substring(0, limit) + dots;
+  }
+
+  return string;
 }
 'use strict';
 
@@ -1715,13 +1701,10 @@ function hideOnClickPagination() {
   $('.c-pagination-click').addClass('-hidden');
 }
 
-function initModalStarred() {
+function initModalStarred(countriesData) {
   $('.show-modal-starred').click(function () {
     var country = $(this).data('value');
-    $.getJSON('/apiJSON/countries?filter[id]=' + country, function (countriesData) {
-      showLoader('body');
-      setMapModalContent('mapModal', 'starred-tab', country, countriesData);
-    });
+    setMapModalContent('mapModal', 'starred', country, countriesData);
   });
 }
 
@@ -1791,7 +1774,7 @@ function showCountriesData(countriesData, activeTab, container, countryId) {
     showOnClickPagination();
   }
   removeLoader(container, null, true);
-  initModalStarred();
+  initModalStarred(countriesData);
 }
 
 function initCountryTabs(onChangeCountryTab) {
