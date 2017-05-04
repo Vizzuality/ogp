@@ -17,7 +17,7 @@
 
   &.-tweet {
     padding-top: 40px;
-
+    
     .field-content {
       font-family: $font-family-1;
       font-size: $font-size-medium;
@@ -29,13 +29,13 @@
       }
     }
 
-    .views-field-created-time {
+    .views-field-field-tweet-creation-date > div {
       span {
         font-size: $font-size-xxsmall;
       }
     }
 
-    .views-field-twitter-id {
+    .views-field-field-link-to-tweet {
       display: none;
     }
 
