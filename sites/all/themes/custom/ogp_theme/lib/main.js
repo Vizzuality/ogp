@@ -23,15 +23,16 @@ function getAbsolutePath() {
       // listener for anchor smooth scrolling
       smoothScroll();
 
-      //init trasnifex
+      // General
+      twitterLink();
+
+      //init transifex
       window.liveSettings.picker = '#transifexSelector';
+
 
       /////////////////
       // Routing action
       /////////////////
-
-      // General
-      twitterLink();
 
       // home page
       if ($(context).find('#homePage').length !== 0) {

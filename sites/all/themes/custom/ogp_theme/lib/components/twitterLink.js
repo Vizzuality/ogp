@@ -1,6 +1,6 @@
 function twitterLink() {
   (function ($) {
     const idStatus = $('.value-status').text();
-    $('.link-twitter').attr('href', `https://twitter.com/opengovpart/status/${idStatus}`);
+    $('.link-twitter').attr('href', idStatus);
   })(jQuery);
 }
