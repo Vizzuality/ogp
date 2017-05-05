@@ -68,9 +68,12 @@ function buildSubscribeModal() {
       </div>
       <input type="submit" name="subscribe" id="mc-embedded-subscribe" class="c-button -tall -green-back -white" value="subscribe">
     </form>
-    <div class="content-footer">
-    <a href="https://dgroups.org/hivos/ogp/login" rel="noreferrer noopener" target="_blank">Join the OGP Civil Society Mailing List</a>
-    </div>
+    <a href="https://dgroups.org/hivos/ogp/login" rel="noreferrer noopener" target="_blank">
+      <div class="content-footer">
+        <span class="text -newsletter-selector">Join the OGP Civil Society Mailing List</span>
+        <svg class="icon -blue -medium arrow"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-arrow"></use></svg>
+      </div>
+    </a>
   `;
   initModal('subscribeModal', subscribeModalTemplate, '-subscribe');
 }

@@ -79,9 +79,11 @@
       justify-content: center;
       margin-top: 40px;
 
-      > a {
-        color: $color-5;
+      .icon {
+        margin-left: 10px;
+      }
 
+      .-newsletter-selector {
         &:hover {
           text-decoration: underline;
         }

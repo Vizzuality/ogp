@@ -410,7 +410,7 @@ function onChangeNewsletterListener() {
 }
 
 function buildSubscribeModal() {
-  var subscribeModalTemplate = '\n    <form class="c-form validate" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" action="http://opengovpartnership.us3.list-manage.com/subscribe/post?u=b25f647af089f5f52485a663d&id=874e29c81c" method="POST">\n      <div class="content-wrapper">\n        <h3 class="text -module-title with-padding">Our Newsletters</h3>\n        <label class="text -small-bold -blue" for="email">Email</label>\n        <input type="email" required="required" placeholder="Your email address" id="mce-EMAIL" name="EMAIL">\n        <label class="text -small-bold -blue">Subscribe to</label>\n        <div class="selector-boxes">\n          <div class="text newsletter-selector -selected -interactive" data-option="874e29c81c">OGP Newsletter</div>\n          <div class="text newsletter-selector -interactive" data-option="20323ef712">OGP Gazette</div>\n          <div class="text newsletter-selector -interactive" data-option="ec2455b5b5">Bolet\xEDn de OGP</div>\n          <div class="text newsletter-selector -interactive" data-option="add766fb76">OGP in the News</div>\n        </div>\n      </div>\n      <input type="submit" name="subscribe" id="mc-embedded-subscribe" class="c-button -tall -green-back -white" value="subscribe">\n    </form>\n    <div class="content-footer">\n    <a href="https://dgroups.org/hivos/ogp/login" rel="noreferrer noopener" target="_blank">Join the OGP Civil Society Mailing List</a>\n    </div>\n  ';
+  var subscribeModalTemplate = '\n    <form class="c-form validate" id="mc-embedded-subscribe-form" name="mc-embedded-subscribe-form" action="http://opengovpartnership.us3.list-manage.com/subscribe/post?u=b25f647af089f5f52485a663d&id=874e29c81c" method="POST">\n      <div class="content-wrapper">\n        <h3 class="text -module-title with-padding">Our Newsletters</h3>\n        <label class="text -small-bold -blue" for="email">Email</label>\n        <input type="email" required="required" placeholder="Your email address" id="mce-EMAIL" name="EMAIL">\n        <label class="text -small-bold -blue">Subscribe to</label>\n        <div class="selector-boxes">\n          <div class="text newsletter-selector -selected -interactive" data-option="874e29c81c">OGP Newsletter</div>\n          <div class="text newsletter-selector -interactive" data-option="20323ef712">OGP Gazette</div>\n          <div class="text newsletter-selector -interactive" data-option="ec2455b5b5">Bolet\xEDn de OGP</div>\n          <div class="text newsletter-selector -interactive" data-option="add766fb76">OGP in the News</div>\n        </div>\n      </div>\n      <input type="submit" name="subscribe" id="mc-embedded-subscribe" class="c-button -tall -green-back -white" value="subscribe">\n    </form>\n    <a href="https://dgroups.org/hivos/ogp/login" rel="noreferrer noopener" target="_blank">\n      <div class="content-footer">\n        <span class="text -newsletter-selector">Join the OGP Civil Society Mailing List</span>\n        <svg class="icon -blue -medium arrow"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-arrow"></use></svg>\n      </div>\n    </a>\n  ';
   initModal('subscribeModal', subscribeModalTemplate, '-subscribe');
 }
 
@@ -2494,6 +2494,57 @@ function showPageList() {
 }
 'use strict';
 
+function peopleInvolved(id) {
+  (function ($) {
+    function getPeopleInvolvedStories(idPeople) {
+      var content = '';
+      $.getJSON('/apiJSON/stories?filter[author]=' + idPeople, function (data) {
+        showLoader('.container-content-user');
+        if (data.count !== 0) {
+          data.data.forEach(function (data) {
+            content += '<div class="small-12 column  medium-4 blogs-detail">\n                      <a href="/' + data.alias + '"><div class="contain-text">\n                        <span class="text -white -title-x-small">' + data.label + '</span>\n                        <span class="text -white">' + moment.unix(parseInt(data.created)).format('D MMMM YYYY') + '</span>\n                      </div></a>\n                    </div>';
+          });
+          removeLoader('.container-content-user');
+          $('.containter-people-detail').append(content);
+        } else {
+          removeLoader('.container-content-user');
+          $('.containter-people-detail').append('<div class="small-12 column"><span class="text -white -small-bold">No results found</span></div>');
+        }
+      });
+    }
+
+    function getPeopleInvolvedNews(idPeople) {
+      var content = '';
+      $.getJSON('/apiJSON/news?filter[author]=' + idPeople, function (data) {
+        showLoader('.container-content-user-news');
+        if (data.count !== 0) {
+          data.data.forEach(function (data) {
+            content += '<div class="small-12 column  medium-4 news-detail">\n                      <a href="/' + data.alias + '"><div class="contain-text">\n                        <span class="text -white -title-x-small">' + data.label + '</span>\n                        <span class="text -white">' + moment.unix(parseInt(data.created)).format('D MMMM YYYY') + '</span>\n                      </div></a>\n                    </div>';
+          });
+          removeLoader('.container-content-user-news');
+          $('.containter-people-detail-news').append(content);
+        } else {
+          removeLoader('.container-content-user-news');
+          $('.containter-people-detail-news').append('<div class="small-12 column"><span class="text -white -small-bold">No results found</span></div>');
+        }
+      });
+    }
+
+    function getPicture(idPeople) {
+      $.getJSON('/apiJSON/people/' + idPeople + '?fields=image', function (data) {
+        showLoader('.image-profile');
+        $('.image-profile').css('background-image', 'url(' + data.data[0].image + ')');
+        removeLoader('.image-profile');
+      });
+    }
+
+    getPeopleInvolvedStories(id);
+    getPeopleInvolvedNews(id);
+    getPicture(id);
+  })(jQuery);
+}
+'use strict';
+
 function showGroupResourcesDetail(id) {
   (function ($) {
 
@@ -3080,57 +3131,6 @@ function showWorkingGroupDetail(id) {
       }
       removeLoader('.working-group-content', null, true);
     });
-  })(jQuery);
-}
-'use strict';
-
-function peopleInvolved(id) {
-  (function ($) {
-    function getPeopleInvolvedStories(idPeople) {
-      var content = '';
-      $.getJSON('/apiJSON/stories?filter[author]=' + idPeople, function (data) {
-        showLoader('.container-content-user');
-        if (data.count !== 0) {
-          data.data.forEach(function (data) {
-            content += '<div class="small-12 column  medium-4 blogs-detail">\n                      <a href="/' + data.alias + '"><div class="contain-text">\n                        <span class="text -white -title-x-small">' + data.label + '</span>\n                        <span class="text -white">' + moment.unix(parseInt(data.created)).format('D MMMM YYYY') + '</span>\n                      </div></a>\n                    </div>';
-          });
-          removeLoader('.container-content-user');
-          $('.containter-people-detail').append(content);
-        } else {
-          removeLoader('.container-content-user');
-          $('.containter-people-detail').append('<div class="small-12 column"><span class="text -white -small-bold">No results found</span></div>');
-        }
-      });
-    }
-
-    function getPeopleInvolvedNews(idPeople) {
-      var content = '';
-      $.getJSON('/apiJSON/news?filter[author]=' + idPeople, function (data) {
-        showLoader('.container-content-user-news');
-        if (data.count !== 0) {
-          data.data.forEach(function (data) {
-            content += '<div class="small-12 column  medium-4 news-detail">\n                      <a href="/' + data.alias + '"><div class="contain-text">\n                        <span class="text -white -title-x-small">' + data.label + '</span>\n                        <span class="text -white">' + moment.unix(parseInt(data.created)).format('D MMMM YYYY') + '</span>\n                      </div></a>\n                    </div>';
-          });
-          removeLoader('.container-content-user-news');
-          $('.containter-people-detail-news').append(content);
-        } else {
-          removeLoader('.container-content-user-news');
-          $('.containter-people-detail-news').append('<div class="small-12 column"><span class="text -white -small-bold">No results found</span></div>');
-        }
-      });
-    }
-
-    function getPicture(idPeople) {
-      $.getJSON('/apiJSON/people/' + idPeople + '?fields=image', function (data) {
-        showLoader('.image-profile');
-        $('.image-profile').css('background-image', 'url(' + data.data[0].image + ')');
-        removeLoader('.image-profile');
-      });
-    }
-
-    getPeopleInvolvedStories(id);
-    getPeopleInvolvedNews(id);
-    getPicture(id);
   })(jQuery);
 }
 //# sourceMappingURL=bundle.js.map
