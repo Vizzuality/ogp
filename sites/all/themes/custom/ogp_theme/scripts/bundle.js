@@ -226,105 +226,6 @@ function getAbsolutePath() {
 })(jQuery);
 'use strict';
 
-function convertPostDate(date, format) {
-  var dateString = new Date(date * 1e3);
-  var dd = dateString.getDate();
-  var mm = dateString.getMonth() + 1; //January is 0!
-  var yyyy = dateString.getFullYear();
-
-  if (format === 'dd/mm/yyyy') {
-    if (dd < 10) {
-      dd = '0' + dd;
-    }
-
-    if (mm < 10) {
-      mm = '0' + mm;
-    }
-  }
-
-  dateString = dd + '/' + mm + '/' + yyyy;
-
-  return dateString;
-}
-
-function convertEventDate(date) {
-  var myDate = moment(date, 'YYYY-M-DD HH:mm:ss');
-  return myDate.format('MMMM D, YYYY - hh:mm');
-}
-
-function dateDiff(date) {
-  return moment().diff(date, 'days');
-}
-"use strict";
-
-var uniqueRandoms = [];
-var numRandoms = 50;
-
-function makeUniqueRandom() {
-  // refill the array if needed
-  if (!uniqueRandoms.length) {
-    for (var i = 0; i < numRandoms; i++) {
-      uniqueRandoms.push(i);
-    }
-  }
-  var index = Math.floor(Math.random() * uniqueRandoms.length);
-  var val = uniqueRandoms[index];
-
-  // now remove that value from the array
-  uniqueRandoms.splice(index, 1);
-
-  return val;
-}
-'use strict';
-
-function smoothScroll() {
-  $('a[href*="#"]:not([href="#"])').click(function () {
-    if (location.pathname.replace(/^\//, '') == this.pathname.replace(/^\//, '') && location.hostname == this.hostname) {
-      var target = $(this.hash);
-      target = target.length ? target : $('[name=' + this.hash.slice(1) + ']');
-      if (target.length) {
-        $('html, body').animate({
-          scrollTop: target.offset().top
-        }, 500);
-        return false;
-      }
-    }
-  });
-}
-'use strict';
-
-function getAuthors(data) {
-  var authorString = '';
-  if (data[0]) {
-    data.forEach(function (author, index) {
-      if (index === data.length - 1) {
-        authorString += '' + author.label;
-      } else {
-        authorString += author.label + ', ';
-      }
-    });
-  }
-  return authorString;
-}
-
-function stripEmptyStrings() {
-  $('p').each(function () {
-    var $this = $(this);
-    if ($this.html().replace(/\s|&nbsp;/g, '').length == 0) $this.remove();
-  });
-}
-'use strict';
-
-function addDots(string, limit) {
-  var dots = '...';
-  if (string.length > limit) {
-    string = string.substring(0, limit) + dots;
-  }
-
-  return string;
-}
-'use strict';
-
 function aboutMenu() {
   (function ($) {
 
@@ -881,11 +782,11 @@ function appendSmallTiles(data, topContainer, gridNum, customClass) {
 function appendTilesIRM(countries, topContainer) {
   var html = '';
   countries.forEach(function (country) {
-    html += '\n      <div class="column small-12 medium-6">\n        <div class="c-country-tile" id="country-report-' + country.id + '">\n          <a class="text -title-x-small" href="' + country.alias + '">' + country.label + '<svg class="icon -blue -medium arrow"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-arrow"></use></svg></a>\n          <div class="row data-tiles">\n    ';
+    html += '\n      <div class="column small-12 medium-6">\n        <div class="c-country-tile" id="country-report-' + country.id + '">\n          <a class="text -title-x-small" href="/' + country.alias + '">' + country.label + '<svg class="icon -blue -medium arrow"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-arrow"></use></svg></a>\n          <div class="row data-tiles">\n    ';
     var reportsTrimmed = country.irm_reports.splice(0, 2);
     reportsTrimmed.forEach(function (report) {
       if (report.type) {
-        html += '\n        <div class="column small-12 large-6 c-tile -short">\n          <a href="' + report.alias + '" class="tile">\n            <span class="text -tile -white">' + report.label + '</span>\n          </a>\n        </div>\n        ';
+        html += '\n        <div class="column small-12 large-6 c-tile -short">\n          <a href="/' + report.alias + '" class="tile">\n            <span class="text -tile -white">' + report.label + '</span>\n          </a>\n        </div>\n        ';
       }
     });
     html += '</div></div></div>';
@@ -1002,6 +903,105 @@ function twitterLink() {
     var idStatus = $('.value-status').text();
     $('.link-twitter').attr('href', idStatus);
   })(jQuery);
+}
+'use strict';
+
+function convertPostDate(date, format) {
+  var dateString = new Date(date * 1e3);
+  var dd = dateString.getDate();
+  var mm = dateString.getMonth() + 1; //January is 0!
+  var yyyy = dateString.getFullYear();
+
+  if (format === 'dd/mm/yyyy') {
+    if (dd < 10) {
+      dd = '0' + dd;
+    }
+
+    if (mm < 10) {
+      mm = '0' + mm;
+    }
+  }
+
+  dateString = dd + '/' + mm + '/' + yyyy;
+
+  return dateString;
+}
+
+function convertEventDate(date) {
+  var myDate = moment(date, 'YYYY-M-DD HH:mm:ss');
+  return myDate.format('MMMM D, YYYY - hh:mm');
+}
+
+function dateDiff(date) {
+  return moment().diff(date, 'days');
+}
+"use strict";
+
+var uniqueRandoms = [];
+var numRandoms = 50;
+
+function makeUniqueRandom() {
+  // refill the array if needed
+  if (!uniqueRandoms.length) {
+    for (var i = 0; i < numRandoms; i++) {
+      uniqueRandoms.push(i);
+    }
+  }
+  var index = Math.floor(Math.random() * uniqueRandoms.length);
+  var val = uniqueRandoms[index];
+
+  // now remove that value from the array
+  uniqueRandoms.splice(index, 1);
+
+  return val;
+}
+'use strict';
+
+function smoothScroll() {
+  $('a[href*="#"]:not([href="#"])').click(function () {
+    if (location.pathname.replace(/^\//, '') == this.pathname.replace(/^\//, '') && location.hostname == this.hostname) {
+      var target = $(this.hash);
+      target = target.length ? target : $('[name=' + this.hash.slice(1) + ']');
+      if (target.length) {
+        $('html, body').animate({
+          scrollTop: target.offset().top
+        }, 500);
+        return false;
+      }
+    }
+  });
+}
+'use strict';
+
+function getAuthors(data) {
+  var authorString = '';
+  if (data[0]) {
+    data.forEach(function (author, index) {
+      if (index === data.length - 1) {
+        authorString += '' + author.label;
+      } else {
+        authorString += author.label + ', ';
+      }
+    });
+  }
+  return authorString;
+}
+
+function stripEmptyStrings() {
+  $('p').each(function () {
+    var $this = $(this);
+    if ($this.html().replace(/\s|&nbsp;/g, '').length == 0) $this.remove();
+  });
+}
+'use strict';
+
+function addDots(string, limit) {
+  var dots = '...';
+  if (string.length > limit) {
+    string = string.substring(0, limit) + dots;
+  }
+
+  return string;
 }
 'use strict';
 
@@ -2619,22 +2619,6 @@ function showResourcesDetail(id) {
 }
 'use strict';
 
-function featuresResultPage() {
-  (function ($) {
-
-    $('#value-search').html('Search for: ' + $('#edit-keys').val());
-  })(jQuery);
-}
-'use strict';
-
-function searchPage() {
-  (function ($) {
-
-    $('.search-form input').attr('placeholder', 'Type what you are searching for...');
-  })(jQuery);
-}
-'use strict';
-
 function showStoryDetail(id) {
   (function ($) {
 
@@ -2884,10 +2868,21 @@ function showStoriesSubmitPage(id) {
     });
   })(jQuery);
 }
-"use strict";
+'use strict';
 
-function tagsPage() {
-  (function ($) {})(jQuery);
+function featuresResultPage() {
+  (function ($) {
+
+    $('#value-search').html('Search for: ' + $('#edit-keys').val());
+  })(jQuery);
+}
+'use strict';
+
+function searchPage() {
+  (function ($) {
+
+    $('.search-form input').attr('placeholder', 'Type what you are searching for...');
+  })(jQuery);
 }
 'use strict';
 
@@ -3045,6 +3040,11 @@ function showThemesPage() {
     setTabListeners(onChangeTab);
     setSearchListeners(searchEl, searchText);
   })(jQuery);
+}
+"use strict";
+
+function tagsPage() {
+  (function ($) {})(jQuery);
 }
 'use strict';
 
