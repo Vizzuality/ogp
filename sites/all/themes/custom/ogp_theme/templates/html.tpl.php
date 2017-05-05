@@ -64,7 +64,7 @@
   <script type="text/javascript" src="//cdn.transifex.com/live.js"></script>
   <script type="text/javascript">
     window.liveSettings = {
-      api_key:"5a2bcd52efad4b169c9543330d3187a4",
+      api_key:"2e24be1dcf164e729229ca078bdcfae7",
       staging: true,
       picker: "#transifexSelector",
       dynamic: true

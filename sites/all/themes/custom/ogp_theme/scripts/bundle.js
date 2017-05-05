@@ -12,7 +12,7 @@ function getAbsolutePath() {
       var page = settings.block_refresh.args[0];
 
       window.liveSettings = {
-        api_key: "5a2bcd52efad4b169c9543330d3187a4",
+        api_key: "2e24be1dcf164e729229ca078bdcfae7",
         picker: "#transifexSelector"
       };
 
@@ -224,105 +224,6 @@ function getAbsolutePath() {
     }
   };
 })(jQuery);
-'use strict';
-
-function convertPostDate(date, format) {
-  var dateString = new Date(date * 1e3);
-  var dd = dateString.getDate();
-  var mm = dateString.getMonth() + 1; //January is 0!
-  var yyyy = dateString.getFullYear();
-
-  if (format === 'dd/mm/yyyy') {
-    if (dd < 10) {
-      dd = '0' + dd;
-    }
-
-    if (mm < 10) {
-      mm = '0' + mm;
-    }
-  }
-
-  dateString = dd + '/' + mm + '/' + yyyy;
-
-  return dateString;
-}
-
-function convertEventDate(date) {
-  var myDate = moment(date, 'YYYY-M-DD HH:mm:ss');
-  return myDate.format('MMMM D, YYYY - hh:mm');
-}
-
-function dateDiff(date) {
-  return moment().diff(date, 'days');
-}
-"use strict";
-
-var uniqueRandoms = [];
-var numRandoms = 50;
-
-function makeUniqueRandom() {
-  // refill the array if needed
-  if (!uniqueRandoms.length) {
-    for (var i = 0; i < numRandoms; i++) {
-      uniqueRandoms.push(i);
-    }
-  }
-  var index = Math.floor(Math.random() * uniqueRandoms.length);
-  var val = uniqueRandoms[index];
-
-  // now remove that value from the array
-  uniqueRandoms.splice(index, 1);
-
-  return val;
-}
-'use strict';
-
-function smoothScroll() {
-  $('a[href*="#"]:not([href="#"])').click(function () {
-    if (location.pathname.replace(/^\//, '') == this.pathname.replace(/^\//, '') && location.hostname == this.hostname) {
-      var target = $(this.hash);
-      target = target.length ? target : $('[name=' + this.hash.slice(1) + ']');
-      if (target.length) {
-        $('html, body').animate({
-          scrollTop: target.offset().top
-        }, 500);
-        return false;
-      }
-    }
-  });
-}
-'use strict';
-
-function getAuthors(data) {
-  var authorString = '';
-  if (data[0]) {
-    data.forEach(function (author, index) {
-      if (index === data.length - 1) {
-        authorString += '' + author.label;
-      } else {
-        authorString += author.label + ', ';
-      }
-    });
-  }
-  return authorString;
-}
-
-function stripEmptyStrings() {
-  $('p').each(function () {
-    var $this = $(this);
-    if ($this.html().replace(/\s|&nbsp;/g, '').length == 0) $this.remove();
-  });
-}
-'use strict';
-
-function addDots(string, limit) {
-  var dots = '...';
-  if (string.length > limit) {
-    string = string.substring(0, limit) + dots;
-  }
-
-  return string;
-}
 'use strict';
 
 function aboutMenu() {
@@ -1016,6 +917,105 @@ function twitterLink() {
     var idStatus = $('.value-status').text();
     $('.link-twitter').attr('href', idStatus);
   })(jQuery);
+}
+'use strict';
+
+function convertPostDate(date, format) {
+  var dateString = new Date(date * 1e3);
+  var dd = dateString.getDate();
+  var mm = dateString.getMonth() + 1; //January is 0!
+  var yyyy = dateString.getFullYear();
+
+  if (format === 'dd/mm/yyyy') {
+    if (dd < 10) {
+      dd = '0' + dd;
+    }
+
+    if (mm < 10) {
+      mm = '0' + mm;
+    }
+  }
+
+  dateString = dd + '/' + mm + '/' + yyyy;
+
+  return dateString;
+}
+
+function convertEventDate(date) {
+  var myDate = moment(date, 'YYYY-M-DD HH:mm:ss');
+  return myDate.format('MMMM D, YYYY - hh:mm');
+}
+
+function dateDiff(date) {
+  return moment().diff(date, 'days');
+}
+"use strict";
+
+var uniqueRandoms = [];
+var numRandoms = 50;
+
+function makeUniqueRandom() {
+  // refill the array if needed
+  if (!uniqueRandoms.length) {
+    for (var i = 0; i < numRandoms; i++) {
+      uniqueRandoms.push(i);
+    }
+  }
+  var index = Math.floor(Math.random() * uniqueRandoms.length);
+  var val = uniqueRandoms[index];
+
+  // now remove that value from the array
+  uniqueRandoms.splice(index, 1);
+
+  return val;
+}
+'use strict';
+
+function smoothScroll() {
+  $('a[href*="#"]:not([href="#"])').click(function () {
+    if (location.pathname.replace(/^\//, '') == this.pathname.replace(/^\//, '') && location.hostname == this.hostname) {
+      var target = $(this.hash);
+      target = target.length ? target : $('[name=' + this.hash.slice(1) + ']');
+      if (target.length) {
+        $('html, body').animate({
+          scrollTop: target.offset().top
+        }, 500);
+        return false;
+      }
+    }
+  });
+}
+'use strict';
+
+function getAuthors(data) {
+  var authorString = '';
+  if (data[0]) {
+    data.forEach(function (author, index) {
+      if (index === data.length - 1) {
+        authorString += '' + author.label;
+      } else {
+        authorString += author.label + ', ';
+      }
+    });
+  }
+  return authorString;
+}
+
+function stripEmptyStrings() {
+  $('p').each(function () {
+    var $this = $(this);
+    if ($this.html().replace(/\s|&nbsp;/g, '').length == 0) $this.remove();
+  });
+}
+'use strict';
+
+function addDots(string, limit) {
+  var dots = '...';
+  if (string.length > limit) {
+    string = string.substring(0, limit) + dots;
+  }
+
+  return string;
 }
 'use strict';
 
@@ -1822,159 +1822,6 @@ function showDocumentResourcePage() {
 }
 'use strict';
 
-function showNewsEventsPage() {
-  (function ($) {
-    // cache
-    var countryFilter = 0;
-    var typeFilter = 0;
-    var page = 1;
-    var totalPages = 0;
-    var totalPagesEvents = 0;
-    var pageEvents = 1;
-
-    //selectors
-    var countrySelector = $('.country-filter');
-    var typeSelector = $('.type-filter');
-    var coverEvents = $('.c-content-banner');
-    var eventsContainer = $('#eventsTiles');
-    var newsContainer = $('#newsTiles');
-
-    // public functions
-    function buildHighlightedEvent(event) {
-      if (event.image) {
-        $('.c-content-banner').css('background-image', 'url(' + event.image + ')');
-      }
-      if (moment() > moment(event.date.value)) {
-        $('.banner-type-date-event').html('Past Event');
-      } else {
-        $('.banner-type-date-event').html('Upcoming Event');
-      }
-      $('.banner-link', coverEvents).attr('href', event.alias);
-      $('.banner-title', coverEvents).html(event.label);
-      $('.banner-date', coverEvents).html(moment(event.date.value).format('MMMM DD, hh:mm a'));
-      $('.c-content-banner').removeClass('-hidden');
-    }
-
-    function setPageCount(val) {
-      $('.page-count').data('value', val);
-    }
-
-    function getCurrentPage() {
-      var pageCount = $('.page-count').data('value');
-      return pageCount;
-    }
-
-    function onClickPagination() {
-      $('.page-count').on('click', function () {
-        setPageCount(getCurrentPage() + 1);
-        pageEvents = getCurrentPage();
-        if (totalPagesEvents > getCurrentPage()) {
-          showLoader('#eventsContainer');
-          showEvents(countryFilter, typeFilter, getCurrentPage());
-        }
-      });
-    }
-
-    function buildSelector(selector, placeholder, endpoint, query) {
-      selector.select2({
-        minimumResultsForSearch: Infinity,
-        containerCssClass: '-green -tall',
-        dropdownCssClass: '-green',
-        placeholder: '' + placeholder
-      });
-      selector.append('<option value="0">' + placeholder + '</option>');
-
-      $.getJSON('/apiJSON/' + endpoint + '?' + query, function (data) {
-        data.data.forEach(function (data) {
-          var option = '<option value="' + data.id + '">' + data.label + '</option>';
-          selector.append(option);
-        });
-
-        selector.on('change', function () {
-          // showLoader('#newsContainer');
-          showLoader('#eventsContainer');
-          countryFilter = countrySelector.val();
-          typeFilter = typeSelector.val();
-          page = 1;
-          // showNews(countryFilter, typeFilter, page);
-          showEvents(countryFilter, typeFilter, page);
-        });
-      });
-    }
-
-    function setPaginationListerners() {
-      countryFilter = countrySelector.val();
-      typeFilter = typeSelector.val();
-      $('.onClickPagination').on('click', function (e) {
-        showLoader('#newsContainer');
-        var pageNum = $(this).data('value');
-        showNews(countryFilter, typeFilter, pageNum);
-      });
-    }
-
-    function showEvents(country, type, page) {
-      var activeCountry = parseInt(country) > 0 ? 'filter[country]=' + country + '&' : '';
-      var activeType = parseInt(type) > 0 ? 'filter[category]=' + type + '&' : '';
-      var activeFilters = '' + activeCountry + activeType + '&page=' + page;
-      $.getJSON('/apiJSON/events?' + activeFilters + '&sort=-date', function (events) {
-        totalPagesEvents = getPageCount(events.count, 4);
-        if (events.data.length > 0) {
-          if (pageEvents === 1) {
-            $.getJSON('/apiJSON/events?sort=-date', function (highlightedEvent) {
-              buildHighlightedEvent(highlightedEvent.data[0]);
-              appendTilesEvent(events.data, eventsContainer);
-              removeLoader('#eventsContainer', null, true);
-            });
-          } else {
-            appendTilesEvent(events.data, eventsContainer);
-            removeLoader('#eventsContainer', null, true);
-          }
-        } else {
-          showNoResults('#eventsContainer', 'No events with these filters', 'tall', 'grey', 'xxlarge', 'blue');
-          removeLoader('#eventsContainer', null, true);
-        }
-      });
-    }
-
-    function showNews(country, type, page) {
-      var activeCountry = parseInt(country) > 0 ? 'filter[country]=' + country + '&' : '';
-      var activeType = parseInt(type) > 0 ? 'filter[category]=' + type + '&' : '';
-      var activeFilters = '' + activeCountry + activeType + '&page=' + page;
-      $.getJSON('/apiJSON/news?' + activeFilters + '&sort=-date&range=4', function (news) {
-        if (news.data.length > 0) {
-          totalPages = getPageCount(news.count, 4);
-          if (page === 1) {
-            $.getJSON('/apiJSON/news?sort=-date&range=4', function (highlightedNews) {
-              buildHighlightedEvent(highlightedNews.data[0]);
-              appendTilesDetailedNews(news.data, newsContainer, 2);
-              initPagination(page, totalPages, 'newsEventsPage');
-              setPaginationListerners();
-              removeLoader('#newsContainer', null, true);
-            });
-          } else {
-            appendTilesDetailedNews(news.data, newsContainer, 2);
-            removeLoader('#newsContainer', null, true);
-            initPagination(page, totalPages, 'newsEventsPage');
-            setPaginationListerners();
-          }
-        } else {
-          showNoResults('#newsTiles', 'No news with these filters', 'tall', 'grey', 'xxlarge', 'blue');
-          $('.c-pagination').html('');
-          removeLoader('#newsContainer', null, true);
-        }
-      });
-    }
-
-    // build page
-    buildSelector(countrySelector, 'All countries', 'countries', 'fields=id,label&sort=label');
-    buildSelector(typeSelector, 'All story types', 'stories_categories', 'fields=id,label&sort=label');
-    showEvents(countryFilter, typeFilter, page);
-    showNews(countryFilter, typeFilter, page);
-    onClickPagination();
-  })(jQuery);
-}
-'use strict';
-
 function showHomePage() {
   (function ($) {
 
@@ -2151,6 +1998,15 @@ function showSliderHomePage() {
 }
 'use strict';
 
+function loginPage() {
+  (function ($) {
+
+    $('#edit-name').attr('placeholder', 'Enter your Open Government Partnership username');
+    $('#edit-pass').attr('placeholder', 'Enter the password that accompanies your username.');
+  })(jQuery);
+}
+'use strict';
+
 function showIrmReports() {
   (function ($) {
 
@@ -2291,11 +2147,155 @@ function showIrmReports() {
 }
 'use strict';
 
-function loginPage() {
+function showNewsEventsPage() {
   (function ($) {
+    // cache
+    var countryFilter = 0;
+    var typeFilter = 0;
+    var page = 1;
+    var totalPages = 0;
+    var totalPagesEvents = 0;
+    var pageEvents = 1;
 
-    $('#edit-name').attr('placeholder', 'Enter your Open Government Partnership username');
-    $('#edit-pass').attr('placeholder', 'Enter the password that accompanies your username.');
+    //selectors
+    var countrySelector = $('.country-filter');
+    var typeSelector = $('.type-filter');
+    var coverEvents = $('.c-content-banner');
+    var eventsContainer = $('#eventsTiles');
+    var newsContainer = $('#newsTiles');
+
+    // public functions
+    function buildHighlightedEvent(event) {
+      if (event.image) {
+        $('.c-content-banner').css('background-image', 'url(' + event.image + ')');
+      }
+      if (moment() > moment(event.date.value)) {
+        $('.banner-type-date-event').html('Past Event');
+      } else {
+        $('.banner-type-date-event').html('Upcoming Event');
+      }
+      $('.banner-link', coverEvents).attr('href', event.alias);
+      $('.banner-title', coverEvents).html(event.label);
+      $('.banner-date', coverEvents).html(moment(event.date.value).format('MMMM DD, hh:mm a'));
+      $('.c-content-banner').removeClass('-hidden');
+    }
+
+    function setPageCount(val) {
+      $('.page-count').data('value', val);
+    }
+
+    function getCurrentPage() {
+      var pageCount = $('.page-count').data('value');
+      return pageCount;
+    }
+
+    function onClickPagination() {
+      $('.page-count').on('click', function () {
+        setPageCount(getCurrentPage() + 1);
+        pageEvents = getCurrentPage();
+        if (totalPagesEvents > getCurrentPage()) {
+          showLoader('#eventsContainer');
+          showEvents(countryFilter, typeFilter, getCurrentPage());
+        }
+      });
+    }
+
+    function buildSelector(selector, placeholder, endpoint, query) {
+      selector.select2({
+        minimumResultsForSearch: Infinity,
+        containerCssClass: '-green -tall',
+        dropdownCssClass: '-green',
+        placeholder: '' + placeholder
+      });
+      selector.append('<option value="0">' + placeholder + '</option>');
+
+      $.getJSON('/apiJSON/' + endpoint + '?' + query, function (data) {
+        data.data.forEach(function (data) {
+          var option = '<option value="' + data.id + '">' + data.label + '</option>';
+          selector.append(option);
+        });
+
+        selector.on('change', function () {
+          // showLoader('#newsContainer');
+          showLoader('#eventsContainer');
+          countryFilter = countrySelector.val();
+          typeFilter = typeSelector.val();
+          page = 1;
+          // showNews(countryFilter, typeFilter, page);
+          showEvents(countryFilter, typeFilter, page);
+        });
+      });
+    }
+
+    function setPaginationListerners() {
+      countryFilter = countrySelector.val();
+      typeFilter = typeSelector.val();
+      $('.onClickPagination').on('click', function (e) {
+        showLoader('#newsContainer');
+        var pageNum = $(this).data('value');
+        showNews(countryFilter, typeFilter, pageNum);
+      });
+    }
+
+    function showEvents(country, type, page) {
+      var activeCountry = parseInt(country) > 0 ? 'filter[country]=' + country + '&' : '';
+      var activeType = parseInt(type) > 0 ? 'filter[category]=' + type + '&' : '';
+      var activeFilters = '' + activeCountry + activeType + '&page=' + page;
+      $.getJSON('/apiJSON/events?' + activeFilters + '&sort=-date', function (events) {
+        totalPagesEvents = getPageCount(events.count, 4);
+        if (events.data.length > 0) {
+          if (pageEvents === 1) {
+            $.getJSON('/apiJSON/events?sort=-date', function (highlightedEvent) {
+              buildHighlightedEvent(highlightedEvent.data[0]);
+              appendTilesEvent(events.data, eventsContainer);
+              removeLoader('#eventsContainer', null, true);
+            });
+          } else {
+            appendTilesEvent(events.data, eventsContainer);
+            removeLoader('#eventsContainer', null, true);
+          }
+        } else {
+          showNoResults('#eventsContainer', 'No events with these filters', 'tall', 'grey', 'xxlarge', 'blue');
+          removeLoader('#eventsContainer', null, true);
+        }
+      });
+    }
+
+    function showNews(country, type, page) {
+      var activeCountry = parseInt(country) > 0 ? 'filter[country]=' + country + '&' : '';
+      var activeType = parseInt(type) > 0 ? 'filter[category]=' + type + '&' : '';
+      var activeFilters = '' + activeCountry + activeType + '&page=' + page;
+      $.getJSON('/apiJSON/news?' + activeFilters + '&sort=-date&range=4', function (news) {
+        if (news.data.length > 0) {
+          totalPages = getPageCount(news.count, 4);
+          if (page === 1) {
+            $.getJSON('/apiJSON/news?sort=-date&range=4', function (highlightedNews) {
+              buildHighlightedEvent(highlightedNews.data[0]);
+              appendTilesDetailedNews(news.data, newsContainer, 2);
+              initPagination(page, totalPages, 'newsEventsPage');
+              setPaginationListerners();
+              removeLoader('#newsContainer', null, true);
+            });
+          } else {
+            appendTilesDetailedNews(news.data, newsContainer, 2);
+            removeLoader('#newsContainer', null, true);
+            initPagination(page, totalPages, 'newsEventsPage');
+            setPaginationListerners();
+          }
+        } else {
+          showNoResults('#newsTiles', 'No news with these filters', 'tall', 'grey', 'xxlarge', 'blue');
+          $('.c-pagination').html('');
+          removeLoader('#newsContainer', null, true);
+        }
+      });
+    }
+
+    // build page
+    buildSelector(countrySelector, 'All countries', 'countries', 'fields=id,label&sort=label');
+    buildSelector(typeSelector, 'All story types', 'stories_categories', 'fields=id,label&sort=label');
+    showEvents(countryFilter, typeFilter, page);
+    showNews(countryFilter, typeFilter, page);
+    onClickPagination();
   })(jQuery);
 }
 'use strict';
