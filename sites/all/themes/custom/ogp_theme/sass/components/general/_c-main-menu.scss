@@ -96,6 +96,7 @@
 
       li {
         padding: 0;
+        width: 100%;
       }
     }
 
@@ -172,8 +173,10 @@
     .txlive-langselector-list {
       margin-top: 33px;
       padding: 0;
+
       li {
         padding: 15px 20px;
+        display: block;
       }
 
       &::before {
