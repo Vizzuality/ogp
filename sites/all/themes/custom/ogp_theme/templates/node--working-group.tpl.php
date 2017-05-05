@@ -5,6 +5,7 @@
 $node = node_load($nid);
 $fields = field_info_instances('node', 'starred_commitments');
 $attachments = field_get_items('node', $node, 'field_attachment');
+$body = field_get_items('node', $node, 'body')[0]['value'];
 ?>
 <div id="workingGroupDetail" class="l-working-group">
 
@@ -30,7 +31,7 @@ $attachments = field_get_items('node', $node, 'field_attachment');
       <div class="tab-content about">
         <h3 class="text -section-title">About</h3>
         <div class="text -body-content">
-          <?php echo $node->body[$node->language][0]['value']; ?>
+          <?php echo $body ?>
         </div>
       </div>
       <?php if ($attachments) { ?>

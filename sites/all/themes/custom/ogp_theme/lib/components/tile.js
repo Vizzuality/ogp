@@ -118,7 +118,7 @@ function appendTilesIRM(countries, topContainer) {
     html += `
       <div class="column small-12 medium-6">
         <div class="c-country-tile" id="country-report-${country.id}">
-          <a class="text -title-x-small" href="${country.alias}">${country.label}<svg class="icon -blue -medium arrow"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-arrow"></use></svg></a>
+          <a class="text -title-x-small" href="/${country.alias}">${country.label}<svg class="icon -blue -medium arrow"><use xmlns:xlink="http://www.w3.org/1999/xlink" xlink:href="#icon-arrow"></use></svg></a>
           <div class="row data-tiles">
     `;
     const reportsTrimmed = country.irm_reports.splice(0,2);
@@ -126,7 +126,7 @@ function appendTilesIRM(countries, topContainer) {
       if (report.type) {
         html += `
         <div class="column small-12 large-6 c-tile -short">
-          <a href="${report.alias}" class="tile">
+          <a href="/${report.alias}" class="tile">
             <span class="text -tile -white">${report.label}</span>
           </a>
         </div>

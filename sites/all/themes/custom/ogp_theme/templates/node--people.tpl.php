@@ -12,7 +12,7 @@ $field_people_pic = field_get_items('node', $node, 'field_profile_picture');
 ?>
 <div id="peopleInvolved" class="l-people-involved -no-bottom l-page -tall">
     <div class="row">
-        <div class="column small-12 medium-12 content-header people-header">
+        <div class="column small-12 content-header people-header">
           <?php if($field_people_pic) { ?>
             <div class="image-profile">
               <div class="c-loader"><div class="loader"></div></div>
@@ -74,7 +74,7 @@ $field_people_pic = field_get_items('node', $node, 'field_profile_picture');
     </div>
 
     <div class="row">
-        <div class="column small-12 medium-12">
+        <div class="column small-12 medium-8 medium-offset-2">
             <div class="text -body-content">
                 <p><?php echo $node->body[$node->language][0]['value']; ?></p>
             </div>
