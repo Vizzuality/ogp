@@ -12,7 +12,7 @@ function getAbsolutePath() {
       const page = settings.block_refresh.args[0];
 
       window.liveSettings={
-        api_key:"5a2bcd52efad4b169c9543330d3187a4",
+        api_key:"2e24be1dcf164e729229ca078bdcfae7",
         picker: "#transifexSelector"
       };
 

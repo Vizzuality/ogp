@@ -12,7 +12,7 @@ function getAbsolutePath() {
       var page = settings.block_refresh.args[0];
 
       window.liveSettings = {
-        api_key: "5a2bcd52efad4b169c9543330d3187a4",
+        api_key: "2e24be1dcf164e729229ca078bdcfae7",
         picker: "#transifexSelector"
       };
 
@@ -2494,57 +2494,6 @@ function showPageList() {
 }
 'use strict';
 
-function peopleInvolved(id) {
-  (function ($) {
-    function getPeopleInvolvedStories(idPeople) {
-      var content = '';
-      $.getJSON('/apiJSON/stories?filter[author]=' + idPeople, function (data) {
-        showLoader('.container-content-user');
-        if (data.count !== 0) {
-          data.data.forEach(function (data) {
-            content += '<div class="small-12 column  medium-4 blogs-detail">\n                      <a href="/' + data.alias + '"><div class="contain-text">\n                        <span class="text -white -title-x-small">' + data.label + '</span>\n                        <span class="text -white">' + moment.unix(parseInt(data.created)).format('D MMMM YYYY') + '</span>\n                      </div></a>\n                    </div>';
-          });
-          removeLoader('.container-content-user');
-          $('.containter-people-detail').append(content);
-        } else {
-          removeLoader('.container-content-user');
-          $('.containter-people-detail').append('<div class="small-12 column"><span class="text -white -small-bold">No results found</span></div>');
-        }
-      });
-    }
-
-    function getPeopleInvolvedNews(idPeople) {
-      var content = '';
-      $.getJSON('/apiJSON/news?filter[author]=' + idPeople, function (data) {
-        showLoader('.container-content-user-news');
-        if (data.count !== 0) {
-          data.data.forEach(function (data) {
-            content += '<div class="small-12 column  medium-4 news-detail">\n                      <a href="/' + data.alias + '"><div class="contain-text">\n                        <span class="text -white -title-x-small">' + data.label + '</span>\n                        <span class="text -white">' + moment.unix(parseInt(data.created)).format('D MMMM YYYY') + '</span>\n                      </div></a>\n                    </div>';
-          });
-          removeLoader('.container-content-user-news');
-          $('.containter-people-detail-news').append(content);
-        } else {
-          removeLoader('.container-content-user-news');
-          $('.containter-people-detail-news').append('<div class="small-12 column"><span class="text -white -small-bold">No results found</span></div>');
-        }
-      });
-    }
-
-    function getPicture(idPeople) {
-      $.getJSON('/apiJSON/people/' + idPeople + '?fields=image', function (data) {
-        showLoader('.image-profile');
-        $('.image-profile').css('background-image', 'url(' + data.data[0].image + ')');
-        removeLoader('.image-profile');
-      });
-    }
-
-    getPeopleInvolvedStories(id);
-    getPeopleInvolvedNews(id);
-    getPicture(id);
-  })(jQuery);
-}
-'use strict';
-
 function showGroupResourcesDetail(id) {
   (function ($) {
 
@@ -2615,6 +2564,22 @@ function showResourcesDetail(id) {
     $.getJSON('/apiJSON/resources?filter[id]=' + id, function (data) {
       buildExploreMoreTiles('resources', 'group_resource', data.data[0].group_resource[0], false, false);
     });
+  })(jQuery);
+}
+'use strict';
+
+function featuresResultPage() {
+  (function ($) {
+
+    $('#value-search').html('Search for: ' + $('#edit-keys').val());
+  })(jQuery);
+}
+'use strict';
+
+function searchPage() {
+  (function ($) {
+
+    $('.search-form input').attr('placeholder', 'Type what you are searching for...');
   })(jQuery);
 }
 'use strict';
@@ -2868,21 +2833,10 @@ function showStoriesSubmitPage(id) {
     });
   })(jQuery);
 }
-'use strict';
+"use strict";
 
-function featuresResultPage() {
-  (function ($) {
-
-    $('#value-search').html('Search for: ' + $('#edit-keys').val());
-  })(jQuery);
-}
-'use strict';
-
-function searchPage() {
-  (function ($) {
-
-    $('.search-form input').attr('placeholder', 'Type what you are searching for...');
-  })(jQuery);
+function tagsPage() {
+  (function ($) {})(jQuery);
 }
 'use strict';
 
@@ -3041,11 +2995,6 @@ function showThemesPage() {
     setSearchListeners(searchEl, searchText);
   })(jQuery);
 }
-"use strict";
-
-function tagsPage() {
-  (function ($) {})(jQuery);
-}
 'use strict';
 
 function showGroupList() {
@@ -3131,6 +3080,57 @@ function showWorkingGroupDetail(id) {
       }
       removeLoader('.working-group-content', null, true);
     });
+  })(jQuery);
+}
+'use strict';
+
+function peopleInvolved(id) {
+  (function ($) {
+    function getPeopleInvolvedStories(idPeople) {
+      var content = '';
+      $.getJSON('/apiJSON/stories?filter[author]=' + idPeople, function (data) {
+        showLoader('.container-content-user');
+        if (data.count !== 0) {
+          data.data.forEach(function (data) {
+            content += '<div class="small-12 column  medium-4 blogs-detail">\n                      <a href="/' + data.alias + '"><div class="contain-text">\n                        <span class="text -white -title-x-small">' + data.label + '</span>\n                        <span class="text -white">' + moment.unix(parseInt(data.created)).format('D MMMM YYYY') + '</span>\n                      </div></a>\n                    </div>';
+          });
+          removeLoader('.container-content-user');
+          $('.containter-people-detail').append(content);
+        } else {
+          removeLoader('.container-content-user');
+          $('.containter-people-detail').append('<div class="small-12 column"><span class="text -white -small-bold">No results found</span></div>');
+        }
+      });
+    }
+
+    function getPeopleInvolvedNews(idPeople) {
+      var content = '';
+      $.getJSON('/apiJSON/news?filter[author]=' + idPeople, function (data) {
+        showLoader('.container-content-user-news');
+        if (data.count !== 0) {
+          data.data.forEach(function (data) {
+            content += '<div class="small-12 column  medium-4 news-detail">\n                      <a href="/' + data.alias + '"><div class="contain-text">\n                        <span class="text -white -title-x-small">' + data.label + '</span>\n                        <span class="text -white">' + moment.unix(parseInt(data.created)).format('D MMMM YYYY') + '</span>\n                      </div></a>\n                    </div>';
+          });
+          removeLoader('.container-content-user-news');
+          $('.containter-people-detail-news').append(content);
+        } else {
+          removeLoader('.container-content-user-news');
+          $('.containter-people-detail-news').append('<div class="small-12 column"><span class="text -white -small-bold">No results found</span></div>');
+        }
+      });
+    }
+
+    function getPicture(idPeople) {
+      $.getJSON('/apiJSON/people/' + idPeople + '?fields=image', function (data) {
+        showLoader('.image-profile');
+        $('.image-profile').css('background-image', 'url(' + data.data[0].image + ')');
+        removeLoader('.image-profile');
+      });
+    }
+
+    getPeopleInvolvedStories(id);
+    getPeopleInvolvedNews(id);
+    getPicture(id);
   })(jQuery);
 }
 //# sourceMappingURL=bundle.js.map
