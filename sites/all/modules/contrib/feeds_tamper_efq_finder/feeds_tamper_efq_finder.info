@@ -1,5 +1,0 @@
-name = "Feeds Tamper EntityFieldQuery find"
-description = "Provides a Feeds Tamper plugin that searches for the value in any pre-configured Field in an entity+bundle and return any other field."
-core = "7.x"
-dependencies[] = "feeds_tamper"
-files[] = "plugins/efq_finder.inc"
