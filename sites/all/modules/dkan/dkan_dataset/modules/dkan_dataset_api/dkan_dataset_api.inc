@@ -64,8 +64,8 @@ function dkan_open_data_build_rows($nodes) {
       else {
         $row->publisher = $publisher[0]->title;
       }
-      $row->contactPoint = dkan_open_data_get_field_value($node, 'field_dataset_contact_name', 'value');
-      $row->mbox = dkan_open_data_get_field_value($node, 'field_dataset_contact_email', 'value');
+      $row->contactPoint = dkan_open_data_get_field_value($node, 'field_contact_name', 'value');
+      $row->mbox = dkan_open_data_get_field_value($node, 'field_contact_email', 'value');
       $row->identifier = dkan_open_data_get_field_value($node, 'uuid', 'value');
       $access_level = dkan_open_data_get_field_value($node, 'field_public_access_level', 'label');
       $row->accessLevel = $access_level ? $access_level : t('public');
@@ -91,7 +91,7 @@ function dkan_open_data_build_rows($nodes) {
 
       // Extended fields.
       if ($accrual = strtolower(dkan_open_data_get_field_value($node, 'field_frequency', 'label'))) {
-        $row->references = dkan_open_data_get_field_value($node, 'field_dataset_related_content', 'value');
+        $row->references = dkan_open_data_get_field_value($node, 'field_related_content', 'value');
       }
       $language = !isset($node->langauge) && $node->language != 'und' ? $node->language : 'english';
       $row->language = array($language);
@@ -134,8 +134,8 @@ function dkan_open_data_build_datasets($nodes) {
       $row->metadata_created = format_date($node_wrapper->created->value(), 'custom', 'Y-m-d\TH:i:s.u');
       $row->metadata_modified = format_date($node_wrapper->changed->value(), 'custom', 'Y-m-d\TH:i:s.u');
       $row->url = url('node/' . $node->nid, array('absolute' => TRUE));
-      $row->author = dkan_open_data_get_field_value($node, 'field_dataset_contact_name', 'value');
-      $row->author_email = dkan_open_data_get_field_value($node, 'field_dataset_contact_email', 'value');
+      $row->author = dkan_open_data_get_field_value($node, 'field_contact_name', 'value');
+      $row->author_email = dkan_open_data_get_field_value($node, 'field_contact_email', 'value');
       $row->type = 'dataset';
 
       $access_level = dkan_open_data_get_field_value($node, 'field_public_access_level', 'label');
@@ -289,7 +289,7 @@ function dkan_open_data_get_field_value($node, $field_name, $column_name) {
       $field_value = isset($options[$key]) ? trim($options[$key]) : NULL;
     }
     // Link field, can be external or external path, preparing url if present.
-    elseif ($field_name == 'field_dataset_related_content') {
+    elseif ($field_name == 'field_related_content') {
       $field_value = $node_wrapper->$field_name->$column_name();
       $references = '';
       foreach ($field_value as $instance) {

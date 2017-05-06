@@ -222,9 +222,9 @@ class DkanDatasetWebTestCase extends DrupalWebTestCase {
    * @param array $additional
    *   Args: field_author, field_spatial, field_spatial_geographical_cover,
    *   field_frequency, field_temporal_coverage, field_granularity,
-   *   field_data_dictionary, field_dataset_contact_name, field_dataset_contact_email,
+   *   field_data_dictionary, field_contact_name, field_contact_email,
    *   field_public_access_level, field_additional_info, field_resources,
-   *   field_dataset_related_content
+   *   field_related_content
    * @param array $resources
    *   Multi-dimensional array for each resource.
    *   Args: title, body, field_link_remote_file, field_upload, field_format,
@@ -369,17 +369,17 @@ class DkanDatasetWebTestCase extends DrupalWebTestCase {
       // Data Dictionary.
       'field_data_dictionary[und][0][value]' => $data_dictionary,
       // Contact Name.
-      'field_dataset_contact_name[und][0][value]' => $contact_name,
+      'field_contact_name[und][0][value]' => $contact_name,
       // Contact Email.
-      'field_dataset_contact_email[und][0][value]' => $contact_email,
+      'field_contact_email[und][0][value]' => $contact_email,
       // Public Access Level.
       'field_public_access_level[und]' => $access_level,
       // Additional Info.
       'field_additional_info[und][0][first]' => $additional_first,
       'field_additional_info[und][0][second]' => $additional_second,
       // Related Content.
-      'field_dataset_related_content[und][0][title]' => $related_title,
-      'field_dataset_related_content[und][0][url]' => $related_url,
+      'field_related_content[und][0][title]' => $related_title,
+      'field_related_content[und][0][url]' => $related_url,
     );
 
     $this->drupalPost($this->getUrl(), $edit, 'Finish');

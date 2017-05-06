@@ -1,8 +1,9 @@
 name = DKAN Dataset
 description = Custom elements for Datasets.
 core = 7.x
+version = "7.x-1.x"
 package = DKAN
-version = 7.x-1.x
+php = 5.2.4
 project = dkan_dataset
 dependencies[] = autocomplete_deluxe
 dependencies[] = beautytips
@@ -10,6 +11,7 @@ dependencies[] = chosen
 dependencies[] = ctools
 dependencies[] = date
 dependencies[] = date_popup
+dependencies[] = dkan_dataset
 dependencies[] = double_field
 dependencies[] = entity
 dependencies[] = entityreference
@@ -41,3 +43,10 @@ features[variable][] = pathauto_node_dataset_pattern
 features[variable][] = pathauto_node_resource_pattern
 files[] = tests/dkan_dataset.test
 files[] = tests/dkan_dataset_class.test
+
+; Information added by Drupal.org packaging script on 2015-04-03
+version = "7.x-1.8"
+core = "7.x"
+project = "dkan_dataset"
+datestamp = "1428083892"
+

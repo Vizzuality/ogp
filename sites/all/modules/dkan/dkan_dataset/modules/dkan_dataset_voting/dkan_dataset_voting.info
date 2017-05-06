@@ -19,3 +19,10 @@ features[field_instance][] = comment-comment_node_dataset-field_rating
 features[field_instance][] = node-dataset-field_rating
 features[variable][] = ajax_comments_node_types
 features[variable][] = ajax_comments_notify
+
+; Information added by Drupal.org packaging script on 2015-04-03
+version = "7.x-1.8"
+core = "7.x"
+project = "dkan_dataset"
+datestamp = "1428083892"
+

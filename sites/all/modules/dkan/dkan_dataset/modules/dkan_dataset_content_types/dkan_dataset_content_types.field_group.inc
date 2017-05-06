@@ -8,7 +8,7 @@
  * Implements hook_field_group_info().
  */
 function dkan_dataset_content_types_field_group_info() {
-  $field_groups = array();
+  $export = array();
 
   $field_group = new stdClass();
   $field_group->disabled = FALSE; /* Edit this to true to make a default field_group disabled initially */
@@ -24,8 +24,8 @@ function dkan_dataset_content_types_field_group_info() {
     'weight' => '3',
     'children' => array(
       0 => 'field_author',
-      1 => 'field_dataset_contact_email',
-      2 => 'field_dataset_contact_name',
+      1 => 'field_contact_email',
+      2 => 'field_contact_name',
       3 => 'field_data_dictionary',
       4 => 'field_frequency',
       5 => 'field_granularity',
@@ -52,7 +52,7 @@ function dkan_dataset_content_types_field_group_info() {
       ),
     ),
   );
-  $field_groups['group_additional|node|dataset|default'] = $field_group;
+  $export['group_additional|node|dataset|default'] = $field_group;
 
   $field_group = new stdClass();
   $field_group->disabled = FALSE; /* Edit this to true to make a default field_group disabled initially */
@@ -69,13 +69,13 @@ function dkan_dataset_content_types_field_group_info() {
     'children' => array(
       0 => 'field_additional_info',
       1 => 'field_author',
-      2 => 'field_dataset_contact_email',
-      3 => 'field_dataset_contact_name',
+      2 => 'field_contact_email',
+      3 => 'field_contact_name',
       4 => 'field_data_dictionary',
       5 => 'field_frequency',
       6 => 'field_granularity',
       7 => 'field_public_access_level',
-      8 => 'field_dataset_related_content',
+      8 => 'field_related_content',
       9 => 'field_resources',
       10 => 'field_spatial',
       11 => 'field_spatial_geographical_cover',
@@ -93,7 +93,7 @@ function dkan_dataset_content_types_field_group_info() {
       'formatter' => 'open',
     ),
   );
-  $field_groups['group_additional|node|dataset|form'] = $field_group;
+  $export['group_additional|node|dataset|form'] = $field_group;
 
   $field_group = new stdClass();
   $field_group->disabled = FALSE; /* Edit this to true to make a default field_group disabled initially */
@@ -120,7 +120,7 @@ function dkan_dataset_content_types_field_group_info() {
       ),
     ),
   );
-  $field_groups['group_data|node|resource|form'] = $field_group;
+  $export['group_data|node|resource|form'] = $field_group;
 
   $field_group = new stdClass();
   $field_group->disabled = FALSE; /* Edit this to true to make a default field_group disabled initially */
@@ -148,7 +148,7 @@ function dkan_dataset_content_types_field_group_info() {
       'formatter' => 'closed',
     ),
   );
-  $field_groups['group_link_api|node|resource|form'] = $field_group;
+  $export['group_link_api|node|resource|form'] = $field_group;
 
   $field_group = new stdClass();
   $field_group->disabled = FALSE; /* Edit this to true to make a default field_group disabled initially */
@@ -176,7 +176,7 @@ function dkan_dataset_content_types_field_group_info() {
       'formatter' => 'closed',
     ),
   );
-  $field_groups['group_link_file|node|resource|form'] = $field_group;
+  $export['group_link_file|node|resource|form'] = $field_group;
 
   $field_group = new stdClass();
   $field_group->disabled = FALSE; /* Edit this to true to make a default field_group disabled initially */
@@ -207,7 +207,7 @@ function dkan_dataset_content_types_field_group_info() {
       'formatter' => 'open',
     ),
   );
-  $field_groups['group_primary|node|dataset|form'] = $field_group;
+  $export['group_primary|node|dataset|form'] = $field_group;
 
   $field_group = new stdClass();
   $field_group->disabled = FALSE; /* Edit this to true to make a default field_group disabled initially */
@@ -235,17 +235,7 @@ function dkan_dataset_content_types_field_group_info() {
       'formatter' => 'closed',
     ),
   );
-  $field_groups['group_upload|node|resource|form'] = $field_group;
+  $export['group_upload|node|resource|form'] = $field_group;
 
-  // Translatables
-  // Included for use with string extractors like potx.
-  t('Dataset Info');
-  t('Dataset Information');
-  t('Link to a file');
-  t('Link to an API');
-  t('Primary');
-  t('Resource');
-  t('Upload a file');
-
-  return $field_groups;
+  return $export;
 }
