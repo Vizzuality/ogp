@@ -76,7 +76,7 @@
               </div>
             </div>
 
-              <input type="submit" value="SEND STORY" class="c-button -green-back -tall -box"></input>
+              <input type="submit" value="SEND STORY" class="c-button -green-back -tall -box -submit-story-button"></input>
 
               <div class="c-loader"><div class="loader"></div></div>
 
