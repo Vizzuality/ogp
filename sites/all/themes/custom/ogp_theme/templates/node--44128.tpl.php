@@ -19,11 +19,6 @@
               <select class="country-filter"></select>
             </div>
           </div>
-          <div class="column small-12 medium-6">
-            <div class="c-selector -tall">
-              <select class="type-filter"></select>
-            </div>
-          </div>
         </div>
       </div>
     </div>

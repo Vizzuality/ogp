@@ -1809,7 +1809,6 @@ function showNewsEventsPage() {
   (function ($) {
     // cache
     var countryFilter = 0;
-    var typeFilter = 0;
     var page = 1;
     var totalPages = 0;
     var totalPagesEvents = 0;
@@ -1817,7 +1816,6 @@ function showNewsEventsPage() {
 
     //selectors
     var countrySelector = $('.country-filter');
-    var typeSelector = $('.type-filter');
     var coverEvents = $('.c-content-banner');
     var eventsContainer = $('#eventsTiles');
     var newsContainer = $('#newsTiles');
@@ -1853,7 +1851,7 @@ function showNewsEventsPage() {
         pageEvents = getCurrentPage();
         if (totalPagesEvents > getCurrentPage()) {
           showLoader('#eventsContainer');
-          showEvents(countryFilter, typeFilter, getCurrentPage());
+          showEvents(countryFilter, getCurrentPage());
         }
       });
     }
@@ -1877,28 +1875,25 @@ function showNewsEventsPage() {
           // showLoader('#newsContainer');
           showLoader('#eventsContainer');
           countryFilter = countrySelector.val();
-          typeFilter = typeSelector.val();
           page = 1;
           // showNews(countryFilter, typeFilter, page);
-          showEvents(countryFilter, typeFilter, page);
+          showEvents(countryFilter, page);
         });
       });
     }
 
     function setPaginationListerners() {
       countryFilter = countrySelector.val();
-      typeFilter = typeSelector.val();
       $('.onClickPagination').on('click', function (e) {
         showLoader('#newsContainer');
         var pageNum = $(this).data('value');
-        showNews(countryFilter, typeFilter, pageNum);
+        showNews(countryFilter, pageNum);
       });
     }
 
-    function showEvents(country, type, page) {
+    function showEvents(country, page) {
       var activeCountry = parseInt(country) > 0 ? 'filter[country]=' + country + '&' : '';
-      var activeType = parseInt(type) > 0 ? 'filter[category]=' + type + '&' : '';
-      var activeFilters = '' + activeCountry + activeType + '&page=' + page;
+      var activeFilters = activeCountry + '&page=' + page;
       $.getJSON('/apiJSON/events?' + activeFilters + '&sort=-date', function (events) {
         totalPagesEvents = getPageCount(events.count, 4);
         if (events.data.length > 0) {
@@ -1919,10 +1914,9 @@ function showNewsEventsPage() {
       });
     }
 
-    function showNews(country, type, page) {
+    function showNews(country, page) {
       var activeCountry = parseInt(country) > 0 ? 'filter[country]=' + country + '&' : '';
-      var activeType = parseInt(type) > 0 ? 'filter[category]=' + type + '&' : '';
-      var activeFilters = '' + activeCountry + activeType + '&page=' + page;
+      var activeFilters = activeCountry + '&page=' + page;
       $.getJSON('/apiJSON/news?' + activeFilters + '&sort=-date&range=4', function (news) {
         if (news.data.length > 0) {
           totalPages = getPageCount(news.count, 4);
@@ -1950,9 +1944,8 @@ function showNewsEventsPage() {
 
     // build page
     buildSelector(countrySelector, 'All countries', 'countries', 'fields=id,label&sort=label');
-    buildSelector(typeSelector, 'All story types', 'stories_categories', 'fields=id,label&sort=label');
-    showEvents(countryFilter, typeFilter, page);
-    showNews(countryFilter, typeFilter, page);
+    showEvents(countryFilter, page);
+    showNews(countryFilter, page);
     onClickPagination();
   })(jQuery);
 }
