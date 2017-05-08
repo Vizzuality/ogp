@@ -2,7 +2,6 @@ function showNewsEventsPage() {
   (function ($) {
     // cache
     let countryFilter = 0;
-    let typeFilter = 0;
     let page = 1;
     let totalPages = 0;
     let totalPagesEvents = 0;
@@ -10,7 +9,6 @@ function showNewsEventsPage() {
 
     //selectors
     const countrySelector = $('.country-filter');
-    const typeSelector = $('.type-filter');
     const coverEvents = $('.c-content-banner');
     const eventsContainer = $('#eventsTiles');
     const newsContainer = $('#newsTiles');
@@ -46,7 +44,7 @@ function showNewsEventsPage() {
         pageEvents = getCurrentPage();
         if (totalPagesEvents > getCurrentPage()) {
           showLoader('#eventsContainer');
-          showEvents(countryFilter, typeFilter, getCurrentPage());
+          showEvents(countryFilter, getCurrentPage());
         }
       });
     }
@@ -67,31 +65,27 @@ function showNewsEventsPage() {
         });
 
         selector.on('change', function () {
-          // showLoader('#newsContainer');
+          const pageNum = 1;
           showLoader('#eventsContainer');
           countryFilter = countrySelector.val();
-          typeFilter = typeSelector.val();
           page = 1;
-          // showNews(countryFilter, typeFilter, page);
-          showEvents(countryFilter, typeFilter, page);
+          showEvents(countryFilter, page);
         });
       });
     }
 
     function setPaginationListerners() {
       countryFilter = countrySelector.val();
-      typeFilter = typeSelector.val();
       $('.onClickPagination').on('click', function(e) {
         showLoader('#newsContainer');
         const pageNum = $(this).data('value');
-        showNews(countryFilter, typeFilter, pageNum);
+        showNews(countryFilter, pageNum);
       })
     }
 
-    function showEvents(country, type, page) {
+    function showEvents(country, page) {
       const activeCountry = parseInt(country) > 0 ? `filter[country]=${country}&` : '';
-      const activeType = parseInt(type) > 0 ? `filter[category]=${type}&` : '';
-      const activeFilters = `${activeCountry}${activeType}&page[number]=${page}&page[size]=8`;
+      const activeFilters = `${activeCountry}&page[number]=${page}&page[size]=8`;
       $.getJSON(`/apiJSON/events?${activeFilters}&sort=-date`, function (events) {
         totalPagesEvents = getPageCount(events.count, 4);
         if (events.data.length > 0) {
@@ -112,10 +106,9 @@ function showNewsEventsPage() {
       });
     }
 
-    function showNews(country, type, page) {
+    function showNews(country, page) {
       const activeCountry = parseInt(country) > 0 ? `filter[country]=${country}&` : '';
-      const activeType = parseInt(type) > 0 ? `filter[category]=${type}&` : '';
-      const activeFilters = `${activeCountry}${activeType}&page=${page}`;
+      const activeFilters = `${activeCountry}&page=${page}`;
       $.getJSON(`/apiJSON/news?${activeFilters}&sort=-date`, function (news) {
         if (news.data.length > 0) {
           totalPages = getPageCount(news.count, 4);
@@ -143,9 +136,8 @@ function showNewsEventsPage() {
 
     // build page
     buildSelector(countrySelector, 'All countries', 'countries', 'fields=id,label&sort=label');
-    buildSelector(typeSelector, 'All story types', 'stories_categories', 'fields=id,label&sort=label');
-    showEvents(countryFilter, typeFilter, page);
-    showNews(countryFilter, typeFilter, page);
+    showEvents(countryFilter, page);
+    showNews(countryFilter, page);
     onClickPagination();
 
   })(jQuery);
