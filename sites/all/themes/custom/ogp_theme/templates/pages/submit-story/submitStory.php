@@ -3,6 +3,8 @@
   $cookie_content_story = 'content_story';
   $cookie_country_story = 'country_story';
   $cookie_topic_story = 'topic_story';
+  $cookie_email_story = 'email_story';
+  $cookie_author_story = 'author_story';
 
   global $user;
   $node = new stdClass();
@@ -11,6 +13,8 @@
   node_object_prepare($node); // Sets some defaults. Invokes hook_prepare() and hook_node_prepare().
   $node->language = LANGUAGE_NONE; // Or e.g. 'en' if locale is enabled
   $node->body[$node->language][0]['value']   = $_COOKIE[$cookie_content_story];
+  $node->field_submit_author[$node->language][0]['value']   = $_COOKIE[$cookie_author_story];
+  $node->field_submit_email_submit[$node->language][0]['value']   = $_COOKIE[$cookie_email_story];
   $node->field_country_ref['und'][0]['target_id'] = [$_COOKIE[$cookie_country_story]];
   $node->field_topic['und'][0]['target_id'] = [$_COOKIE[$cookie_topic_story]];
   $node->uid = $user->uid;

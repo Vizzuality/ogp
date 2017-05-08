@@ -12,6 +12,7 @@
   cursor: pointer;
   width: 100%;
 
+
   a {
     color: $color-4;
     font-family: $font-family-1;
@@ -59,5 +60,9 @@
 
   &.-tall {
     padding: 25px 0;
+  }
+
+  &.-submit-story-button {
+    right: 0 !important;
   }
 }
