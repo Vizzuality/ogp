@@ -722,10 +722,20 @@ function appendTilesWithoutBackground(data, container, gridNum, customClass, typ
       if (item.country) {
         countryList = '';
         if (type === 'stories') {
+<<<<<<< HEAD
           for (var i = 0; i < item.country.length; i += 1) {
             if (i === item.country.length - 1) {
               countryList += '' + item.country[i].label;
             } else {
+=======
+          console.log(item.country.length);
+          for (var i = 0; i < item.country.length; i += 1) {
+            if (i === item.country.length - 1) {
+              console.log('last-one');
+              countryList += '' + item.country[i].label;
+            } else {
+              console.log('others');
+>>>>>>> fix countries on blue boxes
               countryList += item.country[i].label + ', ';
             }
           }
@@ -2643,6 +2653,11 @@ function searchPage() {
     $('.search-form input').attr('placeholder', 'Type what you are searching for...');
   })(jQuery);
 }
+"use strict";
+
+function tagsPage() {
+  (function ($) {})(jQuery);
+}
 'use strict';
 
 function showStoryDetail(id) {
@@ -2894,11 +2909,6 @@ function showStoriesSubmitPage(id) {
     });
   })(jQuery);
 }
-"use strict";
-
-function tagsPage() {
-  (function ($) {})(jQuery);
-}
 'use strict';
 
 function showThemesDetail(id) {
@@ -2975,7 +2985,7 @@ function showThemesDetail(id) {
       $.getJSON('/apiJSON/' + endpoint + '?filter[theme]=' + id + countryQuery + '&sort=' + sorting, function (data) {
         hideNoResults();
         if (data.data.length) {
-          appendTilesWithoutBackground(data.data, container, 2, '-themes');
+          appendTilesWithoutBackground(data.data, container, 2, '-themes', endpoint);
         } else {
           showNoResults(container, 'No content available', 'tall', 'grey', 'xxlarge', 'blue');
         }
