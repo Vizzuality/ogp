@@ -105,7 +105,7 @@ function pushDefaultModal(id, query, countryData, dataLabel, buttonText, buttonL
         for (let i = 0; i < secondData.data.length; i += 1) {
           id_people[i] = secondData.data[i].id;
           dataInfo += `
-            <a class="text -small-bold -blue" href="${secondData.data[i].alias}">(point of contact) ${secondData.data[i].label}</a>
+            <a class="text -small-bold -blue" href="/${secondData.data[i].alias}">(point of contact) ${secondData.data[i].label}</a>
             <p class="text -body-content">${secondData.data[i].body ? secondData.data[i].body.value : ''}</p>`;
         }
       }
@@ -123,7 +123,7 @@ function pushDefaultModal(id, query, countryData, dataLabel, buttonText, buttonL
         } else if (modalType === 'grid') {
           if ($.inArray(data.id, id_people) === -1) {
             dataInfo += `
-              <a class="text -small-bold -blue" href="${data.alias}">${data.label}</a>
+              <a class="text -small-bold -blue" href="/${data.alias}">${data.label}</a>
               <p class="text -body-content">${addDots(data.body.value, 100)}</p>
             `;
           }

@@ -447,7 +447,7 @@ function pushDefaultModal(id, query, countryData, dataLabel, buttonText, buttonL
         secondDataCount = secondData.data.length;
         for (var i = 0; i < secondData.data.length; i += 1) {
           id_people[i] = secondData.data[i].id;
-          dataInfo += '\n            <a class="text -small-bold -blue" href="' + secondData.data[i].alias + '">(point of contact) ' + secondData.data[i].label + '</a>\n            <p class="text -body-content">' + (secondData.data[i].body ? secondData.data[i].body.value : '') + '</p>';
+          dataInfo += '\n            <a class="text -small-bold -blue" href="/' + secondData.data[i].alias + '">(point of contact) ' + secondData.data[i].label + '</a>\n            <p class="text -body-content">' + (secondData.data[i].body ? secondData.data[i].body.value : '') + '</p>';
         }
       }
     }
@@ -459,7 +459,7 @@ function pushDefaultModal(id, query, countryData, dataLabel, buttonText, buttonL
           dataInfo += '\n            <a href="' + data.alias + '">\n              <h2 class="text -title-x-small">' + data.label + '</h2>\n            </a>\n          ';
         } else if (modalType === 'grid') {
           if ($.inArray(data.id, id_people) === -1) {
-            dataInfo += '\n              <a class="text -small-bold -blue" href="' + data.alias + '">' + data.label + '</a>\n              <p class="text -body-content">' + addDots(data.body.value, 100) + '</p>\n            ';
+            dataInfo += '\n              <a class="text -small-bold -blue" href="/' + data.alias + '">' + data.label + '</a>\n              <p class="text -body-content">' + addDots(data.body.value, 100) + '</p>\n            ';
           }
         } else if (modalType === 'slider') {
           dataInfo += '\n            <div class="slide -stories">\n              <a href="' + (data.topic[0] ? data.topic[0].alias : '') + '" class="text -small-bold -blue">' + (data.topic[0] ? data.topic[0].label : '') + '</a>\n              <a href="/' + data.alias + '" class="text -section-title-small">' + data.label + '</a>\n              <span class="text date-text -small-bold">' + moment.unix(data.created).format('D MMMM YYYY') + '</span>\n              <p class="text -meta">' + (data.author[0] ? data.author[0].label : '') + '</p>\n            </div>\n          ';
@@ -1124,28 +1124,6 @@ function showStarredCommitmentDetail(id) {
   (function ($) {
     $('#theme-menu').addClass('active');
     buildExploreMoreTiles('starredcommitments', '', '', true, true);
-  })(jQuery);
-}
-'use strict';
-
-function showDocumentResourcePage() {
-  (function ($) {
-    // cache dom
-    var tileContainer = $('#resourceDocsTiles');
-    var searchEl = $('.c-tile');
-    var searchText = $('.c-tile .tile');
-    var searchContainer = $('#resourceTilesSearch input');
-
-    // fetch content and append
-    $.getJSON('/apiJSON/resource', function (data) {
-      setSearchPlaceholder(searchContainer, data.data[0].label);
-      setSearchListeners(searchEl, searchText);
-      if (data.data.length) {
-        appendTiles(data.data, tileContainer, 4);
-      } else {
-        showNoResults();
-      }
-    });
   })(jQuery);
 }
 'use strict';
@@ -1832,6 +1810,28 @@ function showCountriesData(countriesData, activeTab, container, countryId) {
 function initCountryTabs(onChangeCountryTab) {
   initTabs();
   setTabListeners(onChangeCountryTab);
+}
+'use strict';
+
+function showDocumentResourcePage() {
+  (function ($) {
+    // cache dom
+    var tileContainer = $('#resourceDocsTiles');
+    var searchEl = $('.c-tile');
+    var searchText = $('.c-tile .tile');
+    var searchContainer = $('#resourceTilesSearch input');
+
+    // fetch content and append
+    $.getJSON('/apiJSON/resource', function (data) {
+      setSearchPlaceholder(searchContainer, data.data[0].label);
+      setSearchListeners(searchEl, searchText);
+      if (data.data.length) {
+        appendTiles(data.data, tileContainer, 4);
+      } else {
+        showNoResults();
+      }
+    });
+  })(jQuery);
 }
 'use strict';
 
