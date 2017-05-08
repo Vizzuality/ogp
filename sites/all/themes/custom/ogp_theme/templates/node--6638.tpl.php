@@ -16,11 +16,12 @@
     <div class="l-page l-irm-reports">
 
       <div class="row">
-        <div class="column small-12 medium-8 content-header">
+        <div class="column small-12 content-header">
           <h1 class="text -title"><?php echo $irmReports_heading ?></h1>
-          <div class="text -body-content"><?php echo $irmReports_body ?></div>
         </div>
-        <div class="column small-12 medium-8 content-header medium-offset-2">
+        <?php include(drupal_get_path('theme', 'ogp_theme').'/templates/components/about-menu.tpl.php'); ?>
+        <div class="column small-12 medium-8 content-header">
+          <div class="text -body-content"><?php echo $irmReports_body ?></div>
           <h2 class="text -section-title-small"><?php echo $irmReports_heading_introduction ?></h2>
           <div class="text -body-content">
             <?php echo $irmReports_body_introduction ?>

@@ -16,6 +16,8 @@ $path = explode('/', drupal_get_path_alias());
             if ($primary_link['link']['hidden'] == 0) { ?>
                 <?php if (count($sub_menu) > 0) { ?>
                     <li class="text -menu dropdown <?php echo ($path[0] == $slug) ? '-active' : '' ?>">
+                <?php } else if ($slug == 'participants' && $path[0] == 'countries') { ?>
+                    <li class="text -menu -active">
                 <?php } else { ?>
                     <li class="text -menu <?php echo ($path[0] == $link['link_path']) ? '-active' : '' ?>">
                 <?php } ?>
