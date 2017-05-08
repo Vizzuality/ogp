@@ -72,45 +72,45 @@
     //This is called each time the languages list is retrieved
     //from Transifex Live. This may happen more than once so we should
     //be able to handle this case.
-    Transifex.live.onFetchLanguages(function(languages) {
+    // Transifex.live.onFetchLanguages(function(languages) {
 
-        //set the language selector to the source language (default)
-        $('#language-current').html(
-            Transifex.live.getSourceLanguage().name
-        );
-
-        //empty our language list
-        $('#ltransifexSelector').empty();
-
-        //add translation languages to the list
-        for (var i = 0; i < languages.length; ++i) {
-            $('#ltransifexSelector').append(
-                '<li class="text -menu" data-code="' + languages[i].code +
-                '" data-name="' + languages[i].name +
-                '">' + languages[i].name + '</li>'
-            );
-        }
-
-        //handle user selecting a language
-        $('#ltransifexSelector').find('li').click(function(e) {
-            e && e.preventDefault();
-            var code = $(this).closest('[data-code]').data('code');
-            var name = $(this).closest('[data-code]').data('name');
-
-            //tell transifex live to translate the page
-            //based on user selection
-            Transifex.live.translateTo(code, true);
-        });
-
-        //called when Transifex Live successfully translates the
-        //page to a language. In that case lets update the
-        //selected language of the widget
-        Transifex.live.onTranslatePage(function(language_code) {
-            $('#language-current').html(
-                Transifex.live.getLanguageName(language_code)
-            );
-        });
-    });
+    //     //set the language selector to the source language (default)
+    //     $('#language-current').html(
+    //         Transifex.live.getSourceLanguage().name
+    //     );
+    //
+    //     //empty our language list
+    //     $('#ltransifexSelector').empty();
+    //
+    //     //add translation languages to the list
+    //     for (var i = 0; i < languages.length; ++i) {
+    //         $('#ltransifexSelector').append(
+    //             '<li class="text -menu" data-code="' + languages[i].code +
+    //             '" data-name="' + languages[i].name +
+    //             '">' + languages[i].name + '</li>'
+    //         );
+    //     }
+    //
+    //     //handle user selecting a language
+    //     $('#ltransifexSelector').find('li').click(function(e) {
+    //         e && e.preventDefault();
+    //         var code = $(this).closest('[data-code]').data('code');
+    //         var name = $(this).closest('[data-code]').data('name');
+    //
+    //         //tell transifex live to translate the page
+    //         //based on user selection
+    //         Transifex.live.translateTo(code, true);
+    //     });
+    //
+    //     //called when Transifex Live successfully translates the
+    //     //page to a language. In that case lets update the
+    //     //selected language of the widget
+    //     Transifex.live.onTranslatePage(function(language_code) {
+    //         $('#language-current').html(
+    //             Transifex.live.getLanguageName(language_code)
+    //         );
+    //     });
+    // });
   </script>
 </head>
 <body class="<?php print $classes; ?> txlive" <?php print $attributes;?>>
