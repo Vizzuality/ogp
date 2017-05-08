@@ -714,11 +714,26 @@ function buildTabs(data, tabsContainer, callback) {
 var randomTiles = [];
 var numRandoms = 50;
 
-function appendTilesWithoutBackground(data, container, gridNum, customClass) {
+function appendTilesWithoutBackground(data, container, gridNum, customClass, type) {
   var gridWidth = 12 / gridNum;
+  var countryList = '';
   if (data.length !== 0) {
     data.forEach(function (item) {
-      var html = '\n        <div class="column small-12 medium-' + gridWidth + ' c-tile ' + (customClass ? customClass : '') + '" data-group="' + (item.group ? item.group : '') + '">\n          <a href="/' + item.alias + '" class="tile">\n            <span class="text -tile -white">\n              ' + item.label + '\n            </span>\n          </a>\n        </div>\n      ';
+      if (item.country) {
+        countryList = '';
+        if (type === 'stories') {
+          for (var i = 0; i < item.country.length; i += 1) {
+            if (i === item.country.length - 1) {
+              countryList += '' + item.country[i].label;
+            } else {
+              countryList += item.country[i].label + ', ';
+            }
+          }
+        } else {
+          countryList = item.country.label;
+        }
+      }
+      var html = '\n        <div class="column small-12 medium-' + gridWidth + ' c-tile ' + (customClass ? customClass : '') + '" data-group="' + (item.group ? item.group : '') + '">\n          <a href="/' + item.alias + '" class="tile">\n            <span class="text -tile -white">\n              ' + item.label + '\n            </span>\n            <br>\n            <span class="text -tile -white country-name ' + (item.country ? '-visible' : '-hidden') + '">\n              ' + (item.country ? countryList : '') + '\n            </span>\n          </a>\n        </div>\n      ';
       container.append(html);
     });
   }
@@ -736,7 +751,6 @@ function appendTiles(data, container, gridNum, customClass) {
 
 function appendTilesRandom(data, container, gridNum, customClass, country, numberInformation) {
   var countryText = '';
-  var numberText = '';
   for (var i = 0; i < 4; i += 1) {
     var rand = makeUniqueRandom();
     if (i % numRandoms == 0) {}
@@ -748,11 +762,7 @@ function appendTilesRandom(data, container, gridNum, customClass, country, numbe
       if (country === true) {
         countryText = '(' + data[randomTiles[_i]].country.label + ')';
       }
-
-      if (numberInformation === true) {
-        numberText = '(' + data[randomTiles[_i]].comm_no + ')';
-      }
-      var html = '\n          <a href="/' + data[randomTiles[_i]].alias + '" class="tile column small-12 medium-' + gridWidth + ' c-tile ' + (customClass ? customClass : '') + '" data-group="' + (data[randomTiles[_i]].group ? data[randomTiles[_i]].group : '') + '" style="background-image: url(\'' + (data[randomTiles[_i]].image ? data[randomTiles[_i]].image : '') + '\')">\n            <div class="' + (data[randomTiles[_i]].image ? 'overlay' : '') + '"></div>\n            <span class="text -tile -white">\n              ' + numberText + ' | ' + data[randomTiles[_i]].label + '\n              <br>\n              ' + countryText + '\n            </span>\n          </a>\n      ';
+      var html = '\n          <a href="/' + data[randomTiles[_i]].alias + '" class="tile column small-12 medium-' + gridWidth + ' c-tile ' + (customClass ? customClass : '') + '" data-group="' + (data[randomTiles[_i]].group ? data[randomTiles[_i]].group : '') + '" style="background-image: url(\'' + (data[randomTiles[_i]].image ? data[randomTiles[_i]].image : '') + '\')">\n            <div class="' + (data[randomTiles[_i]].image ? 'overlay' : '') + '"></div>\n            <span class="text -tile -white">\n              ' + data[randomTiles[_i]].label + '\n              <br>\n              ' + countryText + '\n            </span>\n          </a>\n      ';
       container.append(html);
     }
   }
@@ -1051,7 +1061,7 @@ function showCurrentCommitmentDetail(id) {
 
     $('#theme-menu').addClass('active');
     buildCurrentCommitment();
-    buildExploreMoreTiles('current_commitment', '', '', false, false);
+    buildExploreMoreTiles('current_commitment', '', '', true, false);
   })(jQuery);
 }
 'use strict';
@@ -1059,7 +1069,7 @@ function showCurrentCommitmentDetail(id) {
 function showIrmCommitmentDetail(id) {
   (function ($) {
     $('#theme-menu').addClass('active');
-    buildExploreMoreTiles('irm_commitments', '', '', false, false);
+    buildExploreMoreTiles('irm_commitments', '', '', true, false);
   })(jQuery);
 }
 'use strict';
@@ -2965,7 +2975,7 @@ function showThemesDetail(id) {
       $.getJSON('/apiJSON/' + endpoint + '?filter[theme]=' + id + countryQuery + '&sort=' + sorting, function (data) {
         hideNoResults();
         if (data.data.length) {
-          appendTilesWithoutBackground(data.data, container, 2, '-themes');
+          appendTilesWithoutBackground(data.data, container, 2, '-themes', endpoint);
         } else {
           showNoResults(container, 'No content available', 'tall', 'grey', 'xxlarge', 'blue');
         }

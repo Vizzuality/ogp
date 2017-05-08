@@ -20,19 +20,13 @@ $field_people_pic = field_get_items('node', $node, 'field_profile_picture');
           <?php } ?>
           <div>
             <h1 class="text -title"><?php echo $node->title ?></h1>
-            <h2 class="text">
+            <h2 class="text container-information">
               <?php
                 if($field_countries_involved) {
-              ?>
-              <a href="/<?php echo (drupal_get_path_alias('node/' . $field_countries_involved[0]['target_id'])) ?>" class="text -small-bold -uppercase -blue tag"><?php echo $field_countries_involved[0]['entity']->title; ?></a>
-              <span class="line text -blank">|</span>
-              <?php
+                  echo '<div class="line-separator"><a href="'.drupal_get_path_alias('node/' . $field_countries_involved[0]['target_id']).'" class="text -small-bold -uppercase -blue tag">'.$field_countries_involved[0]['entity']->title.'</a></div>';
                 }
                 if($field_job_title) {
-                  echo '<strong class="text -bold">Job title:<strong><span class="text -blank"> '.$field_job_title.'</span>';
-                ?>
-                  <span class="line text -blank">|</span>
-                <?php
+                  echo '<div class="line-separator"><strong class="text -bold">Job title:<strong><span class="text -blank"> '.$field_job_title.'</span></div>';
                 }
               ?>
               <?php
@@ -44,11 +38,11 @@ $field_people_pic = field_get_items('node', $node, 'field_profile_picture');
                     $result .= $t[0];
 
                 if(filter_var($field_contact[0]['value'], FILTER_VALIDATE_EMAIL)) {
-                    echo '<strong class="text -blank -bold">Email: <a class="text -blank" href="mailto:' . $field_contact[0]['value'] . '"></strong>'.$field_contact[0]['value'].'</a>';
+                    echo '<div class="line-separator"><strong class="text -blank -bold">Email: <a class="text -blank" href="mailto:' . $field_contact[0]['value'] . '"></strong>'.$field_contact[0]['value'].'</a></div>';
                 }
 
                 if($result === '@') {
-                    echo '<strong class="text -blank -bold">Twitter: <a class="text -blank" href="mailto:' . str_replace('@', '', $field_contact[0]['value']) . '"></strong>'.$field_contact[0]['value'].'</a>';
+                    echo '<div class="line-separator"><strong class="text -blank -bold">Twitter: <a class="text -blank" href="mailto:' . str_replace('@', '', $field_contact[0]['value']) . '"></strong>'.$field_contact[0]['value'].'</a></div>';
                 }
               }
               ?>

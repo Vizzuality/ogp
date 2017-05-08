@@ -2,15 +2,34 @@
 let randomTiles = [];
 const numRandoms = 50;
 
-function appendTilesWithoutBackground(data, container, gridNum, customClass) {
+function appendTilesWithoutBackground(data, container, gridNum, customClass, type) {
   const gridWidth = 12 / gridNum;
+  let countryList = '';
   if (data.length !== 0) {
     data.forEach((item) => {
+      if (item.country) {
+        countryList = '';
+        if (type === 'stories') {
+          for (let i = 0; i < item.country.length; i += 1) {
+            if (i === item.country.length - 1) {
+              countryList += `${item.country[i].label}`;
+            } else {
+              countryList += `${item.country[i].label}, `;
+            }
+          }
+        } else {
+          countryList = item.country.label;
+        }
+      }
       const html = `
         <div class="column small-12 medium-${gridWidth} c-tile ${customClass ? customClass : ''}" data-group="${item.group ? item.group : ''}">
           <a href="/${item.alias}" class="tile">
             <span class="text -tile -white">
               ${item.label}
+            </span>
+            <br>
+            <span class="text -tile -white country-name ${item.country ? '-visible' : '-hidden'}">
+              ${item.country ? countryList : ''}
             </span>
           </a>
         </div>
@@ -41,7 +60,6 @@ function appendTiles(data, container, gridNum, customClass) {
 
 function appendTilesRandom(data, container, gridNum, customClass, country, numberInformation) {
   let countryText = '';
-  let numberText = '';
   for (let i = 0; i < 4; i += 1) {
     const rand = makeUniqueRandom();
     if (i % numRandoms == 0) {}
@@ -53,15 +71,11 @@ function appendTilesRandom(data, container, gridNum, customClass, country, numbe
       if (country === true) {
         countryText = `(${data[randomTiles[i]].country.label})`;
       }
-
-      if (numberInformation === true) {
-        numberText = `(${data[randomTiles[i]].comm_no})`
-      }
       const html = `
           <a href="/${data[randomTiles[i]].alias}" class="tile column small-12 medium-${gridWidth} c-tile ${customClass ? customClass : ''}" data-group="${data[randomTiles[i]].group ? data[randomTiles[i]].group : ''}" style="background-image: url('${data[randomTiles[i]].image ? data[randomTiles[i]].image : ''}')">
             <div class="${data[randomTiles[i]].image ? 'overlay' : ''}"></div>
             <span class="text -tile -white">
-              ${numberText} | ${data[randomTiles[i]].label}
+              ${data[randomTiles[i]].label}
               <br>
               ${countryText}
             </span>

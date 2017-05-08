@@ -74,7 +74,7 @@ function showThemesDetail(id) {
       $.getJSON(`/apiJSON/${endpoint}?filter[theme]=${id}${countryQuery}&sort=${sorting}`, function(data) {
         hideNoResults();
         if (data.data.length) {
-          appendTilesWithoutBackground(data.data, container, 2, '-themes');
+          appendTilesWithoutBackground(data.data, container, 2, '-themes', endpoint);
         } else {
           showNoResults(container, 'No content available', 'tall', 'grey', 'xxlarge', 'blue');
         }

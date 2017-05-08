@@ -123,6 +123,19 @@
       padding: 30px;
       justify-content: flex-start;
       align-items: flex-start;
+      flex-direction: column;
+
+      .country-name {
+        display: block;
+
+        &.-visible {
+          display: block;
+        }
+
+        &.-hidden {
+          display: none;
+        }
+      }
 
       .text {
         font-size: 16px;
