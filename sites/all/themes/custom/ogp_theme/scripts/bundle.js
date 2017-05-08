@@ -736,7 +736,6 @@ function appendTiles(data, container, gridNum, customClass) {
 
 function appendTilesRandom(data, container, gridNum, customClass, country, numberInformation) {
   var countryText = '';
-  var numberText = '';
   for (var i = 0; i < 4; i += 1) {
     var rand = makeUniqueRandom();
     if (i % numRandoms == 0) {}
@@ -748,11 +747,7 @@ function appendTilesRandom(data, container, gridNum, customClass, country, numbe
       if (country === true) {
         countryText = '(' + data[randomTiles[_i]].country.label + ')';
       }
-
-      if (numberInformation === true) {
-        numberText = '(' + data[randomTiles[_i]].comm_no + ')';
-      }
-      var html = '\n          <a href="/' + data[randomTiles[_i]].alias + '" class="tile column small-12 medium-' + gridWidth + ' c-tile ' + (customClass ? customClass : '') + '" data-group="' + (data[randomTiles[_i]].group ? data[randomTiles[_i]].group : '') + '" style="background-image: url(\'' + (data[randomTiles[_i]].image ? data[randomTiles[_i]].image : '') + '\')">\n            <div class="' + (data[randomTiles[_i]].image ? 'overlay' : '') + '"></div>\n            <span class="text -tile -white">\n              ' + numberText + ' | ' + data[randomTiles[_i]].label + '\n              <br>\n              ' + countryText + '\n            </span>\n          </a>\n      ';
+      var html = '\n          <a href="/' + data[randomTiles[_i]].alias + '" class="tile column small-12 medium-' + gridWidth + ' c-tile ' + (customClass ? customClass : '') + '" data-group="' + (data[randomTiles[_i]].group ? data[randomTiles[_i]].group : '') + '" style="background-image: url(\'' + (data[randomTiles[_i]].image ? data[randomTiles[_i]].image : '') + '\')">\n            <div class="' + (data[randomTiles[_i]].image ? 'overlay' : '') + '"></div>\n            <span class="text -tile -white">\n              ' + data[randomTiles[_i]].label + '\n              <br>\n              ' + countryText + '\n            </span>\n          </a>\n      ';
       container.append(html);
     }
   }
@@ -1051,7 +1046,7 @@ function showCurrentCommitmentDetail(id) {
 
     $('#theme-menu').addClass('active');
     buildCurrentCommitment();
-    buildExploreMoreTiles('current_commitment', '', '', false, false);
+    buildExploreMoreTiles('current_commitment', '', '', true, false);
   })(jQuery);
 }
 'use strict';
@@ -1059,7 +1054,7 @@ function showCurrentCommitmentDetail(id) {
 function showIrmCommitmentDetail(id) {
   (function ($) {
     $('#theme-menu').addClass('active');
-    buildExploreMoreTiles('irm_commitments', '', '', false, false);
+    buildExploreMoreTiles('irm_commitments', '', '', true, false);
   })(jQuery);
 }
 'use strict';
