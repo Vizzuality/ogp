@@ -25,14 +25,26 @@ $field_people_pic = field_get_items('node', $node, 'field_profile_picture');
                 if($field_countries_involved) {
               ?>
               <a href="/<?php echo (drupal_get_path_alias('node/' . $field_countries_involved[0]['target_id'])) ?>" class="text -small-bold -uppercase -blue tag"><?php echo $field_countries_involved[0]['entity']->title; ?></a>
-              <span class="line text -blank">|</span>
               <?php
+                  if($field_countries_involved && $field_job_title && $field_contact[0]['value']) {
+                    print ('<span class="line text -blank">|</span>');
+                  } else {
+
+                    if($field_countries_involved && $field_job_title) {
+                      print ('<span class="line text -blank">|</span>');
+                    }
+
+                    if($field_countries_involved && $field_contact[0]['value']) {
+                      print ('<span class="line text -blank">|</span>');
+                    }
+                  }
                 }
                 if($field_job_title) {
                   echo '<strong class="text -bold">Job title:<strong><span class="text -blank"> '.$field_job_title.'</span>';
-                ?>
-                  <span class="line text -blank">|</span>
-                <?php
+
+                  if($field_job_title && $field_contact[0]['value']) {
+                    print ('<span class="line text -blank">|</span>');
+                  }
                 }
               ?>
               <?php
