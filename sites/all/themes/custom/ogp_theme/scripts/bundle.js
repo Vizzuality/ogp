@@ -289,11 +289,18 @@ function addBanner(type, id) {
       break;
     case 'peopleCountry':
       $.getJSON('/apiJSON/countries/' + id, function (data) {
-        $('.banners-container').append('\n            <div class="l-full-width -blue -short -center">\n              <div class="row">\n                <div class="column small-12 medium-7 large-9">\n                  <h3 class="text -title-small -white">People involved from ' + data.data[0].label + '</h3>\n                  <p class="text -white">\n                    For the Open Government Partnership model to work, lots of people need to get involved\n                  </p>\n                </div>\n                <div class="column small-12 medium-5 large-3 vertical">\n                  <a class="c-button -box -large -center" href="/submit-story">EXPLORE PEOPLE</a>\n                </div>\n              </div>\n            </div>\n          ');
+        $('.banners-container').append('\n            <div class="l-full-width -blue -short -center">\n              <div class="row">\n                <div class="column small-12 medium-7 large-9">\n                  <h3 class="text -title-small -white">People involved from ' + data.data[0].label + '</h3>\n                  <p class="text -white">\n                    For the Open Government Partnership model to work, lots of people need to get involved\n                  </p>\n                </div>\n                <div class="column small-12 medium-5 large-3 vertical">\n                  <span class="c-button -box -large -center show-people-modal">EXPLORE PEOPLE</span>\n                </div>\n              </div>\n            </div>\n          ');
+        initModalPeople(data);
       });
       break;
     default:
       break;
+  }
+
+  function initModalPeople(countriesData) {
+    $('.show-people-modal').click(function () {
+      updateMapModal(id, 'peopleDetail', countriesData);
+    });
   }
 }
 'use strict';
@@ -431,14 +438,16 @@ function setDataToModal(id, html) {
 }
 
 function pushDefaultModal(id, query, countryData, dataLabel, buttonText, buttonLink, modalType, secondData) {
-  $.getJSON('apiJSON/' + query, function (data) {
+  var secondDataCount = 0;
+  $.getJSON('/apiJSON/' + query, function (data) {
     var dataInfo = '';
     var id_people = [];
     if (dataLabel === 'people involved') {
       if (secondData.data.length > 0) {
+        secondDataCount = secondData.data.length;
         for (var i = 0; i < secondData.data.length; i += 1) {
           id_people[i] = secondData.data[i].id;
-          dataInfo += '\n            <a class="text -small-bold -blue" href="' + secondData.data[i].alias + '">' + secondData.data[i].label + ' (point of contact)</a>\n            <p class="text -body-content">' + addDots(secondData.data[i].body.value, 100) + '</p>\n          ';
+          dataInfo += '\n            <a class="text -small-bold -blue" href="/' + secondData.data[i].alias + '">(point of contact) ' + secondData.data[i].label + '</a>\n            <p class="text -body-content">' + (secondData.data[i].body ? secondData.data[i].body.value : '') + '</p>';
         }
       }
     }
@@ -450,21 +459,21 @@ function pushDefaultModal(id, query, countryData, dataLabel, buttonText, buttonL
           dataInfo += '\n            <a href="' + data.alias + '">\n              <h2 class="text -title-x-small">' + data.label + '</h2>\n            </a>\n          ';
         } else if (modalType === 'grid') {
           if ($.inArray(data.id, id_people) === -1) {
-            dataInfo += '\n              <a class="text -small-bold -blue" href="' + data.alias + '">' + data.label + '</a>\n              <p class="text -body-content">' + addDots(data.body.value, 100) + '</p>\n            ';
+            dataInfo += '\n              <a class="text -small-bold -blue" href="/' + data.alias + '">' + data.label + '</a>\n              <p class="text -body-content">' + addDots(data.body.value, 100) + '</p>\n            ';
           }
         } else if (modalType === 'slider') {
           dataInfo += '\n            <div class="slide -stories">\n              <a href="' + (data.topic[0] ? data.topic[0].alias : '') + '" class="text -small-bold -blue">' + (data.topic[0] ? data.topic[0].label : '') + '</a>\n              <a href="/' + data.alias + '" class="text -section-title-small">' + data.label + '</a>\n              <span class="text date-text -small-bold">' + moment.unix(data.created).format('D MMMM YYYY') + '</span>\n              <p class="text -meta">' + (data.author[0] ? data.author[0].label : '') + '</p>\n            </div>\n          ';
         }
       });
     }
-    var html = '\n      <div class="modal-header">\n        <div class="header-info">\n          <h3 class="text -module-title">' + countryData[0].label + '</h3>\n          <p class="text -meta">Member since ' + moment.unix(countryData[0].memberSince).format('YYYY') + ', Action plans ' + countryData[0].action_plan_count + '</p>\n        </div>\n        <div class="c-data-number">\n          <h3 class="text -number">' + data.count + '</h3>\n          <p class="text -small-bold">' + dataLabel + '</p>\n        </div>\n      </div>\n      <div class="content-wrapper -scroll ' + (modalType === 'slider' ? 'stories-slider' : '') + '">\n        ' + dataInfo + '\n      </div>\n      <div class="button-container -fixed">\n        <a href="/' + buttonLink + '" class="c-button -tall -green-back -box">' + buttonText + '</a>\n        <a href="' + countryData[0].alias + '" class="c-button -tall -green-back -box">VIEW COUNTRY</a>\n      </div>\n    ';
+    var html = '\n      <div class="modal-header">\n        <div class="header-info">\n          <h3 class="text -module-title">' + countryData[0].label + '</h3>\n          <p class="text -meta">Member since ' + moment.unix(countryData[0].memberSince).format('YYYY') + ', Action plans ' + countryData[0].action_plan_count + '</p>\n        </div>\n        <div class="c-data-number">\n          <h3 class="text -number">' + (data.count + secondDataCount) + '</h3>\n          <p class="text -small-bold">' + dataLabel + '</p>\n        </div>\n      </div>\n      <div class="content-wrapper -scroll ' + (modalType === 'slider' ? 'stories-slider' : '') + '">\n        ' + dataInfo + '\n      </div>\n      <div class="button-container -fixed">\n        <a href="/' + buttonLink + '" class="c-button -tall -green-back -box">' + buttonText + '</a>\n        <a href="' + countryData[0].alias + '" class="c-button -tall -green-back -box">VIEW COUNTRY</a>\n      </div>\n    ';
     setDataToModal(id, html);
   });
 }
 
 function pushSmallModal(id, query, countryData, firstDataLabel, secondDataLabel, buttonText, buttonLink) {
 
-  $.getJSON('apiJSON/' + query, function (data) {
+  $.getJSON('/apiJSON/' + query, function (data) {
     var html = '\n      <div class="content-wrapper">\n        <h3 class="text -module-title">' + countryData[0].label + '</h3>\n        <p class="text -meta">Member since ' + moment.unix(countryData[0].memberSince).format('YYYY') + '</p>\n        <div class="data-container">\n          <div class="c-data-number -with-padding">\n            <h4 class="text -number">' + data.count + '</h4>\n            <span class="text -small-bold">' + firstDataLabel + '</span>\n          </div>\n          <div class="c-data-number -with-padding">\n            <h4 class="text -number">3</h4>\n            <span class="text -small-bold">' + secondDataLabel + '</span>\n          </div>\n        </div>\n      </div>\n      <div class="button-container">\n        <a class="c-button -box -tall -green-back -white" href="' + buttonLink + '">' + buttonText + '</a>\n        <a class="c-button -box -tall -green-back -white" href="' + countryData[0].alias + '">View country</a>\n      </div>\n    ';
     setDataToModal(id, html);
   });
@@ -472,9 +481,14 @@ function pushSmallModal(id, query, countryData, firstDataLabel, secondDataLabel,
 
 function setMapModalContent(id, type, countryId, countriesData) {
   var themeCommitmentAlias = 'theme';
-  var countryData = countriesData.filter(function (country) {
-    return country.id == countryId;
-  });
+  var countryData = void 0;
+  if (type !== 'peopleDetail') {
+    countryData = countriesData.filter(function (country) {
+      return country.id == countryId;
+    });
+  } else {
+    countryData = countriesData.data;
+  }
   switch (type) {
     case 'actionPlan':
       pushSmallModal(id, 'irm_commitments?filter[country]=' + countryId, countryData, 'commitments', 'themes covered', 'latest stories', 'stories', '');
@@ -493,7 +507,12 @@ function setMapModalContent(id, type, countryId, countriesData) {
       pushDefaultModal(id, 'current_commitment?filter[country]=' + countryId + currentFilter, countryData, 'current commitments', 'explore this theme', '' + themeCommitmentAlias, 'list', '');
       break;
     case 'people':
-      $.getJSON('apiJSON/people?filter[country_poc]=' + countryId, function (poc) {
+      $.getJSON('/apiJSON/people?filter[country_poc]=' + countryId, function (poc) {
+        pushDefaultModal(id, 'people?filter[country]=' + countryId, countryData, 'people involved', 'latest stories', 'stories', 'grid', poc);
+      });
+      break;
+    case 'peopleDetail':
+      $.getJSON('/apiJSON/people?filter[country_poc]=' + countryId, function (poc) {
         pushDefaultModal(id, 'people?filter[country]=' + countryId, countryData, 'people involved', 'latest stories', 'stories', 'grid', poc);
       });
       break;
@@ -1343,6 +1362,7 @@ function showCountriesDetail(id) {
     });
 
     // init selectors and views for actions, reports and letters data
+    buildMapModal();
     bodyContentListener();
   })(jQuery);
 }

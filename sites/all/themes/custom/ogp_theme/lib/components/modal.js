@@ -95,17 +95,18 @@ function setDataToModal(id, html) {
 }
 
 function pushDefaultModal(id, query, countryData, dataLabel, buttonText, buttonLink, modalType, secondData) {
-  $.getJSON(`apiJSON/${query}`, function (data) {
+  let secondDataCount = 0;
+  $.getJSON(`/apiJSON/${query}`, function (data) {
     let dataInfo = '';
     let id_people= [];
     if (dataLabel === 'people involved') {
       if (secondData.data.length > 0) {
+        secondDataCount = secondData.data.length;
         for (let i = 0; i < secondData.data.length; i += 1) {
           id_people[i] = secondData.data[i].id;
           dataInfo += `
-            <a class="text -small-bold -blue" href="${secondData.data[i].alias}">${secondData.data[i].label} (point of contact)</a>
-            <p class="text -body-content">${addDots(secondData.data[i].body.value, 100)}</p>
-          `;
+            <a class="text -small-bold -blue" href="/${secondData.data[i].alias}">(point of contact) ${secondData.data[i].label}</a>
+            <p class="text -body-content">${secondData.data[i].body ? secondData.data[i].body.value : ''}</p>`;
         }
       }
     }
@@ -122,7 +123,7 @@ function pushDefaultModal(id, query, countryData, dataLabel, buttonText, buttonL
         } else if (modalType === 'grid') {
           if ($.inArray(data.id, id_people) === -1) {
             dataInfo += `
-              <a class="text -small-bold -blue" href="${data.alias}">${data.label}</a>
+              <a class="text -small-bold -blue" href="/${data.alias}">${data.label}</a>
               <p class="text -body-content">${addDots(data.body.value, 100)}</p>
             `;
           }
@@ -145,7 +146,7 @@ function pushDefaultModal(id, query, countryData, dataLabel, buttonText, buttonL
           <p class="text -meta">Member since ${moment.unix(countryData[0].memberSince).format('YYYY')}, Action plans ${countryData[0].action_plan_count}</p>
         </div>
         <div class="c-data-number">
-          <h3 class="text -number">${data.count}</h3>
+          <h3 class="text -number">${data.count + secondDataCount}</h3>
           <p class="text -small-bold">${dataLabel}</p>
         </div>
       </div>
@@ -163,7 +164,7 @@ function pushDefaultModal(id, query, countryData, dataLabel, buttonText, buttonL
 
 function pushSmallModal(id, query, countryData, firstDataLabel, secondDataLabel, buttonText, buttonLink) {
 
-  $.getJSON(`apiJSON/${query}`, function (data) {
+  $.getJSON(`/apiJSON/${query}`, function (data) {
     const html = `
       <div class="content-wrapper">
         <h3 class="text -module-title">${countryData[0].label}</h3>
@@ -190,9 +191,14 @@ function pushSmallModal(id, query, countryData, firstDataLabel, secondDataLabel,
 
 function setMapModalContent(id, type, countryId, countriesData) {
   let themeCommitmentAlias = 'theme';
-  const countryData = countriesData.filter(function(country) {
-    return country.id == countryId;
-  });
+  let countryData;
+  if (type !== 'peopleDetail') {
+    countryData = countriesData.filter(function(country) {
+      return country.id == countryId;
+    });
+  } else {
+    countryData = countriesData.data;
+  }
   switch (type) {
     case 'actionPlan':
       pushSmallModal(id, `irm_commitments?filter[country]=${countryId}`, countryData, 'commitments', 'themes covered', 'latest stories', 'stories', '');
@@ -211,7 +217,12 @@ function setMapModalContent(id, type, countryId, countriesData) {
       pushDefaultModal(id, `current_commitment?filter[country]=${countryId}${currentFilter}`, countryData, 'current commitments', 'explore this theme', `${themeCommitmentAlias}`, 'list', '');
       break;
     case 'people':
-      $.getJSON(`apiJSON/people?filter[country_poc]=${countryId}`, function (poc) {
+      $.getJSON(`/apiJSON/people?filter[country_poc]=${countryId}`, function (poc) {
+        pushDefaultModal(id, `people?filter[country]=${countryId}`, countryData, 'people involved', 'latest stories', 'stories', 'grid', poc);
+      });
+      break;
+    case 'peopleDetail':
+      $.getJSON(`/apiJSON/people?filter[country_poc]=${countryId}`, function (poc) {
         pushDefaultModal(id, `people?filter[country]=${countryId}`, countryData, 'people involved', 'latest stories', 'stories', 'grid', poc);
       });
       break;
