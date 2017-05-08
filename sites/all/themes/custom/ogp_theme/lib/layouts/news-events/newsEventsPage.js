@@ -115,24 +115,14 @@ function showNewsEventsPage() {
     function showNews(country, type, page) {
       const activeCountry = parseInt(country) > 0 ? `filter[country]=${country}&` : '';
       const activeType = parseInt(type) > 0 ? `filter[category]=${type}&` : '';
-      const activeFilters = `${activeCountry}${activeType}&page=${page}`;
+      const activeFilters = `${activeCountry}${activeType}&page[number]=${page}&page[size]=8`;
       $.getJSON(`/apiJSON/news?${activeFilters}&sort=-date`, function (news) {
         if (news.data.length > 0) {
           totalPages = getPageCount(news.count, 4);
-          if (page === 1) {
-            $.getJSON(`/apiJSON/news?sort=-date`, function (highlightedNews) {
-              buildHighlightedEvent(highlightedNews.data[0]);
-              appendTilesDetailedNews(news.data, newsContainer, 2);
-              initPagination(page, totalPages, 'newsEventsPage');
-              setPaginationListerners();
-              removeLoader('#newsContainer', null, true);
-            });
-          } else {
-            appendTilesDetailedNews(news.data, newsContainer, 2);
-            removeLoader('#newsContainer', null, true);
-            initPagination(page, totalPages, 'newsEventsPage');
-            setPaginationListerners();
-          }
+          appendTilesDetailedNews(news.data, newsContainer, 2);
+          removeLoader('#newsContainer', null, true);
+          initPagination(page, totalPages, 'newsEventsPage');
+          setPaginationListerners();
         } else {
           showNoResults('#newsTiles', 'No news with these filters', 'tall', 'grey', 'xxlarge', 'blue');
           $('.c-pagination').html('');

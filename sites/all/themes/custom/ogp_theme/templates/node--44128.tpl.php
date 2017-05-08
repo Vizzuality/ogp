@@ -12,7 +12,7 @@
       <div class="column small-12 medium-6 content-header">
         <h1 class="text -title">News and Events</h1>
       </div>
-      <div class="column small-12 medium-6">
+      <!-- <div class="column small-12 medium-6">
         <div class="row">
           <div class="column small-12 medium-6">
             <div class="c-selector -tall">
@@ -25,7 +25,7 @@
             </div>
           </div>
         </div>
-      </div>
+      </div> -->
     </div>
 
     <section id="eventsContainer" class="l-section">
