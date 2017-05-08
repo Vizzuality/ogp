@@ -28,7 +28,6 @@ function showCountriesDetail(id) {
     let actionPlansData;
     let reportsData;
 
-
     // init selectors
     $('select').select2({
       minimumResultsForSearch: Infinity,
@@ -252,6 +251,7 @@ function showCountriesDetail(id) {
     });
 
     // init selectors and views for actions, reports and letters data
+    buildMapModal();
     bodyContentListener();
 
   })(jQuery);

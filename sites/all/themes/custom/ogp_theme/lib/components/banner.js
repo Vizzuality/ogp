@@ -64,14 +64,21 @@ function addBanner(type, id) {
                   </p>
                 </div>
                 <div class="column small-12 medium-5 large-3 vertical">
-                  <a class="c-button -box -large -center" href="/submit-story">EXPLORE PEOPLE</a>
+                  <span class="c-button -box -large -center show-people-modal">EXPLORE PEOPLE</span>
                 </div>
               </div>
             </div>
           `);
+          initModalPeople(data);
         });
       break;
     default:
       break;
+  }
+
+  function initModalPeople(countriesData) {
+    $('.show-people-modal').click(function() {
+      updateMapModal(id, 'people', countriesData);
+    });
   }
 }
