@@ -63,12 +63,12 @@
   <!-- scripts -->
   <script type="text/javascript" src="//cdn.transifex.com/live.js"></script>
   <script type="text/javascript">
-    window.liveSettings = {
-      api_key:"2e24be1dcf164e729229ca078bdcfae7",
-      staging: true,
-      picker: "#transifexSelector",
-      dynamic: true
-    }
+    // window.liveSettings = {
+    //   api_key:"2e24be1dcf164e729229ca078bdcfae7",
+    //   staging: true,
+    //   picker: "#transifexSelector",
+    //   dynamic: true
+    // }
     //This is called each time the languages list is retrieved
     //from Transifex Live. This may happen more than once so we should
     //be able to handle this case.

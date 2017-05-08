@@ -11,10 +11,10 @@ function getAbsolutePath() {
     attach: function (context, settings) {
       const page = settings.block_refresh.args[0];
 
-      // window.liveSettings={
-      //   api_key:"2e24be1dcf164e729229ca078bdcfae7",
-      //   picker: "#transifexSelector"
-      // };
+      window.liveSettings={
+        api_key:"2e24be1dcf164e729229ca078bdcfae7",
+        picker: "#transifexSelector"
+      };
 
       /////////////////
       // global actions
@@ -27,7 +27,7 @@ function getAbsolutePath() {
       twitterLink();
 
       //init transifex
-      // window.liveSettings.picker = '#transifexSelector';
+      window.liveSettings.picker = '#transifexSelector';
 
 
       /////////////////
