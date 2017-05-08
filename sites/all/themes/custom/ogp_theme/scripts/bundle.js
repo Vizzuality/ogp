@@ -299,7 +299,7 @@ function addBanner(type, id) {
 
   function initModalPeople(countriesData) {
     $('.show-people-modal').click(function () {
-      updateMapModal(id, 'people', countriesData);
+      updateMapModal(id, 'peopleDetail', countriesData);
     });
   }
 }
@@ -482,7 +482,7 @@ function pushSmallModal(id, query, countryData, firstDataLabel, secondDataLabel,
 function setMapModalContent(id, type, countryId, countriesData) {
   var themeCommitmentAlias = 'theme';
   var countryData = void 0;
-  if (type !== 'people') {
+  if (type !== 'peopleDetail') {
     countryData = countriesData.filter(function (country) {
       return country.id == countryId;
     });
@@ -507,6 +507,11 @@ function setMapModalContent(id, type, countryId, countriesData) {
       pushDefaultModal(id, 'current_commitment?filter[country]=' + countryId + currentFilter, countryData, 'current commitments', 'explore this theme', '' + themeCommitmentAlias, 'list', '');
       break;
     case 'people':
+      $.getJSON('/apiJSON/people?filter[country_poc]=' + countryId, function (poc) {
+        pushDefaultModal(id, 'people?filter[country]=' + countryId, countryData, 'people involved', 'latest stories', 'stories', 'grid', poc);
+      });
+      break;
+    case 'peopleDetail':
       $.getJSON('/apiJSON/people?filter[country_poc]=' + countryId, function (poc) {
         pushDefaultModal(id, 'people?filter[country]=' + countryId, countryData, 'people involved', 'latest stories', 'stories', 'grid', poc);
       });
@@ -1119,6 +1124,28 @@ function showStarredCommitmentDetail(id) {
   (function ($) {
     $('#theme-menu').addClass('active');
     buildExploreMoreTiles('starredcommitments', '', '', true, true);
+  })(jQuery);
+}
+'use strict';
+
+function showDocumentResourcePage() {
+  (function ($) {
+    // cache dom
+    var tileContainer = $('#resourceDocsTiles');
+    var searchEl = $('.c-tile');
+    var searchText = $('.c-tile .tile');
+    var searchContainer = $('#resourceTilesSearch input');
+
+    // fetch content and append
+    $.getJSON('/apiJSON/resource', function (data) {
+      setSearchPlaceholder(searchContainer, data.data[0].label);
+      setSearchListeners(searchEl, searchText);
+      if (data.data.length) {
+        appendTiles(data.data, tileContainer, 4);
+      } else {
+        showNoResults();
+      }
+    });
   })(jQuery);
 }
 'use strict';
@@ -1805,28 +1832,6 @@ function showCountriesData(countriesData, activeTab, container, countryId) {
 function initCountryTabs(onChangeCountryTab) {
   initTabs();
   setTabListeners(onChangeCountryTab);
-}
-'use strict';
-
-function showDocumentResourcePage() {
-  (function ($) {
-    // cache dom
-    var tileContainer = $('#resourceDocsTiles');
-    var searchEl = $('.c-tile');
-    var searchText = $('.c-tile .tile');
-    var searchContainer = $('#resourceTilesSearch input');
-
-    // fetch content and append
-    $.getJSON('/apiJSON/resource', function (data) {
-      setSearchPlaceholder(searchContainer, data.data[0].label);
-      setSearchListeners(searchEl, searchText);
-      if (data.data.length) {
-        appendTiles(data.data, tileContainer, 4);
-      } else {
-        showNoResults();
-      }
-    });
-  })(jQuery);
 }
 'use strict';
 

@@ -192,7 +192,7 @@ function pushSmallModal(id, query, countryData, firstDataLabel, secondDataLabel,
 function setMapModalContent(id, type, countryId, countriesData) {
   let themeCommitmentAlias = 'theme';
   let countryData;
-  if (type !== 'people') {
+  if (type !== 'peopleDetail') {
     countryData = countriesData.filter(function(country) {
       return country.id == countryId;
     });
@@ -217,6 +217,11 @@ function setMapModalContent(id, type, countryId, countriesData) {
       pushDefaultModal(id, `current_commitment?filter[country]=${countryId}${currentFilter}`, countryData, 'current commitments', 'explore this theme', `${themeCommitmentAlias}`, 'list', '');
       break;
     case 'people':
+      $.getJSON(`/apiJSON/people?filter[country_poc]=${countryId}`, function (poc) {
+        pushDefaultModal(id, `people?filter[country]=${countryId}`, countryData, 'people involved', 'latest stories', 'stories', 'grid', poc);
+      });
+      break;
+    case 'peopleDetail':
       $.getJSON(`/apiJSON/people?filter[country_poc]=${countryId}`, function (poc) {
         pushDefaultModal(id, `people?filter[country]=${countryId}`, countryData, 'people involved', 'latest stories', 'stories', 'grid', poc);
       });

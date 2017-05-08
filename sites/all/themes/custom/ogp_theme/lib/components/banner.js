@@ -78,7 +78,7 @@ function addBanner(type, id) {
 
   function initModalPeople(countriesData) {
     $('.show-people-modal').click(function() {
-      updateMapModal(id, 'people', countriesData);
+      updateMapModal(id, 'peopleDetail', countriesData);
     });
   }
 }
