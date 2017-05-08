@@ -714,11 +714,26 @@ function buildTabs(data, tabsContainer, callback) {
 var randomTiles = [];
 var numRandoms = 50;
 
-function appendTilesWithoutBackground(data, container, gridNum, customClass) {
+function appendTilesWithoutBackground(data, container, gridNum, customClass, type) {
   var gridWidth = 12 / gridNum;
+  var countryList = '';
   if (data.length !== 0) {
     data.forEach(function (item) {
-      var html = '\n        <div class="column small-12 medium-' + gridWidth + ' c-tile ' + (customClass ? customClass : '') + '" data-group="' + (item.group ? item.group : '') + '">\n          <a href="/' + item.alias + '" class="tile">\n            <span class="text -tile -white">\n              ' + item.label + '\n            </span>\n          </a>\n        </div>\n      ';
+      if (item.country) {
+        countryList = '';
+        if (type === 'stories') {
+          for (var i = 0; i < item.country.length; i += 1) {
+            if (i === item.country.length - 1) {
+              countryList += '' + item.country[i].label;
+            } else {
+              countryList += item.country[i].label + ', ';
+            }
+          }
+        } else {
+          countryList = item.country.label;
+        }
+      }
+      var html = '\n        <div class="column small-12 medium-' + gridWidth + ' c-tile ' + (customClass ? customClass : '') + '" data-group="' + (item.group ? item.group : '') + '">\n          <a href="/' + item.alias + '" class="tile">\n            <span class="text -tile -white">\n              ' + item.label + '\n            </span>\n            <br>\n            <span class="text -tile -white country-name ' + (item.country ? '-visible' : '-hidden') + '">\n              ' + (item.country ? countryList : '') + '\n            </span>\n          </a>\n        </div>\n      ';
       container.append(html);
     });
   }

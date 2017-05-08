@@ -23,6 +23,29 @@
       margin-right: 15px;
       margin-left: 15px;
     }
+
+    .container-information {
+      .line-separator {
+        display: inline-block;
+
+        &::after {
+          display: inline-block;
+          position: relative;
+          top: 3px;
+          width: 1px;
+          height: 15px;
+          margin: 0 15px;
+          background-color: $color-5;
+          content: '';
+        }
+
+        &:last-of-type {
+          &::after {
+            display: none;
+          }
+        }
+      }
+    }
   }
 
   .container-contact {
