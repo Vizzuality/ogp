@@ -447,7 +447,7 @@ function pushDefaultModal(id, query, countryData, dataLabel, buttonText, buttonL
         secondDataCount = secondData.data.length;
         for (var i = 0; i < secondData.data.length; i += 1) {
           id_people[i] = secondData.data[i].id;
-          dataInfo += '\n            <a class="text -small-bold -blue" href="/' + secondData.data[i].alias + '">(point of contact) ' + secondData.data[i].label + '</a>\n            <p class="text -body-content">' + (secondData.data[i].body ? secondData.data[i].body.value : '') + '</p>';
+          dataInfo += '\n            <div class="modal-line-separator">\n              <a class="text -small-bold -blue" href="/' + secondData.data[i].alias + '">(point of contact) ' + secondData.data[i].label + '</a>\n              <p class="text -body-content">' + (secondData.data[i].body ? secondData.data[i].body.value : '') + '</p>\n            </div>';
         }
       }
     }
@@ -456,10 +456,10 @@ function pushDefaultModal(id, query, countryData, dataLabel, buttonText, buttonL
       var trimmedData = modalType === 'slider' ? data.data.slice(0, 3) : data.data;
       trimmedData.forEach(function (data) {
         if (modalType === 'list') {
-          dataInfo += '\n            <a href="/' + data.alias + '">\n              <h2 class="text -title-x-small">' + data.label + '</h2>\n            </a>\n          ';
+          dataInfo += '\n          <div class="people-line-separator">\n            <a href="/' + data.alias + '">\n              <h2 class="text -title-x-small">' + data.label + '</h2>\n            </a>\n          ';
         } else if (modalType === 'grid') {
           if ($.inArray(data.id, id_people) === -1) {
-            dataInfo += '\n              <a class="text -small-bold -blue" href="/' + data.alias + '">' + data.label + '</a>\n              <p class="text -body-content">' + addDots(data.body.value, 100) + '</p>\n            ';
+            dataInfo += '\n            <div class="modal-line-separator">\n              <a class="text -small-bold -blue" href="/' + data.alias + '">' + (data.label ? data.label : '') + '</a>\n              <p class="text -body-content">' + (data.body ? addDots(data.body.value, 100) : '') + '</p>\n            </div>';
           }
         } else if (modalType === 'slider') {
           dataInfo += '\n            <div class="slide -stories">\n              <a href="/' + (data.topic[0] ? data.topic[0].alias : '') + '" class="text -small-bold -blue">' + (data.topic[0] ? data.topic[0].label : '') + '</a>\n              <a href="/' + data.alias + '" class="text -section-title-small">' + data.label + '</a>\n              <span class="text date-text -small-bold">' + moment.unix(data.created).format('D MMMM YYYY') + '</span>\n              <p class="text -meta">' + (data.author[0] ? data.author[0].label : '') + '</p>\n            </div>\n          ';
@@ -1810,6 +1810,28 @@ function initCountryTabs(onChangeCountryTab) {
 }
 'use strict';
 
+function showDocumentResourcePage() {
+  (function ($) {
+    // cache dom
+    var tileContainer = $('#resourceDocsTiles');
+    var searchEl = $('.c-tile');
+    var searchText = $('.c-tile .tile');
+    var searchContainer = $('#resourceTilesSearch input');
+
+    // fetch content and append
+    $.getJSON('/apiJSON/resource', function (data) {
+      setSearchPlaceholder(searchContainer, data.data[0].label);
+      setSearchListeners(searchEl, searchText);
+      if (data.data.length) {
+        appendTiles(data.data, tileContainer, 4);
+      } else {
+        showNoResults();
+      }
+    });
+  })(jQuery);
+}
+'use strict';
+
 function showHomePage() {
   (function ($) {
 
@@ -1986,24 +2008,142 @@ function showSliderHomePage() {
 }
 'use strict';
 
-function showDocumentResourcePage() {
+function showIrmReports() {
   (function ($) {
-    // cache dom
-    var tileContainer = $('#resourceDocsTiles');
-    var searchEl = $('.c-tile');
-    var searchText = $('.c-tile .tile');
-    var searchContainer = $('#resourceTilesSearch input');
 
-    // fetch content and append
-    $.getJSON('/apiJSON/resource', function (data) {
-      setSearchPlaceholder(searchContainer, data.data[0].label);
-      setSearchListeners(searchEl, searchText);
-      if (data.data.length) {
-        appendTiles(data.data, tileContainer, 4);
-      } else {
-        showNoResults();
-      }
-    });
+    // cache
+    var countryFilter = 0;
+    var typeFilter = 0;
+    var page = 1;
+    var totalPages = 0;
+
+    //selectors
+    var countrySelectorDownload = $('.country-filter-download');
+    var countrySelectorComments = $('.country-filter-comments');
+    var tabsContainer = $('.tabs-container');
+    var containerInfo = $('#container-info');
+    var irmContainer = $('#downloadContainer');
+    var commentsContainer = $('#commentsContainer');
+
+    // custom callback for tabs component
+    var onChangeIRMTabs = function onChangeIRMTabs(id, label) {
+      $('.tab-content').addClass('-hidden');
+      $('.' + id).removeClass('-hidden');
+    };
+
+    function initIRMTabs(onChange) {
+      initTabs();
+      setTabListeners(onChange);
+    }
+
+    function setPageCount(val) {
+      $('.reload-thematic-download').data('value', val);
+    }
+
+    function setPageCountComments(val) {
+      $('.reload-thematic-comments').data('value', val);
+    }
+
+    function getCurrentPage() {
+      var pageCount = $('.reload-thematic-download').data('value');
+      return pageCount;
+    }
+
+    function getCurrentPageComments() {
+      var pageCount = $('.reload-thematic-comments').data('value');
+      return pageCount;
+    }
+
+    function onClickPagination() {
+      $('.c-pagination-click-download').on('click', function () {
+        setPageCount(getCurrentPage() + 1);
+        showLoader('#container-info');
+        showTilesIrmReports(countryFilter, getCurrentPage());
+      });
+    }
+
+    function onClickPaginationComments() {
+      $('.c-pagination-click-comments').on('click', function () {
+        setPageCountComments(getCurrentPageComments() + 1);
+        showLoader('#container-info');
+        showTilesComments(countryFilter, getCurrentPageComments());
+      });
+    }
+
+    function showTilesIrmReports(country, pageNext) {
+      var activeCountry = parseInt(country) > 0 ? 'filter[id]=' + country + '&' : '';
+      $.getJSON('/apiJSON/countries?' + activeCountry + 'sort=label', function (countries) {
+        appendTilesIRM(countries.data, irmContainer);
+        appendTilesComments(countries.data, commentsContainer);
+        removeLoader('#container-info', null, true);
+      });
+    }
+
+    // function showTilesComments(country, pageNext) {
+    //   const activeCountry = parseInt(country) > 0 ? `filter[id]=${country}&` : '';
+    //   $.getJSON(`/apiJSON/countries?${activeCountry}sort=label`, function (countries) {
+    //     for (let i = 0; i < countries.data.length; i += 1) {
+    //
+    //     }
+    //   });
+    // }
+
+    function buildSelectorDownload(selector, placeholder, endpoint, query) {
+      selector.select2({
+        minimumResultsForSearch: Infinity,
+        containerCssClass: '-green -tall',
+        dropdownCssClass: '-green',
+        placeholder: '' + placeholder
+      });
+      selector.append('<option value="0">' + placeholder + '</option>');
+      $.getJSON('/apiJSON/' + endpoint + '?' + query, function (data) {
+        data.data.forEach(function (data) {
+          var option = '<option value="' + data.id + '">' + data.label + '</option>';
+          selector.append(option);
+        });
+
+        $(countrySelectorDownload).on('change', function () {
+          $(irmContainer).html('');
+          showLoader('#tab-loader');
+          countryFilter = countrySelectorDownload.val();
+          page = 1;
+          showTilesIrmReports(countryFilter, page);
+        });
+      });
+    }
+
+    function buildSelectorComments(selector, placeholder, endpoint, query) {
+      selector.select2({
+        minimumResultsForSearch: Infinity,
+        containerCssClass: '-green -tall',
+        dropdownCssClass: '-green',
+        placeholder: '' + placeholder
+      });
+      selector.append('<option value="0">' + placeholder + '</option>');
+      $.getJSON('/apiJSON/' + endpoint + '?' + query, function (data) {
+        data.data.forEach(function (data) {
+          var option = '<option value="' + data.id + '">' + data.label + '</option>';
+          selector.append(option);
+        });
+
+        $(countrySelectorComments).on('change', function () {
+          $(irmContainer).html('');
+          showLoader('#tab-loader-comments');
+          countryFilter = countrySelectorComments.val();
+          page = 1;
+          showTilesComments(countryFilter, page);
+        });
+      });
+    }
+
+    buildSelectorDownload(countrySelectorDownload, 'All countries', 'countries', 'fields=id,label&sort=label');
+    buildSelectorComments(countrySelectorComments, 'All countries', 'countries', 'fields=id,label&sort=label');
+    onClickPagination();
+    onClickPaginationComments();
+    initIRMTabs(onChangeIRMTabs);
+    showTilesIrmReports(countryFilter, page);
+    // showTilesComments(countryFilter, page);
+
   })(jQuery);
 }
 'use strict';
@@ -2269,80 +2409,6 @@ function peopleInvolved(id) {
 }
 'use strict';
 
-function showGroupResourcesDetail(id) {
-  (function ($) {
-
-    // cache dom
-    var currentNode = $('#groupResourcesDetail').data('node');
-    var tabsContainer = $('#groupResourcesTabs .tabs-container');
-    var searchContainer = $('#resourceTilesSearch input');
-    var tilesContainer = $('#tilesContainer');
-    var searchEl = $('.c-tile');
-    var searchText = $('.c-tile .tile');
-
-    // custom callback for tabs component
-    var onChangeTab = function onChangeTab(sub_group_id, label) {
-      hideNoResults('#noResultsContainer');
-      showLoader('.l-section');
-      tilesContainer.html('');
-      searchContainer.val('');
-      var filterGroup = currentNode === 2920 ? '' : 'filter[group_resource]=' + currentNode + '&';
-      $.getJSON('/apiJSON/resources?' + filterGroup + 'filter[sub_group]=' + sub_group_id + '&sort=-post_highlighted', function (data) {
-        if (data.data.length) {
-          appendTiles(data.data, tilesContainer, 4);
-        } else {
-          showNoResults('#noResultsContainer', 'No resources available', 'tall', 'grey', 'xxlarge', 'blue');
-        }
-        removeLoader('.l-section', null, true);
-      });
-      setSearchPlaceholder(searchContainer, label);
-    };
-
-    // fetch content and append
-    $.getJSON('/apiJSON/sub_group_resource', function (data) {
-      buildTabs(data.data, tabsContainer, onChangeTab);
-      setSearchPlaceholder(searchContainer, data.data[0].label);
-      setSearchListeners(searchEl, searchText);
-      var filterGroup = currentNode === 2920 ? '' : 'filter[group_resource]=' + currentNode + '&';
-      $.getJSON('/apiJSON/resources?' + filterGroup + 'filter[sub_group]=' + data.data[0].id + '&sort=-post_highlighted', function (resources) {
-        if (resources.data.length) {
-          appendTiles(resources.data, tilesContainer, 4);
-        } else {
-          showNoResults('#noResultsContainer', 'No resources available', 'tall', 'grey', 'xxlarge', 'blue');
-        }
-        removeLoader('.l-section', null, true);
-      });
-    });
-  })(jQuery);
-}
-'use strict';
-
-function showGroupResourcesPage() {
-  (function ($) {
-    // cache dom
-    var tileContainer = $('#groupResourcesTiles');
-
-    // fetch content and append
-    $.getJSON('/apiJSON/group_resources', function (data) {
-      data.data.forEach(function (resource) {
-        var html = '\n          <div class="column small-12 medium-4 c-tile">\n            <a href="/' + resource.alias + '" class="tile -tall">\n              <span class="text -tile -white">\n                ' + resource.label + '\n              </span>\n            </a>\n          </div>\n        ';
-        tileContainer.append(html);
-      });
-      removeLoader('.l-section', null, true);
-    });
-  })(jQuery);
-}
-'use strict';
-
-function showResourcesDetail(id) {
-  (function ($) {
-    $.getJSON('/apiJSON/resources?filter[id]=' + id, function (data) {
-      buildExploreMoreTiles('resources', 'group_resource', data.data[0].group_resource[0], false, false);
-    });
-  })(jQuery);
-}
-'use strict';
-
 function featuresResultPage() {
   (function ($) {
 
@@ -2355,259 +2421,6 @@ function searchPage() {
   (function ($) {
 
     $('.search-form input').attr('placeholder', 'Type what you are searching for...');
-  })(jQuery);
-}
-'use strict';
-
-function showStoryDetail(id) {
-  (function ($) {
-
-    // data for post
-    $.getJSON('/apiJSON/stories/' + id, function (data) {
-      // cache
-      var story = data.data[0];
-      var creationDate = moment.unix(parseInt(story.created, 10)).format('D MMMM YYYY');
-      var metaHtml = '';
-      var authorsHtml = '<strong class="text -bold">Authors: </strong>';
-      // set country tags
-      if (story.country.length) {
-        var countries = story.country;
-        countries.forEach(function (country, index) {
-          var pathCountry = '' + country.alias;
-          if (index === countries.length - 1) {
-            metaHtml += '<a href="/' + pathCountry + '">' + country.label + '</a><span class="text -post-meta"> | </span>';
-          } else {
-            metaHtml += '<a href="/' + pathCountry + '">' + country.label + ', </a>';
-          }
-        });
-      }
-      metaHtml += '<span class="text -post-meta">' + creationDate + '</span>';
-      $('.countries').html(metaHtml);
-
-      // set body content
-      if (story.content) {
-        $('.-body-content').html(story.content.value);
-      }
-
-      // set author and topics
-      if (story.author[0]) {
-        story.author.forEach(function (author, index) {
-          if (index === story.author.length - 1) {
-            authorsHtml += '<a class="text -blank" href="/' + author.alias + '">' + author.label + '</a>';
-          } else {
-            authorsHtml += '<a class="text -blank" href="/' + author.alias + '">' + author.label + ', </a>';
-          }
-        });
-        $('.author').append(authorsHtml);
-      }
-
-      if (story.topic[0]) {
-        $('.topic').append('<strong class="text -bold">Topics: </strong>');
-        story.topic.forEach(function (topic, index) {
-          var pathTheme = '' + topic.alias;
-          if (index === story.topic.length - 1) {
-            $('.topic').append('<a class="text -blank" href="/' + pathTheme + '">' + topic.label + '</a>');
-          } else {
-            $('.topic').append('<a class="text -blank" href="/' + pathTheme + '">' + topic.label + '</a>, ');
-          }
-        });
-      }
-
-      if (story.tags) {
-        var tags = $('.tags');
-        tags.append('<strong class="text -bold">Tags: </strong>');
-        if (story.tags.length) {
-          story.tags.forEach(function (tag, index) {
-            if (index === story.tags.length - 1) {
-              tags.append('<span class="text -blank">' + tag.label + '</span>');
-            } else {
-              tags.append('<span class="text -blank">' + tag.label + '</span>, ');
-            }
-          });
-        } else {
-          tags.append('<span class="text -grey">N/A</span>');
-        }
-      }
-
-      if (story.type) {
-        $('.filed-under').append('<strong class="text -bold">Filed Under: </strong>');
-        $('.filed-under').append('<span class="text -blank">' + story.type.label + '</a>');
-      }
-
-      removeLoader('#storiesDetail');
-    });
-  })(jQuery);
-}
-'use strict';
-
-function showStoriesPage() {
-  (function ($) {
-
-    // cache
-    var countryFilter = 0;
-    var typeFilter = 0;
-    var page = 1;
-    var totalPages = 0;
-    var authorsHtml = '';
-
-    //selectors
-    var countrySelector = $('.country-filter');
-    var typeSelector = $('.type-filter');
-    var coverEvents = $('.c-content-banner');
-    var storiesContainer = $('#storiesTiles');
-
-    // public functions
-    function buildHighlightedEvent(story) {
-      if (story.image) {
-        $('.c-content-banner').css('background-image', 'url(' + story.image + ')');
-      }
-      if (story.author[0]) {
-        story.author.forEach(function (author, index) {
-          if (index === story.author.length - 1) {
-            authorsHtml += '<a class="text -white" href="/' + author.alias + '">' + author.label + '</a>';
-          } else {
-            authorsHtml += '<a class="text -white" href="/' + author.alias + '">' + author.label + ', </a>';
-          }
-        });
-      }
-      $('.banner-link', coverEvents).attr('href', story.alias);
-      $('.banner-title', coverEvents).html(story.label);
-      $('.banner-date', coverEvents).html(moment.unix(story.created).format('D MMMM YYYY'));
-      if (story.author[0]) {
-        $('.banner-author', coverEvents).html(authorsHtml);
-      }
-      $('.c-content-banner').removeClass('-hidden');
-    }
-
-    function buildSelector(selector, placeholder, endpoint, query) {
-      selector.select2({
-        minimumResultsForSearch: Infinity,
-        containerCssClass: '-green -tall',
-        dropdownCssClass: '-green',
-        placeholder: '' + placeholder
-      });
-      selector.append('<option value="0">' + placeholder + '</option>');
-
-      $.getJSON('/apiJSON/' + endpoint + '?' + query, function (data) {
-        data.data.forEach(function (data) {
-          var option = '<option value="' + data.id + '">' + data.label + '</option>';
-          selector.append(option);
-        });
-
-        selector.on('change', function () {
-          showLoader('#storiesContainer');
-          countryFilter = countrySelector.val();
-          typeFilter = typeSelector.val();
-          page = 1;
-          showStories(countryFilter, typeFilter, page);
-        });
-      });
-    }
-
-    function setPaginationListerners() {
-      countryFilter = countrySelector.val();
-      typeFilter = typeSelector.val();
-      $('.onClickPagination').on('click', function (e) {
-        showLoader('#storiesContainer');
-        var pageNum = $(this).data('value');
-        showStories(countryFilter, typeFilter, pageNum);
-      });
-    }
-
-    function showStories(country, type, page) {
-      var activeCountry = parseInt(country) > 0 ? 'filter[country]=' + country + '&' : '';
-      var activeType = parseInt(type) > 0 ? 'filter[category]=' + type + '&' : '';
-      var activeFilters = '' + activeCountry + activeType + '&page[number]=' + page + '&page[size]=8';
-      $.getJSON('/apiJSON/stories?' + activeFilters + '&sort=-created', function (stories) {
-        if (stories.data.length > 0) {
-          totalPages = getPageCount(stories.count, 8);
-          // if (page === 1) {
-          //   $.getJSON(`/apiJSON/stories?sort=-created`, function (highlightedStory) {
-          //     if (highlightedStory.data[0]) {
-          //       buildHighlightedEvent(highlightedStory.data[0]);
-          //     }
-          //     appendTilesDetailed(stories.data, storiesContainer, 2);
-          //     initPagination(page, totalPages, 'storiesPage');
-          //     setPaginationListerners();
-          //     removeLoader('#storiesContainer', null, true);
-          //   });
-          // } else {
-          appendTilesDetailed(stories.data, storiesContainer, 2);
-          removeLoader('#storiesContainer', null, true);
-          initPagination(page, totalPages, 'storiesPage');
-          setPaginationListerners();
-          // }
-        } else {
-          showNoResults('#storiesTiles', 'No stories with these filters', 'tall', 'grey', 'xxlarge', 'blue');
-          $('.c-pagination').html('');
-          removeLoader('#storiesContainer', null, true);
-        }
-      }).error(function () {
-        showNoResults('#storiesTiles', 'Sorry, stories counld not be found', 'tall', 'grey', 'xxlarge', 'blue');
-        $('.c-pagination').html('');
-        removeLoader('#storiesContainer', null, true);
-      });
-    }
-
-    // build page
-    buildSelector(countrySelector, 'All countries', 'countries', 'fields=id,label&sort=label');
-    buildSelector(typeSelector, 'All story types', 'stories_categories', 'fields=id,label&sort=label');
-    showStories(countryFilter, typeFilter, page);
-  })(jQuery);
-}
-'use strict';
-
-function showStoriesSubmitPage(id) {
-  (function ($) {
-
-    // cache
-    var themeSelector = '.type-select';
-    var countrySelector = '.country-select';
-
-    $('#stories-menu').addClass('active');
-
-    $(themeSelector).select2({
-      minimumResultsForSearch: Infinity,
-      containerCssClass: '-tall',
-      placeholder: 'All story types'
-    });
-    $(countrySelector).select2({
-      minimumResultsForSearch: Infinity,
-      containerCssClass: '-tall',
-      placeholder: 'All countries'
-    });
-
-    $.getJSON('/apiJSON/countries?fields=id,name,label&sort=label', function (data) {
-      appendSelectOptionsFromData(countrySelector, data.data);
-      $.getJSON('/apiJSON/themes?sort=label&fields=id,label', function (data) {
-        appendSelectOptionsFromData(themeSelector, data.data);
-        removeLoader('.c-form', null, true);
-      });
-    });
-
-    $('.c-form').submit(function (e) {
-      var title = $('#title').val();
-      var content = $('.-content').val();
-      var country = $('#country').val();
-      var topic = $('#topic').val();
-      var email = $('#email').val();
-      var author = $('#author').val();
-      var url = './submitCookiesStory.php';
-      if (title !== '' && content !== '') {
-        var dataString = 'title=' + title + '&content=' + content + '&country=' + country + '&topic=' + topic + '&email=' + email + '&author=' + author;
-        $.ajax({
-          type: 'POST',
-          url: url,
-          data: dataString,
-          success: function success(data) {
-            document.location.href = window.location.origin + '/submit-story-accepted';
-          }
-        });
-      } else {
-        // console.log('data not accepted');
-      }
-      e.preventDefault();
-    });
   })(jQuery);
 }
 "use strict";
@@ -2861,7 +2674,162 @@ function showWorkingGroupDetail(id) {
 }
 'use strict';
 
-function showIrmReports() {
+function showGroupResourcesDetail(id) {
+  (function ($) {
+
+    // cache dom
+    var currentNode = $('#groupResourcesDetail').data('node');
+    var tabsContainer = $('#groupResourcesTabs .tabs-container');
+    var searchContainer = $('#resourceTilesSearch input');
+    var tilesContainer = $('#tilesContainer');
+    var searchEl = $('.c-tile');
+    var searchText = $('.c-tile .tile');
+
+    // custom callback for tabs component
+    var onChangeTab = function onChangeTab(sub_group_id, label) {
+      hideNoResults('#noResultsContainer');
+      showLoader('.l-section');
+      tilesContainer.html('');
+      searchContainer.val('');
+      var filterGroup = currentNode === 2920 ? '' : 'filter[group_resource]=' + currentNode + '&';
+      $.getJSON('/apiJSON/resources?' + filterGroup + 'filter[sub_group]=' + sub_group_id + '&sort=-post_highlighted', function (data) {
+        if (data.data.length) {
+          appendTiles(data.data, tilesContainer, 4);
+        } else {
+          showNoResults('#noResultsContainer', 'No resources available', 'tall', 'grey', 'xxlarge', 'blue');
+        }
+        removeLoader('.l-section', null, true);
+      });
+      setSearchPlaceholder(searchContainer, label);
+    };
+
+    // fetch content and append
+    $.getJSON('/apiJSON/sub_group_resource', function (data) {
+      buildTabs(data.data, tabsContainer, onChangeTab);
+      setSearchPlaceholder(searchContainer, data.data[0].label);
+      setSearchListeners(searchEl, searchText);
+      var filterGroup = currentNode === 2920 ? '' : 'filter[group_resource]=' + currentNode + '&';
+      $.getJSON('/apiJSON/resources?' + filterGroup + 'filter[sub_group]=' + data.data[0].id + '&sort=-post_highlighted', function (resources) {
+        if (resources.data.length) {
+          appendTiles(resources.data, tilesContainer, 4);
+        } else {
+          showNoResults('#noResultsContainer', 'No resources available', 'tall', 'grey', 'xxlarge', 'blue');
+        }
+        removeLoader('.l-section', null, true);
+      });
+    });
+  })(jQuery);
+}
+'use strict';
+
+function showGroupResourcesPage() {
+  (function ($) {
+    // cache dom
+    var tileContainer = $('#groupResourcesTiles');
+
+    // fetch content and append
+    $.getJSON('/apiJSON/group_resources', function (data) {
+      data.data.forEach(function (resource) {
+        var html = '\n          <div class="column small-12 medium-4 c-tile">\n            <a href="/' + resource.alias + '" class="tile -tall">\n              <span class="text -tile -white">\n                ' + resource.label + '\n              </span>\n            </a>\n          </div>\n        ';
+        tileContainer.append(html);
+      });
+      removeLoader('.l-section', null, true);
+    });
+  })(jQuery);
+}
+'use strict';
+
+function showResourcesDetail(id) {
+  (function ($) {
+    $.getJSON('/apiJSON/resources?filter[id]=' + id, function (data) {
+      buildExploreMoreTiles('resources', 'group_resource', data.data[0].group_resource[0], false, false);
+    });
+  })(jQuery);
+}
+'use strict';
+
+function showStoryDetail(id) {
+  (function ($) {
+
+    // data for post
+    $.getJSON('/apiJSON/stories/' + id, function (data) {
+      // cache
+      var story = data.data[0];
+      var creationDate = moment.unix(parseInt(story.created, 10)).format('D MMMM YYYY');
+      var metaHtml = '';
+      var authorsHtml = '<strong class="text -bold">Authors: </strong>';
+      // set country tags
+      if (story.country.length) {
+        var countries = story.country;
+        countries.forEach(function (country, index) {
+          var pathCountry = '' + country.alias;
+          if (index === countries.length - 1) {
+            metaHtml += '<a href="/' + pathCountry + '">' + country.label + '</a><span class="text -post-meta"> | </span>';
+          } else {
+            metaHtml += '<a href="/' + pathCountry + '">' + country.label + ', </a>';
+          }
+        });
+      }
+      metaHtml += '<span class="text -post-meta">' + creationDate + '</span>';
+      $('.countries').html(metaHtml);
+
+      // set body content
+      if (story.content) {
+        $('.-body-content').html(story.content.value);
+      }
+
+      // set author and topics
+      if (story.author[0]) {
+        story.author.forEach(function (author, index) {
+          if (index === story.author.length - 1) {
+            authorsHtml += '<a class="text -blank" href="/' + author.alias + '">' + author.label + '</a>';
+          } else {
+            authorsHtml += '<a class="text -blank" href="/' + author.alias + '">' + author.label + ', </a>';
+          }
+        });
+        $('.author').append(authorsHtml);
+      }
+
+      if (story.topic[0]) {
+        $('.topic').append('<strong class="text -bold">Topics: </strong>');
+        story.topic.forEach(function (topic, index) {
+          var pathTheme = '' + topic.alias;
+          if (index === story.topic.length - 1) {
+            $('.topic').append('<a class="text -blank" href="/' + pathTheme + '">' + topic.label + '</a>');
+          } else {
+            $('.topic').append('<a class="text -blank" href="/' + pathTheme + '">' + topic.label + '</a>, ');
+          }
+        });
+      }
+
+      if (story.tags) {
+        var tags = $('.tags');
+        tags.append('<strong class="text -bold">Tags: </strong>');
+        if (story.tags.length) {
+          story.tags.forEach(function (tag, index) {
+            if (index === story.tags.length - 1) {
+              tags.append('<span class="text -blank">' + tag.label + '</span>');
+            } else {
+              tags.append('<span class="text -blank">' + tag.label + '</span>, ');
+            }
+          });
+        } else {
+          tags.append('<span class="text -grey">N/A</span>');
+        }
+      }
+
+      if (story.type) {
+        $('.filed-under').append('<strong class="text -bold">Filed Under: </strong>');
+        $('.filed-under').append('<span class="text -blank">' + story.type.label + '</a>');
+      }
+
+      removeLoader('#storiesDetail');
+    });
+  })(jQuery);
+}
+'use strict';
+
+function showStoriesPage() {
   (function ($) {
 
     // cache
@@ -2869,79 +2837,38 @@ function showIrmReports() {
     var typeFilter = 0;
     var page = 1;
     var totalPages = 0;
+    var authorsHtml = '';
 
     //selectors
-    var countrySelectorDownload = $('.country-filter-download');
-    var countrySelectorComments = $('.country-filter-comments');
-    var tabsContainer = $('.tabs-container');
-    var containerInfo = $('#container-info');
-    var irmContainer = $('#downloadContainer');
-    var commentsContainer = $('#commentsContainer');
+    var countrySelector = $('.country-filter');
+    var typeSelector = $('.type-filter');
+    var coverEvents = $('.c-content-banner');
+    var storiesContainer = $('#storiesTiles');
 
-    // custom callback for tabs component
-    var onChangeIRMTabs = function onChangeIRMTabs(id, label) {
-      $('.tab-content').addClass('-hidden');
-      $('.' + id).removeClass('-hidden');
-    };
-
-    function initIRMTabs(onChange) {
-      initTabs();
-      setTabListeners(onChange);
+    // public functions
+    function buildHighlightedEvent(story) {
+      if (story.image) {
+        $('.c-content-banner').css('background-image', 'url(' + story.image + ')');
+      }
+      if (story.author[0]) {
+        story.author.forEach(function (author, index) {
+          if (index === story.author.length - 1) {
+            authorsHtml += '<a class="text -white" href="/' + author.alias + '">' + author.label + '</a>';
+          } else {
+            authorsHtml += '<a class="text -white" href="/' + author.alias + '">' + author.label + ', </a>';
+          }
+        });
+      }
+      $('.banner-link', coverEvents).attr('href', story.alias);
+      $('.banner-title', coverEvents).html(story.label);
+      $('.banner-date', coverEvents).html(moment.unix(story.created).format('D MMMM YYYY'));
+      if (story.author[0]) {
+        $('.banner-author', coverEvents).html(authorsHtml);
+      }
+      $('.c-content-banner').removeClass('-hidden');
     }
 
-    function setPageCount(val) {
-      $('.reload-thematic-download').data('value', val);
-    }
-
-    function setPageCountComments(val) {
-      $('.reload-thematic-comments').data('value', val);
-    }
-
-    function getCurrentPage() {
-      var pageCount = $('.reload-thematic-download').data('value');
-      return pageCount;
-    }
-
-    function getCurrentPageComments() {
-      var pageCount = $('.reload-thematic-comments').data('value');
-      return pageCount;
-    }
-
-    function onClickPagination() {
-      $('.c-pagination-click-download').on('click', function () {
-        setPageCount(getCurrentPage() + 1);
-        showLoader('#container-info');
-        showTilesIrmReports(countryFilter, getCurrentPage());
-      });
-    }
-
-    function onClickPaginationComments() {
-      $('.c-pagination-click-comments').on('click', function () {
-        setPageCountComments(getCurrentPageComments() + 1);
-        showLoader('#container-info');
-        showTilesComments(countryFilter, getCurrentPageComments());
-      });
-    }
-
-    function showTilesIrmReports(country, pageNext) {
-      var activeCountry = parseInt(country) > 0 ? 'filter[id]=' + country + '&' : '';
-      $.getJSON('/apiJSON/countries?' + activeCountry + 'sort=label', function (countries) {
-        appendTilesIRM(countries.data, irmContainer);
-        appendTilesComments(countries.data, commentsContainer);
-        removeLoader('#container-info', null, true);
-      });
-    }
-
-    // function showTilesComments(country, pageNext) {
-    //   const activeCountry = parseInt(country) > 0 ? `filter[id]=${country}&` : '';
-    //   $.getJSON(`/apiJSON/countries?${activeCountry}sort=label`, function (countries) {
-    //     for (let i = 0; i < countries.data.length; i += 1) {
-    //
-    //     }
-    //   });
-    // }
-
-    function buildSelectorDownload(selector, placeholder, endpoint, query) {
+    function buildSelector(selector, placeholder, endpoint, query) {
       selector.select2({
         minimumResultsForSearch: Infinity,
         containerCssClass: '-green -tall',
@@ -2949,54 +2876,127 @@ function showIrmReports() {
         placeholder: '' + placeholder
       });
       selector.append('<option value="0">' + placeholder + '</option>');
+
       $.getJSON('/apiJSON/' + endpoint + '?' + query, function (data) {
         data.data.forEach(function (data) {
           var option = '<option value="' + data.id + '">' + data.label + '</option>';
           selector.append(option);
         });
 
-        $(countrySelectorDownload).on('change', function () {
-          $(irmContainer).html('');
-          showLoader('#tab-loader');
-          countryFilter = countrySelectorDownload.val();
+        selector.on('change', function () {
+          showLoader('#storiesContainer');
+          countryFilter = countrySelector.val();
+          typeFilter = typeSelector.val();
           page = 1;
-          showTilesIrmReports(countryFilter, page);
+          showStories(countryFilter, typeFilter, page);
         });
       });
     }
 
-    function buildSelectorComments(selector, placeholder, endpoint, query) {
-      selector.select2({
-        minimumResultsForSearch: Infinity,
-        containerCssClass: '-green -tall',
-        dropdownCssClass: '-green',
-        placeholder: '' + placeholder
-      });
-      selector.append('<option value="0">' + placeholder + '</option>');
-      $.getJSON('/apiJSON/' + endpoint + '?' + query, function (data) {
-        data.data.forEach(function (data) {
-          var option = '<option value="' + data.id + '">' + data.label + '</option>';
-          selector.append(option);
-        });
-
-        $(countrySelectorComments).on('change', function () {
-          $(irmContainer).html('');
-          showLoader('#tab-loader-comments');
-          countryFilter = countrySelectorComments.val();
-          page = 1;
-          showTilesComments(countryFilter, page);
-        });
+    function setPaginationListerners() {
+      countryFilter = countrySelector.val();
+      typeFilter = typeSelector.val();
+      $('.onClickPagination').on('click', function (e) {
+        showLoader('#storiesContainer');
+        var pageNum = $(this).data('value');
+        showStories(countryFilter, typeFilter, pageNum);
       });
     }
 
-    buildSelectorDownload(countrySelectorDownload, 'All countries', 'countries', 'fields=id,label&sort=label');
-    buildSelectorComments(countrySelectorComments, 'All countries', 'countries', 'fields=id,label&sort=label');
-    onClickPagination();
-    onClickPaginationComments();
-    initIRMTabs(onChangeIRMTabs);
-    showTilesIrmReports(countryFilter, page);
-    // showTilesComments(countryFilter, page);
+    function showStories(country, type, page) {
+      var activeCountry = parseInt(country) > 0 ? 'filter[country]=' + country + '&' : '';
+      var activeType = parseInt(type) > 0 ? 'filter[category]=' + type + '&' : '';
+      var activeFilters = '' + activeCountry + activeType + '&page[number]=' + page + '&page[size]=8';
+      $.getJSON('/apiJSON/stories?' + activeFilters + '&sort=-created', function (stories) {
+        if (stories.data.length > 0) {
+          totalPages = getPageCount(stories.count, 8);
+          // if (page === 1) {
+          //   $.getJSON(`/apiJSON/stories?sort=-created`, function (highlightedStory) {
+          //     if (highlightedStory.data[0]) {
+          //       buildHighlightedEvent(highlightedStory.data[0]);
+          //     }
+          //     appendTilesDetailed(stories.data, storiesContainer, 2);
+          //     initPagination(page, totalPages, 'storiesPage');
+          //     setPaginationListerners();
+          //     removeLoader('#storiesContainer', null, true);
+          //   });
+          // } else {
+          appendTilesDetailed(stories.data, storiesContainer, 2);
+          removeLoader('#storiesContainer', null, true);
+          initPagination(page, totalPages, 'storiesPage');
+          setPaginationListerners();
+          // }
+        } else {
+          showNoResults('#storiesTiles', 'No stories with these filters', 'tall', 'grey', 'xxlarge', 'blue');
+          $('.c-pagination').html('');
+          removeLoader('#storiesContainer', null, true);
+        }
+      }).error(function () {
+        showNoResults('#storiesTiles', 'Sorry, stories counld not be found', 'tall', 'grey', 'xxlarge', 'blue');
+        $('.c-pagination').html('');
+        removeLoader('#storiesContainer', null, true);
+      });
+    }
 
+    // build page
+    buildSelector(countrySelector, 'All countries', 'countries', 'fields=id,label&sort=label');
+    buildSelector(typeSelector, 'All story types', 'stories_categories', 'fields=id,label&sort=label');
+    showStories(countryFilter, typeFilter, page);
+  })(jQuery);
+}
+'use strict';
+
+function showStoriesSubmitPage(id) {
+  (function ($) {
+
+    // cache
+    var themeSelector = '.type-select';
+    var countrySelector = '.country-select';
+
+    $('#stories-menu').addClass('active');
+
+    $(themeSelector).select2({
+      minimumResultsForSearch: Infinity,
+      containerCssClass: '-tall',
+      placeholder: 'All story types'
+    });
+    $(countrySelector).select2({
+      minimumResultsForSearch: Infinity,
+      containerCssClass: '-tall',
+      placeholder: 'All countries'
+    });
+
+    $.getJSON('/apiJSON/countries?fields=id,name,label&sort=label', function (data) {
+      appendSelectOptionsFromData(countrySelector, data.data);
+      $.getJSON('/apiJSON/themes?sort=label&fields=id,label', function (data) {
+        appendSelectOptionsFromData(themeSelector, data.data);
+        removeLoader('.c-form', null, true);
+      });
+    });
+
+    $('.c-form').submit(function (e) {
+      var title = $('#title').val();
+      var content = $('.-content').val();
+      var country = $('#country').val();
+      var topic = $('#topic').val();
+      var email = $('#email').val();
+      var author = $('#author').val();
+      var url = './submitCookiesStory.php';
+      if (title !== '' && content !== '') {
+        var dataString = 'title=' + title + '&content=' + content + '&country=' + country + '&topic=' + topic + '&email=' + email + '&author=' + author;
+        $.ajax({
+          type: 'POST',
+          url: url,
+          data: dataString,
+          success: function success(data) {
+            document.location.href = window.location.origin + '/submit-story-accepted';
+          }
+        });
+      } else {
+        // console.log('data not accepted');
+      }
+      e.preventDefault();
+    });
   })(jQuery);
 }
 //# sourceMappingURL=bundle.js.map

@@ -68,6 +68,16 @@
         max-height: 150px;
         overflow: auto;
        }
+
+       .modal-line-separator {
+         margin-bottom: 15px;
+         border-bottom: 1px solid $color-3;
+
+         &:last-of-type {
+          border-bottom: 0;
+         }
+       }
+
      }
 
     .content-footer {
