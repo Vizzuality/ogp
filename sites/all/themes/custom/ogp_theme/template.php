@@ -193,29 +193,17 @@ function ogp_theme_preprocess_node(&$vars) {
     $vars['submitted'] = $credit . '<br /><span class="submitted-date">' . $vars['date'] . '</span>';
   }
 
-  switch ($vars['type']) {
-    case 'country_page':
-      if ($vars['view_mode'] == 'action_plan') {
-        $vars['page'] = TRUE;
-        $vars['country_section'] = t('Action Plans');
-      }
-      elseif ($vars['view_mode'] == 'full' && !empty($vars['body'])) {
-        $vars['country_section'] = t('Introduction');
-      }
-      break;
-  }
-}
-
-/**
- * Implements hook_form_FORM_ID_alter().
- *
- * Render language switcher as short two-letter language codes.
- * @todo replace this with JS so that options still appear to be full language name.
- */
-function ogp_theme_form_lang_dropdown_form_alter(&$form, &$form_state) {
-  foreach($form['lang_dropdown_select']['#options'] as $lang_code => $language_name) {
-    $form['lang_dropdown_select']['#options'][$lang_code] = strtoupper($lang_code);
-  }
+  // switch ($vars['type']) {
+  //   case 'country_page':
+  //     if ($vars['view_mode'] == 'action_plan') {
+  //       $vars['page'] = TRUE;
+  //       $vars['country_section'] = t('Action Plans');
+  //     }
+  //     elseif ($vars['view_mode'] == 'full' && !empty($vars['body'])) {
+  //       $vars['country_section'] = t('Introduction');
+  //     }
+  //     break;
+  // }
 }
 
 function ogp_theme_preprocess_html(&$variables) {
@@ -308,34 +296,3 @@ function ogp_theme_facetapi_link_active($variables) {
   $variables['options']['html'] = TRUE;
   return theme_link($variables);
 }
-
-function ogp_theme_preprocess_camp_schedule_grid(&$vars) {
-  $vars['header'][0]['data'] = t('Time');
-}
-
-function ogp_theme_node_view_alter(&$build)
-{
-  $build['#attach']['js'][] = array
-  (
-    'type' => 'setting',
-    'data' => array
-    (
-      'THEMENAME' => array('nodeType' => $node->type),
-    ),
-  );
-}
-
-/*
- * Implements template_css_alter().
- * Remove theme CSS at IRM page
- */
-/*function ogp_theme_css_alter(&$items) {
-  if (drupal_get_path_alias() == 'IRM-explorer') {
-    foreach ($items as $item => $value) {
-      if (substr($item, 35, 11) == 'responsive.') {
-        unset($items[$item]);
-      }
-    }
-    dpm($items);
-  }
-}*/

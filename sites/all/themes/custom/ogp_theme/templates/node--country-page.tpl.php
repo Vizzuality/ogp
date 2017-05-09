@@ -12,6 +12,9 @@ $current_body = field_get_items('node', $current, 'body')[0]['value'];
 $reviewed = node_load(25021);
 $reviewed_heading = field_get_items('node', $reviewed, 'field_headline')[0]['value'];
 $reviewed_body = field_get_items('node', $reviewed, 'body')[0]['value'];
+
+$current_themes = field_get_items('node', $node, 'field_current_themes')[0]['value'];
+$themes_percentage = field_get_items('node', $node, 'field_themes_percentage')[0]['value'];
 ?>
 <div id="countriesDetail" class="l-countries -single"<?php print $attributes; ?>>
 
