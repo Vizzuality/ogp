@@ -121,6 +121,10 @@
 
      .c-button {
        width: 50%;
+
+       &:first-of-type {
+         border-right: 1px solid $color-8;
+       }
      }
 
      &.-fixed {

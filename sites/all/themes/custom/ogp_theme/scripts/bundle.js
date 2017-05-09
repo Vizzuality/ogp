@@ -447,7 +447,7 @@ function pushDefaultModal(id, query, countryData, dataLabel, buttonText, buttonL
         for (var i = 0; i < secondData.data.length; i += 1) {
           totalPeople += 1;
           id_people[i] = secondData.data[i].id;
-          dataInfo += '\n            <div class="modal-line-separator">\n              <a class="text -small-bold -blue" href="/' + secondData.data[i].alias + '">(point of contact) ' + secondData.data[i].label + '</a>\n              <p class="text -body-content">' + (secondData.data[i].body ? addDots(secondData.data[i].body.value, 100) : '') + '</p>\n            </div>';
+          dataInfo += '\n              <a class="text -small-bold -blue" href="/' + secondData.data[i].alias + '">(point of contact) ' + secondData.data[i].label + '</a>\n              <p class="text -body-content">' + (secondData.data[i].body ? addDots(secondData.data[i].body.value, 100) : '') + '</p>';
         }
       }
     }
@@ -460,7 +460,7 @@ function pushDefaultModal(id, query, countryData, dataLabel, buttonText, buttonL
         } else if (modalType === 'grid') {
           if ($.inArray(data.id, id_people) === -1) {
             totalPeople += 1;
-            dataInfo += '\n            <div class="modal-line-separator">\n              <a class="text -small-bold -blue" href="/' + data.alias + '">' + (data.label ? data.label : '') + '</a>\n              <p class="text -body-content">' + (data.body ? addDots(data.body.value, 100) : '') + '</p>\n            </div>';
+            dataInfo += '\n              <a class="text -small-bold -blue" href="/' + data.alias + '">' + (data.label ? data.label : '') + '</a>\n              <p class="text -body-content">' + (data.body ? addDots(data.body.value, 100) : '') + '</p>';
           }
         } else if (modalType === 'slider') {
           dataInfo += '\n            <div class="slide -stories">\n              <a href="/' + (data.topic[0] ? data.topic[0].alias : '') + '" class="text -small-bold -blue">' + (data.topic[0] ? data.topic[0].label : '') + '</a>\n              <a href="/' + data.alias + '" class="text -section-title-small">' + data.label + '</a>\n              <span class="text date-text -small-bold">' + moment.unix(data.created).format('D MMMM YYYY') + '</span>\n              <p class="text -meta">' + (data.author[0] ? data.author[0].label : '') + '</p>\n            </div>\n          ';
