@@ -6,14 +6,13 @@
 
   .people-header {
     display: flex;
-    align-items: center;
+    align-items: flex-start;
 
     .image-profile {
       position: relative;
       width: 150px;
-      height: 200px;
+      height: 150px;
       margin-right: 50px;
-      border: 1px solid $color-2;
       background-repeat: no-repeat;
       background-size: cover;
     }
