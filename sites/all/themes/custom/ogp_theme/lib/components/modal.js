@@ -105,10 +105,8 @@ function pushDefaultModal(id, query, countryData, dataLabel, buttonText, buttonL
           totalPeople += 1;
           id_people[i] = secondData.data[i].id;
           dataInfo += `
-            <div class="modal-line-separator">
               <a class="text -small-bold -blue" href="/${secondData.data[i].alias}">(point of contact) ${secondData.data[i].label}</a>
-              <p class="text -body-content">${secondData.data[i].body ? addDots(secondData.data[i].body.value, 100) : ''}</p>
-            </div>`;
+              <p class="text -body-content">${secondData.data[i].body ? addDots(secondData.data[i].body.value, 100) : ''}</p>`;
         }
       }
     }
@@ -128,10 +126,8 @@ function pushDefaultModal(id, query, countryData, dataLabel, buttonText, buttonL
           if ($.inArray(data.id, id_people) === -1) {
             totalPeople += 1;
             dataInfo += `
-            <div class="modal-line-separator">
               <a class="text -small-bold -blue" href="/${data.alias}">${data.label ? data.label : ''}</a>
-              <p class="text -body-content">${data.body ? addDots(data.body.value, 100) : ''}</p>
-            </div>`;
+              <p class="text -body-content">${data.body ? addDots(data.body.value, 100) : ''}</p>`;
           }
         } else if (modalType === 'slider') {
           dataInfo += `
