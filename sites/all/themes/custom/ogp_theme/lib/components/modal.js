@@ -227,7 +227,7 @@ function setMapModalContent(id, type, countryId, countriesData) {
       });
       break;
     case 'stories':
-      pushDefaultModal(id, `stories?filter[country]=${countryId}&sort=-created`, countryData, 'stories', 'latest stories', 'stories', 'slider', '');
+      pushDefaultModal(id, `stories?filter[country]=${countryId}&sort=-created&range=3`, countryData, 'stories', 'latest stories', 'stories', 'slider', '');
       break;
     default:
       break;
