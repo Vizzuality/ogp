@@ -14,7 +14,6 @@ $reviewed_heading = field_get_items('node', $reviewed, 'field_headline')[0]['val
 $reviewed_body = field_get_items('node', $reviewed, 'body')[0]['value'];
 ?>
 <div id="countriesDetail" class="l-countries -single"<?php print $attributes; ?>>
-  <div class="c-loader"><div class="loader"></div></div>
 
   <div id="countryHeaderBanner" class="header-banner">
 
