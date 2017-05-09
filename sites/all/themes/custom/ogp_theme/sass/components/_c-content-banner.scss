@@ -12,6 +12,28 @@
     display: none;
   }
 
+  &.-image-upcoming-events {
+    position: relative;
+    background-image: url('../images/cover/cover2.jpeg');
+    min-height: 0;
+
+    .banner-title {
+      z-index: 102;
+    }
+
+    &:after {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      display: block;
+      background-color: rgba($color-2, .3);
+      z-index: 101;
+      content: '';
+    }
+  }
+
   .title-text {
     font-size: $font-size-x-medium;
     font-weight: $font-weight-semi-bold;
