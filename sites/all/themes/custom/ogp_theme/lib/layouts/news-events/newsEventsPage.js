@@ -16,19 +16,24 @@ function showNewsEventsPage() {
     const newsContainer = $('#newsTiles');
 
     // public functions
-    function buildHighlightedEvent(event) {
-      if (event.image) {
-        $('.c-content-banner').css('background-image', `url(${event.image})`);
-      }
-      if (moment() > moment(event.date.value)) {
-        $('.banner-type-date-event').html('Past Event');
+    function buildHighlightedEvent(event, showEvent) {
+      if (showEvent) {
+        if (event.image) {
+          $('.c-content-banner').css('background-image', `url(${event.image})`);
+        }
+        if (moment() > moment(event.date.value)) {
+          $('.banner-type-date-event').html('Past Event');
+        } else {
+          $('.banner-type-date-event').html('Upcoming Event');
+        }
+        $('.banner-link', coverEvents).attr('href', event.alias);
+        $('.banner-title', coverEvents).html(event.label);
+        $('.banner-date', coverEvents).html(moment(event.date.value).format('MMMM DD, hh:mm a'));
       } else {
-        $('.banner-type-date-event').html('Upcoming Event');
+        $('.banner-title', coverEvents).html('No upcoming events');
       }
-      $('.banner-link', coverEvents).attr('href', event.alias);
-      $('.banner-title', coverEvents).html(event.label);
-      $('.banner-date', coverEvents).html(moment(event.date.value).format('MMMM DD, hh:mm a'));
       $('.c-content-banner').removeClass('-hidden');
+      $('.c-content-banner').addClass('-image-upcoming-events');
     }
 
     function setPageCount(val) {
@@ -89,6 +94,7 @@ function showNewsEventsPage() {
     }
 
     function showEvents(country, type, page) {
+      const now = moment();
       const activeCountry = parseInt(country) > 0 ? `filter[country]=${country}&` : '';
       const activeType = parseInt(type) > 0 ? `filter[category]=${type}&` : '';
       const activeFilters = `${activeCountry}${activeType}&page[number]=${page}&page[size]=8`;
@@ -96,8 +102,13 @@ function showNewsEventsPage() {
         totalPagesEvents = getPageCount(events.count, 4);
         if (events.data.length > 0) {
           if (pageEvents === 1) {
-            $.getJSON(`/apiJSON/events?sort=-date`, function (highlightedEvent) {
-              buildHighlightedEvent(highlightedEvent.data[0]);
+            $.getJSON(`/apiJSON/events?sort=-date&range=1`, function (highlightedEvent) {
+              if (now > moment(highlightedEvent.data[0].date.value)) {
+                buildHighlightedEvent(highlightedEvent.data[0], false);
+              } else {
+                buildHighlightedEvent(highlightedEvent.data[0], true);
+              }
+
               appendTilesEvent(events.data, eventsContainer);
               removeLoader('#eventsContainer', null, true);
             });
