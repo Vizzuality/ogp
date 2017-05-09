@@ -163,30 +163,27 @@ function pushDefaultModal(id, query, countryData, dataLabel, buttonText, buttonL
 }
 
 function pushSmallModal(id, query, countryData, firstDataLabel, secondDataLabel, buttonText, buttonLink) {
-
-  $.getJSON(`/apiJSON/${query}`, function (data) {
-    const html = `
-      <div class="content-wrapper">
-        <h3 class="text -module-title">${countryData[0].label}</h3>
-        <p class="text -meta">Member since ${moment.unix(countryData[0].memberSince).format('YYYY')}</p>
-        <div class="data-container">
-          <div class="c-data-number -with-padding">
-            <h4 class="text -number">${data.count}</h4>
-            <span class="text -small-bold">${firstDataLabel}</span>
-          </div>
-          <div class="c-data-number -with-padding">
-            <h4 class="text -number">3</h4>
-            <span class="text -small-bold">${secondDataLabel}</span>
-          </div>
+  const html = `
+    <div class="content-wrapper">
+      <h3 class="text -module-title">${countryData[0].label}</h3>
+      <p class="text -meta">Member since ${moment.unix(countryData[0].memberSince).format('YYYY')}</p>
+      <div class="data-container">
+        <div class="c-data-number -with-padding">
+          <h4 class="text -number">${parseInt(countryData[0].current_commitments_count) + parseInt(countryData[0].starred_commitments_count) + parseInt(countryData[0].irm_commitments_count)}</h4>
+          <span class="text -small-bold">${firstDataLabel}</span>
+        </div>
+        <div class="c-data-number -with-padding">
+          <h4 class="text -number">3</h4>
+          <span class="text -small-bold">${secondDataLabel}</span>
         </div>
       </div>
-      <div class="button-container">
-        <a class="c-button -box -tall -green-back -white" href="${buttonLink}">${buttonText}</a>
-        <a class="c-button -box -tall -green-back -white" href="${countryData[0].alias}">View country</a>
-      </div>
-    `;
-    setDataToModal(id, html);
-  });
+    </div>
+    <div class="button-container">
+      <a class="c-button -box -tall -green-back -white" href="${buttonLink}">${buttonText}</a>
+      <a class="c-button -box -tall -green-back -white" href="${countryData[0].alias}">View country</a>
+    </div>
+  `;
+  setDataToModal(id, html);
 }
 
 function setMapModalContent(id, type, countryId, countriesData) {
@@ -201,7 +198,7 @@ function setMapModalContent(id, type, countryId, countriesData) {
   }
   switch (type) {
     case 'actionPlan':
-      pushSmallModal(id, `irm_commitments?filter[country]=${countryId}`, countryData, 'commitments', 'themes covered', 'latest stories', 'stories', '');
+      pushSmallModal(id, `countries/${countryId}`, countryData, 'commitments', 'themes covered', 'latest stories', 'stories', '');
       break;
     case 'starred':
       pushDefaultModal(id, `starredcommitments?filter[country]=${countryId}`, countryData, 'starred commitments', 'latest stories', 'stories', 'list', '');
