@@ -23,7 +23,7 @@ $field_people_pic = field_get_items('node', $node, 'field_profile_picture');
             <h2 class="text container-information">
               <?php
                 if($field_countries_involved) {
-                  echo '<div class="line-separator"><a href="'.drupal_get_path_alias('node/' . $field_countries_involved[0]['target_id']).'" class="text -small-bold -uppercase -blue tag">'.$field_countries_involved[0]['entity']->title.'</a></div>';
+                  echo '<div class="line-separator"><a href="/'.drupal_get_path_alias('node/' . $field_countries_involved[0]['target_id']).'" class="text -small-bold -uppercase -blue tag">'.$field_countries_involved[0]['entity']->title.'</a></div>';
                 }
                 if($field_job_title) {
                   echo '<div class="line-separator"><strong class="text -bold">Job title:<strong><span class="text -blank"> '.$field_job_title.'</span></div>';
