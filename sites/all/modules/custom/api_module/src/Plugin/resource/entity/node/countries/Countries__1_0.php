@@ -22,6 +22,7 @@ use Drupal\restful\Plugin\resource\ResourceNode;
  *   authenticationOptional = TRUE,
  *   dataProvider = {
  *     "entityType": "node",
+ *     "range": 1000,
  *     "bundles": {
  *       "country_page"
  *     },
