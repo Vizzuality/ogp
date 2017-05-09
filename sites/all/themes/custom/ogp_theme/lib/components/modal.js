@@ -95,14 +95,14 @@ function setDataToModal(id, html) {
 }
 
 function pushDefaultModal(id, query, countryData, dataLabel, buttonText, buttonLink, modalType, secondData) {
-  let secondDataCount = 0;
+  let totalPeople = 0;
   $.getJSON(`/apiJSON/${query}`, function (data) {
     let dataInfo = '';
     let id_people= [];
     if (dataLabel === 'people involved') {
       if (secondData.data.length > 0) {
-        secondDataCount = secondData.data.length;
         for (let i = 0; i < secondData.data.length; i += 1) {
+          totalPeople += 1;
           id_people[i] = secondData.data[i].id;
           dataInfo += `
             <div class="modal-line-separator">
@@ -125,6 +125,7 @@ function pushDefaultModal(id, query, countryData, dataLabel, buttonText, buttonL
           `;
         } else if (modalType === 'grid') {
           if ($.inArray(data.id, id_people) === -1) {
+            totalPeople += 1;
             dataInfo += `
             <div class="modal-line-separator">
               <a class="text -small-bold -blue" href="/${data.alias}">${data.label ? data.label : ''}</a>
@@ -150,7 +151,7 @@ function pushDefaultModal(id, query, countryData, dataLabel, buttonText, buttonL
           <p class="text -meta">Member since ${moment.unix(countryData[0].memberSince).format('YYYY')}, Action plans ${countryData[0].action_plan_count}</p>
         </div>
         <div class="c-data-number">
-          <h3 class="text -number">${data.count + secondDataCount}</h3>
+          <h3 class="text -number">${dataLabel === 'people involved' ? totalPeople : data.count}</h3>
           <p class="text -small-bold">${dataLabel}</p>
         </div>
       </div>

@@ -226,6 +226,105 @@ function getAbsolutePath() {
 })(jQuery);
 'use strict';
 
+function convertPostDate(date, format) {
+  var dateString = new Date(date * 1e3);
+  var dd = dateString.getDate();
+  var mm = dateString.getMonth() + 1; //January is 0!
+  var yyyy = dateString.getFullYear();
+
+  if (format === 'dd/mm/yyyy') {
+    if (dd < 10) {
+      dd = '0' + dd;
+    }
+
+    if (mm < 10) {
+      mm = '0' + mm;
+    }
+  }
+
+  dateString = dd + '/' + mm + '/' + yyyy;
+
+  return dateString;
+}
+
+function convertEventDate(date) {
+  var myDate = moment(date, 'YYYY-M-DD HH:mm:ss');
+  return myDate.format('MMMM D, YYYY - hh:mm');
+}
+
+function dateDiff(date) {
+  return moment().diff(date, 'days');
+}
+"use strict";
+
+var uniqueRandoms = [];
+var numRandoms = 50;
+
+function makeUniqueRandom() {
+  // refill the array if needed
+  if (!uniqueRandoms.length) {
+    for (var i = 0; i < numRandoms; i++) {
+      uniqueRandoms.push(i);
+    }
+  }
+  var index = Math.floor(Math.random() * uniqueRandoms.length);
+  var val = uniqueRandoms[index];
+
+  // now remove that value from the array
+  uniqueRandoms.splice(index, 1);
+
+  return val;
+}
+'use strict';
+
+function smoothScroll() {
+  $('a[href*="#"]:not([href="#"])').click(function () {
+    if (location.pathname.replace(/^\//, '') == this.pathname.replace(/^\//, '') && location.hostname == this.hostname) {
+      var target = $(this.hash);
+      target = target.length ? target : $('[name=' + this.hash.slice(1) + ']');
+      if (target.length) {
+        $('html, body').animate({
+          scrollTop: target.offset().top
+        }, 500);
+        return false;
+      }
+    }
+  });
+}
+'use strict';
+
+function getAuthors(data) {
+  var authorString = '';
+  if (data[0]) {
+    data.forEach(function (author, index) {
+      if (index === data.length - 1) {
+        authorString += '' + author.label;
+      } else {
+        authorString += author.label + ', ';
+      }
+    });
+  }
+  return authorString;
+}
+
+function stripEmptyStrings() {
+  $('p').each(function () {
+    var $this = $(this);
+    if ($this.html().replace(/\s|&nbsp;/g, '').length == 0) $this.remove();
+  });
+}
+'use strict';
+
+function addDots(string, limit) {
+  var dots = '...';
+  if (string.length > limit) {
+    string = string.substring(0, limit) + dots;
+  }
+
+  return string;
+}
+'use strict';
+
 function aboutMenu() {
   (function ($) {
 
@@ -438,14 +537,14 @@ function setDataToModal(id, html) {
 }
 
 function pushDefaultModal(id, query, countryData, dataLabel, buttonText, buttonLink, modalType, secondData) {
-  var secondDataCount = 0;
+  var totalPeople = 0;
   $.getJSON('/apiJSON/' + query, function (data) {
     var dataInfo = '';
     var id_people = [];
     if (dataLabel === 'people involved') {
       if (secondData.data.length > 0) {
-        secondDataCount = secondData.data.length;
         for (var i = 0; i < secondData.data.length; i += 1) {
+          totalPeople += 1;
           id_people[i] = secondData.data[i].id;
           dataInfo += '\n            <div class="modal-line-separator">\n              <a class="text -small-bold -blue" href="/' + secondData.data[i].alias + '">(point of contact) ' + secondData.data[i].label + '</a>\n              <p class="text -body-content">' + (secondData.data[i].body ? secondData.data[i].body.value : '') + '</p>\n            </div>';
         }
@@ -459,6 +558,7 @@ function pushDefaultModal(id, query, countryData, dataLabel, buttonText, buttonL
           dataInfo += '\n          <div class="people-line-separator">\n            <a href="/' + data.alias + '">\n              <h2 class="text -title-x-small">' + data.label + '</h2>\n            </a>\n          ';
         } else if (modalType === 'grid') {
           if ($.inArray(data.id, id_people) === -1) {
+            totalPeople += 1;
             dataInfo += '\n            <div class="modal-line-separator">\n              <a class="text -small-bold -blue" href="/' + data.alias + '">' + (data.label ? data.label : '') + '</a>\n              <p class="text -body-content">' + (data.body ? addDots(data.body.value, 100) : '') + '</p>\n            </div>';
           }
         } else if (modalType === 'slider') {
@@ -466,7 +566,7 @@ function pushDefaultModal(id, query, countryData, dataLabel, buttonText, buttonL
         }
       });
     }
-    var html = '\n      <div class="modal-header">\n        <div class="header-info">\n          <h3 class="text -module-title">' + countryData[0].label + '</h3>\n          <p class="text -meta">Member since ' + moment.unix(countryData[0].memberSince).format('YYYY') + ', Action plans ' + countryData[0].action_plan_count + '</p>\n        </div>\n        <div class="c-data-number">\n          <h3 class="text -number">' + (data.count + secondDataCount) + '</h3>\n          <p class="text -small-bold">' + dataLabel + '</p>\n        </div>\n      </div>\n      <div class="content-wrapper -scroll ' + (modalType === 'slider' ? 'stories-slider' : '') + '">\n        ' + dataInfo + '\n      </div>\n      <div class="button-container -fixed">\n        <a href="/' + buttonLink + '" class="c-button -tall -green-back -box">' + buttonText + '</a>\n        <a href="/' + countryData[0].alias + '" class="c-button -tall -green-back -box">VIEW COUNTRY</a>\n      </div>\n    ';
+    var html = '\n      <div class="modal-header">\n        <div class="header-info">\n          <h3 class="text -module-title">' + countryData[0].label + '</h3>\n          <p class="text -meta">Member since ' + moment.unix(countryData[0].memberSince).format('YYYY') + ', Action plans ' + countryData[0].action_plan_count + '</p>\n        </div>\n        <div class="c-data-number">\n          <h3 class="text -number">' + (dataLabel === 'people involved' ? totalPeople : data.count) + '</h3>\n          <p class="text -small-bold">' + dataLabel + '</p>\n        </div>\n      </div>\n      <div class="content-wrapper -scroll ' + (modalType === 'slider' ? 'stories-slider' : '') + '">\n        ' + dataInfo + '\n      </div>\n      <div class="button-container -fixed">\n        <a href="/' + buttonLink + '" class="c-button -tall -green-back -box">' + buttonText + '</a>\n        <a href="/' + countryData[0].alias + '" class="c-button -tall -green-back -box">VIEW COUNTRY</a>\n      </div>\n    ';
     setDataToModal(id, html);
   });
 }
@@ -929,105 +1029,6 @@ function twitterLink() {
     var idStatus = $('.value-status').text();
     $('.link-twitter').attr('href', idStatus);
   })(jQuery);
-}
-'use strict';
-
-function convertPostDate(date, format) {
-  var dateString = new Date(date * 1e3);
-  var dd = dateString.getDate();
-  var mm = dateString.getMonth() + 1; //January is 0!
-  var yyyy = dateString.getFullYear();
-
-  if (format === 'dd/mm/yyyy') {
-    if (dd < 10) {
-      dd = '0' + dd;
-    }
-
-    if (mm < 10) {
-      mm = '0' + mm;
-    }
-  }
-
-  dateString = dd + '/' + mm + '/' + yyyy;
-
-  return dateString;
-}
-
-function convertEventDate(date) {
-  var myDate = moment(date, 'YYYY-M-DD HH:mm:ss');
-  return myDate.format('MMMM D, YYYY - hh:mm');
-}
-
-function dateDiff(date) {
-  return moment().diff(date, 'days');
-}
-"use strict";
-
-var uniqueRandoms = [];
-var numRandoms = 50;
-
-function makeUniqueRandom() {
-  // refill the array if needed
-  if (!uniqueRandoms.length) {
-    for (var i = 0; i < numRandoms; i++) {
-      uniqueRandoms.push(i);
-    }
-  }
-  var index = Math.floor(Math.random() * uniqueRandoms.length);
-  var val = uniqueRandoms[index];
-
-  // now remove that value from the array
-  uniqueRandoms.splice(index, 1);
-
-  return val;
-}
-'use strict';
-
-function smoothScroll() {
-  $('a[href*="#"]:not([href="#"])').click(function () {
-    if (location.pathname.replace(/^\//, '') == this.pathname.replace(/^\//, '') && location.hostname == this.hostname) {
-      var target = $(this.hash);
-      target = target.length ? target : $('[name=' + this.hash.slice(1) + ']');
-      if (target.length) {
-        $('html, body').animate({
-          scrollTop: target.offset().top
-        }, 500);
-        return false;
-      }
-    }
-  });
-}
-'use strict';
-
-function getAuthors(data) {
-  var authorString = '';
-  if (data[0]) {
-    data.forEach(function (author, index) {
-      if (index === data.length - 1) {
-        authorString += '' + author.label;
-      } else {
-        authorString += author.label + ', ';
-      }
-    });
-  }
-  return authorString;
-}
-
-function stripEmptyStrings() {
-  $('p').each(function () {
-    var $this = $(this);
-    if ($this.html().replace(/\s|&nbsp;/g, '').length == 0) $this.remove();
-  });
-}
-'use strict';
-
-function addDots(string, limit) {
-  var dots = '...';
-  if (string.length > limit) {
-    string = string.substring(0, limit) + dots;
-  }
-
-  return string;
 }
 'use strict';
 
@@ -2409,271 +2410,6 @@ function peopleInvolved(id) {
 }
 'use strict';
 
-function featuresResultPage() {
-  (function ($) {
-
-    $('#value-search').html('Search for: ' + $('#edit-keys').val());
-  })(jQuery);
-}
-'use strict';
-
-function searchPage() {
-  (function ($) {
-
-    $('.search-form input').attr('placeholder', 'Type what you are searching for...');
-  })(jQuery);
-}
-"use strict";
-
-function tagsPage() {
-  (function ($) {})(jQuery);
-}
-'use strict';
-
-function showThemesDetail(id) {
-  (function showAPIThemes($) {
-
-    //cache
-    var countrySelector = $('.country-selector');
-    var contentContainer = $('#contentContainer .content-tiles');
-    var contributorText = $('#contributorsText');
-    var countryFilter = void 0;
-
-    // local functions
-    function setContributorsText(log, author, email) {
-      var html = '\n        <b>Contributors:</b> This topic has been developed for the Open Gov Guide by the National Democratic Institute. The lead author was Patrick Merloe with contributions from Michelle Brown and Tova Wang. Please send comments to pat@ndi.org.\n      ';
-      contributorText.html(html);
-    }
-
-    function setSelectCountryListerners() {
-      countrySelector.on('change', function () {
-        hideNoResults();
-        showLoader('#themesDetail');
-        var activeTab = $('.c-tabs .-selected').data('node');
-        var countryModel = $(this).val();
-        if (parseInt(countryModel) === 0) {
-          showContent(contentContainer, activeTab);
-        } else {
-          showContent(contentContainer, activeTab, countryModel);
-        }
-      });
-    }
-
-    // init selector
-    function initSelectors() {
-      countrySelector.select2({
-        minimumResultsForSearch: Infinity,
-        containerCssClass: '-green -tall',
-        dropdownCssClass: '-green',
-        placeholder: 'All countries'
-      });
-      $('.select2').addClass('-green-select');
-      $.getJSON('/apiJSON/countries?fields=id,label&sort=label', function (data) {
-        data.data.forEach(function (country) {
-          var option = '<option value="' + country.id + '">' + country.label + '</option>';
-          countrySelector.append(option);
-        });
-      });
-      setSelectCountryListerners();
-    }
-
-    // custom callback for tabs component
-    var onChangeTab = function onChangeTab(id, label) {
-      hideNoResults();
-      showLoader('#themesDetail');
-      $('#themesDetail .-body-content').addClass('-hidden');
-      $('#themesDetail .' + id).removeClass('-hidden');
-      var activeCountry = countrySelector.val();
-      if (parseInt(activeCountry) === 0) {
-        showContent(contentContainer, id);
-      } else {
-        showContent(contentContainer, id, activeCountry);
-      }
-      setContributorsText();
-      if (id === 'modelcommitments') {
-        contributorText.removeClass('-hidden');
-      } else {
-        contributorText.addClass('-hidden');
-      }
-    };
-
-    function showContent(container, endpoint, countryFilter) {
-      container.html('');
-      var countryQuery = countryFilter && endpoint !== 'modelcommitments' ? '&filter[country]=' + countryFilter : '';
-      var sorting = endpoint === 'stories' ? '-created' : 'label';
-      $.getJSON('/apiJSON/' + endpoint + '?filter[theme]=' + id + countryQuery + '&sort=' + sorting, function (data) {
-        hideNoResults();
-        if (data.data.length) {
-          appendTilesWithoutBackground(data.data, container, 2, '-themes', endpoint);
-        } else {
-          showNoResults(container, 'No content available', 'tall', 'grey', 'xxlarge', 'blue');
-        }
-        removeLoader('#themesDetail', null, true);
-      });
-    }
-    // init page
-    initTabs();
-    setTabListeners(onChangeTab);
-    initSelectors();
-    showContent(contentContainer, 'starredcommitments');
-    buildExploreMoreTiles('themes', '', '', false, false);
-  })(jQuery);
-}
-'use strict';
-
-function showThemesPage() {
-  (function showAPIThemes($) {
-
-    //consts
-    var themesContainer = $('#tilesContainer');
-    var searchContainer = $('#themesTilesSearch input');
-    var searchEl = $('.c-tile');
-    var searchText = $('.c-tile .tile');
-    var themesTitle = $('.tiles-heading');
-
-    // local functions
-    function showThemesTiles() {
-      $.getJSON('/apiJSON/themes?sort=label', function (data) {
-        if (data.data.length) {
-          appendTiles(data.data, themesContainer, 3);
-        } else {
-          showNoResults('#tilesNoResults', 'No themes available', 'tall', 'grey', 'xxlarge', 'blue');
-        }
-        removeLoader('.l-section', null, true);
-      });
-    }
-
-    // custom callback for tabs component
-    var onChangeTab = function onChangeTab(id, label) {
-      themesTitle.html(label);
-      var currentSearch = searchContainer.val();
-      currentSearch = currentSearch.toLowerCase();
-      var parseId = parseInt(id);
-      $('.c-tile').each(function () {
-        if (currentSearch) {
-          if ($(this).data('group') === parseId && $(this).html().toLowerCase().indexOf(currentSearch) > -1 || id === '0' && $('.tile', this).html().toLowerCase().indexOf(currentSearch) > -1) {
-            $(this).css('display', 'block');
-          } else {
-            $(this).css('display', 'none');
-          }
-        } else {
-          if ($(this).data('group') === parseId || parseId === 0) {
-            $(this).css('display', 'block');
-          } else {
-            $(this).css('display', 'none');
-          }
-        }
-      });
-
-      // check for zero results
-      var results = $('.c-tile').filter(function () {
-        return $(this).css('display') === 'block';
-      }).length;
-
-      // show empty results
-      if (results === 0) {
-        showNoResults('#noResultsContainer', 'No themes available', 'tall', 'grey', 'xxlarge', 'blue');
-      } else {
-        hideNoResults('#noResultsContainer');
-      }
-    };
-
-    // init page
-    showThemesTiles();
-    initTabs();
-    setTabListeners(onChangeTab);
-    setSearchListeners(searchEl, searchText);
-  })(jQuery);
-}
-'use strict';
-
-function showGroupList() {
-  (function ($) {
-    var page = 1;
-    var totalPages = 0;
-    var sortValue = 'asc';
-    var tableContainer = $('.container-info-table');
-
-    $('.sort-field').click(function () {
-      if (sortValue === 'asc') {
-        $('.triangle-sort').css('transform', 'rotate(180deg)'); // use this functions, because jquery method addClass not work with svg.
-        sortValue = 'desc';
-      } else {
-        $('.triangle-sort').css('transform', 'rotate(0deg)');
-        sortValue = 'asc';
-      }
-      page = 1;
-      showLoader('#tableContainer');
-      showGroups(page, sortValue);
-    });
-
-    function setPaginationListerners() {
-      $('.onClickPagination').on('click', function (e) {
-        showLoader('#tableContainer');
-        var pageNum = $(this).data('value');
-        showGroups(pageNum, sortValue);
-      });
-    }
-
-    function showGroups(page, sort) {
-      var sortApi = '';
-
-      if (sort === 'asc') {
-        sortApi = 'sort=label';
-      } else {
-        sortApi = 'sort-=label';
-      }
-
-      $.getJSON('/apiJSON/working_group?&page=' + page + '&' + sortApi, function (working) {
-        totalPages = getPageCount(working.count, 5);
-        if (page === 1) {
-          $.getJSON('/apiJSON/working_group?date&page=' + page + '&' + sortApi, function (workingTable) {
-            createTable(workingTable, 'groups');
-            initPagination(page, totalPages, 'workingGroupList');
-            setPaginationListerners();
-            removeLoader('#tableContainer', null, true);
-          });
-        } else {
-          createTable(working, 'groups');
-          removeLoader('#tableContainer', null, true);
-          initPagination(page, totalPages, 'workingGroupList');
-          setPaginationListerners();
-        }
-      });
-    }
-    showGroups(page, sortValue);
-  })(jQuery);
-}
-'use strict';
-
-function showWorkingGroupDetail(id) {
-  (function ($) {
-    var tabsContainer = $('.tabs-container');
-    var containerInfo = $('#container-info');
-
-    // custom callback for tabs component
-    var onChangeWorkinPageTab = function onChangeWorkinPageTab(id, label) {
-      $('.tab-content').addClass('-hidden');
-      $('.' + id).removeClass('-hidden');
-    };
-
-    function initWorkingTabs(onChange) {
-      initTabs();
-      setTabListeners(onChange);
-    }
-    showLoader('.working-group-content');
-    $.getJSON('/apiJSON/working_group_page?filter[working_group]=' + id + '&filter[show]=1&sort=order', function (data) {
-      buildTabs(data.data, tabsContainer, onChangeWorkinPageTab);
-      initWorkingTabs(onChangeWorkinPageTab);
-      for (var i = 0; i < data.data.length; i += 1) {
-        containerInfo.append('\n          <div class="tab-content -hidden ' + data.data[i].id + '">\n            <h3 class="text -section-title">' + data.data[i].label + '</h3>\n            <div class="text -body-content">\n              ' + data.data[i].body.value + '\n            </div>\n          </div>\n        ');
-      }
-      removeLoader('.working-group-content', null, true);
-    });
-  })(jQuery);
-}
-'use strict';
-
 function showGroupResourcesDetail(id) {
   (function ($) {
 
@@ -2744,6 +2480,22 @@ function showResourcesDetail(id) {
     $.getJSON('/apiJSON/resources?filter[id]=' + id, function (data) {
       buildExploreMoreTiles('resources', 'group_resource', data.data[0].group_resource[0], false, false);
     });
+  })(jQuery);
+}
+'use strict';
+
+function featuresResultPage() {
+  (function ($) {
+
+    $('#value-search').html('Search for: ' + $('#edit-keys').val());
+  })(jQuery);
+}
+'use strict';
+
+function searchPage() {
+  (function ($) {
+
+    $('.search-form input').attr('placeholder', 'Type what you are searching for...');
   })(jQuery);
 }
 'use strict';
@@ -2996,6 +2748,255 @@ function showStoriesSubmitPage(id) {
         // console.log('data not accepted');
       }
       e.preventDefault();
+    });
+  })(jQuery);
+}
+"use strict";
+
+function tagsPage() {
+  (function ($) {})(jQuery);
+}
+'use strict';
+
+function showThemesDetail(id) {
+  (function showAPIThemes($) {
+
+    //cache
+    var countrySelector = $('.country-selector');
+    var contentContainer = $('#contentContainer .content-tiles');
+    var contributorText = $('#contributorsText');
+    var countryFilter = void 0;
+
+    // local functions
+    function setContributorsText(log, author, email) {
+      var html = '\n        <b>Contributors:</b> This topic has been developed for the Open Gov Guide by the National Democratic Institute. The lead author was Patrick Merloe with contributions from Michelle Brown and Tova Wang. Please send comments to pat@ndi.org.\n      ';
+      contributorText.html(html);
+    }
+
+    function setSelectCountryListerners() {
+      countrySelector.on('change', function () {
+        hideNoResults();
+        showLoader('#themesDetail');
+        var activeTab = $('.c-tabs .-selected').data('node');
+        var countryModel = $(this).val();
+        if (parseInt(countryModel) === 0) {
+          showContent(contentContainer, activeTab);
+        } else {
+          showContent(contentContainer, activeTab, countryModel);
+        }
+      });
+    }
+
+    // init selector
+    function initSelectors() {
+      countrySelector.select2({
+        minimumResultsForSearch: Infinity,
+        containerCssClass: '-green -tall',
+        dropdownCssClass: '-green',
+        placeholder: 'All countries'
+      });
+      $('.select2').addClass('-green-select');
+      $.getJSON('/apiJSON/countries?fields=id,label&sort=label', function (data) {
+        data.data.forEach(function (country) {
+          var option = '<option value="' + country.id + '">' + country.label + '</option>';
+          countrySelector.append(option);
+        });
+      });
+      setSelectCountryListerners();
+    }
+
+    // custom callback for tabs component
+    var onChangeTab = function onChangeTab(id, label) {
+      hideNoResults();
+      showLoader('#themesDetail');
+      $('#themesDetail .-body-content').addClass('-hidden');
+      $('#themesDetail .' + id).removeClass('-hidden');
+      var activeCountry = countrySelector.val();
+      if (parseInt(activeCountry) === 0) {
+        showContent(contentContainer, id);
+      } else {
+        showContent(contentContainer, id, activeCountry);
+      }
+      setContributorsText();
+      if (id === 'modelcommitments') {
+        contributorText.removeClass('-hidden');
+      } else {
+        contributorText.addClass('-hidden');
+      }
+    };
+
+    function showContent(container, endpoint, countryFilter) {
+      container.html('');
+      var countryQuery = countryFilter && endpoint !== 'modelcommitments' ? '&filter[country]=' + countryFilter : '';
+      var sorting = endpoint === 'stories' ? '-created' : 'label';
+      $.getJSON('/apiJSON/' + endpoint + '?filter[theme]=' + id + countryQuery + '&sort=' + sorting, function (data) {
+        hideNoResults();
+        if (data.data.length) {
+          appendTilesWithoutBackground(data.data, container, 2, '-themes', endpoint);
+        } else {
+          showNoResults(container, 'No content available', 'tall', 'grey', 'xxlarge', 'blue');
+        }
+        removeLoader('#themesDetail', null, true);
+      });
+    }
+    // init page
+    initTabs();
+    setTabListeners(onChangeTab);
+    initSelectors();
+    showContent(contentContainer, 'starredcommitments');
+    buildExploreMoreTiles('themes', '', '', false, false);
+  })(jQuery);
+}
+'use strict';
+
+function showThemesPage() {
+  (function showAPIThemes($) {
+
+    //consts
+    var themesContainer = $('#tilesContainer');
+    var searchContainer = $('#themesTilesSearch input');
+    var searchEl = $('.c-tile');
+    var searchText = $('.c-tile .tile');
+    var themesTitle = $('.tiles-heading');
+
+    // local functions
+    function showThemesTiles() {
+      $.getJSON('/apiJSON/themes?sort=label', function (data) {
+        if (data.data.length) {
+          appendTiles(data.data, themesContainer, 3);
+        } else {
+          showNoResults('#tilesNoResults', 'No themes available', 'tall', 'grey', 'xxlarge', 'blue');
+        }
+        removeLoader('.l-section', null, true);
+      });
+    }
+
+    // custom callback for tabs component
+    var onChangeTab = function onChangeTab(id, label) {
+      themesTitle.html(label);
+      var currentSearch = searchContainer.val();
+      currentSearch = currentSearch.toLowerCase();
+      var parseId = parseInt(id);
+      $('.c-tile').each(function () {
+        if (currentSearch) {
+          if ($(this).data('group') === parseId && $(this).html().toLowerCase().indexOf(currentSearch) > -1 || id === '0' && $('.tile', this).html().toLowerCase().indexOf(currentSearch) > -1) {
+            $(this).css('display', 'block');
+          } else {
+            $(this).css('display', 'none');
+          }
+        } else {
+          if ($(this).data('group') === parseId || parseId === 0) {
+            $(this).css('display', 'block');
+          } else {
+            $(this).css('display', 'none');
+          }
+        }
+      });
+
+      // check for zero results
+      var results = $('.c-tile').filter(function () {
+        return $(this).css('display') === 'block';
+      }).length;
+
+      // show empty results
+      if (results === 0) {
+        showNoResults('#noResultsContainer', 'No themes available', 'tall', 'grey', 'xxlarge', 'blue');
+      } else {
+        hideNoResults('#noResultsContainer');
+      }
+    };
+
+    // init page
+    showThemesTiles();
+    initTabs();
+    setTabListeners(onChangeTab);
+    setSearchListeners(searchEl, searchText);
+  })(jQuery);
+}
+'use strict';
+
+function showGroupList() {
+  (function ($) {
+    var page = 1;
+    var totalPages = 0;
+    var sortValue = 'asc';
+    var tableContainer = $('.container-info-table');
+
+    $('.sort-field').click(function () {
+      if (sortValue === 'asc') {
+        $('.triangle-sort').css('transform', 'rotate(180deg)'); // use this functions, because jquery method addClass not work with svg.
+        sortValue = 'desc';
+      } else {
+        $('.triangle-sort').css('transform', 'rotate(0deg)');
+        sortValue = 'asc';
+      }
+      page = 1;
+      showLoader('#tableContainer');
+      showGroups(page, sortValue);
+    });
+
+    function setPaginationListerners() {
+      $('.onClickPagination').on('click', function (e) {
+        showLoader('#tableContainer');
+        var pageNum = $(this).data('value');
+        showGroups(pageNum, sortValue);
+      });
+    }
+
+    function showGroups(page, sort) {
+      var sortApi = '';
+
+      if (sort === 'asc') {
+        sortApi = 'sort=label';
+      } else {
+        sortApi = 'sort-=label';
+      }
+
+      $.getJSON('/apiJSON/working_group?&page=' + page + '&' + sortApi, function (working) {
+        totalPages = getPageCount(working.count, 5);
+        if (page === 1) {
+          $.getJSON('/apiJSON/working_group?date&page=' + page + '&' + sortApi, function (workingTable) {
+            createTable(workingTable, 'groups');
+            initPagination(page, totalPages, 'workingGroupList');
+            setPaginationListerners();
+            removeLoader('#tableContainer', null, true);
+          });
+        } else {
+          createTable(working, 'groups');
+          removeLoader('#tableContainer', null, true);
+          initPagination(page, totalPages, 'workingGroupList');
+          setPaginationListerners();
+        }
+      });
+    }
+    showGroups(page, sortValue);
+  })(jQuery);
+}
+'use strict';
+
+function showWorkingGroupDetail(id) {
+  (function ($) {
+    var tabsContainer = $('.tabs-container');
+    var containerInfo = $('#container-info');
+
+    // custom callback for tabs component
+    var onChangeWorkinPageTab = function onChangeWorkinPageTab(id, label) {
+      $('.tab-content').addClass('-hidden');
+      $('.' + id).removeClass('-hidden');
+    };
+
+    function initWorkingTabs(onChange) {
+      initTabs();
+      setTabListeners(onChange);
+    }
+    showLoader('.working-group-content');
+    $.getJSON('/apiJSON/working_group_page?filter[working_group]=' + id + '&filter[show]=1&sort=order', function (data) {
+      buildTabs(data.data, tabsContainer, onChangeWorkinPageTab);
+      initWorkingTabs(onChangeWorkinPageTab);
+      for (var i = 0; i < data.data.length; i += 1) {
+        containerInfo.append('\n          <div class="tab-content -hidden ' + data.data[i].id + '">\n            <h3 class="text -section-title">' + data.data[i].label + '</h3>\n            <div class="text -body-content">\n              ' + data.data[i].body.value + '\n            </div>\n          </div>\n        ');
+      }
+      removeLoader('.working-group-content', null, true);
     });
   })(jQuery);
 }
