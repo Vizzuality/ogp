@@ -116,7 +116,7 @@ function pushDefaultModal(id, query, countryData, dataLabel, buttonText, buttonL
       trimmedData.forEach(function(data) {
         if (modalType === 'list') {
           dataInfo += `
-            <a href="${data.alias}">
+            <a href="/${data.alias}">
               <h2 class="text -title-x-small">${data.label}</h2>
             </a>
           `;
@@ -130,7 +130,7 @@ function pushDefaultModal(id, query, countryData, dataLabel, buttonText, buttonL
         } else if (modalType === 'slider') {
           dataInfo += `
             <div class="slide -stories">
-              <a href="${data.topic[0] ? data.topic[0].alias : ''}" class="text -small-bold -blue">${data.topic[0] ? data.topic[0].label : ''}</a>
+              <a href="/${data.topic[0] ? data.topic[0].alias : ''}" class="text -small-bold -blue">${data.topic[0] ? data.topic[0].label : ''}</a>
               <a href="/${data.alias}" class="text -section-title-small">${data.label}</a>
               <span class="text date-text -small-bold">${moment.unix(data.created).format('D MMMM YYYY')}</span>
               <p class="text -meta">${data.author[0] ? data.author[0].label : ''}</p>
@@ -155,7 +155,7 @@ function pushDefaultModal(id, query, countryData, dataLabel, buttonText, buttonL
       </div>
       <div class="button-container -fixed">
         <a href="/${buttonLink}" class="c-button -tall -green-back -box">${buttonText}</a>
-        <a href="${countryData[0].alias}" class="c-button -tall -green-back -box">VIEW COUNTRY</a>
+        <a href="/${countryData[0].alias}" class="c-button -tall -green-back -box">VIEW COUNTRY</a>
       </div>
     `;
     setDataToModal(id, html);
