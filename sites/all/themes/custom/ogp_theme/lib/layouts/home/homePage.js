@@ -37,7 +37,7 @@ function showHomePage() {
       layer.setInteraction(true);
       const hovers = [];
       layer.on('featureClick', function(e, latlng, pos, data) {
-        $.getJSON(`https://jmonaco.carto.com/api/v2/sql?q= SELECT * FROM countries_homepage WHERE cartodb_id =  ${data.cartodb_id}`, function (datapath) {
+        $.getJSON(`https://jmonaco.carto.com/api/v2/sql?q= SELECT * FROM ggtqckcj2bioeepnuvxoow  WHERE cartodb_id =  ${data.cartodb_id}`, function (datapath) {
           document.location.href = `${window.location.origin}${datapath.rows[0].path}`;
         });
       });
