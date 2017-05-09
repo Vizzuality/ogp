@@ -456,7 +456,7 @@ function pushDefaultModal(id, query, countryData, dataLabel, buttonText, buttonL
       var trimmedData = modalType === 'slider' ? data.data.slice(0, 3) : data.data;
       trimmedData.forEach(function (data) {
         if (modalType === 'list') {
-          dataInfo += '\n          <div class="people-line-separator">\n            <a href="/' + data.alias + '">\n              <h2 class="text -title-x-small">' + data.label + '</h2>\n            </a>\n          ';
+          dataInfo += '\n            <div class="people-line-separator">\n              <a href="/' + data.alias + '">\n                <h2 class="text -title-x-small">' + data.label + '</h2>\n              </a>\n            </div>\n          ';
         } else if (modalType === 'grid') {
           if ($.inArray(data.id, id_people) === -1) {
             totalPeople += 1;

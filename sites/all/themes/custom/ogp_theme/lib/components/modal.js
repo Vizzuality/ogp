@@ -118,10 +118,11 @@ function pushDefaultModal(id, query, countryData, dataLabel, buttonText, buttonL
       trimmedData.forEach(function(data) {
         if (modalType === 'list') {
           dataInfo += `
-          <div class="people-line-separator">
-            <a href="/${data.alias}">
-              <h2 class="text -title-x-small">${data.label}</h2>
-            </a>
+            <div class="people-line-separator">
+              <a href="/${data.alias}">
+                <h2 class="text -title-x-small">${data.label}</h2>
+              </a>
+            </div>
           `;
         } else if (modalType === 'grid') {
           if ($.inArray(data.id, id_people) === -1) {
