@@ -107,7 +107,7 @@ function pushDefaultModal(id, query, countryData, dataLabel, buttonText, buttonL
           dataInfo += `
             <div class="modal-line-separator">
               <a class="text -small-bold -blue" href="/${secondData.data[i].alias}">(point of contact) ${secondData.data[i].label}</a>
-              <p class="text -body-content">${secondData.data[i].body ? secondData.data[i].body.value : ''}</p>
+              <p class="text -body-content">${secondData.data[i].body ? addDots(secondData.data[i].body.value, 100) : ''}</p>
             </div>`;
         }
       }
