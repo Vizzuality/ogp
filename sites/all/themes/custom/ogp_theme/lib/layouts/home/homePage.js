@@ -27,7 +27,7 @@ function showHomePage() {
       user_name: 'jmonaco',
       type: 'cartodb',
       sublayers: [{
-        sql: 'SELECT  wb.the_geom_webmercator the_geom_webmercator, nid, member_since, at.path, actionplan, at.country, at.cartodb_id FROM ggtqckcj2bioeepnuvxoow at INNER JOIN country_centroids_all ca on at.country = ca.short_name INNER JOIN world_borders_hd wb on ca.iso3136 = wb.wb_a2',
+        sql: 'SELECT  wb.the_geom_webmercator the_geom_webmercator, nid, member_since, at.path, actionplan, at.country, at.cartodb_id FROM ggtqckcj2bioeepnuvxoow at INNER JOIN country_centroids_all ca on at.country = ca.short_name INNER JOIN world_border_ogp wb on ca.iso3136 = wb.wb_a2',
         cartocss: '#layer {polygon-fill: ramp([actionplan], (#2d4f00, #66bc29, #2d4f00, #66bc29, #2d4f00, #2d4f00, #cc3300, #cc3300), ("Implementing 1st action plan and Developing 2nd action plan","Developing action plan", "Implementing 2nd action plan", "Developing 1st Action Plan", "Implementing 1st action plan", "Implementing action plan", , "Inactive"), "="); line-width: 1; line-color: #FFF; line-opacity: 0.5;}',
         interactivity: 'the_geom_webmercator, nid, country, cartodb_id'
       }]

@@ -1032,6 +1032,36 @@ function addDots(string, limit) {
 }
 'use strict';
 
+function showAboutPages() {
+  (function ($) {
+
+    var tabsContainer = $('.tabs-container');
+    var containerInfo = $('#containerInfo');
+
+    // custom callback for tabs component
+    var onChangeAboutPageTab = function onChangeAboutPageTab(id, label) {
+      $('.tab-content').addClass('-hidden');
+      $('.' + id).removeClass('-hidden');
+    };
+
+    function initAboutTabs(onChange) {
+      initTabs();
+      setTabListeners(onChange);
+    }
+
+    showLoader('#containerInfo');
+    $.getJSON('/apiJSON/page?filter[page_category]=2925', function (data) {
+      buildTabs(data.data, tabsContainer, onChangeAboutPageTab);
+      initAboutTabs(onChangeAboutPageTab);
+      for (var i = 0; i < data.data.length; i += 1) {
+        containerInfo.append('\n        <div class="tab-content -hidden ' + data.data[i].id + '">\n          <h3 class="text -section-title">' + data.data[i].label + '</h3>\n          <div class="text -body-content">\n            <p class="text -body-content">\n              ' + data.data[i].body.value + '\n            </p>\n          </div>\n        </div>\n      ');
+      }
+      removeLoader('#containerInfo', null, true);
+    });
+  })(jQuery);
+}
+'use strict';
+
 function showCurrentCommitmentDetail(id) {
   (function ($) {
 
@@ -1092,58 +1122,6 @@ function showStarredCommitmentDetail(id) {
   (function ($) {
     $('#theme-menu').addClass('active');
     buildExploreMoreTiles('starredcommitments', '', '', true, true);
-  })(jQuery);
-}
-'use strict';
-
-function showAboutPages() {
-  (function ($) {
-
-    var tabsContainer = $('.tabs-container');
-    var containerInfo = $('#containerInfo');
-
-    // custom callback for tabs component
-    var onChangeAboutPageTab = function onChangeAboutPageTab(id, label) {
-      $('.tab-content').addClass('-hidden');
-      $('.' + id).removeClass('-hidden');
-    };
-
-    function initAboutTabs(onChange) {
-      initTabs();
-      setTabListeners(onChange);
-    }
-
-    showLoader('#containerInfo');
-    $.getJSON('/apiJSON/page?filter[page_category]=2925', function (data) {
-      buildTabs(data.data, tabsContainer, onChangeAboutPageTab);
-      initAboutTabs(onChangeAboutPageTab);
-      for (var i = 0; i < data.data.length; i += 1) {
-        containerInfo.append('\n        <div class="tab-content -hidden ' + data.data[i].id + '">\n          <h3 class="text -section-title">' + data.data[i].label + '</h3>\n          <div class="text -body-content">\n            <p class="text -body-content">\n              ' + data.data[i].body.value + '\n            </p>\n          </div>\n        </div>\n      ');
-      }
-      removeLoader('#containerInfo', null, true);
-    });
-  })(jQuery);
-}
-'use strict';
-
-function showDocumentResourcePage() {
-  (function ($) {
-    // cache dom
-    var tileContainer = $('#resourceDocsTiles');
-    var searchEl = $('.c-tile');
-    var searchText = $('.c-tile .tile');
-    var searchContainer = $('#resourceTilesSearch input');
-
-    // fetch content and append
-    $.getJSON('/apiJSON/resource', function (data) {
-      setSearchPlaceholder(searchContainer, data.data[0].label);
-      setSearchListeners(searchEl, searchText);
-      if (data.data.length) {
-        appendTiles(data.data, tileContainer, 4);
-      } else {
-        showNoResults();
-      }
-    });
   })(jQuery);
 }
 'use strict';
@@ -1602,7 +1580,7 @@ function showCountriesPage() {
     var cartoQueryLink = 'https://jmonaco.carto.com/api/v2/sql?q=';
     var layers = {
       action: {
-        sql: 'SELECT  wb.the_geom_webmercator the_geom_webmercator, nid, member_since, at.path, actionplan, at.country, at.cartodb_id FROM ggtqckcj2bioeepnuvxoow at INNER JOIN country_centroids_all ca on at.country = ca.short_name INNER JOIN world_borders_hd wb on ca.iso3136 = wb.wb_a2',
+        sql: 'SELECT  wb.the_geom_webmercator the_geom_webmercator, nid, member_since, at.path, actionplan, at.country, at.cartodb_id FROM ggtqckcj2bioeepnuvxoow at INNER JOIN country_centroids_all ca on at.country = ca.short_name INNER JOIN world_border_ogp wb on ca.iso3136 = wb.wb_a2',
         cartocss: '#layer {polygon-fill: ramp([actionplan], (#2d4f00, #66bc29, #2d4f00, #66bc29, #2d4f00, #2d4f00, #cc3300, #cc3300), ("Implementing 1st action plan and Developing 2nd action plan","Developing action plan", "Implementing 2nd action plan", "Developing 1st Action Plan", "Implementing 1st action plan", "Implementing action plan", , "Inactive"), "="); line-width: 1; line-color: #FFF; line-opacity: 0.5;}',
         interactivity: 'the_geom_webmercator, nid, country, cartodb_id',
         name: 'action'
@@ -1833,6 +1811,28 @@ function initCountryTabs(onChangeCountryTab) {
 }
 'use strict';
 
+function showDocumentResourcePage() {
+  (function ($) {
+    // cache dom
+    var tileContainer = $('#resourceDocsTiles');
+    var searchEl = $('.c-tile');
+    var searchText = $('.c-tile .tile');
+    var searchContainer = $('#resourceTilesSearch input');
+
+    // fetch content and append
+    $.getJSON('/apiJSON/resource', function (data) {
+      setSearchPlaceholder(searchContainer, data.data[0].label);
+      setSearchListeners(searchEl, searchText);
+      if (data.data.length) {
+        appendTiles(data.data, tileContainer, 4);
+      } else {
+        showNoResults();
+      }
+    });
+  })(jQuery);
+}
+'use strict';
+
 function showHomePage() {
   (function ($) {
 
@@ -1862,7 +1862,7 @@ function showHomePage() {
       user_name: 'jmonaco',
       type: 'cartodb',
       sublayers: [{
-        sql: 'SELECT  wb.the_geom_webmercator the_geom_webmercator, nid, member_since, at.path, actionplan, at.country, at.cartodb_id FROM ggtqckcj2bioeepnuvxoow at INNER JOIN country_centroids_all ca on at.country = ca.short_name INNER JOIN world_borders_hd wb on ca.iso3136 = wb.wb_a2',
+        sql: 'SELECT  wb.the_geom_webmercator the_geom_webmercator, nid, member_since, at.path, actionplan, at.country, at.cartodb_id FROM ggtqckcj2bioeepnuvxoow at INNER JOIN country_centroids_all ca on at.country = ca.short_name INNER JOIN world_border_ogp wb on ca.iso3136 = wb.wb_a2',
         cartocss: '#layer {polygon-fill: ramp([actionplan], (#2d4f00, #66bc29, #2d4f00, #66bc29, #2d4f00, #2d4f00, #cc3300, #cc3300), ("Implementing 1st action plan and Developing 2nd action plan","Developing action plan", "Implementing 2nd action plan", "Developing 1st Action Plan", "Implementing 1st action plan", "Implementing action plan", , "Inactive"), "="); line-width: 1; line-color: #FFF; line-opacity: 0.5;}',
         interactivity: 'the_geom_webmercator, nid, country, cartodb_id'
       }]
