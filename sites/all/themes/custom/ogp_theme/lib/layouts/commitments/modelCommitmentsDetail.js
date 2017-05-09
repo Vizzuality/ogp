@@ -11,7 +11,7 @@ function showModelCommitmentDetail(id) {
         $('.strength-info').html(`<strong>Strength: </strong>${data.data[0].strength.label}`);
         $('.contributor-info').html(`<strong>Contributors: </strong>${data.data[0].contributors}`);
         $('#justification .container').html(data.data[0].justification);
-        appendTilesStandards(data.data[0].standardsguidance, $('#standards .container'), 2);
+        appendStandardsTiles(data.data[0], $('#standards .container'), 2);
         removeLoader('.l-section', null, true);
       });
     }

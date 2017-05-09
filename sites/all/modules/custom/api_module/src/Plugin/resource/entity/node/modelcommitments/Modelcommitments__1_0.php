@@ -43,15 +43,6 @@ class Modelcommitments__1_0 extends ResourceNode{
       'property' => 'field_theme_model',
     );
 
-    // $public_fields['country'] = array(
-    //   'property' => 'field_country_model',
-    //   'resource' => array(
-    //     'name' => 'countries',
-    //     'majorVersion' => '1',
-    //     'minorVersion' => '0'
-    //   )
-    // );
-
     $public_fields['log'] = array(
       'property' => 'log'
     );

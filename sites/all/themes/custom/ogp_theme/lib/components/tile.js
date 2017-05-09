@@ -86,26 +86,6 @@ function appendTilesRandom(data, container, gridNum, customClass, country, numbe
   }
 }
 
-function appendTilesStandards(data, container, gridNum, customClass) {
-  const gridWidth = 12 / gridNum;
-  if (data.length !== 0) {
-    data.forEach((item) => {
-      const html = `
-        <div class="column small-12 medium-4 large-${gridWidth} c-tile ${customClass ? customClass : ''}" data-group="${item.group ? item.group : ''}">
-          <a href="" class="tile" style="background-image: url('${item.image ? item.image : ''}')">
-            <div class="${item.image ? 'overlay' : ''}"></div>
-            <span class="text -tile -white">
-              ${item}
-
-            </span>
-          </a>
-        </div>
-      `;
-      container.append(html);
-    });
-  }
-}
-
 function appendSmallTiles(data, topContainer, gridNum, customClass) {
   const container = $(`${topContainer} .data-tiles`);
   const gridWidth = 12 / gridNum;
@@ -117,6 +97,25 @@ function appendSmallTiles(data, topContainer, gridNum, customClass) {
             <div class="${item.image ? 'overlay' : ''}"></div>
             <span class="text -tile -white">
               ${item.label}
+            </span>
+          </a>
+        </div>
+      `;
+      container.append(html);
+    });
+  }
+}
+
+function appendStandardsTiles(data, container, gridNum, customClass) {
+  const gridWidth = 12 / gridNum;
+  if (data.standardsguidance.length > 0) {
+    data.standardsguidance.forEach((item, index) => {
+      const html = `
+        <div class="column small-12 large-${gridWidth} c-tile ${customClass ? customClass : ''}">
+          <a href="${data.linkstandardsguidance[index]}" class="tile" target="_blank">
+            <div class="${item.image ? 'overlay' : ''}"></div>
+            <span class="text -tile -white">
+              ${item}
             </span>
           </a>
         </div>

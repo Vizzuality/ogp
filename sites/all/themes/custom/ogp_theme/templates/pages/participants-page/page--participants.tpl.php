@@ -49,7 +49,7 @@
                   </li>
                   <li class="text -small -grey">
                     <div class="circle-color -inactive"></div>
-                    <a class="inactive-link" href="<?php print drupal_get_path_alias('node/5852') ?>"><span>Inactive</span><svg class="icon"><use xlink:href="#icon-triangle-right"></use></svg></a>
+                    <a class="inactive-link" href="<?php print drupal_get_path_alias('node/5852') ?>" target="_blank"><span>Inactive</span><svg class="icon"><use xlink:href="#icon-triangle-right"></use></svg></a>
                   </li>
                 </ul>
               </div>
