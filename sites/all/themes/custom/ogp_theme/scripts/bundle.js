@@ -1126,6 +1126,204 @@ function showStarredCommitmentDetail(id) {
 }
 'use strict';
 
+function showDocumentResourcePage() {
+  (function ($) {
+    // cache dom
+    var tileContainer = $('#resourceDocsTiles');
+    var searchEl = $('.c-tile');
+    var searchText = $('.c-tile .tile');
+    var searchContainer = $('#resourceTilesSearch input');
+
+    // fetch content and append
+    $.getJSON('/apiJSON/resource', function (data) {
+      setSearchPlaceholder(searchContainer, data.data[0].label);
+      setSearchListeners(searchEl, searchText);
+      if (data.data.length) {
+        appendTiles(data.data, tileContainer, 4);
+      } else {
+        showNoResults();
+      }
+    });
+  })(jQuery);
+}
+'use strict';
+
+function showHomePage() {
+  (function ($) {
+
+    var map = L.map('maphome', {
+      zoomControl: false,
+      center: [35, -60],
+      zoom: 2,
+      maxZoom: 6,
+      minZoom: 2,
+      scrollWheelZoom: false
+    });
+    var over = false;
+
+    $('#in').click(function () {
+      map.setZoom(map.getZoom() + 1);
+    });
+
+    $('#out').click(function () {
+      map.setZoom(map.getZoom() - 1);
+    });
+
+    var basemap = L.tileLayer('http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png', {
+      attribution: ''
+    }).addTo(map);
+
+    cartodb.createLayer(map, {
+      user_name: 'jmonaco',
+      type: 'cartodb',
+      sublayers: [{
+        sql: 'SELECT  wb.the_geom_webmercator the_geom_webmercator, nid, member_since, at.path, actionplan, at.country, at.cartodb_id FROM ggtqckcj2bioeepnuvxoow at INNER JOIN country_centroids_all ca on at.country = ca.short_name INNER JOIN world_border_ogp wb on ca.iso3136 = wb.wb_a2',
+        cartocss: '#layer {polygon-fill: ramp([actionplan], (#2d4f00, #66bc29, #2d4f00, #66bc29, #2d4f00, #2d4f00, #cc3300, #cc3300), ("Implementing 1st action plan and Developing 2nd action plan","Developing action plan", "Implementing 2nd action plan", "Developing 1st Action Plan", "Implementing 1st action plan", "Implementing action plan", , "Inactive"), "="); line-width: 1; line-color: #FFF; line-opacity: 0.5;}',
+        interactivity: 'the_geom_webmercator, nid, country, cartodb_id'
+      }]
+    }).addTo(map).done(function (layer) {
+      layer.setInteraction(true);
+      var hovers = [];
+      layer.on('featureClick', function (e, latlng, pos, data) {
+        $.getJSON('https://jmonaco.carto.com/api/v2/sql?q= SELECT * FROM ggtqckcj2bioeepnuvxoow  WHERE cartodb_id =  ' + data.cartodb_id, function (datapath) {
+          document.location.href = '' + window.location.origin + datapath.rows[0].path;
+        });
+      });
+
+      layer.bind('featureOver', function (e, latlon, pxPos, data, layers) {
+        hovers[layers] = 1;
+        if (_.any(hovers)) {
+          $('#maphome').css('cursor', 'pointer');
+        }
+      });
+
+      layer.bind('featureOut', function (m, layers) {
+        hovers[layers] = 0;
+        if (!_.any(hovers)) {
+          $('#maphome').css('cursor', 'auto');
+        }
+      });
+
+      layer.on('featureOver', function (e, latlng, pos, data) {
+        if (over === false) {
+          $('body').append('<div class="tooltip" style="padding: 5px; position: absolute; z-index: 10; background-color: rgba(255, 255, 255, 1); top:' + (e.pageY - 25) + 'px; left:' + (e.pageX + 25) + 'px">' + data.country + '</div>');
+          over = true;
+        } else {
+          $('.tooltip').html(data.country);
+          $('.tooltip').css('top', e.pageY - 25 + 'px');
+          $('.tooltip').css('left', e.pageX + 25 + 'px');
+        }
+      });
+
+      layer.on('featureOut', function (e, latlng, pos, data) {
+        over = false;
+        $('.tooltip').remove();
+      });
+      map.invalidateSize();
+    });
+  })(jQuery);
+}
+'use strict';
+
+function showSliderHomePage() {
+  (function ($) {
+
+    function getSlideConten(dataContent, dataSlide, imageContent, i) {
+      var textLink = 'Explore the content';
+      var imageSlide = void 0;
+      if (dataSlide.text_link) {
+        textLink = '' + dataSlide.text_link;
+      }
+      if (imageContent) {
+        if (dataSlide.image) {
+          imageSlide = '<div class="c-slider-home-page slider-image-' + i + ' ' + (dataSlide.image ? '-image' : '') + '">';
+        } else {
+          imageSlide = '<div class="c-slider-home-page slider-image-' + i + ' ' + (dataContent.image ? '-image' : '') + '">';
+        }
+      } else {
+        imageSlide = '<div class="c-slider-home-page slider-image-' + i + ' ' + (dataSlide.image ? '-image' : '') + '">';
+      }
+      var slideContent = '\n        ' + imageSlide + '\n          <div class="row">\n            <div class="column small-12 medium-9">\n              <div class="container slider-0">\n                <div>\n                  <h1 class="title-text -white">\n                    <a href="' + dataSlide.alias + '">' + dataContent.label + '</a>\n                  </h1>\n                  <div class="small-12 medium-5 large-4">\n                    <a class="c-button -box" href="' + dataSlide.alias + '">' + textLink + '</a>\n                  <div>\n                </div>\n              </div>\n            </div>\n          </div>\n        </div>\n      ';
+      return slideContent;
+    }
+
+    $.getJSON('/apiJSON/slider_home_page', function (stories) {
+      showLoader('.slider-cover-home');
+      for (var i = 0; i < stories.count; i += 1) {
+        if (stories.data[i].show) {
+          var slide = '';
+
+          if (stories.data[i].information_current) {
+            slide = getSlideConten(stories.data[i].information_current, stories.data[i], false, i);
+          }
+
+          if (stories.data[i].information_event) {
+            slide = getSlideConten(stories.data[i].information_event, stories.data[i], false, i);
+          }
+
+          if (stories.data[i].information_irm) {
+            slide = getSlideConten(stories.data[i].information_irm, stories.data[i], false, i);
+          }
+
+          if (stories.data[i].information_model) {
+            slide = getSlideConten(stories.data[i].information_model, stories.data[i], false, i);
+          }
+
+          if (stories.data[i].information_news) {
+            slide = getSlideConten(stories.data[i].information_news, stories.data[i], false, i);
+          }
+
+          if (stories.data[i].information_page) {
+            slide = getSlideConten(stories.data[i].information_page, stories.data[i], false, i);
+          }
+
+          if (stories.data[i].information_starred) {
+            slide = getSlideConten(stories.data[i].information_starred, stories.data[i], false, i);
+          }
+
+          if (stories.data[i].information_stories) {
+            slide = getSlideConten(stories.data[i].information_stories, stories.data[i], true, i);
+          }
+
+          if (stories.data[i].information_working) {
+            slide = getSlideConten(stories.data[i].information_working, stories.data[i], false, i);
+          }
+
+          if (stories.data[i].information_working_page) {
+            slide = getSlideConten(stories.data[i].information_working_page, stories.data[i], false, i);
+          }
+
+          $('.slider-cover-home').append(slide);
+        }
+
+        if (stories.data[i].information_stories) {
+          if (stories.data[i].image) {
+            $('.slider-image-' + i).css('background-image', 'url(' + stories.data[i].image + ')');
+          }
+          if (stories.data[i].information_stories.image) {
+            $('.slider-image-' + i).css('background-image', 'url(' + stories.data[i].information_stories.image + ')');
+          }
+        } else {
+          if (stories.data[i].image) {
+            $('.slider-image-' + i).css('background-image', 'url(' + stories.data[i].image + ')');
+          }
+        }
+      }
+      removeLoader('.slider-cover-home');
+      $('.slider-cover-home').slick({
+        dots: true,
+        arrows: false,
+        speed: 500,
+        fade: true,
+        cssEase: 'linear',
+        dotsClass: 'dots-slider',
+        adaptiveHeight: true
+      });
+    });
+  })(jQuery);
+}
+'use strict';
+
 function showCountriesDetail(id) {
   (function ($) {
 
@@ -1586,14 +1784,14 @@ function showCountriesPage() {
         name: 'action'
       },
       starred: {
-        sql: 'SELECT numberstarred,country, st.cartodb_id, st_centroid(wb.the_geom_webmercator) the_geom_webmercator FROM zzpexx07fxnjtcvjpptz2q st INNER JOIN country_centroids_all wb on st.country = wb.short_name WHERE wb.the_geom_webmercator IS NOT NULL ORDER BY numberstarred',
+        sql: '#layer::z1 {marker-width: 30;marker-fill: #ffffff;marker-fill-opacity: 1;marker-line-width: 1;marker-line-color: #4b392f;marker-line-opacity: 0.2;marker-allow-overlap:true;marker-comp-op: src;[zoom = 2] {marker-width: 20;}[zoom = 3] {marker-width: 25;}[zoom = 4] {marker-width: 30;}[zoom = 5] {marker-width: 35;}[zoom = 6] {marker-width: 40;}}#layer::z1 {text-name: [numberstarred];text-face-name: "DejaVu Sans Book";text-size: 10;text-fill: #000000;text-label-position-tolerance: 0;text-halo-radius: 0;text-halo-fill: #6F808D;text-dy: 0;text-allow-overlap: true;[zoom = 2] {text-size: 8;}[zoom = 4] {text-size: 12;}  [zoom = 5] {text-size: 14;}[zoom = 6] {text-size: 16;}}',
         cartocss: '#layer::z1 {marker-width: 30;marker-fill: #ffffff;marker-fill-opacity: 1;marker-line-width: 1;marker-line-color: #4b392f;marker-line-opacity: 0.2;marker-allow-overlap:true;marker-comp-op: src;[zoom = 2] {marker-width: 30;}[zoom = 3] {marker-width: 35;}[zoom = 4] {marker-width: 40;}[zoom = 5] {marker-width: 45;}[zoom = 6] {marker-width: 45;}} #layer::z1 {text-name: [numberstarred];text-face-name: "DejaVu Sans Book";text-size: 10;text-fill: #000000;text-label-position-tolerance: 0;text-halo-radius: 0;text-halo-fill: #6F808D;text-dy: 0;text-allow-overlap: true;}',
         interactivity: 'numberstarred, country, cartodb_id, the_geom_webmercator',
         name: 'starred'
       },
       people: {
         sql: 'SELECT numberpeopleinvolved,country,countryid, pi.cartodb_id, st_centroid(wb.the_geom_webmercator) the_geom_webmercator FROM u4yhv_fq5_jb91rzuzgd8q pi INNER JOIN country_centroids_all wb on pi.country = wb.short_name WHERE wb.the_geom_webmercator IS NOT NULL',
-        cartocss: '#layer {marker-width: 50;marker-height: 45;marker-fill: #007acb;marker-fill-opacity: 1;marker-file:url("https://s3.amazonaws.com/com.cartodb.users-assets.production/maki-icons/marker-18.svg");marker-allow-overlap: true;marker-line-width: 1;marker-line-color: #4b392f;marker-line-opacity: 1;marker-comp-op: src-over;[zoom = 2] {marker-width: 30;marker-height: 25;}[zoom = 3] {marker-width: 35;marker-height: 30;}[zoom = 4] {marker-width: 45;marker-height: 40;} [zoom = 5] {marker-width: 50;marker-height: 45;}[zoom = 6] {marker-width: 55;marker-height: 50;}}',
+        cartocss: '#layer {marker-width: 50;marker-height: 45;marker-fill: #007acb;marker-fill-opacity: 1;marker-file:url("https://s3.amazonaws.com/com.cartodb.users-assets.production/maki-icons/marker-18.svg");marker-allow-overlap: true;marker-line-width: 1;marker-line-color: #4b392f;marker-line-opacity: 1;marker-comp-op: src-over;[zoom = 2] {marker-width: 15;marker-height: 12;}[zoom = 3] {marker-width: 20;marker-height: 17;}[zoom = 4] {marker-width: 30;marker-height: 27;}[zoom = 5] {marker-width: 40;marker-height: 35;}[zoom = 6] {marker-width: 45;marker-height: 40;}}',
         interactivity: 'numberpeopleinvolved,countryid, country, cartodb_id, the_geom_webmercator',
         name: 'people'
       },
@@ -1623,7 +1821,7 @@ function showCountriesPage() {
       },
       participants: {
         sql: 'SELECT * FROM table_4q9xwd8iroblyagpt_dx5q WHERE show_on_map IS TRUE',
-        cartocss: '#layer {marker-width: 50;marker-height: 45;marker-fill: #FFB927;marker-fill-opacity: 1;marker-file: url("https://s3.amazonaws.com/com.cartodb.users-assets.production/maki-icons/marker-18.svg");marker-allow-overlap: true;marker-line-width: 1;marker-line-color: #4b392f;marker-line-opacity: 1;marker-comp-op: src-over;[zoom = 2] {marker-width: 30;marker-height: 25;}[zoom = 3] {marker-width: 35;marker-height: 30;}[zoom = 4] {marker-width: 45;marker-height: 40;}[zoom = 5] {marker-width: 50;marker-height: 45;}[zoom = 6] {marker-width: 55;marker-height: 50;}}',
+        cartocss: '#layer {marker-width: 50;marker-height: 45;marker-fill: #FFB927;marker-fill-opacity: 1;marker-file: url("https://s3.amazonaws.com/com.cartodb.users-assets.production/maki-icons/marker-18.svg");marker-allow-overlap: true;marker-line-width: 1;marker-line-color: #4b392f;marker-line-opacity: 1;marker-comp-op: src-over;[zoom = 2] {marker-width: 15;marker-height: 12;}[zoom = 3] {marker-width: 20;marker-height: 17;}[zoom = 4] {marker-width: 30;marker-height: 27;}[zoom = 5] {marker-width: 40;marker-height: 35;}[zoom = 6] {marker-width: 45;marker-height: 40;}}',
         interactivity: 'cartodb_id, title',
         name: 'participants'
       }
@@ -1808,204 +2006,6 @@ function showCountriesData(countriesData, activeTab, container, countryId) {
 function initCountryTabs(onChangeCountryTab) {
   initTabs();
   setTabListeners(onChangeCountryTab);
-}
-'use strict';
-
-function showDocumentResourcePage() {
-  (function ($) {
-    // cache dom
-    var tileContainer = $('#resourceDocsTiles');
-    var searchEl = $('.c-tile');
-    var searchText = $('.c-tile .tile');
-    var searchContainer = $('#resourceTilesSearch input');
-
-    // fetch content and append
-    $.getJSON('/apiJSON/resource', function (data) {
-      setSearchPlaceholder(searchContainer, data.data[0].label);
-      setSearchListeners(searchEl, searchText);
-      if (data.data.length) {
-        appendTiles(data.data, tileContainer, 4);
-      } else {
-        showNoResults();
-      }
-    });
-  })(jQuery);
-}
-'use strict';
-
-function showHomePage() {
-  (function ($) {
-
-    var map = L.map('maphome', {
-      zoomControl: false,
-      center: [35, -60],
-      zoom: 2,
-      maxZoom: 6,
-      minZoom: 2,
-      scrollWheelZoom: false
-    });
-    var over = false;
-
-    $('#in').click(function () {
-      map.setZoom(map.getZoom() + 1);
-    });
-
-    $('#out').click(function () {
-      map.setZoom(map.getZoom() - 1);
-    });
-
-    var basemap = L.tileLayer('http://{s}.basemaps.cartocdn.com/light_nolabels/{z}/{x}/{y}.png', {
-      attribution: ''
-    }).addTo(map);
-
-    cartodb.createLayer(map, {
-      user_name: 'jmonaco',
-      type: 'cartodb',
-      sublayers: [{
-        sql: 'SELECT  wb.the_geom_webmercator the_geom_webmercator, nid, member_since, at.path, actionplan, at.country, at.cartodb_id FROM ggtqckcj2bioeepnuvxoow at INNER JOIN country_centroids_all ca on at.country = ca.short_name INNER JOIN world_border_ogp wb on ca.iso3136 = wb.wb_a2',
-        cartocss: '#layer {polygon-fill: ramp([actionplan], (#2d4f00, #66bc29, #2d4f00, #66bc29, #2d4f00, #2d4f00, #cc3300, #cc3300), ("Implementing 1st action plan and Developing 2nd action plan","Developing action plan", "Implementing 2nd action plan", "Developing 1st Action Plan", "Implementing 1st action plan", "Implementing action plan", , "Inactive"), "="); line-width: 1; line-color: #FFF; line-opacity: 0.5;}',
-        interactivity: 'the_geom_webmercator, nid, country, cartodb_id'
-      }]
-    }).addTo(map).done(function (layer) {
-      layer.setInteraction(true);
-      var hovers = [];
-      layer.on('featureClick', function (e, latlng, pos, data) {
-        $.getJSON('https://jmonaco.carto.com/api/v2/sql?q= SELECT * FROM ggtqckcj2bioeepnuvxoow  WHERE cartodb_id =  ' + data.cartodb_id, function (datapath) {
-          document.location.href = '' + window.location.origin + datapath.rows[0].path;
-        });
-      });
-
-      layer.bind('featureOver', function (e, latlon, pxPos, data, layers) {
-        hovers[layers] = 1;
-        if (_.any(hovers)) {
-          $('#maphome').css('cursor', 'pointer');
-        }
-      });
-
-      layer.bind('featureOut', function (m, layers) {
-        hovers[layers] = 0;
-        if (!_.any(hovers)) {
-          $('#maphome').css('cursor', 'auto');
-        }
-      });
-
-      layer.on('featureOver', function (e, latlng, pos, data) {
-        if (over === false) {
-          $('body').append('<div class="tooltip" style="padding: 5px; position: absolute; z-index: 10; background-color: rgba(255, 255, 255, 1); top:' + (e.pageY - 25) + 'px; left:' + (e.pageX + 25) + 'px">' + data.country + '</div>');
-          over = true;
-        } else {
-          $('.tooltip').html(data.country);
-          $('.tooltip').css('top', e.pageY - 25 + 'px');
-          $('.tooltip').css('left', e.pageX + 25 + 'px');
-        }
-      });
-
-      layer.on('featureOut', function (e, latlng, pos, data) {
-        over = false;
-        $('.tooltip').remove();
-      });
-      map.invalidateSize();
-    });
-  })(jQuery);
-}
-'use strict';
-
-function showSliderHomePage() {
-  (function ($) {
-
-    function getSlideConten(dataContent, dataSlide, imageContent, i) {
-      var textLink = 'Explore the content';
-      var imageSlide = void 0;
-      if (dataSlide.text_link) {
-        textLink = '' + dataSlide.text_link;
-      }
-      if (imageContent) {
-        if (dataSlide.image) {
-          imageSlide = '<div class="c-slider-home-page slider-image-' + i + ' ' + (dataSlide.image ? '-image' : '') + '">';
-        } else {
-          imageSlide = '<div class="c-slider-home-page slider-image-' + i + ' ' + (dataContent.image ? '-image' : '') + '">';
-        }
-      } else {
-        imageSlide = '<div class="c-slider-home-page slider-image-' + i + ' ' + (dataSlide.image ? '-image' : '') + '">';
-      }
-      var slideContent = '\n        ' + imageSlide + '\n          <div class="row">\n            <div class="column small-12 medium-9">\n              <div class="container slider-0">\n                <div>\n                  <h1 class="title-text -white">\n                    <a href="' + dataSlide.alias + '">' + dataContent.label + '</a>\n                  </h1>\n                  <div class="small-12 medium-5 large-4">\n                    <a class="c-button -box" href="' + dataSlide.alias + '">' + textLink + '</a>\n                  <div>\n                </div>\n              </div>\n            </div>\n          </div>\n        </div>\n      ';
-      return slideContent;
-    }
-
-    $.getJSON('/apiJSON/slider_home_page', function (stories) {
-      showLoader('.slider-cover-home');
-      for (var i = 0; i < stories.count; i += 1) {
-        if (stories.data[i].show) {
-          var slide = '';
-
-          if (stories.data[i].information_current) {
-            slide = getSlideConten(stories.data[i].information_current, stories.data[i], false, i);
-          }
-
-          if (stories.data[i].information_event) {
-            slide = getSlideConten(stories.data[i].information_event, stories.data[i], false, i);
-          }
-
-          if (stories.data[i].information_irm) {
-            slide = getSlideConten(stories.data[i].information_irm, stories.data[i], false, i);
-          }
-
-          if (stories.data[i].information_model) {
-            slide = getSlideConten(stories.data[i].information_model, stories.data[i], false, i);
-          }
-
-          if (stories.data[i].information_news) {
-            slide = getSlideConten(stories.data[i].information_news, stories.data[i], false, i);
-          }
-
-          if (stories.data[i].information_page) {
-            slide = getSlideConten(stories.data[i].information_page, stories.data[i], false, i);
-          }
-
-          if (stories.data[i].information_starred) {
-            slide = getSlideConten(stories.data[i].information_starred, stories.data[i], false, i);
-          }
-
-          if (stories.data[i].information_stories) {
-            slide = getSlideConten(stories.data[i].information_stories, stories.data[i], true, i);
-          }
-
-          if (stories.data[i].information_working) {
-            slide = getSlideConten(stories.data[i].information_working, stories.data[i], false, i);
-          }
-
-          if (stories.data[i].information_working_page) {
-            slide = getSlideConten(stories.data[i].information_working_page, stories.data[i], false, i);
-          }
-
-          $('.slider-cover-home').append(slide);
-        }
-
-        if (stories.data[i].information_stories) {
-          if (stories.data[i].image) {
-            $('.slider-image-' + i).css('background-image', 'url(' + stories.data[i].image + ')');
-          }
-          if (stories.data[i].information_stories.image) {
-            $('.slider-image-' + i).css('background-image', 'url(' + stories.data[i].information_stories.image + ')');
-          }
-        } else {
-          if (stories.data[i].image) {
-            $('.slider-image-' + i).css('background-image', 'url(' + stories.data[i].image + ')');
-          }
-        }
-      }
-      removeLoader('.slider-cover-home');
-      $('.slider-cover-home').slick({
-        dots: true,
-        arrows: false,
-        speed: 500,
-        fade: true,
-        cssEase: 'linear',
-        dotsClass: 'dots-slider',
-        adaptiveHeight: true
-      });
-    });
-  })(jQuery);
 }
 'use strict';
 

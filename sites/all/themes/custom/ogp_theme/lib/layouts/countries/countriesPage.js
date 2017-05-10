@@ -11,14 +11,14 @@ function showCountriesPage() {
         name: 'action'
       },
       starred: {
-        sql: 'SELECT numberstarred,country, st.cartodb_id, st_centroid(wb.the_geom_webmercator) the_geom_webmercator FROM zzpexx07fxnjtcvjpptz2q st INNER JOIN country_centroids_all wb on st.country = wb.short_name WHERE wb.the_geom_webmercator IS NOT NULL ORDER BY numberstarred',
+        sql: '#layer::z1 {marker-width: 30;marker-fill: #ffffff;marker-fill-opacity: 1;marker-line-width: 1;marker-line-color: #4b392f;marker-line-opacity: 0.2;marker-allow-overlap:true;marker-comp-op: src;[zoom = 2] {marker-width: 20;}[zoom = 3] {marker-width: 25;}[zoom = 4] {marker-width: 30;}[zoom = 5] {marker-width: 35;}[zoom = 6] {marker-width: 40;}}#layer::z1 {text-name: [numberstarred];text-face-name: "DejaVu Sans Book";text-size: 10;text-fill: #000000;text-label-position-tolerance: 0;text-halo-radius: 0;text-halo-fill: #6F808D;text-dy: 0;text-allow-overlap: true;[zoom = 2] {text-size: 8;}[zoom = 4] {text-size: 12;}  [zoom = 5] {text-size: 14;}[zoom = 6] {text-size: 16;}}',
         cartocss: '#layer::z1 {marker-width: 30;marker-fill: #ffffff;marker-fill-opacity: 1;marker-line-width: 1;marker-line-color: #4b392f;marker-line-opacity: 0.2;marker-allow-overlap:true;marker-comp-op: src;[zoom = 2] {marker-width: 30;}[zoom = 3] {marker-width: 35;}[zoom = 4] {marker-width: 40;}[zoom = 5] {marker-width: 45;}[zoom = 6] {marker-width: 45;}} #layer::z1 {text-name: [numberstarred];text-face-name: "DejaVu Sans Book";text-size: 10;text-fill: #000000;text-label-position-tolerance: 0;text-halo-radius: 0;text-halo-fill: #6F808D;text-dy: 0;text-allow-overlap: true;}',
         interactivity: 'numberstarred, country, cartodb_id, the_geom_webmercator',
         name: 'starred'
       },
       people: {
         sql: 'SELECT numberpeopleinvolved,country,countryid, pi.cartodb_id, st_centroid(wb.the_geom_webmercator) the_geom_webmercator FROM u4yhv_fq5_jb91rzuzgd8q pi INNER JOIN country_centroids_all wb on pi.country = wb.short_name WHERE wb.the_geom_webmercator IS NOT NULL',
-        cartocss: '#layer {marker-width: 50;marker-height: 45;marker-fill: #007acb;marker-fill-opacity: 1;marker-file:url("https://s3.amazonaws.com/com.cartodb.users-assets.production/maki-icons/marker-18.svg");marker-allow-overlap: true;marker-line-width: 1;marker-line-color: #4b392f;marker-line-opacity: 1;marker-comp-op: src-over;[zoom = 2] {marker-width: 30;marker-height: 25;}[zoom = 3] {marker-width: 35;marker-height: 30;}[zoom = 4] {marker-width: 45;marker-height: 40;} [zoom = 5] {marker-width: 50;marker-height: 45;}[zoom = 6] {marker-width: 55;marker-height: 50;}}',
+        cartocss: '#layer {marker-width: 50;marker-height: 45;marker-fill: #007acb;marker-fill-opacity: 1;marker-file:url("https://s3.amazonaws.com/com.cartodb.users-assets.production/maki-icons/marker-18.svg");marker-allow-overlap: true;marker-line-width: 1;marker-line-color: #4b392f;marker-line-opacity: 1;marker-comp-op: src-over;[zoom = 2] {marker-width: 15;marker-height: 12;}[zoom = 3] {marker-width: 20;marker-height: 17;}[zoom = 4] {marker-width: 30;marker-height: 27;}[zoom = 5] {marker-width: 40;marker-height: 35;}[zoom = 6] {marker-width: 45;marker-height: 40;}}',
         interactivity: 'numberpeopleinvolved,countryid, country, cartodb_id, the_geom_webmercator',
         name: 'people'
       },
@@ -48,7 +48,7 @@ function showCountriesPage() {
       },
       participants: {
         sql: 'SELECT * FROM table_4q9xwd8iroblyagpt_dx5q WHERE show_on_map IS TRUE',
-        cartocss: '#layer {marker-width: 50;marker-height: 45;marker-fill: #FFB927;marker-fill-opacity: 1;marker-file: url("https://s3.amazonaws.com/com.cartodb.users-assets.production/maki-icons/marker-18.svg");marker-allow-overlap: true;marker-line-width: 1;marker-line-color: #4b392f;marker-line-opacity: 1;marker-comp-op: src-over;[zoom = 2] {marker-width: 30;marker-height: 25;}[zoom = 3] {marker-width: 35;marker-height: 30;}[zoom = 4] {marker-width: 45;marker-height: 40;}[zoom = 5] {marker-width: 50;marker-height: 45;}[zoom = 6] {marker-width: 55;marker-height: 50;}}',
+        cartocss: '#layer {marker-width: 50;marker-height: 45;marker-fill: #FFB927;marker-fill-opacity: 1;marker-file: url("https://s3.amazonaws.com/com.cartodb.users-assets.production/maki-icons/marker-18.svg");marker-allow-overlap: true;marker-line-width: 1;marker-line-color: #4b392f;marker-line-opacity: 1;marker-comp-op: src-over;[zoom = 2] {marker-width: 15;marker-height: 12;}[zoom = 3] {marker-width: 20;marker-height: 17;}[zoom = 4] {marker-width: 30;marker-height: 27;}[zoom = 5] {marker-width: 40;marker-height: 35;}[zoom = 6] {marker-width: 45;marker-height: 40;}}',
         interactivity: 'cartodb_id, title',
         name: 'participants'
       }
