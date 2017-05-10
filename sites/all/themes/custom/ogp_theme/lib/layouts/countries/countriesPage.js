@@ -11,7 +11,7 @@ function showCountriesPage() {
         name: 'action'
       },
       starred: {
-        sql: 'SELECT numberstarred,country, st.cartodb_id, st_centroid(wb.the_geom_webmercator) the_geom_webmercator FROM zzpexx07fxnjtcvjpptz2q st INNER JOIN country_centroids_all wb on st.country = wb.short_name WHERE wb.the_geom_webmercator IS NOT NULL ORDER BY numberstarred',
+        sql: '#layer::z1 {marker-width: 30;marker-fill: #ffffff;marker-fill-opacity: 1;marker-line-width: 1;marker-line-color: #4b392f;marker-line-opacity: 0.2;marker-allow-overlap:true;marker-comp-op: src;[zoom = 2] {marker-width: 20;}[zoom = 3] {marker-width: 25;}[zoom = 4] {marker-width: 30;}[zoom = 5] {marker-width: 35;}[zoom = 6] {marker-width: 40;}}#layer::z1 {text-name: [numberstarred];text-face-name: "DejaVu Sans Book";text-size: 10;text-fill: #000000;text-label-position-tolerance: 0;text-halo-radius: 0;text-halo-fill: #6F808D;text-dy: 0;text-allow-overlap: true;[zoom = 2] {text-size: 8;}[zoom = 4] {text-size: 12;}  [zoom = 5] {text-size: 14;}[zoom = 6] {text-size: 16;}}',
         cartocss: '#layer::z1 {marker-width: 30;marker-fill: #ffffff;marker-fill-opacity: 1;marker-line-width: 1;marker-line-color: #4b392f;marker-line-opacity: 0.2;marker-allow-overlap:true;marker-comp-op: src;[zoom = 2] {marker-width: 30;}[zoom = 3] {marker-width: 35;}[zoom = 4] {marker-width: 40;}[zoom = 5] {marker-width: 45;}[zoom = 6] {marker-width: 45;}} #layer::z1 {text-name: [numberstarred];text-face-name: "DejaVu Sans Book";text-size: 10;text-fill: #000000;text-label-position-tolerance: 0;text-halo-radius: 0;text-halo-fill: #6F808D;text-dy: 0;text-allow-overlap: true;}',
         interactivity: 'numberstarred, country, cartodb_id, the_geom_webmercator',
         name: 'starred'
